@@ -1,0 +1,5561 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.gitignore
+db.json
+eslint.config.js
+index.html
+package.json
+postcss.config.js
+README.md
+src/App.css
+src/App.tsx
+src/components/common/EmptyState.tsx
+src/components/common/Header.tsx
+src/components/common/Loading.tsx
+src/components/common/Sidebar.tsx
+src/components/ui/Badge.tsx
+src/components/ui/Button.tsx
+src/components/ui/Card.tsx
+src/components/ui/ConfirmDialog.tsx
+src/components/ui/Input.tsx
+src/components/ui/Modal.tsx
+src/components/ui/SearchInput.tsx
+src/components/ui/Select.tsx
+src/components/ui/StatusChip.tsx
+src/components/ui/Table.tsx
+src/components/ui/Textarea.tsx
+src/context/AuthContext.ts
+src/context/AuthProvider.tsx
+src/data/constants.ts
+src/index.css
+src/layouts/MainLayout.tsx
+src/main.tsx
+src/pages/announcements/AnnouncementForm.tsx
+src/pages/announcements/AnnouncementsPage.tsx
+src/pages/assignments/AssignmentsPage.tsx
+src/pages/attendance/AttendancePage.tsx
+src/pages/auth/LoginPage.tsx
+src/pages/classes/ClassDetailsPage.tsx
+src/pages/classes/ClassesPage.tsx
+src/pages/classes/ClassFilters.tsx
+src/pages/classes/ClassForm.tsx
+src/pages/classes/ClassSessionsPanel.tsx
+src/pages/classes/ClassStudentsPanel.tsx
+src/pages/classes/ClassTable.tsx
+src/pages/classes/classValidation.ts
+src/pages/classes/SessionForm.tsx
+src/pages/classes/sessionValidation.ts
+src/pages/dashboard/DashboardPage.tsx
+src/pages/NotFoundPage.tsx
+src/pages/profile/ProfilePage.tsx
+src/pages/UnauthorizedPage.tsx
+src/pages/users/UserDetails.tsx
+src/pages/users/UserFilters.tsx
+src/pages/users/UserForm.tsx
+src/pages/users/UsersPage.tsx
+src/pages/users/UserTable.tsx
+src/pages/users/userValidation.ts
+src/routes/AppRoutes.tsx
+src/routes/ProtectedRoute.tsx
+src/routes/RoleGuard.tsx
+src/services/api/axiosInstance.ts
+src/services/api/baseApi.ts
+src/services/modules/announcementService.ts
+src/services/modules/assignmentService.ts
+src/services/modules/attendanceService.ts
+src/services/modules/authService.ts
+src/services/modules/classService.ts
+src/services/modules/sessionService.ts
+src/services/modules/submissionService.ts
+src/services/modules/userService.ts
+src/types/announcement.ts
+src/types/assignment.ts
+src/types/attendance.ts
+src/types/auth.ts
+src/types/class.ts
+src/types/common.ts
+src/types/session.ts
+src/types/submission.ts
+src/types/user.ts
+src/utils/constants.ts
+src/utils/formatDate.ts
+tailwind.config.js
+tsconfig.app.json
+tsconfig.json
+tsconfig.node.json
+vite.config.ts
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+</file>
+
+<file path="db.json">
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Admin User",
+      "email": "admin@educonnect.com",
+      "password": "123456",
+      "role": "admin",
+      "status": "active"
+    },
+    {
+      "id": "2",
+      "name": "مدیر سیستم",
+      "email": "admin2@educonnect.com",
+      "password": "123456",
+      "role": "admin",
+      "status": "inactive"
+    },
+    {
+      "id": "3",
+      "name": "محمد حسینی",
+      "email": "mh419421@gmail.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "active"
+    },
+    {
+      "id": "4",
+      "name": "سارا محمدی",
+      "email": "teacher2@educonnect.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "active"
+    },
+    {
+      "id": "5",
+      "name": "علی رضایی",
+      "email": "teacher3@educonnect.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "active"
+    },
+    {
+      "id": "6",
+      "name": "رضا کریمی",
+      "email": "teacher4@educonnect.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "inactive"
+    },
+    {
+      "id": "7",
+      "name": "Student User 1",
+      "email": "mh4194214@gmail.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "8",
+      "name": "زهرا احمدی",
+      "email": "student2@educonnect.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "9",
+      "name": "امیر حسنی",
+      "email": "student3@educonnect.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "10",
+      "name": "فاطمه نوری",
+      "email": "student4@educonnect.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "11",
+      "name": "حسین موسوی",
+      "email": "student5@educonnect.com",
+      "password": "123456",
+      "role": "student",
+      "status": "inactive"
+    },
+    {
+      "id": "12",
+      "name": "مریم صادقی",
+      "email": "student6@educonnect.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "name": "T_U_1",
+      "email": "mh41942122334@gmail.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "active",
+      "id": "k8pFsZdoCRc"
+    }
+  ],
+  "classes": [
+    {
+      "id": "1",
+      "title": "پیشرفته React",
+      "teacherId": 3,
+      "studentIds": [
+        7,
+        8,
+        11
+      ],
+      "capacity": 20,
+      "status": "active",
+      "description": "بررسی عمیق الگوها و بهترین شیوه‌های React",
+      "createdAt": "2025-07-01T10:00:00.000Z",
+      "updatedAt": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "title": "Backend با Node.js",
+      "teacherId": 4,
+      "studentIds": [
+        9,
+        10
+      ],
+      "capacity": 25,
+      "status": "active",
+      "description": "توسعه سمت سرور با Node.js و Express",
+      "createdAt": "2025-07-05T10:00:00.000Z",
+      "updatedAt": "2025-07-05T10:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "title": "برنامه‌نویسی Python",
+      "teacherId": 5,
+      "studentIds": [
+        7,
+        10,
+        12
+      ],
+      "capacity": 30,
+      "status": "active",
+      "description": "مبانی و مفاهیم پیشرفته Python",
+      "createdAt": "2025-07-10T10:00:00.000Z",
+      "updatedAt": "2025-07-10T10:00:00.000Z"
+    },
+    {
+      "id": "4",
+      "title": "طراحی پایگاه داده",
+      "teacherId": 3,
+      "studentIds": [
+        9,
+        10,
+        12
+      ],
+      "capacity": 20,
+      "status": "active",
+      "description": "طراحی و پیاده‌سازی پایگاه داده‌های رابطه‌ای",
+      "createdAt": "2025-07-15T10:00:00.000Z",
+      "updatedAt": "2026-06-20T17:36:23.412Z"
+    },
+    {
+      "id": "5",
+      "title": "شبکه‌های کامپیوتری",
+      "teacherId": 5,
+      "studentIds": [
+        8,
+        11
+      ],
+      "capacity": 25,
+      "status": "inactive",
+      "description": "مبانی شبکه و پروتکل‌های ارتباطی",
+      "createdAt": "2025-06-01T10:00:00.000Z",
+      "updatedAt": "2025-09-01T10:00:00.000Z"
+    },
+    {
+      "id": "6",
+      "title": "مبانی توسعه وب",
+      "teacherId": 4,
+      "studentIds": [],
+      "capacity": 30,
+      "status": "inactive",
+      "description": "آشنایی با HTML، CSS و JavaScript",
+      "createdAt": "2025-06-15T10:00:00.000Z",
+      "updatedAt": "2025-08-15T10:00:00.000Z"
+    }
+  ],
+  "sessions": [
+    {
+      "id": "1",
+      "classId": 1,
+      "title": "جلسه 1 - مقدمه‌ای بر React",
+      "date": "2025-08-01",
+      "description": "آشنایی با مفاهیم پایه React و JSX",
+      "createdAt": "2025-07-25T10:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "classId": 1,
+      "title": "جلسه 2 - Components و Props",
+      "date": "2025-08-08",
+      "description": "ساخت کامپوننت‌ها و مدیریت Props",
+      "createdAt": "2025-08-02T10:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "classId": 1,
+      "title": "جلسه 3 - State و Hooks",
+      "date": "2025-08-15",
+      "description": "مدیریت State و استفاده از Hooks",
+      "createdAt": "2025-08-09T10:00:00.000Z"
+    },
+    {
+      "id": "4",
+      "classId": 2,
+      "title": "جلسه 1 - مقدمه Node.js",
+      "date": "2025-08-03",
+      "description": "آشنایی با محیط Node.js و npm",
+      "createdAt": "2025-07-28T10:00:00.000Z"
+    },
+    {
+      "id": "5",
+      "classId": 2,
+      "title": "جلسه 2 - Express Framework",
+      "date": "2025-08-10",
+      "description": "ساخت API با Express",
+      "createdAt": "2025-08-04T10:00:00.000Z"
+    },
+    {
+      "id": "6",
+      "classId": 2,
+      "title": "جلسه 3 - اتصال به دیتابیس",
+      "date": "2025-08-17",
+      "description": "استفاده از MongoDB با Mongoose",
+      "createdAt": "2025-08-11T10:00:00.000Z"
+    },
+    {
+      "id": "7",
+      "classId": 3,
+      "title": "جلسه 1 - مبانی Python",
+      "date": "2025-08-05",
+      "description": "نحوه نصب و سینتکس پایه Python",
+      "createdAt": "2025-07-30T10:00:00.000Z"
+    },
+    {
+      "id": "8",
+      "classId": 3,
+      "title": "جلسه 2 - توابع و ماژول‌ها",
+      "date": "2025-08-12",
+      "description": "تعریف توابع و استفاده از ماژول‌ها",
+      "createdAt": "2025-08-06T10:00:00.000Z"
+    },
+    {
+      "id": "9",
+      "classId": 3,
+      "title": "جلسه 3 - شی‌گرایی",
+      "date": "2025-08-19",
+      "description": "مفاهیم OOP در Python",
+      "createdAt": "2025-08-13T10:00:00.000Z"
+    },
+    {
+      "id": "10",
+      "classId": 4,
+      "title": "جلسه 1 - مدل‌سازی داده",
+      "date": "2025-08-07",
+      "description": "طراحی ERD و نرمال‌سازی",
+      "createdAt": "2025-08-01T10:00:00.000Z"
+    },
+    {
+      "id": "11",
+      "classId": 4,
+      "title": "جلسه 2 - SQL مقدماتی",
+      "date": "2025-08-14",
+      "description": "دستورات SELECT، INSERT، UPDATE",
+      "createdAt": "2025-08-08T10:00:00.000Z"
+    },
+    {
+      "id": "12",
+      "classId": 5,
+      "title": "جلسه 1 - مدل OSI",
+      "date": "2025-07-10",
+      "description": "بررسی لایه‌های مدل OSI",
+      "createdAt": "2025-07-05T10:00:00.000Z"
+    },
+    {
+      "id": "13",
+      "classId": 5,
+      "title": "جلسه 2 - پروتکل TCP/IP",
+      "date": "2025-07-17",
+      "description": "آشنایی با پروتکل‌های اینترنت",
+      "createdAt": "2025-07-11T10:00:00.000Z"
+    }
+  ],
+  "attendance": [
+    {
+      "id": "a1",
+      "sessionId": 1,
+      "classId": 1,
+      "studentId": 7,
+      "status": "present"
+    },
+    {
+      "id": "a2",
+      "sessionId": 1,
+      "classId": 1,
+      "studentId": 8,
+      "status": "late"
+    },
+    {
+      "id": "a3",
+      "sessionId": 1,
+      "classId": 1,
+      "studentId": 11,
+      "status": "absent"
+    },
+    {
+      "id": "a4",
+      "sessionId": 2,
+      "classId": 1,
+      "studentId": 7,
+      "status": "present"
+    },
+    {
+      "id": "a5",
+      "sessionId": 2,
+      "classId": 1,
+      "studentId": 8,
+      "status": "absent"
+    },
+    {
+      "id": "a6",
+      "sessionId": 2,
+      "classId": 1,
+      "studentId": 11,
+      "status": "late"
+    },
+    {
+      "id": "a7",
+      "sessionId": 3,
+      "classId": 1,
+      "studentId": 7,
+      "status": "present"
+    },
+    {
+      "id": "a8",
+      "sessionId": 3,
+      "classId": 1,
+      "studentId": 8,
+      "status": "absent"
+    },
+    {
+      "id": "a9",
+      "sessionId": 3,
+      "classId": 1,
+      "studentId": 11,
+      "status": "present"
+    },
+    {
+      "id": "a10",
+      "sessionId": 4,
+      "classId": 2,
+      "studentId": 9,
+      "status": "present"
+    },
+    {
+      "id": "a11",
+      "sessionId": 4,
+      "classId": 2,
+      "studentId": 10,
+      "status": "present"
+    },
+    {
+      "id": "a12",
+      "sessionId": 5,
+      "classId": 2,
+      "studentId": 9,
+      "status": "late"
+    },
+    {
+      "id": "a13",
+      "sessionId": 5,
+      "classId": 2,
+      "studentId": 10,
+      "status": "present"
+    },
+    {
+      "id": "a14",
+      "sessionId": 6,
+      "classId": 2,
+      "studentId": 9,
+      "status": "present"
+    },
+    {
+      "id": "a15",
+      "sessionId": 6,
+      "classId": 2,
+      "studentId": 10,
+      "status": "absent"
+    },
+    {
+      "id": "a16",
+      "sessionId": 7,
+      "classId": 3,
+      "studentId": 7,
+      "status": "present"
+    },
+    {
+      "id": "a17",
+      "sessionId": 7,
+      "classId": 3,
+      "studentId": 10,
+      "status": "present"
+    },
+    {
+      "id": "a18",
+      "sessionId": 7,
+      "classId": 3,
+      "studentId": 12,
+      "status": "present"
+    },
+    {
+      "id": "a19",
+      "sessionId": 8,
+      "classId": 3,
+      "studentId": 7,
+      "status": "present"
+    },
+    {
+      "id": "a20",
+      "sessionId": 8,
+      "classId": 3,
+      "studentId": 10,
+      "status": "late"
+    },
+    {
+      "id": "a21",
+      "sessionId": 8,
+      "classId": 3,
+      "studentId": 12,
+      "status": "absent"
+    },
+    {
+      "id": "a22",
+      "sessionId": 9,
+      "classId": 3,
+      "studentId": 7,
+      "status": "absent"
+    },
+    {
+      "id": "a23",
+      "sessionId": 9,
+      "classId": 3,
+      "studentId": 10,
+      "status": "present"
+    },
+    {
+      "id": "a24",
+      "sessionId": 9,
+      "classId": 3,
+      "studentId": 12,
+      "status": "present"
+    },
+    {
+      "id": "a25",
+      "sessionId": 10,
+      "classId": 4,
+      "studentId": 9,
+      "status": "present"
+    },
+    {
+      "id": "a26",
+      "sessionId": 10,
+      "classId": 4,
+      "studentId": 10,
+      "status": "present"
+    },
+    {
+      "id": "a27",
+      "sessionId": 10,
+      "classId": 4,
+      "studentId": 12,
+      "status": "absent"
+    },
+    {
+      "id": "a28",
+      "sessionId": 11,
+      "classId": 4,
+      "studentId": 9,
+      "status": "absent"
+    },
+    {
+      "id": "a29",
+      "sessionId": 11,
+      "classId": 4,
+      "studentId": 10,
+      "status": "present"
+    },
+    {
+      "id": "a30",
+      "sessionId": 11,
+      "classId": 4,
+      "studentId": 12,
+      "status": "present"
+    },
+    {
+      "id": "a31",
+      "sessionId": 12,
+      "classId": 5,
+      "studentId": 8,
+      "status": "present"
+    },
+    {
+      "id": "a32",
+      "sessionId": 12,
+      "classId": 5,
+      "studentId": 11,
+      "status": "present"
+    },
+    {
+      "id": "a33",
+      "sessionId": 13,
+      "classId": 5,
+      "studentId": 8,
+      "status": "late"
+    },
+    {
+      "id": "a34",
+      "sessionId": 13,
+      "classId": 5,
+      "studentId": 11,
+      "status": "absent"
+    }
+  ],
+  "announcements": [
+    {
+      "id": "1",
+      "title": "اطلاعیه عمومی برای همه",
+      "content": "این یک اطلاعیه عمومی است که برای همه کاربران قابل مشاهده است.",
+      "classId": 0,
+      "authorId": "1",
+      "createdAt": "2025-07-01T10:00:00.000Z",
+      "seenBy": [
+        "3",
+        "4"
+      ],
+      "targetRoles": [
+        "student",
+        "teacher"
+      ]
+    },
+    {
+      "id": "2",
+      "title": "اطلاعیه مخصوص دانشجویان کلاس React",
+      "content": "این اطلاعیه فقط برای دانشجویان کلاس پیشرفته React است.",
+      "classId": 1,
+      "authorId": 3,
+      "createdAt": "2025-07-05T10:00:00.000Z",
+      "seenBy": [],
+      "targetAudience": "students"
+    },
+    {
+      "title": "1",
+      "content": "55",
+      "classId": 4,
+      "authorId": "3",
+      "targetAudience": "students",
+      "seenBy": [],
+      "createdAt": "2026-06-26T18:37:21.005Z",
+      "id": "5MpWlTIzgg0"
+    }
+  ],
+  "assignments": [],
+  "submissions": [],
+  "$schema": "./node_modules/json-server/schema.json"
+}
+</file>
+
+<file path="eslint.config.js">
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import tseslint from 'typescript-eslint'
+import { defineConfig, globalIgnores } from 'eslint/config'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      tseslint.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      globals: globals.browser,
+    },
+  },
+])
+</file>
+
+<file path="index.html">
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>educonnect</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>
+</file>
+
+<file path="package.json">
+{
+  "name": "educonnect",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "server": "json-server --watch db.json --port 3001"
+  },
+  "dependencies": {
+    "axios": "^1.16.1",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-hook-form": "^7.77.0",
+    "react-router-dom": "^7.16.0",
+    "recharts": "^3.8.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.12.4",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "autoprefixer": "^10.5.0",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "json-server": "^1.0.0-beta.15",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^3.4.19",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.59.2",
+    "vite": "^8.0.12",
+    "vite-tsconfig-paths": "^6.1.1"
+  },
+  "imports": {
+    "#/*": "./src/*"
+  }
+}
+</file>
+
+<file path="postcss.config.js">
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+</file>
+
+<file path="README.md">
+
+</file>
+
+<file path="src/App.css">
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+</file>
+
+<file path="src/App.tsx">
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+
+import MainLayout from "#/layouts/MainLayout.tsx";
+import DashboardPage from "#/pages/dashboard/DashboardPage.tsx";
+import UsersPage from "#/pages/users/UsersPage.tsx";
+import ClassesPage from "#/pages/classes/ClassesPage.tsx";
+import ClassDetailsPage from "#/pages/classes/ClassDetailsPage.tsx";
+import AttendancePage from "#/pages/attendance/AttendancePage.tsx";
+import AnnouncementsPage from "#/pages/announcements/AnnouncementsPage.tsx";
+import AssignmentsPage from "#/pages/assignments/AssignmentsPage.tsx";
+import ProfilePage from "#/pages/profile/ProfilePage.tsx";
+import LoginPage from "#/pages/auth/LoginPage.tsx";
+import UnauthorizedPage from "#/pages/UnauthorizedPage.tsx";
+import NotFoundPage from "#/pages/NotFoundPage.tsx";
+import ProtectedRoute from "#/routes/ProtectedRoute.tsx";
+import RoleGuard from "#/routes/RoleGuard.tsx";
+
+function App() {
+  return (
+    <Routes>
+      {/* مسیرهای عمومی */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+      {/* Layout Route برای صفحات محافظت‌شده */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Outlet />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/" element={<DashboardPage />} />
+
+        <Route
+          path="users"
+          element={
+            <RoleGuard allowedRoles={["admin"]}>
+              <UsersPage />
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="classes"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher"]}>
+              <ClassesPage />
+            </RoleGuard>
+          }
+        />
+
+        {/* ✅ مسیر جدید برای جزئیات کلاس */}
+        <Route
+          path="classes/:id"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher"]}>
+              <ClassDetailsPage />
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="attendance"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher"]}>
+              <AttendancePage />
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="announcements"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
+              <AnnouncementsPage />
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="assignments"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
+              <AssignmentsPage />
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="profile"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
+              <ProfilePage />
+            </RoleGuard>
+          }
+        />
+      </Route>
+
+      {/* ریدایرکت و صفحات خطا */}
+      <Route path="/home" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
+  );
+}
+
+export default App;
+</file>
+
+<file path="src/components/common/EmptyState.tsx">
+interface EmptyStateProps {
+  title?: string;
+  description?: string;
+}
+
+function EmptyState({
+  title = "No data found",
+  description = "There is nothing to display here yet.",
+}: EmptyStateProps) {
+  return (
+    <div className="rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center">
+      <h3 className="mb-2 text-lg font-semibold text-gray-700">{title}</h3>
+      <p className="text-sm text-gray-500">{description}</p>
+    </div>
+  );
+}
+
+export default EmptyState;
+</file>
+
+<file path="src/components/common/Header.tsx">
+import { useNavigate } from "react-router-dom";
+
+import Button from "#/components/ui/Button.tsx";
+import { useAuth } from "#/context/AuthContext.ts";
+
+function Header() {
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  return (
+    <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6">
+      <div>
+        <h1 className="text-xl font-bold text-blue-600">EduConnect</h1>
+      </div>
+
+      <div className="flex items-center gap-3">
+        {isAuthenticated && user ? (
+          <>
+            <div className="text-sm text-gray-600">
+              {user.name} ({user.role})
+            </div>
+            <Button variant="secondary" onClick={handleLogout}>
+              Logout
+            </Button>
+          </>
+        ) : (
+          <div className="text-sm text-gray-500">Guest</div>
+        )}
+      </div>
+    </header>
+  );
+}
+
+export default Header;
+</file>
+
+<file path="src/components/common/Loading.tsx">
+function Loading() {
+  return (
+    <div className="flex items-center justify-center py-10">
+      <div className="text-sm text-gray-500">Loading...</div>
+    </div>
+  );
+}
+
+export default Loading;
+</file>
+
+<file path="src/components/common/Sidebar.tsx">
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
+
+import { useAuth } from "#/context/AuthContext.ts";
+import type { UserRole } from "#/types/common.ts";
+
+interface NavItem {
+  label: string;
+  path: string;
+  roles: UserRole[];
+}
+
+const navItems: NavItem[] = [
+  { label: "Dashboard", path: "/", roles: ["admin", "teacher", "student"] },
+  { label: "Users", path: "/users", roles: ["admin"] },
+  { label: "Classes", path: "/classes", roles: ["admin", "teacher"] },
+  { label: "Attendance", path: "/attendance", roles: ["admin", "teacher"] },
+  {
+    label: "Announcements",
+    path: "/announcements",
+    roles: ["admin", "teacher", "student"],
+  },
+  {
+    label: "Assignments",
+    path: "/assignments",
+    roles: ["admin", "teacher", "student"],
+  },
+  {
+    label: "Profile",
+    path: "/profile",
+    roles: ["admin", "teacher", "student"],
+  },
+];
+
+function Sidebar() {
+  const { user } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const filteredNavItems = navItems.filter((item) =>
+    user ? item.roles.includes(user.role) : false,
+  );
+
+  return (
+    <>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed bottom-4 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg md:hidden"
+        aria-label="Toggle menu"
+      >
+        <svg
+          className="h-6 w-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          {isOpen ? (
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          ) : (
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          )}
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-gray-200 bg-white p-4 transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <nav className="flex flex-col gap-2 pt-4 md:pt-0">
+          {filteredNavItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              onClick={() => setIsOpen(false)}
+              className={({ isActive }) =>
+                `rounded-lg px-4 py-2 text-sm font-medium transition ${
+                  isActive
+                    ? "bg-blue-100 text-blue-700"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+      </aside>
+    </>
+  );
+}
+
+export default Sidebar;
+</file>
+
+<file path="src/components/ui/Badge.tsx">
+import type { ReactNode } from "react";
+
+interface BadgeProps {
+  children: ReactNode;
+  variant?: "blue" | "green" | "red" | "gray" | "yellow";
+}
+
+function Badge({ children, variant = "gray" }: BadgeProps) {
+  const variantClasses = {
+    blue: "bg-blue-100 text-blue-700",
+    green: "bg-green-100 text-green-700",
+    red: "bg-red-100 text-red-700",
+    gray: "bg-gray-100 text-gray-700",
+    yellow: "bg-yellow-100 text-yellow-700",
+  };
+
+  return (
+    <span
+      className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${variantClasses[variant]}`}
+    >
+      {children}
+    </span>
+  );
+}
+
+export default Badge;
+</file>
+
+<file path="src/components/ui/Button.tsx">
+import type { ButtonHTMLAttributes, ReactNode } from "react";
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  variant?: "primary" | "secondary" | "danger";
+}
+
+function Button({
+  children,
+  variant = "primary",
+  className = "",
+  ...props
+}: ButtonProps) {
+  const baseClasses = "rounded-lg px-4 py-2 text-sm font-medium transition";
+
+  const variantClasses = {
+    primary: "bg-blue-600 text-white hover:bg-blue-700",
+    secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300",
+    danger: "bg-red-600 text-white hover:bg-red-700",
+  };
+
+  return (
+    <button
+      className={`${baseClasses} ${variantClasses[variant]} ${className}`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+export default Button;
+</file>
+
+<file path="src/components/ui/Card.tsx">
+import type { ReactNode } from "react";
+
+interface CardProps {
+  children: ReactNode;
+  title?: string;
+}
+
+function Card({ children, title }: CardProps) {
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+      {title && (
+        <h3 className="mb-4 text-lg font-semibold text-gray-800">{title}</h3>
+      )}
+      {children}
+    </div>
+  );
+}
+
+export default Card;
+</file>
+
+<file path="src/components/ui/ConfirmDialog.tsx">
+import Button from "#/components/ui/Button.tsx";
+import Modal from "#/components/ui/Modal.tsx";
+
+interface ConfirmDialogProps {
+  isOpen: boolean;
+  title?: string;
+  message?: string;
+  onConfirm: () => void;
+  onClose: () => void;
+}
+
+function ConfirmDialog({
+  isOpen,
+  title = "Confirm Action",
+  message = "Are you sure you want to continue?",
+  onConfirm,
+  onClose,
+}: ConfirmDialogProps) {
+  return (
+    <Modal isOpen={isOpen} title={title} onClose={onClose}>
+      <p className="mb-6 text-sm text-gray-600">{message}</p>
+
+      <div className="flex justify-end gap-2">
+        <Button variant="secondary" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button variant="danger" onClick={onConfirm}>
+          Confirm
+        </Button>
+      </div>
+    </Modal>
+  );
+}
+
+export default ConfirmDialog;
+</file>
+
+<file path="src/components/ui/Input.tsx">
+import { forwardRef, type InputHTMLAttributes } from "react";
+
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  error?: string;
+}
+
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ label, error, className = "", ...props }, ref) => {
+    return (
+      <div className="flex flex-col gap-1">
+        {label && (
+          <label className="text-sm font-medium text-gray-700">{label}</label>
+        )}
+        <input
+          ref={ref}
+          className={`rounded-lg border px-3 py-2 text-sm outline-none focus:border-blue-500 ${
+            error ? "border-red-500" : "border-gray-300"
+          } ${className}`}
+          {...props}
+        />
+        {error && <span className="text-xs text-red-600">{error}</span>}
+      </div>
+    );
+  },
+);
+
+Input.displayName = "Input";
+
+export default Input;
+</file>
+
+<file path="src/components/ui/Modal.tsx">
+import type { ReactNode } from "react";
+
+interface ModalProps {
+  isOpen: boolean;
+  title?: string;
+  children: ReactNode;
+  onClose: () => void;
+}
+
+function Modal({ isOpen, title, children, onClose }: ModalProps) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 sm:p-4">
+      <div className="w-full max-w-lg rounded-xl bg-white p-4 shadow-lg sm:p-6">
+        <div className="mb-4 flex items-center justify-between">
+          {title && (
+            <h2 className="text-base font-semibold text-gray-800 sm:text-lg">
+              {title}
+            </h2>
+          )}
+          <button
+            onClick={onClose}
+            className="text-sm text-gray-500 hover:text-gray-700"
+          >
+            Close
+          </button>
+        </div>
+        <div>{children}</div>
+      </div>
+    </div>
+  );
+}
+
+export default Modal;
+</file>
+
+<file path="src/components/ui/SearchInput.tsx">
+import type { InputHTMLAttributes } from "react";
+
+interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+}
+
+function SearchInput({ label, className = "", ...props }: SearchInputProps) {
+  return (
+    <div className="flex flex-col gap-1">
+      {label && (
+        <label className="text-sm font-medium text-gray-700">{label}</label>
+      )}
+      <input
+        type="text"
+        placeholder="Search..."
+        className={`rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 ${className}`}
+        {...props}
+      />
+    </div>
+  );
+}
+
+export default SearchInput;
+</file>
+
+<file path="src/components/ui/Select.tsx">
+import type { SelectHTMLAttributes } from "react";
+
+interface Option {
+  label: string;
+  value: string | number;
+}
+
+interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+  label?: string;
+  options: Option[];
+  error?: string;
+}
+
+function Select({
+  label,
+  options,
+  error,
+  className = "",
+  ...props
+}: SelectProps) {
+  return (
+    <div className="flex flex-col gap-1">
+      {label && (
+        <label className="text-sm font-medium text-gray-700">{label}</label>
+      )}
+      <select
+        className={`rounded-lg border px-3 py-2 text-sm outline-none focus:border-blue-500 ${
+          error ? "border-red-500" : "border-gray-300"
+        } ${className}`}
+        {...props}
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      {error && <span className="text-xs text-red-600">{error}</span>}
+    </div>
+  );
+}
+
+export default Select;
+</file>
+
+<file path="src/components/ui/StatusChip.tsx">
+interface StatusChipProps {
+  status:
+    | "active"
+    | "inactive"
+    | "present"
+    | "absent"
+    | "late"
+    | "submitted"
+    | "graded"
+    | "pending";
+}
+
+function StatusChip({ status }: StatusChipProps) {
+  const statusMap: Record<string, string> = {
+    active: "bg-green-100 text-green-700",
+    inactive: "bg-gray-100 text-gray-700",
+    present: "bg-green-100 text-green-700",
+    absent: "bg-red-100 text-red-700",
+    late: "bg-yellow-100 text-yellow-700",
+    submitted: "bg-blue-100 text-blue-700",
+    graded: "bg-green-100 text-green-700",
+    pending: "bg-gray-100 text-gray-700",
+  };
+
+  return (
+    <span
+      className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusMap[status]}`}
+    >
+      {status}
+    </span>
+  );
+}
+
+export default StatusChip;
+</file>
+
+<file path="src/components/ui/Table.tsx">
+import type { ReactNode } from "react";
+
+interface TableColumn<T> {
+  key: keyof T | string;
+  title: string;
+  render?: (item: T) => ReactNode;
+}
+
+interface TableProps<T> {
+  columns: TableColumn<T>[];
+  data: T[];
+  getRowKey?: (item: T, index: number) => string | number;
+}
+
+function Table<T>({ columns, data, getRowKey }: TableProps<T>) {
+  return (
+    <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+      <table className="min-w-full text-left text-sm">
+        <thead className="bg-gray-50">
+          <tr>
+            {columns.map((column) => (
+              <th
+                key={String(column.key)}
+                className="whitespace-nowrap px-3 py-3 text-xs font-semibold text-gray-700 sm:px-4 sm:text-sm"
+              >
+                {column.title}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((item, index) => (
+            <tr
+              key={getRowKey ? getRowKey(item, index) : index}
+              className="border-t border-gray-200"
+            >
+              {columns.map((column) => (
+                <td
+                  key={String(column.key)}
+                  className="px-3 py-3 text-gray-600 sm:px-4"
+                >
+                  {column.render
+                    ? column.render(item)
+                    : String(
+                        (item as Record<string, unknown>)[String(column.key)] ??
+                          "",
+                      )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default Table;
+</file>
+
+<file path="src/components/ui/Textarea.tsx">
+import type { TextareaHTMLAttributes } from "react";
+
+interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  label?: string;
+}
+
+function Textarea({ label, className = "", ...props }: TextareaProps) {
+  return (
+    <div className="flex flex-col gap-1">
+      {label && (
+        <label className="text-sm font-medium text-gray-700">{label}</label>
+      )}
+      <textarea
+        className={`rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 ${className}`}
+        {...props}
+      />
+    </div>
+  );
+}
+
+export default Textarea;
+</file>
+
+<file path="src/context/AuthContext.ts">
+import { createContext, useContext } from "react";
+import type { AuthContextType } from "#/types/auth.ts";
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export default AuthContext;
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used inside AuthProvider");
+  }
+  return context;
+}
+</file>
+
+<file path="src/context/AuthProvider.tsx">
+import { useCallback, useMemo, useState, type ReactNode } from "react";
+
+import AuthContext from "./AuthContext";
+import { loginUser } from "#/services/modules/authService.ts";
+import type { LoginPayload } from "#/types/auth.ts";
+import type { User } from "#/types/user.ts";
+import { STORAGE_KEYS } from "#/utils/constants.ts";
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+function getStoredUser(): User | null {
+  const storedUser = localStorage.getItem(STORAGE_KEYS.authUser);
+  if (!storedUser) return null;
+
+  try {
+    return JSON.parse(storedUser) as User;
+  } catch {
+    return null;
+  }
+}
+
+function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(() => getStoredUser());
+
+  const login = useCallback(async (payload: LoginPayload) => {
+    const loggedInUser = await loginUser(payload);
+    setUser(loggedInUser);
+    localStorage.setItem(STORAGE_KEYS.authUser, JSON.stringify(loggedInUser));
+  }, []);
+
+  const logout = useCallback(() => {
+    setUser(null);
+    localStorage.removeItem(STORAGE_KEYS.authUser);
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      user,
+      isAuthenticated: !!user,
+      isLoading: false,
+      login,
+      logout,
+    }),
+    [user, login, logout],
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export default AuthProvider;
+</file>
+
+<file path="src/data/constants.ts">
+export const APP_NAME = "EduConnect";
+</file>
+
+<file path="src/index.css">
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+</file>
+
+<file path="src/layouts/MainLayout.tsx">
+import type { ReactNode } from "react";
+
+import Header from "#/components/common/Header.tsx";
+import Sidebar from "#/components/common/Sidebar.tsx";
+
+interface MainLayoutProps {
+  children: ReactNode;
+}
+
+function MainLayout({ children }: MainLayoutProps) {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+
+      <div className="flex min-h-[calc(100vh-64px)]">
+        <Sidebar />
+
+        {/* ✅ ریسپانسیو: padding کمتر در موبایل */}
+        <main className="flex-1 p-3 sm:p-4 md:p-6">
+          <div className="mx-auto max-w-7xl">{children}</div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+export default MainLayout;
+</file>
+
+<file path="src/main.tsx">
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+
+import App from "./App";
+import AuthProvider from "#/context/AuthProvider.tsx";
+import "./index.css";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
+  </React.StrictMode>,
+);
+</file>
+
+<file path="src/pages/announcements/AnnouncementForm.tsx">
+import { useState } from "react";
+import Button from "#/components/ui/Button.tsx";
+import Input from "#/components/ui/Input.tsx";
+import Modal from "#/components/ui/Modal.tsx";
+import Select from "#/components/ui/Select.tsx";
+import Textarea from "#/components/ui/Textarea.tsx";
+import { announcementService } from "#/services/modules/announcementService.ts";
+import type { Announcement, TargetAudience } from "#/types/announcement.ts";
+import type { ClassItem } from "#/types/class.ts";
+import type { UserRole } from "#/types/common.ts";
+
+interface Props {
+  isOpen: boolean;
+  initialData?: Announcement | null;
+  classes: ClassItem[]; // کلاس‌های فیلتر شده از قبل
+  authorId: number;
+  userRole: UserRole;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+export default function AnnouncementForm({
+  isOpen,
+  initialData,
+  classes,
+  authorId,
+  userRole,
+  onClose,
+  onSuccess,
+}: Props) {
+  const [title, setTitle] = useState(initialData?.title ?? "");
+  const [content, setContent] = useState(initialData?.content ?? "");
+  const [classId, setClassId] = useState<number>(initialData?.classId ?? 0);
+  const [targetRoles, setTargetRoles] = useState<UserRole[]>(
+    initialData?.targetRoles ?? ["admin", "teacher", "student"],
+  );
+  const [targetAudience, setTargetAudience] = useState<TargetAudience>(
+    initialData?.targetAudience ?? "students",
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const isAdmin = userRole === "admin";
+
+  const handleSubmit = async () => {
+    if (!title.trim() || !content.trim()) {
+      setError("عنوان و محتوا الزامی است.");
+      return;
+    }
+    try {
+      setIsSubmitting(true);
+      const basePayload = {
+        title,
+        content,
+        classId,
+        authorId,
+      };
+
+      // ✅ اصلاح تایپ‌اسکریپت با تعیین نوع Partial<Announcement> و cast کردن مقدار
+      const payload: Partial<Announcement> = isAdmin
+        ? classId === 0
+          ? { ...basePayload, targetRoles, targetAudience: undefined }
+          : { ...basePayload, targetAudience, targetRoles: undefined }
+        : {
+            ...basePayload,
+            targetAudience: "students" as TargetAudience,
+            targetRoles: undefined,
+          };
+
+      if (initialData) {
+        await announcementService.update(initialData.id, payload);
+        await announcementService.resetSeenBy(initialData.id);
+      } else {
+        await announcementService.create(
+          payload as Omit<Announcement, "id" | "createdAt" | "seenBy">,
+        );
+      }
+      onSuccess();
+    } catch {
+      setError("خطا در ذخیره اطلاعیه.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const toggleRole = (role: UserRole) => {
+    setTargetRoles((prev) =>
+      prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role],
+    );
+  };
+
+  // گزینه‌های کلاس: مدیر همه را می‌بیند، استاد فقط کلاس‌های خودش را (بدون عمومی)
+  const classOptions = isAdmin
+    ? [
+        { label: "همه (عمومی)", value: 0 },
+        ...classes.map((c) => ({ label: c.title, value: c.id })),
+      ]
+    : classes.map((c) => ({ label: c.title, value: c.id }));
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      title={initialData ? "ویرایش اطلاعیه" : "ایجاد اطلاعیه جدید"}
+      onClose={onClose}
+    >
+      <div className="space-y-4">
+        <Input
+          label="عنوان"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="عنوان اطلاعیه"
+        />
+        <Select
+          label="مخاطب (کلاس)"
+          value={classId}
+          onChange={(e) => setClassId(Number(e.target.value))}
+          options={classOptions}
+        />
+
+        {/* بخش targetRoles فقط برای مدیر و فقط وقتی کلاس عمومی است */}
+        {isAdmin && classId === 0 && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              قابل مشاهده برای (نقش‌ها):
+            </label>
+            <div className="flex flex-wrap gap-3">
+              {(["admin", "teacher", "student"] as UserRole[]).map((role) => (
+                <label
+                  key={role}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={targetRoles.includes(role)}
+                    onChange={() => toggleRole(role)}
+                    className="h-4 w-4"
+                  />
+                  <span className="text-sm text-gray-700 capitalize">
+                    {role === "admin"
+                      ? "مدیر"
+                      : role === "teacher"
+                        ? "استاد"
+                        : "دانشجو"}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* بخش targetAudience فقط برای مدیر و فقط وقتی کلاس خاص است */}
+        {isAdmin && classId !== 0 && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              مخاطبان در کلاس:
+            </label>
+            <Select
+              value={targetAudience}
+              onChange={(e) =>
+                setTargetAudience(e.target.value as TargetAudience)
+              }
+              options={[
+                { label: "دانشجویان کلاس", value: "students" },
+                { label: "استاد کلاس", value: "teacher" },
+                { label: "دانشجویان و استاد کلاس", value: "both" },
+              ]}
+            />
+          </div>
+        )}
+
+        <Textarea
+          label="محتوا"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={5}
+          placeholder="متن اطلاعیه..."
+        />
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        <div className="flex justify-end gap-2 pt-2">
+          <Button variant="secondary" onClick={onClose}>
+            انصراف
+          </Button>
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+</file>
+
+<file path="src/pages/announcements/AnnouncementsPage.tsx">
+import { useEffect, useMemo, useState } from "react";
+import EmptyState from "#/components/common/EmptyState.tsx";
+import Loading from "#/components/common/Loading.tsx";
+import Button from "#/components/ui/Button.tsx";
+import Card from "#/components/ui/Card.tsx";
+import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
+import Modal from "#/components/ui/Modal.tsx";
+import { useAuth } from "#/context/AuthContext.ts";
+import { announcementService } from "#/services/modules/announcementService.ts";
+import { classService } from "#/services/modules/classService.ts";
+import { userService } from "#/services/modules/userService.ts";
+import { formatDate } from "#/utils/formatDate.ts";
+import type { Announcement } from "#/types/announcement.ts";
+import type { ClassItem } from "#/types/class.ts";
+import type { User } from "#/types/user.ts";
+import AnnouncementForm from "./AnnouncementForm";
+
+export default function AnnouncementsPage() {
+  const { user: currentUser } = useAuth();
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [classes, setClasses] = useState<ClassItem[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<Announcement | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Announcement | null>(null);
+  const [viewingItem, setViewingItem] = useState<Announcement | null>(null);
+
+  const isAdmin = currentUser?.role === "admin";
+  const isTeacher = currentUser?.role === "teacher";
+  const canCreate = isAdmin || isTeacher;
+
+  const canManageItem = (item: Announcement) => {
+    if (!currentUser) return false;
+    if (currentUser.role === "admin") return true;
+    if (currentUser.role === "teacher") {
+      return String(item.authorId) === String(currentUser.id);
+    }
+    return false;
+  };
+
+  const fetchData = async () => {
+    try {
+      const [a, c, u] = await Promise.all([
+        announcementService.getAll(),
+        classService.getAll(),
+        userService.getAll(),
+      ]);
+      setAnnouncements(
+        a.sort(
+          (x, y) =>
+            new Date(y.createdAt).getTime() - new Date(x.createdAt).getTime(),
+        ),
+      );
+      setClasses(c);
+      setUsers(u);
+    } catch {
+      // مدیریت خطا
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let ignore = false;
+    Promise.all([
+      announcementService.getAll(),
+      classService.getAll(),
+      userService.getAll(),
+    ])
+      .then(([a, c, u]) => {
+        if (!ignore) {
+          setAnnouncements(
+            a.sort(
+              (x, y) =>
+                new Date(y.createdAt).getTime() -
+                new Date(x.createdAt).getTime(),
+            ),
+          );
+          setClasses(c);
+          setUsers(u);
+        }
+      })
+      .catch(() => {
+        // مدیریت خطا
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  // ✅ کلاس‌های قابل انتخاب برای فرم: مدیر همه، استاد فقط کلاس‌های خودش
+  const formClasses = useMemo(() => {
+    if (isAdmin) return classes;
+    if (isTeacher && currentUser) {
+      return classes.filter(
+        (c) => String(c.teacherId) === String(currentUser.id),
+      );
+    }
+    return [];
+  }, [classes, isAdmin, isTeacher, currentUser]);
+
+  const filteredAnnouncements = useMemo(() => {
+    if (!currentUser) return [];
+
+    return announcements.filter((a) => {
+      // 1. Public Announcements (classId === 0)
+      if (a.classId === 0) {
+        const roles = a.targetRoles ?? ["admin", "teacher", "student"];
+        return roles.includes(currentUser.role);
+      }
+
+      // 2. Class-specific Announcements
+      const targetClass = classes.find((c) => c.id === a.classId);
+      if (!targetClass) return false;
+
+      const audience = a.targetAudience ?? "students";
+      const isTeacherOfThisClass =
+        String(targetClass.teacherId) === String(currentUser.id);
+      const isStudentInThisClass = (targetClass.studentIds || [])
+        .map(String)
+        .includes(String(currentUser.id));
+
+      if (audience === "teacher") return isTeacherOfThisClass;
+      if (audience === "students") return isStudentInThisClass;
+      if (audience === "both")
+        return isTeacherOfThisClass || isStudentInThisClass;
+
+      return false;
+    });
+  }, [announcements, classes, currentUser]);
+
+  const getAuthorName = (authorId: number | string) => {
+    return (
+      users.find((u) => String(u.id) === String(authorId))?.name ?? "نامشخص"
+    );
+  };
+
+  const getClassName = (classId: number) => {
+    if (classId === 0) return "همه (عمومی)";
+    return classes.find((c) => c.id === classId)?.title ?? "نامشخص";
+  };
+
+  const getTargetDescription = (item: Announcement) => {
+    if (item.classId === 0) {
+      const roles = item.targetRoles ?? ["admin", "teacher", "student"];
+      return roles
+        .map((r) =>
+          r === "admin" ? "مدیر" : r === "teacher" ? "استاد" : "دانشجو",
+        )
+        .join("، ");
+    }
+    const audience = item.targetAudience ?? "students";
+    if (audience === "teacher") return "استاد کلاس";
+    if (audience === "students") return "دانشجویان کلاس";
+    return "دانشجویان و استاد کلاس";
+  };
+
+  const handleView = async (item: Announcement) => {
+    setViewingItem(item);
+    if (currentUser && !announcementService.isSeenBy(item, currentUser.id)) {
+      await announcementService.markAsSeen(item.id, currentUser.id);
+      setAnnouncements((prev) =>
+        prev.map((a) =>
+          a.id === item.id
+            ? { ...a, seenBy: [...(a.seenBy ?? []), currentUser.id] }
+            : a,
+        ),
+      );
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await announcementService.delete(deleteTarget.id);
+      setDeleteTarget(null);
+      await fetchData();
+    } catch {
+      // مدیریت خطا
+    }
+  };
+
+  if (loading) return <Loading />;
+
+  return (
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
+          اطلاعیه‌ها
+        </h1>
+        {/* ✅ فقط مدیر و استاد می‌توانند اطلاعیه جدید ایجاد کنند */}
+        {canCreate && (
+          <Button
+            onClick={() => {
+              setEditingItem(null);
+              setIsFormOpen(true);
+            }}
+          >
+            ایجاد اطلاعیه جدید
+          </Button>
+        )}
+      </div>
+
+      {filteredAnnouncements.length === 0 ? (
+        <EmptyState
+          title="اطلاعیه‌ای وجود ندارد"
+          description="هنوز هیچ اطلاعیه‌ای ثبت نشده است."
+        />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filteredAnnouncements.map((item) => {
+            const isSeen = currentUser
+              ? announcementService.isSeenBy(item, currentUser.id)
+              : true;
+            return (
+              <Card key={item.id}>
+                <div className="flex flex-col h-full">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <h3
+                      className={`text-lg font-semibold ${
+                        isSeen ? "text-gray-600" : "text-blue-700"
+                      }`}
+                    >
+                      {item.title}
+                      {isSeen ? (
+                        <span
+                          className="mr-2 inline-block h-2 w-2 rounded-full bg-green-500"
+                          title="خوانده شده"
+                        ></span>
+                      ) : (
+                        <span
+                          className="mr-2 inline-block h-2 w-2 rounded-full bg-red-500"
+                          title="خوانده نشده"
+                        ></span>
+                      )}
+                    </h3>
+                  </div>
+                  <p className="text-xs text-gray-500 mb-1">
+                    مخاطب: {getClassName(item.classId)}
+                  </p>
+                  <p className="text-xs text-gray-500 mb-1">
+                    دسترسی: {getTargetDescription(item)}
+                  </p>
+                  <p className="text-xs text-gray-500 mb-3">
+                    نویسنده: {getAuthorName(item.authorId)} | تاریخ:{" "}
+                    {formatDate(item.createdAt)}
+                  </p>
+                  <p className="text-sm text-gray-700 line-clamp-3 mb-4 flex-grow">
+                    {item.content}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-auto">
+                    <Button
+                      variant="secondary"
+                      onClick={() => handleView(item)}
+                    >
+                      مشاهده
+                    </Button>
+                    {canManageItem(item) && (
+                      <>
+                        <Button
+                          variant="secondary"
+                          onClick={() => {
+                            setEditingItem(item);
+                            setIsFormOpen(true);
+                          }}
+                        >
+                          ویرایش
+                        </Button>
+                        <Button
+                          variant="danger"
+                          onClick={() => setDeleteTarget(item)}
+                        >
+                          حذف
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      )}
+
+      <AnnouncementForm
+        key={`announcement-form-${editingItem?.id ?? "new"}-${isFormOpen}`}
+        isOpen={isFormOpen}
+        initialData={editingItem}
+        classes={formClasses} // ✅ ارسال کلاس‌های فیلتر شده
+        authorId={currentUser?.id ?? 0}
+        userRole={currentUser?.role ?? "student"} // ✅ ارسال نقش کاربر
+        onClose={() => {
+          setIsFormOpen(false);
+          setEditingItem(null);
+        }}
+        onSuccess={() => {
+          setIsFormOpen(false);
+          setEditingItem(null);
+          fetchData();
+        }}
+      />
+
+      <Modal
+        isOpen={!!viewingItem}
+        title={viewingItem?.title ?? ""}
+        onClose={() => setViewingItem(null)}
+      >
+        {viewingItem && (
+          <div className="space-y-3 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">مخاطب:</span>{" "}
+              {getClassName(viewingItem.classId)}
+            </p>
+            <p>
+              <span className="font-semibold">دسترسی:</span>{" "}
+              {getTargetDescription(viewingItem)}
+            </p>
+            <p>
+              <span className="font-semibold">نویسنده:</span>{" "}
+              {getAuthorName(viewingItem.authorId)}
+            </p>
+            <p>
+              <span className="font-semibold">تاریخ:</span>{" "}
+              {formatDate(viewingItem.createdAt)}
+            </p>
+            <hr className="my-2" />
+            <p className="whitespace-pre-wrap leading-relaxed">
+              {viewingItem.content}
+            </p>
+          </div>
+        )}
+      </Modal>
+
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        title="حذف اطلاعیه"
+        message={`آیا از حذف اطلاعیه "${deleteTarget?.title ?? ""}" مطمئن هستید؟`}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+      />
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/assignments/AssignmentsPage.tsx">
+function AssignmentsPage() {
+  return <div className="text-xl font-semibold">Assignments Page</div>;
+}
+
+export default AssignmentsPage;
+</file>
+
+<file path="src/pages/attendance/AttendancePage.tsx">
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import EmptyState from "#/components/common/EmptyState.tsx";
+import Loading from "#/components/common/Loading.tsx";
+import Button from "#/components/ui/Button.tsx";
+import Card from "#/components/ui/Card.tsx";
+import Select from "#/components/ui/Select.tsx";
+import StatusChip from "#/components/ui/StatusChip.tsx";
+import Table from "#/components/ui/Table.tsx";
+import { useAuth } from "#/context/AuthContext.ts";
+import { attendanceService } from "#/services/modules/attendanceService.ts";
+import { classService } from "#/services/modules/classService.ts";
+import { sessionService } from "#/services/modules/sessionService.ts";
+import { userService } from "#/services/modules/userService.ts";
+import type { Attendance } from "#/types/attendance.ts";
+import type { AttendanceStatus } from "#/types/common.ts";
+import type { ClassItem } from "#/types/class.ts";
+import type { Session } from "#/types/session.ts";
+import type { User } from "#/types/user.ts";
+
+export default function AttendancePage() {
+  const { user: currentUser } = useAuth();
+  const [searchParams] = useSearchParams();
+
+  const [classes, setClasses] = useState<ClassItem[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [attendances, setAttendances] = useState<Attendance[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [selectedClassId, setSelectedClassId] = useState<string>(
+    searchParams.get("classId") || "",
+  );
+  const [selectedSessionId, setSelectedSessionId] = useState<string>(
+    searchParams.get("sessionId") || "",
+  );
+
+  const [attendanceMap, setAttendanceMap] = useState<
+    Record<string, AttendanceStatus>
+  >({});
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [actionMessage, setActionMessage] = useState("");
+  const [actionError, setActionError] = useState("");
+
+  const isAdmin = currentUser?.role === "admin";
+  const isTeacher = currentUser?.role === "teacher";
+  const isStudent = currentUser?.role === "student";
+  const canManage = isAdmin || isTeacher;
+
+  useEffect(() => {
+    let ignore = false;
+    Promise.all([
+      classService.getAll(),
+      userService.getAll(),
+      sessionService.getAll(),
+      attendanceService.getAll(),
+    ])
+      .then(([c, u, s, a]) => {
+        if (!ignore) {
+          setClasses(c);
+          setUsers(u);
+          setSessions(s);
+          setAttendances(a);
+        }
+      })
+      .catch(() => {
+        if (!ignore) setError("دریافت اطلاعات با خطا مواجه شد.");
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const availableClasses = useMemo(() => {
+    if (isAdmin) return classes;
+    if (isTeacher) {
+      return classes.filter(
+        (c) => String(c.teacherId) === String(currentUser?.id),
+      );
+    }
+    return [];
+  }, [classes, isAdmin, isTeacher, currentUser]);
+
+  const availableSessions = useMemo(() => {
+    if (!selectedClassId) return [];
+    return sessions
+      .filter((s) => String(s.classId) === selectedClassId)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [sessions, selectedClassId]);
+
+  const classStudents = useMemo(() => {
+    if (!selectedClassId) return [];
+    const cls = classes.find((c) => String(c.id) === selectedClassId);
+    if (!cls) return [];
+    return users.filter((u) =>
+      (cls.studentIds || []).map(String).includes(String(u.id)),
+    );
+  }, [classes, users, selectedClassId]);
+
+  useEffect(() => {
+    if (!selectedSessionId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAttendanceMap({});
+      return;
+    }
+    const sessionAttendances = attendances.filter(
+      (a) => String(a.sessionId) === selectedSessionId,
+    );
+    const map: Record<string, AttendanceStatus> = {};
+    for (const a of sessionAttendances) {
+      map[String(a.studentId)] = a.status;
+    }
+    setAttendanceMap(map);
+  }, [selectedSessionId, attendances]);
+
+  const handleStatusChange = (studentId: string, status: AttendanceStatus) => {
+    setAttendanceMap((prev) => ({ ...prev, [studentId]: status }));
+  };
+
+  const handleSave = async () => {
+    if (!selectedSessionId || !selectedClassId) return;
+
+    setIsSaving(true);
+    setActionMessage("");
+    setActionError("");
+
+    try {
+      const records = classStudents.map((student) => ({
+        studentId: student.id,
+        status: attendanceMap[String(student.id)] || "absent",
+      }));
+
+      await attendanceService.saveAttendanceForSession(
+        selectedSessionId,
+        selectedClassId,
+        records,
+      );
+
+      const updated = await attendanceService.getAll();
+      setAttendances(updated);
+
+      setActionMessage("حضور و غیاب با موفقیت ذخیره شد.");
+    } catch {
+      setActionError("ذخیره حضور و غیاب با خطا مواجه شد.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const studentView = useMemo(() => {
+    if (!isStudent || !currentUser) return null;
+    const myAttendances = attendances.filter(
+      (a) => String(a.studentId) === String(currentUser.id),
+    );
+    const stats = attendanceService.calculateStudentStats(myAttendances);
+
+    const sessionDetails = myAttendances.map((a) => {
+      const session = sessions.find(
+        (s) => String(s.id) === String(a.sessionId),
+      );
+      const cls = classes.find((c) => String(c.id) === String(a.classId));
+      return {
+        ...a,
+        sessionTitle: session?.title || "—",
+        sessionDate: session?.date || "—",
+        classTitle: cls?.title || "—",
+      };
+    });
+
+    return { ...stats, sessionDetails };
+  }, [attendances, sessions, classes, isStudent, currentUser]);
+
+  if (loading) return <Loading />;
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {error}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4 sm:space-y-6">
+      <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
+        حضور و غیاب
+      </h1>
+
+      {actionMessage && (
+        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+          {actionMessage}
+        </div>
+      )}
+      {actionError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {actionError}
+        </div>
+      )}
+
+      {isStudent && studentView ? (
+        <>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <Card title="کل جلسات ثبت‌شده">
+              <div className="text-2xl font-bold text-gray-800">
+                {studentView.total}
+              </div>
+            </Card>
+            <Card title="حاضر">
+              <div className="text-2xl font-bold text-green-600">
+                {studentView.present}
+              </div>
+            </Card>
+            <Card title="با تأخیر">
+              <div className="text-2xl font-bold text-yellow-600">
+                {studentView.late}
+              </div>
+            </Card>
+            <Card title="غایب">
+              <div className="text-2xl font-bold text-red-600">
+                {studentView.absent}
+              </div>
+            </Card>
+            <Card title="درصد حضور">
+              <div className="text-2xl font-bold text-blue-600">
+                {studentView.percentage.toFixed(1)}%
+              </div>
+            </Card>
+          </div>
+
+          <Card title="نوار پیشرفت حضور">
+            <div className="h-4 w-full overflow-hidden rounded-full bg-gray-200">
+              <div
+                className="h-full bg-blue-600 transition-all"
+                style={{ width: `${Math.min(studentView.percentage, 100)}%` }}
+              />
+            </div>
+            <p className="mt-2 text-xs text-gray-500">
+              {studentView.attended} جلسه از {studentView.total} جلسه (present +
+              late به‌عنوان «حاضر» محاسبه می‌شود).
+            </p>
+          </Card>
+
+          <Card title="جزئیات جلسات">
+            {studentView.sessionDetails.length === 0 ? (
+              <EmptyState
+                title="هنوز جلسه‌ای ثبت نشده"
+                description="هیچ رکورد حضور و غیابی برای شما ثبت نشده است."
+              />
+            ) : (
+              <div className="-mx-5 overflow-x-auto sm:mx-0">
+                <Table
+                  getRowKey={(item) => item.id}
+                  columns={[
+                    {
+                      key: "classTitle",
+                      title: "کلاس",
+                      render: (item) => item.classTitle,
+                    },
+                    {
+                      key: "sessionTitle",
+                      title: "جلسه",
+                      render: (item) => item.sessionTitle,
+                    },
+                    {
+                      key: "sessionDate",
+                      title: "تاریخ",
+                      render: (item) => item.sessionDate,
+                    },
+                    {
+                      key: "status",
+                      title: "وضعیت",
+                      render: (item) => <StatusChip status={item.status} />,
+                    },
+                  ]}
+                  data={studentView.sessionDetails}
+                />
+              </div>
+            )}
+          </Card>
+        </>
+      ) : canManage ? (
+        <>
+          <Card title="ثبت حضور و غیاب">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Select
+                label="کلاس"
+                value={selectedClassId}
+                onChange={(e) => {
+                  setSelectedClassId(e.target.value);
+                  setSelectedSessionId("");
+                  setAttendanceMap({});
+                  setActionMessage("");
+                  setActionError("");
+                }}
+                options={[
+                  { label: "انتخاب کلاس...", value: "" },
+                  ...availableClasses.map((c) => ({
+                    label: c.title || "(بدون عنوان)",
+                    value: String(c.id),
+                  })),
+                ]}
+              />
+              <Select
+                label="جلسه"
+                value={selectedSessionId}
+                onChange={(e) => {
+                  setSelectedSessionId(e.target.value);
+                  setActionMessage("");
+                  setActionError("");
+                }}
+                disabled={!selectedClassId}
+                options={[
+                  { label: "انتخاب جلسه...", value: "" },
+                  ...availableSessions.map((s) => ({
+                    label: `${s.title} - ${s.date}`,
+                    value: String(s.id),
+                  })),
+                ]}
+              />
+            </div>
+          </Card>
+
+          {selectedSessionId && (
+            <Card title="لیست دانشجویان">
+              {classStudents.length === 0 ? (
+                <EmptyState
+                  title="دانشجویی در این کلاس ثبت نشده"
+                  description="لطفاً ابتدا دانشجویان را به کلاس اضافه کنید."
+                />
+              ) : (
+                <>
+                  <div className="-mx-5 overflow-x-auto sm:mx-0">
+                    <Table
+                      getRowKey={(student) => student.id}
+                      columns={[
+                        {
+                          key: "name",
+                          title: "نام",
+                          render: (student) => (
+                            <span className="font-medium text-gray-800">
+                              {student.name}
+                            </span>
+                          ),
+                        },
+                        {
+                          key: "email",
+                          title: "ایمیل",
+                          render: (student) => (
+                            <span className="text-sm text-gray-600">
+                              {student.email}
+                            </span>
+                          ),
+                        },
+                        {
+                          key: "status",
+                          title: "وضعیت حضور",
+                          render: (student) => (
+                            <select
+                              value={
+                                attendanceMap[String(student.id)] || "absent"
+                              }
+                              onChange={(e) =>
+                                handleStatusChange(
+                                  String(student.id),
+                                  e.target.value as AttendanceStatus,
+                                )
+                              }
+                              className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-blue-500"
+                            >
+                              <option value="present">حاضر</option>
+                              <option value="late">با تأخیر</option>
+                              <option value="absent">غایب</option>
+                            </select>
+                          ),
+                        },
+                      ]}
+                      data={classStudents}
+                    />
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <Button onClick={handleSave} disabled={isSaving}>
+                      {isSaving ? "در حال ذخیره..." : "ذخیره حضور و غیاب"}
+                    </Button>
+                  </div>
+                </>
+              )}
+            </Card>
+          )}
+        </>
+      ) : (
+        <EmptyState
+          title="دسترسی محدود"
+          description="شما دسترسی به این بخش ندارید."
+        />
+      )}
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/auth/LoginPage.tsx">
+import { useEffect, useRef, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+import Button from "#/components/ui/Button.tsx";
+import Card from "#/components/ui/Card.tsx";
+import Input from "#/components/ui/Input.tsx";
+import { useAuth } from "#/context/AuthContext.ts";
+
+function LoginPage() {
+  const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
+  const emailRef = useRef<HTMLInputElement>(null);
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    emailRef.current?.focus();
+  }, []);
+
+  const handleChange = (field: "email" | "password", value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError("");
+    try {
+      setIsSubmitting(true);
+      await login(formData);
+      navigate("/");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Login failed");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
+      <div className="w-full max-w-md">
+        <Card title="Login to EduConnect">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              label="Email"
+              type="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={(e) => handleChange("email", e.target.value)}
+              ref={emailRef}
+            />
+            <Input
+              label="Password"
+              type="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={(e) => handleChange("password", e.target.value)}
+            />
+            {error && <p className="text-sm text-red-600">{error}</p>}
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Logging in..." : "Login"}
+            </Button>
+          </form>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+export default LoginPage;
+</file>
+
+<file path="src/pages/classes/ClassDetailsPage.tsx">
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import EmptyState from "#/components/common/EmptyState.tsx";
+import Loading from "#/components/common/Loading.tsx";
+import Button from "#/components/ui/Button.tsx";
+import Card from "#/components/ui/Card.tsx";
+import StatusChip from "#/components/ui/StatusChip.tsx";
+import { useAuth } from "#/context/AuthContext.ts";
+import { classService } from "#/services/modules/classService.ts";
+import { sessionService } from "#/services/modules/sessionService.ts";
+import { userService } from "#/services/modules/userService.ts";
+import type { ClassItem } from "#/types/class.ts";
+import type { Session } from "#/types/session.ts";
+import type { User } from "#/types/user.ts";
+import SessionForm from "./SessionForm";
+
+export default function ClassDetailsPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
+  const classId = Number(id);
+  const isInvalidId = Number.isNaN(classId);
+
+  const [classItem, setClassItem] = useState<ClassItem | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [loading, setLoading] = useState(!isInvalidId);
+  const [error, setError] = useState(
+    isInvalidId ? "شناسه کلاس نامعتبر است." : "",
+  );
+  const [showSessionForm, setShowSessionForm] = useState(false);
+  const [actionError, setActionError] = useState("");
+  const [actionSuccess, setActionSuccess] = useState("");
+
+  const isAdmin = currentUser?.role === "admin";
+  const isTeacherOfThisClass =
+    currentUser?.role === "teacher" &&
+    classItem !== null &&
+    String(classItem.teacherId) === String(currentUser.id);
+  const canManage = isAdmin || isTeacherOfThisClass;
+
+  const getErrorMessage = (err: unknown): string => {
+    if (err && typeof err === "object" && "code" in err) {
+      const axiosErr = err as { code?: string; message?: string };
+      if (axiosErr.code === "ERR_NETWORK") {
+        return "سرور در دسترس نیست. لطفاً json-server را بررسی کنید.";
+      }
+      if (axiosErr.code === "ECONNABORTED") {
+        return "زمان درخواست به پایان رسید. لطفاً دوباره تلاش کنید.";
+      }
+    }
+    return "دریافت اطلاعات کلاس با خطا مواجه شد.";
+  };
+
+  const fetchData = async () => {
+    try {
+      setError("");
+      const [c, u, s] = await Promise.all([
+        classService.getById(classId),
+        userService.getAll(),
+        sessionService.getAll(),
+      ]);
+      setClassItem(c);
+      setUsers(u);
+      setSessions(s.filter((x) => String(x.classId) === String(classId)));
+    } catch (err) {
+      setError(getErrorMessage(err));
+    }
+  };
+
+  useEffect(() => {
+    if (isInvalidId) return;
+    let ignore = false;
+    Promise.all([
+      classService.getById(classId),
+      userService.getAll(),
+      sessionService.getAll(),
+    ])
+      .then(([c, u, s]) => {
+        if (!ignore) {
+          setClassItem(c);
+          setUsers(u);
+          setSessions(s.filter((x) => String(x.classId) === String(classId)));
+        }
+      })
+      .catch((err) => {
+        if (!ignore) setError(getErrorMessage(err));
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [classId, isInvalidId]);
+
+  useEffect(() => {
+    if (
+      !loading &&
+      classItem &&
+      currentUser?.role === "teacher" &&
+      String(classItem.teacherId) !== String(currentUser.id)
+    ) {
+      navigate("/unauthorized", { replace: true });
+    }
+  }, [loading, classItem, currentUser, navigate]);
+
+  const students = useMemo(() => {
+    if (!classItem) return [];
+    return users.filter((u) =>
+      (classItem.studentIds || []).map(String).includes(String(u.id)),
+    );
+  }, [users, classItem]);
+
+  const teacher = useMemo(() => {
+    if (!classItem || classItem.teacherId === null) return null;
+    return (
+      users.find((u) => String(u.id) === String(classItem.teacherId)) ?? null
+    );
+  }, [users, classItem]);
+
+  if (isInvalidId) {
+    return (
+      <div className="space-y-4">
+        <Button variant="secondary" onClick={() => navigate("/classes")}>
+          ← بازگشت به لیست کلاس‌ها
+        </Button>
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          شناسه کلاس نامعتبر است.
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) return <Loading />;
+
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <Button variant="secondary" onClick={() => navigate("/classes")}>
+          ← بازگشت به لیست کلاس‌ها
+        </Button>
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (!classItem) {
+    return (
+      <div className="space-y-4">
+        <Button variant="secondary" onClick={() => navigate("/classes")}>
+          ← بازگشت به لیست کلاس‌ها
+        </Button>
+        <EmptyState
+          title="کلاس پیدا نشد"
+          description="کلاس موردنظر وجود ندارد."
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => navigate("/classes")}
+            className="w-full sm:w-auto"
+          >
+            ← بازگشت
+          </Button>
+          <h1 className="text-lg font-bold text-gray-800 sm:text-2xl">
+            {classItem.title || "(بدون عنوان)"}
+          </h1>
+          <StatusChip status={classItem.status || "inactive"} />
+        </div>
+      </div>
+
+      {actionSuccess && (
+        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+          {actionSuccess}
+        </div>
+      )}
+      {actionError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {actionError}
+        </div>
+      )}
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card title="اطلاعات کلاس">
+          <div className="space-y-3 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">عنوان:</span>{" "}
+              {classItem.title || "—"}
+            </p>
+            {classItem.description && (
+              <p>
+                <span className="font-semibold">توضیحات:</span>{" "}
+                {classItem.description}
+              </p>
+            )}
+            <p>
+              <span className="font-semibold">استاد:</span>{" "}
+              {teacher?.name ?? "—"}
+            </p>
+            <p>
+              <span className="font-semibold">ظرفیت:</span>{" "}
+              {(classItem.studentIds || []).length} / {classItem.capacity || 0}
+            </p>
+            <p className="flex items-center gap-2">
+              <span className="font-semibold">وضعیت:</span>
+              <StatusChip status={classItem.status || "inactive"} />
+            </p>
+          </div>
+        </Card>
+
+        <Card title={`دانشجویان (${students.length})`}>
+          {students.length === 0 ? (
+            <EmptyState
+              title="دانشجویی ثبت نشده"
+              description="هنوز دانشجویی به این کلاس اضافه نشده است."
+            />
+          ) : (
+            <ul className="space-y-2">
+              {students.map((s) => (
+                <li
+                  key={s.id}
+                  className="flex flex-col gap-1 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <span className="font-medium text-gray-800">{s.name}</span>
+                  <span className="text-xs text-gray-500">{s.email}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      </div>
+
+      {/* <Card title={`جلسات (${sessions.length})`}>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-gray-600">
+            لیست جلسات برگزار شده و برنامه‌ریزی شده
+          </p>
+          {canManage && classItem.status !== "inactive" && (
+            <Button
+              onClick={() => setShowSessionForm(true)}
+              className="w-full sm:w-auto"
+            >
+              افزودن جلسه
+            </Button>
+          )}
+        </div>
+        {sessions.length === 0 ? (
+          <EmptyState
+            title="جلسه‌ای ثبت نشده"
+            description="هنوز جلسه‌ای برای این کلاس تعریف نشده است."
+          />
+        ) : (
+          <div className="space-y-2">
+            {[...sessions]
+              .sort(
+                (a, b) =>
+                  new Date(a.date).getTime() - new Date(b.date).getTime(),
+              )
+              .map((s) => (
+                <div
+                  key={s.id}
+                  className="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <div className="font-medium text-gray-800">{s.title}</div>
+                    {s.description && (
+                      <div className="mt-1 text-xs text-gray-500">
+                        {s.description}
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-sm text-gray-600">{s.date}</div>
+                </div>
+              ))}
+          </div>
+        )}
+      </Card> */}
+      <Card title={`جلسات (${sessions.length})`}>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-gray-600">
+            لیست جلسات برگزار شده و برنامه‌ریزی شده
+          </p>
+          {canManage && classItem.status !== "inactive" && (
+            <Button
+              onClick={() => setShowSessionForm(true)}
+              className="w-full sm:w-auto"
+            >
+              افزودن جلسه
+            </Button>
+          )}
+        </div>
+        {sessions.length === 0 ? (
+          <EmptyState
+            title="جلسه‌ای ثبت نشده"
+            description="هنوز جلسه‌ای برای این کلاس تعریف نشده است."
+          />
+        ) : (
+          <div className="space-y-2">
+            {[...sessions]
+              .sort(
+                (a, b) =>
+                  new Date(a.date).getTime() - new Date(b.date).getTime(),
+              )
+              .map((s) => (
+                <div
+                  key={s.id}
+                  className="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <div className="font-medium text-gray-800">{s.title}</div>
+                    {s.description && (
+                      <div className="mt-1 text-xs text-gray-500">
+                        {s.description}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="text-sm text-gray-600">{s.date}</div>
+                    {canManage && classItem.status !== "inactive" && (
+                      <Button
+                        variant="secondary"
+                        onClick={() =>
+                          navigate(
+                            `/attendance?classId=${classId}&sessionId=${s.id}`,
+                          )
+                        }
+                      >
+                        حضور و غیاب
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
+        )}
+      </Card>
+
+      {showSessionForm && (
+        <SessionForm
+          key={`session-form-${classId}-${showSessionForm}`}
+          classId={classId}
+          onClose={() => setShowSessionForm(false)}
+          onSuccess={async (message) => {
+            setActionSuccess(message);
+            setShowSessionForm(false);
+            await fetchData();
+          }}
+          onError={(message) => {
+            setActionError(message);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/classes/ClassesPage.tsx">
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import EmptyState from "#/components/common/EmptyState.tsx";
+import Loading from "#/components/common/Loading.tsx";
+import Button from "#/components/ui/Button.tsx";
+import Card from "#/components/ui/Card.tsx";
+import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
+import SearchInput from "#/components/ui/SearchInput.tsx";
+import Select from "#/components/ui/Select.tsx";
+import StatusChip from "#/components/ui/StatusChip.tsx";
+import Table from "#/components/ui/Table.tsx";
+import { useAuth } from "#/context/AuthContext.ts";
+import { classService } from "#/services/modules/classService.ts";
+import { userService } from "#/services/modules/userService.ts";
+import type { ClassItem, ClassStatus } from "#/types/class.ts";
+import type { User } from "#/types/user.ts";
+import ClassForm from "./ClassForm";
+
+export default function ClassesPage() {
+  const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
+
+  const [classes, setClasses] = useState<ClassItem[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<ClassStatus | "">("");
+  const [teacherFilter, setTeacherFilter] = useState<string>("");
+
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<ClassItem | null>(null);
+
+  const [statusChangeTarget, setStatusChangeTarget] =
+    useState<ClassItem | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ClassItem | null>(null);
+
+  const [actionError, setActionError] = useState("");
+  const [actionSuccess, setActionSuccess] = useState("");
+
+  const isAdmin = currentUser?.role === "admin";
+
+  // ✅ تابع کمکی: آیا کاربر فعلی می‌تواند این کلاس را مدیریت کند؟
+  const canManageClass = (c: ClassItem) => {
+    if (isAdmin) return true;
+    if (currentUser?.role === "teacher") {
+      return String(c.teacherId) === String(currentUser.id);
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    let ignore = false;
+    Promise.all([classService.getAll(), userService.getAll()])
+      .then(([classesData, usersData]) => {
+        if (!ignore) {
+          setClasses(classesData);
+          setUsers(usersData);
+        }
+      })
+      .catch(() => {
+        if (!ignore) setError("دریافت اطلاعات با خطا مواجه شد.");
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const teachers = useMemo(
+    () => users.filter((u) => u.role === "teacher"),
+    [users],
+  );
+
+  const filteredClasses = useMemo(() => {
+    return classes.filter((c) => {
+      if (!isAdmin && currentUser?.role === "teacher") {
+        if (String(c.teacherId) !== String(currentUser.id)) return false;
+      }
+      const matchesSearch = (c.title || "")
+        .toLowerCase()
+        .includes(search.toLowerCase());
+      const matchesStatus = statusFilter ? c.status === statusFilter : true;
+      const matchesTeacher = teacherFilter
+        ? String(c.teacherId) === teacherFilter
+        : true;
+      return matchesSearch && matchesStatus && matchesTeacher;
+    });
+  }, [classes, search, statusFilter, teacherFilter, isAdmin, currentUser]);
+
+  const resetMessages = () => {
+    setActionError("");
+    setActionSuccess("");
+  };
+
+  const fetchData = async () => {
+    try {
+      const [classesData, usersData] = await Promise.all([
+        classService.getAll(),
+        userService.getAll(),
+      ]);
+      setClasses(classesData);
+      setUsers(usersData);
+    } catch {
+      setError("دریافت اطلاعات با خطا مواجه شد.");
+    }
+  };
+
+  const handleStatusChangeClick = (classItem: ClassItem) => {
+    resetMessages();
+    setStatusChangeTarget(classItem);
+  };
+
+  const confirmStatusChange = async () => {
+    if (!statusChangeTarget) return;
+    try {
+      if (statusChangeTarget.status === "active") {
+        await classService.deactivate(statusChangeTarget.id);
+        setActionSuccess(`کلاس "${statusChangeTarget.title}" غیرفعال شد.`);
+      } else {
+        await classService.activate(statusChangeTarget.id);
+        setActionSuccess(`کلاس "${statusChangeTarget.title}" فعال شد.`);
+      }
+      setStatusChangeTarget(null);
+      await fetchData();
+    } catch {
+      setActionError("تغییر وضعیت کلاس ناموفق بود.");
+      setStatusChangeTarget(null);
+    }
+  };
+
+  const handleDeleteClick = (classItem: ClassItem) => {
+    resetMessages();
+    setDeleteTarget(classItem);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await classService.delete(deleteTarget.id);
+      setActionSuccess(`کلاس "${deleteTarget.title}" با موفقیت حذف شد.`);
+      setDeleteTarget(null);
+      await fetchData();
+    } catch {
+      setActionError("حذف کلاس ناموفق بود.");
+      setDeleteTarget(null);
+    }
+  };
+
+  const handleEdit = (classItem: ClassItem) => {
+    resetMessages();
+    setEditing(classItem);
+    setShowForm(true);
+  };
+
+  const handleCreate = () => {
+    resetMessages();
+    setEditing(null);
+    setShowForm(true);
+  };
+
+  const getTeacherName = (teacherId: number | string | null | undefined) => {
+    if (teacherId === null || teacherId === undefined) return "—";
+    const teacher = users.find((u) => String(u.id) === String(teacherId));
+    return teacher?.name ?? "—";
+  };
+
+  return (
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
+          مدیریت کلاس‌ها
+        </h1>
+        {(isAdmin || currentUser?.role === "teacher") && (
+          <Button onClick={handleCreate} className="w-full sm:w-auto">
+            ایجاد کلاس جدید
+          </Button>
+        )}
+      </div>
+
+      {actionSuccess && (
+        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+          {actionSuccess}
+        </div>
+      )}
+      {actionError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {actionError}
+        </div>
+      )}
+
+      <div className="grid gap-3 rounded-xl border border-gray-200 bg-white p-3 sm:gap-4 sm:p-4 md:grid-cols-2 xl:grid-cols-4">
+        <SearchInput
+          label="جستجو"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="عنوان کلاس"
+        />
+        <Select
+          label="وضعیت"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as ClassStatus | "")}
+          options={[
+            { label: "همه وضعیت‌ها", value: "" },
+            { label: "فعال", value: "active" },
+            { label: "غیرفعال", value: "inactive" },
+          ]}
+        />
+        {isAdmin && (
+          <Select
+            label="استاد"
+            value={teacherFilter}
+            onChange={(e) => setTeacherFilter(e.target.value)}
+            options={[
+              { label: "همه اساتید", value: "" },
+              ...teachers.map((t) => ({ label: t.name, value: String(t.id) })),
+            ]}
+          />
+        )}
+        <div className="flex items-end">
+          <Button
+            variant="secondary"
+            className="w-full"
+            onClick={() => {
+              setSearch("");
+              setStatusFilter("");
+              setTeacherFilter("");
+            }}
+          >
+            پاک‌کردن فیلترها
+          </Button>
+        </div>
+      </div>
+
+      <Card title="لیست کلاس‌ها">
+        {loading ? (
+          <Loading />
+        ) : error ? (
+          <div className="text-sm text-red-600">{error}</div>
+        ) : classes.length === 0 ? (
+          <EmptyState
+            title="کلاسی ثبت نشده است"
+            description="هنوز هیچ کلاسی در سیستم وجود ندارد."
+          />
+        ) : filteredClasses.length === 0 ? (
+          <EmptyState
+            title="کلاسی پیدا نشد"
+            description="هیچ کلاسی با فیلترهای انتخاب‌شده پیدا نشد."
+          />
+        ) : (
+          <div className="-mx-5 overflow-x-auto sm:mx-0">
+            <Table
+              getRowKey={(c) => c.id}
+              columns={[
+                {
+                  key: "title",
+                  title: "عنوان",
+                  render: (c) => (
+                    <button
+                      onClick={() => navigate(`/classes/${c.id}`)}
+                      className="font-medium text-blue-600 hover:underline"
+                    >
+                      {c.title || "(بدون عنوان)"}
+                    </button>
+                  ),
+                },
+                {
+                  key: "teacherId",
+                  title: "استاد",
+                  render: (c) => getTeacherName(c.teacherId),
+                },
+                {
+                  key: "capacity",
+                  title: "ظرفیت",
+                  render: (c) => (
+                    <span>
+                      {(c.studentIds || []).length}/{c.capacity || 0}
+                    </span>
+                  ),
+                },
+                {
+                  key: "status",
+                  title: "وضعیت",
+                  render: (c) => <StatusChip status={c.status || "inactive"} />,
+                },
+                {
+                  key: "actions",
+                  title: "عملیات",
+                  render: (c) => (
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant="secondary"
+                        onClick={() => navigate(`/classes/${c.id}`)}
+                      >
+                        جزئیات
+                      </Button>
+                      {canManageClass(c) && (
+                        <>
+                          <Button
+                            variant="secondary"
+                            onClick={() => handleEdit(c)}
+                          >
+                            ویرایش
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            onClick={() => handleStatusChangeClick(c)}
+                          >
+                            {c.status === "active"
+                              ? "غیرفعال کردن"
+                              : "فعال کردن"}
+                          </Button>
+                          <Button
+                            variant="danger"
+                            onClick={() => handleDeleteClick(c)}
+                          >
+                            حذف
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  ),
+                },
+              ]}
+              data={filteredClasses}
+            />
+          </div>
+        )}
+      </Card>
+
+      {showForm && (
+        <ClassForm
+          key={`class-form-${editing?.id ?? "new"}-${showForm}`}
+          users={users}
+          initialData={editing}
+          onClose={() => {
+            setShowForm(false);
+            setEditing(null);
+          }}
+          onSuccess={async (message) => {
+            setActionSuccess(message);
+            setShowForm(false);
+            setEditing(null);
+            await fetchData();
+          }}
+          onError={(message) => {
+            setActionError(message);
+          }}
+        />
+      )}
+
+      <ConfirmDialog
+        isOpen={!!statusChangeTarget}
+        title={
+          statusChangeTarget?.status === "active"
+            ? "غیرفعال کردن کلاس"
+            : "فعال کردن کلاس"
+        }
+        message={
+          statusChangeTarget?.status === "active"
+            ? `آیا از غیرفعال کردن کلاس "${statusChangeTarget?.title ?? ""}" مطمئن هستید؟`
+            : `آیا از فعال کردن کلاس "${statusChangeTarget?.title ?? ""}" مطمئن هستید؟`
+        }
+        onClose={() => setStatusChangeTarget(null)}
+        onConfirm={confirmStatusChange}
+      />
+
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        title="حذف کلاس"
+        message={`آیا از حذف کامل کلاس "${deleteTarget?.title ?? ""}" مطمئن هستید؟ این عمل قابل بازگشت نیست.`}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+      />
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/classes/ClassFilters.tsx">
+
+</file>
+
+<file path="src/pages/classes/ClassForm.tsx">
+import { useState } from "react";
+import Button from "#/components/ui/Button.tsx";
+import Input from "#/components/ui/Input.tsx";
+import Modal from "#/components/ui/Modal.tsx";
+import Select from "#/components/ui/Select.tsx";
+import Textarea from "#/components/ui/Textarea.tsx";
+import { classService } from "#/services/modules/classService.ts";
+import type { ClassFormValues, ClassItem, ClassStatus } from "#/types/class.ts";
+import type { User } from "#/types/user.ts";
+
+interface Props {
+  users: User[];
+  initialData?: ClassItem | null;
+  onClose: () => void;
+  onSuccess: (message: string) => void;
+  onError: (message: string) => void;
+}
+
+export default function ClassForm({
+  users,
+  initialData,
+  onClose,
+  onSuccess,
+  onError,
+}: Props) {
+  const teachers = users.filter((u) => u.role === "teacher");
+  const students = users.filter((u) => u.role === "student");
+
+  const [form, setForm] = useState<ClassFormValues>(() => ({
+    title: initialData?.title || "",
+    teacherId: initialData?.teacherId ?? null,
+    studentIds: initialData?.studentIds || [],
+    capacity: initialData?.capacity || 10,
+    status: initialData?.status || "active",
+    description: initialData?.description || "",
+  }));
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    if (!form.title.trim()) {
+      newErrors.title = "عنوان الزامی است.";
+    } else if (form.title.trim().length < 3) {
+      newErrors.title = "عنوان باید حداقل 3 کاراکتر باشد.";
+    }
+    if (!form.teacherId) newErrors.teacherId = "انتخاب استاد الزامی است.";
+    if (form.capacity < 1) newErrors.capacity = "ظرفیت باید حداقل 1 باشد.";
+    if (form.studentIds.length > form.capacity) {
+      newErrors.students = `تعداد دانشجویان (${form.studentIds.length}) بیشتر از ظرفیت (${form.capacity}) است.`;
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validate()) return;
+    try {
+      setIsSubmitting(true);
+      if (initialData) {
+        await classService.update(initialData.id, form);
+        onSuccess("کلاس با موفقیت ویرایش شد.");
+      } else {
+        await classService.create(form);
+        onSuccess("کلاس با موفقیت ایجاد شد.");
+      }
+    } catch (err) {
+      onError(err instanceof Error ? err.message : "عملیات با خطا مواجه شد.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const toggleStudent = (id: number | string) => {
+    setForm((prev) => {
+      const stringIds = prev.studentIds.map(String);
+      const stringId = String(id);
+      const exists = stringIds.includes(stringId);
+      return {
+        ...prev,
+        studentIds: exists
+          ? prev.studentIds.filter((s) => String(s) !== stringId)
+          : [...prev.studentIds, id as number],
+      };
+    });
+    if (errors.students) setErrors((prev) => ({ ...prev, students: "" }));
+  };
+
+  const title = initialData ? "ویرایش کلاس" : "ایجاد کلاس جدید";
+
+  return (
+    <Modal isOpen={true} title={title} onClose={onClose}>
+      <div className="space-y-4">
+        <Input
+          label="عنوان کلاس"
+          value={form.title}
+          onChange={(e) => {
+            setForm({ ...form, title: e.target.value });
+            if (errors.title) setErrors({ ...errors, title: "" });
+          }}
+          error={errors.title}
+          placeholder="مثلاً: مبانی برنامه‌نویسی"
+        />
+        <Select
+          label="استاد"
+          value={form.teacherId ?? ""}
+          onChange={(e) => {
+            const value = e.target.value;
+            setForm({ ...form, teacherId: value ? Number(value) : null });
+            if (errors.teacherId) setErrors({ ...errors, teacherId: "" });
+          }}
+          options={[
+            { label: "انتخاب استاد...", value: "" },
+            ...teachers.map((t) => ({ label: t.name, value: String(t.id) })),
+          ]}
+          error={errors.teacherId}
+        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Input
+            label="ظرفیت"
+            type="number"
+            value={form.capacity}
+            onChange={(e) => {
+              setForm({ ...form, capacity: Number(e.target.value) });
+              if (errors.capacity) setErrors({ ...errors, capacity: "" });
+            }}
+            error={errors.capacity}
+          />
+          <Select
+            label="وضعیت"
+            value={form.status}
+            onChange={(e) =>
+              setForm({ ...form, status: e.target.value as ClassStatus })
+            }
+            options={[
+              { label: "فعال", value: "active" },
+              { label: "غیرفعال", value: "inactive" },
+            ]}
+          />
+        </div>
+        <Textarea
+          label="توضیحات"
+          value={form.description || ""}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          placeholder="توضیحات مختصر درباره کلاس..."
+          rows={3}
+        />
+        <div>
+          <div className="mb-2 flex items-center justify-between">
+            <label className="text-sm font-medium text-gray-700">
+              دانشجویان ({form.studentIds.length} انتخاب شده)
+            </label>
+            {errors.students && (
+              <span className="text-xs text-red-600">{errors.students}</span>
+            )}
+          </div>
+          {students.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-gray-300 p-4 text-center text-sm text-gray-500">
+              دانشجویی در سیستم ثبت نشده است. ابتدا کاربران دانشجو ایجاد کنید.
+            </div>
+          ) : (
+            <div className="max-h-48 space-y-1 overflow-y-auto rounded-lg border border-gray-200 p-2">
+              {students.map((s) => (
+                <label
+                  key={s.id}
+                  className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 hover:bg-gray-50"
+                >
+                  <input
+                    type="checkbox"
+                    checked={form.studentIds.map(String).includes(String(s.id))}
+                    onChange={() => toggleStudent(s.id)}
+                    className="h-4 w-4"
+                  />
+                  <span className="text-sm text-gray-800">{s.name}</span>
+                  <span className="text-xs text-gray-500">{s.email}</span>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="flex justify-end gap-2 border-t border-gray-200 pt-4">
+          <Button type="button" variant="secondary" onClick={onClose}>
+            انصراف
+          </Button>
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+</file>
+
+<file path="src/pages/classes/ClassSessionsPanel.tsx">
+
+</file>
+
+<file path="src/pages/classes/ClassStudentsPanel.tsx">
+
+</file>
+
+<file path="src/pages/classes/ClassTable.tsx">
+
+</file>
+
+<file path="src/pages/classes/classValidation.ts">
+
+</file>
+
+<file path="src/pages/classes/SessionForm.tsx">
+import { useState } from "react";
+import Button from "#/components/ui/Button.tsx";
+import Input from "#/components/ui/Input.tsx";
+import Modal from "#/components/ui/Modal.tsx";
+import Textarea from "#/components/ui/Textarea.tsx";
+import { sessionService } from "#/services/modules/sessionService.ts";
+
+interface Props {
+  classId: number;
+  onClose: () => void;
+  onSuccess: (message: string) => void;
+  onError: (message: string) => void;
+}
+
+export default function SessionForm({
+  classId,
+  onClose,
+  onSuccess,
+  onError,
+}: Props) {
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState("");
+  const [description, setDescription] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    if (!title.trim()) {
+      newErrors.title = "عنوان الزامی است.";
+    } else if (title.trim().length < 3) {
+      newErrors.title = "عنوان باید حداقل 3 کاراکتر باشد.";
+    }
+    if (!date) newErrors.date = "تاریخ الزامی است.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validate()) return;
+    try {
+      setIsSubmitting(true);
+      await sessionService.create({
+        title: title.trim(),
+        date,
+        description: description.trim(),
+        classId,
+      });
+      onSuccess("جلسه با موفقیت ایجاد شد.");
+    } catch (err) {
+      onError(
+        err instanceof Error ? err.message : "ایجاد جلسه با خطا مواجه شد.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Modal isOpen={true} title="ایجاد جلسه جدید" onClose={onClose}>
+      <div className="space-y-4">
+        <Input
+          label="عنوان جلسه"
+          value={title}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            if (errors.title) setErrors({ ...errors, title: "" });
+          }}
+          error={errors.title}
+          placeholder="مثلاً: جلسه اول - مقدمه"
+        />
+        <Input
+          label="تاریخ"
+          type="date"
+          value={date}
+          onChange={(e) => {
+            setDate(e.target.value);
+            if (errors.date) setErrors({ ...errors, date: "" });
+          }}
+          error={errors.date}
+        />
+        <Textarea
+          label="توضیحات"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="توضیحات مختصر درباره محتوای جلسه..."
+          rows={3}
+        />
+        <div className="flex justify-end gap-2 border-t border-gray-200 pt-4">
+          <Button type="button" variant="secondary" onClick={onClose}>
+            انصراف
+          </Button>
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+</file>
+
+<file path="src/pages/classes/sessionValidation.ts">
+
+</file>
+
+<file path="src/pages/dashboard/DashboardPage.tsx">
+function DashboardPage() {
+  return <div className="text-xl font-semibold">Dashboard Page</div>;
+}
+
+export default DashboardPage;
+</file>
+
+<file path="src/pages/NotFoundPage.tsx">
+import { Link } from "react-router-dom";
+
+function NotFoundPage() {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+      <h1 className="mb-2 text-5xl font-bold text-blue-600">404</h1>
+      <p className="mb-4 text-gray-600">Page not found</p>
+      <Link
+        to="/"
+        className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+      >
+        Back to Dashboard
+      </Link>
+    </div>
+  );
+}
+
+export default NotFoundPage;
+</file>
+
+<file path="src/pages/profile/ProfilePage.tsx">
+import { useEffect, useState } from "react";
+import EmptyState from "#/components/common/EmptyState.tsx";
+import Loading from "#/components/common/Loading.tsx";
+import Card from "#/components/ui/Card.tsx";
+import StatusChip from "#/components/ui/StatusChip.tsx";
+import Table from "#/components/ui/Table.tsx";
+import { useAuth } from "#/context/AuthContext.ts";
+import { attendanceService } from "#/services/modules/attendanceService.ts";
+import { classService } from "#/services/modules/classService.ts";
+import { sessionService } from "#/services/modules/sessionService.ts";
+import type { Attendance } from "#/types/attendance.ts";
+import type { ClassItem } from "#/types/class.ts";
+import type { Session } from "#/types/session.ts";
+
+function ProfilePage() {
+  const { user } = useAuth();
+  const [attendances, setAttendances] = useState<Attendance[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [classes, setClasses] = useState<ClassItem[]>([]);
+
+  // ✅ اصلاح: استفاده از string برای جلوگیری از مشکل مقایسه string/number
+  const [fetchedUserId, setFetchedUserId] = useState<string | null>(null);
+
+  // ✅ اصلاح: مقایسه string با string
+  const loading =
+    user?.role === "student" && fetchedUserId !== String(user?.id);
+
+  useEffect(() => {
+    if (!user || user.role !== "student") return;
+    let ignore = false;
+
+    Promise.all([
+      attendanceService.getByStudent(user.id),
+      sessionService.getAll(),
+      classService.getAll(),
+    ])
+      .then(([a, s, c]) => {
+        if (!ignore) {
+          setAttendances(a);
+          setSessions(s);
+          setClasses(c);
+          setFetchedUserId(String(user.id));
+        }
+      })
+      .catch(() => {
+        if (!ignore) setFetchedUserId(String(user.id));
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [user]);
+
+  if (!user) return null;
+
+  const stats =
+    user.role === "student"
+      ? attendanceService.calculateStudentStats(attendances)
+      : null;
+
+  const sessionDetails =
+    user.role === "student"
+      ? attendances.map((a) => {
+          const session = sessions.find(
+            (s) => String(s.id) === String(a.sessionId),
+          );
+          const cls = classes.find((c) => String(c.id) === String(a.classId));
+          return {
+            ...a,
+            sessionTitle: session?.title || "—",
+            sessionDate: session?.date || "—",
+            classTitle: cls?.title || "—",
+          };
+        })
+      : [];
+
+  return (
+    <div className="space-y-4 sm:space-y-6">
+      <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">Profile</h1>
+      <Card title="User Information">
+        <div className="space-y-3 text-sm text-gray-700 sm:text-base">
+          <p className="flex flex-col gap-1 sm:flex-row sm:gap-2">
+            <span className="font-semibold">Name:</span>
+            <span>{user.name}</span>
+          </p>
+          <p className="flex flex-col gap-1 break-all sm:flex-row sm:gap-2">
+            <span className="font-semibold">Email:</span>
+            <span>{user.email}</span>
+          </p>
+          <p className="flex flex-col gap-1 sm:flex-row sm:gap-2">
+            <span className="font-semibold">Role:</span>
+            <span className="capitalize">{user.role}</span>
+          </p>
+          <p className="flex flex-col gap-1 sm:flex-row sm:gap-2">
+            <span className="font-semibold">Status:</span>
+            <span className="capitalize">{user.status}</span>
+          </p>
+        </div>
+      </Card>
+
+      {user.role === "student" && (
+        <>
+          {loading ? (
+            <Loading />
+          ) : stats ? (
+            <>
+              <Card title="آمار حضور و غیاب">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                  <div className="rounded-lg bg-gray-50 p-3 text-center">
+                    <div className="text-xs text-gray-500">
+                      کل جلسات ثبت‌شده
+                    </div>
+                    <div className="mt-1 text-xl font-bold text-gray-800">
+                      {stats.total}
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-green-50 p-3 text-center">
+                    <div className="text-xs text-gray-500">حاضر</div>
+                    <div className="mt-1 text-xl font-bold text-green-700">
+                      {stats.present}
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-yellow-50 p-3 text-center">
+                    <div className="text-xs text-gray-500">با تأخیر</div>
+                    <div className="mt-1 text-xl font-bold text-yellow-700">
+                      {stats.late}
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-red-50 p-3 text-center">
+                    <div className="text-xs text-gray-500">غایب</div>
+                    <div className="mt-1 text-xl font-bold text-red-700">
+                      {stats.absent}
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-blue-50 p-3 text-center">
+                    <div className="text-xs text-gray-500">درصد حضور</div>
+                    <div className="mt-1 text-xl font-bold text-blue-700">
+                      {stats.percentage.toFixed(1)}%
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <div className="h-3 w-full overflow-hidden rounded-full bg-gray-200">
+                    <div
+                      className="h-full bg-blue-600 transition-all"
+                      style={{
+                        width: `${Math.min(stats.percentage, 100)}%`,
+                      }}
+                    />
+                  </div>
+                  <p className="mt-2 text-xs text-gray-500">
+                    {stats.attended} جلسه از {stats.total} جلسه (present + late
+                    به‌عنوان «حاضر» محاسبه می‌شود).
+                  </p>
+                </div>
+              </Card>
+
+              <Card title="جزئیات جلسات">
+                {sessionDetails.length === 0 ? (
+                  <EmptyState
+                    title="هنوز جلسه‌ای ثبت نشده"
+                    description="هیچ رکورد حضور و غیابی برای شما ثبت نشده است."
+                  />
+                ) : (
+                  <div className="-mx-5 overflow-x-auto sm:mx-0">
+                    <Table
+                      getRowKey={(item) => item.id}
+                      columns={[
+                        {
+                          key: "classTitle",
+                          title: "کلاس",
+                          render: (item) => item.classTitle,
+                        },
+                        {
+                          key: "sessionTitle",
+                          title: "جلسه",
+                          render: (item) => item.sessionTitle,
+                        },
+                        {
+                          key: "sessionDate",
+                          title: "تاریخ",
+                          render: (item) => item.sessionDate,
+                        },
+                        {
+                          key: "status",
+                          title: "وضعیت",
+                          render: (item) => <StatusChip status={item.status} />,
+                        },
+                      ]}
+                      data={sessionDetails}
+                    />
+                  </div>
+                )}
+              </Card>
+            </>
+          ) : null}
+        </>
+      )}
+    </div>
+  );
+}
+
+export default ProfilePage;
+</file>
+
+<file path="src/pages/UnauthorizedPage.tsx">
+import { Link } from "react-router-dom";
+
+function UnauthorizedPage() {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+      <h1 className="mb-2 text-4xl font-bold text-red-600">403</h1>
+      <p className="mb-4 text-gray-600">
+        You do not have permission to access this page.
+      </p>
+      <Link
+        to="/"
+        className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+      >
+        Back to Dashboard
+      </Link>
+    </div>
+  );
+}
+
+export default UnauthorizedPage;
+</file>
+
+<file path="src/pages/users/UserDetails.tsx">
+import Modal from "#/components/ui/Modal.tsx";
+import Card from "#/components/ui/Card.tsx";
+import type { User } from "#/types/user.ts";
+
+interface UserDetailsProps {
+  isOpen: boolean;
+  user: User | null;
+  onClose: () => void;
+}
+
+function UserDetails({ isOpen, user, onClose }: UserDetailsProps) {
+  if (!user) return null;
+
+  return (
+    <Modal isOpen={isOpen} title="جزئیات کاربر" onClose={onClose}>
+      <Card>
+        <div className="space-y-3 text-sm text-gray-700">
+          <p>
+            <span className="font-semibold">نام:</span> {user.name}
+          </p>
+          <p>
+            <span className="font-semibold">ایمیل:</span> {user.email}
+          </p>
+          <p>
+            <span className="font-semibold">نقش:</span> {user.role}
+          </p>
+          <p>
+            <span className="font-semibold">وضعیت:</span> {user.status}
+          </p>
+        </div>
+      </Card>
+    </Modal>
+  );
+}
+
+export default UserDetails;
+</file>
+
+<file path="src/pages/users/UserFilters.tsx">
+import SearchInput from "#/components/ui/SearchInput.tsx";
+import Select from "#/components/ui/Select.tsx";
+import Button from "#/components/ui/Button.tsx";
+import type { UserFilters as UserFiltersType } from "#/types/user.ts";
+
+interface UserFiltersProps {
+  filters: UserFiltersType;
+  onChange: (filters: UserFiltersType) => void;
+  onReset: () => void;
+}
+
+function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
+  return (
+    <div className="grid grid-cols-1 gap-4 rounded-xl border border-gray-200 bg-white p-4 md:grid-cols-2 xl:grid-cols-5">
+      <SearchInput
+        label="جستجو بر اساس نام"
+        value={filters.searchName}
+        onChange={(e) => onChange({ ...filters, searchName: e.target.value })}
+        placeholder="نام کاربر"
+      />
+      <SearchInput
+        label="جستجو بر اساس ایمیل"
+        value={filters.searchEmail}
+        onChange={(e) => onChange({ ...filters, searchEmail: e.target.value })}
+        placeholder="ایمیل کاربر"
+      />
+      <Select
+        label="نقش"
+        value={filters.role}
+        onChange={(e) =>
+          onChange({
+            ...filters,
+            role: e.target.value as UserFiltersType["role"],
+          })
+        }
+        options={[
+          { label: "همه نقش‌ها", value: "" },
+          { label: "Admin", value: "admin" },
+          { label: "Teacher", value: "teacher" },
+          { label: "Student", value: "student" },
+        ]}
+      />
+      <Select
+        label="وضعیت"
+        value={filters.status}
+        onChange={(e) =>
+          onChange({
+            ...filters,
+            status: e.target.value as UserFiltersType["status"],
+          })
+        }
+        options={[
+          { label: "همه وضعیت‌ها", value: "" },
+          { label: "Active", value: "active" },
+          { label: "Inactive", value: "inactive" },
+        ]}
+      />
+      <div className="flex items-end">
+        <Button variant="secondary" className="w-full" onClick={onReset}>
+          پاک‌کردن فیلترها
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export default UserFilters;
+</file>
+
+<file path="src/pages/users/UserForm.tsx">
+import { useState } from "react";
+import Button from "#/components/ui/Button.tsx";
+import Input from "#/components/ui/Input.tsx";
+import Modal from "#/components/ui/Modal.tsx";
+import Select from "#/components/ui/Select.tsx";
+import type {
+  CreateUserPayload,
+  UpdateUserPayload,
+  User,
+} from "#/types/user.ts";
+import {
+  validateCreateUser,
+  validateUpdateUser,
+  type UserFormErrors,
+} from "./userValidation";
+
+interface UserFormProps {
+  isOpen: boolean;
+  mode: "create" | "edit";
+  user?: User | null;
+  onClose: () => void;
+  onCreate: (values: CreateUserPayload) => Promise<void>;
+  onUpdate: (values: UpdateUserPayload) => Promise<void>;
+}
+
+function UserForm({
+  isOpen,
+  mode,
+  user,
+  onClose,
+  onCreate,
+  onUpdate,
+}: UserFormProps) {
+  const [createValues, setCreateValues] = useState<CreateUserPayload>({
+    name: "",
+    email: "",
+    password: "",
+    role: "student",
+    status: "active",
+  });
+  const [editValues, setEditValues] = useState<UpdateUserPayload>({
+    name: user?.name ?? "",
+    email: user?.email ?? "",
+    role: user?.role ?? "student",
+    status: user?.status ?? "active",
+  });
+  const [errors, setErrors] = useState<UserFormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const mapServerErrorToField = (message: string): UserFormErrors => {
+    if (message.includes("ایمیل")) return { email: message };
+    if (message.includes("نام")) return { name: message };
+    return { form: message };
+  };
+
+  const handleCreateSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const validationErrors = validateCreateUser(createValues);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
+    try {
+      setIsSubmitting(true);
+      setErrors({});
+      await onCreate(createValues);
+    } catch (err) {
+      if (err instanceof Error) {
+        setErrors(mapServerErrorToField(err.message));
+      } else {
+        setErrors({ form: "خطای غیرمنتظره‌ای رخ داد." });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleEditSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const validationErrors = validateUpdateUser(editValues);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
+    try {
+      setIsSubmitting(true);
+      setErrors({});
+      await onUpdate(editValues);
+    } catch (err) {
+      if (err instanceof Error) {
+        setErrors(mapServerErrorToField(err.message));
+      } else {
+        setErrors({ form: "خطای غیرمنتظره‌ای رخ داد." });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const title = mode === "create" ? "ایجاد کاربر جدید" : "ویرایش اطلاعات کاربر";
+
+  return (
+    <Modal isOpen={isOpen} title={title} onClose={onClose}>
+      <form
+        onSubmit={mode === "create" ? handleCreateSubmit : handleEditSubmit}
+        className="space-y-4"
+      >
+        {errors.form && (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {errors.form}
+          </div>
+        )}
+        <Input
+          label="نام"
+          value={mode === "create" ? createValues.name : editValues.name}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (mode === "create")
+              setCreateValues((prev) => ({ ...prev, name: value }));
+            else setEditValues((prev) => ({ ...prev, name: value }));
+            if (errors.name)
+              setErrors((prev) => ({ ...prev, name: undefined }));
+          }}
+          error={errors.name}
+        />
+        <Input
+          label="ایمیل"
+          type="email"
+          value={mode === "create" ? createValues.email : editValues.email}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (mode === "create")
+              setCreateValues((prev) => ({ ...prev, email: value }));
+            else setEditValues((prev) => ({ ...prev, email: value }));
+            if (errors.email)
+              setErrors((prev) => ({ ...prev, email: undefined }));
+          }}
+          error={errors.email}
+        />
+        {mode === "create" && (
+          <Input
+            label="رمز عبور"
+            type="password"
+            value={createValues.password}
+            onChange={(e) => {
+              const value = e.target.value;
+              setCreateValues((prev) => ({ ...prev, password: value }));
+              if (errors.password)
+                setErrors((prev) => ({ ...prev, password: undefined }));
+            }}
+            error={errors.password}
+          />
+        )}
+        <Select
+          label="نقش"
+          value={mode === "create" ? createValues.role : editValues.role}
+          onChange={(e) => {
+            if (mode === "create") {
+              setCreateValues((prev) => ({
+                ...prev,
+                role: e.target.value as CreateUserPayload["role"],
+              }));
+            } else {
+              setEditValues((prev) => ({
+                ...prev,
+                role: e.target.value as UpdateUserPayload["role"],
+              }));
+            }
+          }}
+          options={[
+            { label: "Admin", value: "admin" },
+            { label: "Teacher", value: "teacher" },
+            { label: "Student", value: "student" },
+          ]}
+          error={errors.role}
+        />
+        <Select
+          label="وضعیت"
+          value={mode === "create" ? createValues.status : editValues.status}
+          onChange={(e) => {
+            if (mode === "create") {
+              setCreateValues((prev) => ({
+                ...prev,
+                status: e.target.value as CreateUserPayload["status"],
+              }));
+            } else {
+              setEditValues((prev) => ({
+                ...prev,
+                status: e.target.value as UpdateUserPayload["status"],
+              }));
+            }
+          }}
+          options={[
+            { label: "Active", value: "active" },
+            { label: "Inactive", value: "inactive" },
+          ]}
+          error={errors.status}
+        />
+        <div className="flex justify-end gap-2 pt-2">
+          <Button type="button" variant="secondary" onClick={onClose}>
+            انصراف
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+export default UserForm;
+</file>
+
+<file path="src/pages/users/UsersPage.tsx">
+import { useEffect, useMemo, useState } from "react";
+import EmptyState from "#/components/common/EmptyState.tsx";
+import Loading from "#/components/common/Loading.tsx";
+import Button from "#/components/ui/Button.tsx";
+import Card from "#/components/ui/Card.tsx";
+import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
+import { useAuth } from "#/context/AuthContext.ts";
+import { userService } from "#/services/modules/userService.ts";
+import type {
+  CreateUserPayload,
+  UpdateUserPayload,
+  User,
+  UserFilters as UserFiltersType,
+} from "#/types/user.ts";
+import UserDetails from "./UserDetails";
+import UserFilters from "./UserFilters";
+import UserForm from "./UserForm";
+import UserTable from "./UserTable";
+
+const initialFilters: UserFiltersType = {
+  searchName: "",
+  searchEmail: "",
+  role: "",
+  status: "",
+};
+
+function UsersPage() {
+  const { user: currentUser } = useAuth();
+  const [users, setUsers] = useState<User[]>([]);
+  const [filters, setFilters] = useState<UserFiltersType>(initialFilters);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [actionError, setActionError] = useState("");
+  const [actionSuccess, setActionSuccess] = useState("");
+
+  const fetchUsers = async () => {
+    try {
+      setError("");
+      const data = await userService.getAll();
+      setUsers(data);
+    } catch {
+      setError("دریافت لیست کاربران با خطا مواجه شد.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let ignore = false;
+    userService
+      .getAll()
+      .then((data) => {
+        if (!ignore) setUsers(data);
+      })
+      .catch(() => {
+        if (!ignore) setError("دریافت لیست کاربران با خطا مواجه شد.");
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const filteredUsers = useMemo(() => {
+    return users.filter((user) => {
+      const matchesName = user.name
+        .toLowerCase()
+        .includes(filters.searchName.toLowerCase());
+      const matchesEmail = user.email
+        .toLowerCase()
+        .includes(filters.searchEmail.toLowerCase());
+      const matchesRole = filters.role ? user.role === filters.role : true;
+      const matchesStatus = filters.status
+        ? user.status === filters.status
+        : true;
+      return matchesName && matchesEmail && matchesRole && matchesStatus;
+    });
+  }, [users, filters]);
+
+  const resetMessages = () => {
+    setActionError("");
+    setActionSuccess("");
+  };
+
+  const handleCreate = async (values: CreateUserPayload) => {
+    resetMessages();
+    await userService.create(values);
+    setActionSuccess("کاربر با موفقیت ایجاد شد.");
+    setIsCreateOpen(false);
+    await fetchUsers();
+  };
+
+  const handleOpenEdit = (user: User) => {
+    resetMessages();
+    setSelectedUser(user);
+    setIsEditOpen(true);
+  };
+
+  const handleUpdate = async (values: UpdateUserPayload) => {
+    if (!selectedUser) return;
+    resetMessages();
+    if (currentUser?.id === selectedUser.id && values.status === "inactive") {
+      throw new Error("شما نمی‌توانید حساب کاربری خودتان را غیرفعال کنید.");
+    }
+    await userService.update(selectedUser.id, values);
+    setActionSuccess("اطلاعات کاربر با موفقیت ویرایش شد.");
+    setIsEditOpen(false);
+    setSelectedUser(null);
+    await fetchUsers();
+  };
+
+  const handleOpenDelete = (user: User) => {
+    resetMessages();
+    setSelectedUser(user);
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!selectedUser || !currentUser) return;
+    try {
+      resetMessages();
+      if (selectedUser.id === currentUser.id) {
+        throw new Error("شما نمی‌توانید حساب کاربری خودتان را حذف کنید.");
+      }
+      await userService.delete(selectedUser.id);
+      setActionSuccess("کاربر با موفقیت حذف شد.");
+      setIsDeleteConfirmOpen(false);
+      setSelectedUser(null);
+      await fetchUsers();
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : "حذف کاربر ناموفق بود.",
+      );
+      setIsDeleteConfirmOpen(false);
+    }
+  };
+
+  const handleToggleStatus = async (user: User) => {
+    if (!currentUser) return;
+    try {
+      resetMessages();
+      if (user.id === currentUser.id) {
+        throw new Error("شما نمی‌توانید وضعیت حساب خودتان را تغییر دهید.");
+      }
+      await userService.toggleStatus(user.id);
+      setActionSuccess("وضعیت کاربر با موفقیت تغییر کرد.");
+      await fetchUsers();
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : "تغییر وضعیت کاربر ناموفق بود.",
+      );
+    }
+  };
+
+  const handleView = (user: User) => {
+    resetMessages();
+    setSelectedUser(user);
+    setIsDetailsOpen(true);
+  };
+
+  return (
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
+          مدیریت کاربران
+        </h1>
+        <Button
+          onClick={() => {
+            resetMessages();
+            setIsCreateOpen(true);
+          }}
+          className="w-full sm:w-auto"
+        >
+          ایجاد کاربر
+        </Button>
+      </div>
+
+      {actionSuccess && (
+        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+          {actionSuccess}
+        </div>
+      )}
+      {actionError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {actionError}
+        </div>
+      )}
+
+      <UserFilters
+        filters={filters}
+        onChange={setFilters}
+        onReset={() => setFilters(initialFilters)}
+      />
+
+      <Card title="لیست کاربران">
+        {loading ? (
+          <Loading />
+        ) : error ? (
+          <div className="text-sm text-red-600">{error}</div>
+        ) : users.length === 0 ? (
+          <EmptyState
+            title="کاربری ثبت نشده است"
+            description="هنوز هیچ کاربری در سیستم وجود ندارد."
+          />
+        ) : filteredUsers.length === 0 ? (
+          <EmptyState
+            title="کاربری پیدا نشد"
+            description="هیچ کاربری با فیلترهای انتخاب‌شده پیدا نشد."
+          />
+        ) : (
+          <div className="-mx-5 overflow-x-auto sm:mx-0">
+            <UserTable
+              users={filteredUsers}
+              currentUserId={currentUser?.id}
+              onView={handleView}
+              onEdit={handleOpenEdit}
+              onDelete={handleOpenDelete}
+              onToggleStatus={handleToggleStatus}
+            />
+          </div>
+        )}
+      </Card>
+
+      <UserForm
+        key={`create-${isCreateOpen}`}
+        isOpen={isCreateOpen}
+        mode="create"
+        onClose={() => setIsCreateOpen(false)}
+        onCreate={handleCreate}
+        onUpdate={async () => {}}
+      />
+      <UserForm
+        key={`edit-${selectedUser?.id ?? "none"}-${isEditOpen}`}
+        isOpen={isEditOpen}
+        mode="edit"
+        user={selectedUser}
+        onClose={() => {
+          setIsEditOpen(false);
+          setSelectedUser(null);
+        }}
+        onCreate={async () => {}}
+        onUpdate={handleUpdate}
+      />
+      <UserDetails
+        isOpen={isDetailsOpen}
+        user={selectedUser}
+        onClose={() => {
+          setIsDetailsOpen(false);
+          setSelectedUser(null);
+        }}
+      />
+      <ConfirmDialog
+        isOpen={isDeleteConfirmOpen}
+        title="حذف کاربر"
+        message={`آیا از حذف کاربر "${selectedUser?.name ?? ""}" مطمئن هستید؟`}
+        onClose={() => {
+          setIsDeleteConfirmOpen(false);
+          setSelectedUser(null);
+        }}
+        onConfirm={handleDelete}
+      />
+    </div>
+  );
+}
+
+export default UsersPage;
+</file>
+
+<file path="src/pages/users/UserTable.tsx">
+import Button from "#/components/ui/Button.tsx";
+import StatusChip from "#/components/ui/StatusChip.tsx";
+import Table from "#/components/ui/Table.tsx";
+import type { User } from "#/types/user.ts";
+
+interface UserTableProps {
+  users: User[];
+  currentUserId?: number;
+  onView: (user: User) => void;
+  onEdit: (user: User) => void;
+  onDelete: (user: User) => void;
+  onToggleStatus: (user: User) => void;
+}
+
+function UserTable({
+  users,
+  currentUserId,
+  onView,
+  onEdit,
+  onDelete,
+  onToggleStatus,
+}: UserTableProps) {
+  return (
+    <Table
+      getRowKey={(user) => user.id}
+      columns={[
+        {
+          key: "name",
+          title: "نام",
+          render: (user) => (
+            <div className="font-medium text-gray-800">
+              {user.name}
+              {user.id === currentUserId && (
+                <span className="mr-2 text-xs text-blue-600">(شما)</span>
+              )}
+            </div>
+          ),
+        },
+        { key: "email", title: "ایمیل" },
+        {
+          key: "role",
+          title: "نقش",
+          render: (user) => <span className="capitalize">{user.role}</span>,
+        },
+        {
+          key: "status",
+          title: "وضعیت",
+          render: (user) => <StatusChip status={user.status} />,
+        },
+        {
+          key: "actions",
+          title: "عملیات",
+          render: (user) => (
+            <div className="flex flex-wrap gap-2">
+              <Button variant="secondary" onClick={() => onView(user)}>
+                جزئیات
+              </Button>
+              <Button variant="secondary" onClick={() => onEdit(user)}>
+                ویرایش
+              </Button>
+              <Button variant="secondary" onClick={() => onToggleStatus(user)}>
+                {user.status === "active" ? "غیرفعال‌سازی" : "فعال‌سازی"}
+              </Button>
+              <Button variant="danger" onClick={() => onDelete(user)}>
+                حذف
+              </Button>
+            </div>
+          ),
+        },
+      ]}
+      data={users}
+    />
+  );
+}
+
+export default UserTable;
+</file>
+
+<file path="src/pages/users/userValidation.ts">
+import type { CreateUserPayload, UpdateUserPayload } from "#/types/user.ts";
+
+export interface UserFormErrors {
+  name?: string;
+  email?: string;
+  password?: string;
+  role?: string;
+  status?: string;
+  form?: string;
+}
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export function validateCreateUser(values: CreateUserPayload): UserFormErrors {
+  const errors: UserFormErrors = {};
+
+  if (!values.name.trim()) {
+    errors.name = "نام الزامی است.";
+  } else if (values.name.trim().length < 3) {
+    errors.name = "نام باید حداقل 3 کاراکتر باشد.";
+  }
+
+  if (!values.email.trim()) {
+    errors.email = "ایمیل الزامی است.";
+  } else if (!emailRegex.test(values.email.trim())) {
+    errors.email = "فرمت ایمیل معتبر نیست.";
+  }
+
+  if (!values.password.trim()) {
+    errors.password = "رمز عبور الزامی است.";
+  } else if (values.password.trim().length < 6) {
+    errors.password = "رمز عبور باید حداقل 6 کاراکتر باشد.";
+  }
+
+  if (!values.role) {
+    errors.role = "نقش الزامی است.";
+  }
+
+  if (!values.status) {
+    errors.status = "وضعیت الزامی است.";
+  }
+
+  return errors;
+}
+
+export function validateUpdateUser(values: UpdateUserPayload): UserFormErrors {
+  const errors: UserFormErrors = {};
+
+  if (!values.name.trim()) {
+    errors.name = "نام الزامی است.";
+  } else if (values.name.trim().length < 3) {
+    errors.name = "نام باید حداقل 3 کاراکتر باشد.";
+  }
+
+  if (!values.email.trim()) {
+    errors.email = "ایمیل الزامی است.";
+  } else if (!emailRegex.test(values.email.trim())) {
+    errors.email = "فرمت ایمیل معتبر نیست.";
+  }
+
+  if (!values.role) {
+    errors.role = "نقش الزامی است.";
+  }
+
+  if (!values.status) {
+    errors.status = "وضعیت الزامی است.";
+  }
+
+  return errors;
+}
+</file>
+
+<file path="src/routes/AppRoutes.tsx">
+
+</file>
+
+<file path="src/routes/ProtectedRoute.tsx">
+import { Navigate } from "react-router-dom";
+
+import Loading from "#/components/common/Loading.tsx";
+import { useAuth } from "#/context/AuthContext.ts";
+
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+function ProtectedRoute({ children }: ProtectedRouteProps) {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+export default ProtectedRoute;
+</file>
+
+<file path="src/routes/RoleGuard.tsx">
+import { Navigate } from "react-router-dom";
+import { useAuth } from "#/context/AuthContext.ts";
+import type { UserRole } from "#/types/common.ts";
+
+interface RoleGuardProps {
+  children: React.ReactNode;
+  allowedRoles: UserRole[];
+}
+
+function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  if (!allowedRoles.includes(user.role)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+export default RoleGuard;
+</file>
+
+<file path="src/services/api/axiosInstance.ts">
+import axios from "axios";
+
+const axiosInstance = axios.create({
+  baseURL: "http://localhost:3001",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+export default axiosInstance;
+</file>
+
+<file path="src/services/api/baseApi.ts">
+import axiosInstance from "#/services/api/axiosInstance.ts";
+
+export const baseApi = {
+  getAll: async <T>(endpoint: string): Promise<T[]> => {
+    const response = await axiosInstance.get<T[]>(endpoint);
+    return response.data;
+  },
+
+  getById: async <T>(endpoint: string, id: number | string): Promise<T> => {
+    const response = await axiosInstance.get<T>(`${endpoint}/${id}`);
+    return response.data;
+  },
+
+  create: async <T>(endpoint: string, data: Omit<T, "id">): Promise<T> => {
+    const response = await axiosInstance.post<T>(endpoint, data);
+    return response.data;
+  },
+
+  update: async <T>(
+    endpoint: string,
+    id: number | string,
+    data: Partial<T>,
+  ): Promise<T> => {
+    const response = await axiosInstance.patch<T>(`${endpoint}/${id}`, data);
+    return response.data;
+  },
+
+  delete: async (endpoint: string, id: number | string): Promise<void> => {
+    await axiosInstance.delete(`${endpoint}/${id}`);
+  },
+};
+</file>
+
+<file path="src/services/modules/announcementService.ts">
+import { baseApi } from "#/services/api/baseApi.ts";
+import type { Announcement } from "#/types/announcement.ts";
+
+const endpoint = "/announcements";
+
+export const announcementService = {
+  getAll: () => baseApi.getAll<Announcement>(endpoint),
+
+  getById: (id: number) => baseApi.getById<Announcement>(endpoint, id),
+
+  create: (data: Omit<Announcement, "id" | "createdAt" | "seenBy">) =>
+    baseApi.create<Announcement>(endpoint, {
+      ...data,
+      seenBy: [],
+      createdAt: new Date().toISOString(),
+    }),
+
+  update: (id: number, data: Partial<Announcement>) =>
+    baseApi.update<Announcement>(endpoint, id, data),
+
+  delete: (id: number) => baseApi.delete(endpoint, id),
+
+  markAsSeen: async (id: number, userId: number) => {
+    const announcement = await baseApi.getById<Announcement>(endpoint, id);
+    if (!announcement.seenBy?.includes(userId)) {
+      await baseApi.update<Announcement>(endpoint, id, {
+        seenBy: [...(announcement.seenBy ?? []), userId],
+      });
+    }
+  },
+
+  resetSeenBy: async (id: number) => {
+    await baseApi.update<Announcement>(endpoint, id, { seenBy: [] });
+  },
+
+  isSeenBy: (announcement: Announcement, userId: number) => {
+    return announcement.seenBy?.includes(userId) ?? false;
+  },
+};
+</file>
+
+<file path="src/services/modules/assignmentService.ts">
+
+</file>
+
+<file path="src/services/modules/attendanceService.ts">
+import { baseApi } from "#/services/api/baseApi.ts";
+import type { Attendance } from "#/types/attendance.ts";
+import type { AttendanceStatus } from "#/types/common.ts";
+
+const endpoint = "/attendance";
+
+export const attendanceService = {
+  getAll: () => baseApi.getAll<Attendance>(endpoint),
+
+  getBySession: async (sessionId: number | string): Promise<Attendance[]> => {
+    const all = await baseApi.getAll<Attendance>(endpoint);
+    return all.filter((a) => String(a.sessionId) === String(sessionId));
+  },
+
+  getByStudent: async (studentId: number | string): Promise<Attendance[]> => {
+    const all = await baseApi.getAll<Attendance>(endpoint);
+    return all.filter((a) => String(a.studentId) === String(studentId));
+  },
+
+  getByClass: async (classId: number | string): Promise<Attendance[]> => {
+    const all = await baseApi.getAll<Attendance>(endpoint);
+    return all.filter((a) => String(a.classId) === String(classId));
+  },
+
+  saveAttendanceForSession: async (
+    sessionId: number | string,
+    classId: number | string,
+    records: Array<{ studentId: number | string; status: AttendanceStatus }>,
+  ): Promise<Attendance[]> => {
+    const existing = await attendanceService.getBySession(sessionId);
+    const results: Attendance[] = [];
+
+    for (const record of records) {
+      const existingRecord = existing.find(
+        (a) => String(a.studentId) === String(record.studentId),
+      );
+
+      if (existingRecord) {
+        const updated = await baseApi.update<Attendance>(
+          endpoint,
+          existingRecord.id,
+          { status: record.status },
+        );
+        results.push(updated);
+      } else {
+        const created = await baseApi.create<Attendance>(endpoint, {
+          sessionId: Number(sessionId),
+          classId: Number(classId),
+          studentId: Number(record.studentId),
+          status: record.status,
+        } as unknown as Omit<Attendance, "id">);
+        results.push(created);
+      }
+    }
+
+    return results;
+  },
+
+  updateStatus: async (
+    id: number | string,
+    status: AttendanceStatus,
+  ): Promise<Attendance> => {
+    return baseApi.update<Attendance>(endpoint, id, { status });
+  },
+
+  delete: (id: number | string) => baseApi.delete(endpoint, id),
+
+  calculateStudentStats: (attendances: Attendance[]) => {
+    const present = attendances.filter((a) => a.status === "present").length;
+    const late = attendances.filter((a) => a.status === "late").length;
+    const absent = attendances.filter((a) => a.status === "absent").length;
+    const total = attendances.length;
+    const attended = present + late;
+    const percentage = total > 0 ? (attended / total) * 100 : 0;
+
+    return { present, late, absent, total, attended, percentage };
+  },
+};
+</file>
+
+<file path="src/services/modules/authService.ts">
+import axiosInstance from "#/services/api/axiosInstance.ts";
+import type { LoginPayload } from "#/types/auth.ts";
+import type { User } from "#/types/user.ts";
+
+export async function loginUser(payload: LoginPayload): Promise<User> {
+  const email = payload.email.trim().toLowerCase();
+  const password = payload.password.trim();
+
+  if (!email || !password) {
+    throw new Error("لطفاً ایمیل و رمز عبور را وارد کنید.");
+  }
+
+  const response = await axiosInstance.get<User[]>("/users", {
+    params: { email },
+  });
+
+  const user = response.data[0];
+
+  if (!user) {
+    throw new Error("هیچ حساب کاربری با این ایمیل یافت نشد.");
+  }
+
+  if (user.password !== password) {
+    throw new Error("رمز عبور وارد شده صحیح نیست.");
+  }
+
+  if (user.status !== "active") {
+    throw new Error("این حساب کاربری غیرفعال است. با مدیر سیستم تماس بگیرید.");
+  }
+
+  return user;
+}
+</file>
+
+<file path="src/services/modules/classService.ts">
+import { baseApi } from "#/services/api/baseApi.ts";
+import type { ClassItem, ClassFormValues } from "#/types/class.ts";
+
+const endpoint = "/classes";
+
+export const classService = {
+  getAll: () => baseApi.getAll<ClassItem>(endpoint),
+  getById: (id: number) => baseApi.getById<ClassItem>(endpoint, id),
+  create: (data: ClassFormValues) =>
+    baseApi.create<ClassItem>(endpoint, {
+      ...data,
+      createdAt: new Date().toISOString(),
+    }),
+  update: (id: number, data: Partial<ClassFormValues>) =>
+    baseApi.update<ClassItem>(endpoint, id, {
+      ...data,
+      updatedAt: new Date().toISOString(),
+    }),
+  delete: (id: number) => baseApi.delete(endpoint, id),
+  deactivate: (id: number) =>
+    baseApi.update<ClassItem>(endpoint, id, {
+      status: "inactive",
+      updatedAt: new Date().toISOString(),
+    }),
+  activate: (id: number) =>
+    baseApi.update<ClassItem>(endpoint, id, {
+      status: "active",
+      updatedAt: new Date().toISOString(),
+    }),
+};
+</file>
+
+<file path="src/services/modules/sessionService.ts">
+import { baseApi } from "#/services/api/baseApi.ts";
+import type { Session, SessionFormValues } from "#/types/session.ts";
+
+const endpoint = "/sessions";
+
+export const sessionService = {
+  getAll: () => baseApi.getAll<Session>(endpoint),
+
+  getById: (id: number) => baseApi.getById<Session>(endpoint, id),
+
+  create: (data: SessionFormValues) =>
+    baseApi.create<Session>(endpoint, {
+      ...data,
+      createdAt: new Date().toISOString(),
+    }),
+
+  update: (id: number, data: Partial<SessionFormValues>) =>
+    baseApi.update<Session>(endpoint, id, {
+      ...data,
+      updatedAt: new Date().toISOString(),
+    }),
+
+  delete: (id: number) => baseApi.delete(endpoint, id),
+};
+</file>
+
+<file path="src/services/modules/submissionService.ts">
+
+</file>
+
+<file path="src/services/modules/userService.ts">
+import { baseApi } from "#/services/api/baseApi.ts";
+import type {
+  CreateUserPayload,
+  UpdateUserPayload,
+  User,
+} from "#/types/user.ts";
+import type { RecordStatus, UserRole } from "#/types/common.ts";
+
+const endpoint = "/users";
+
+async function getAllUsers(): Promise<User[]> {
+  return baseApi.getAll<User>(endpoint);
+}
+
+async function getUserById(id: number): Promise<User> {
+  return baseApi.getById<User>(endpoint, id);
+}
+
+async function ensureEmailIsUnique(
+  email: string,
+  excludeUserId?: number,
+): Promise<void> {
+  const users = await getAllUsers();
+
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const duplicate = users.find(
+    (user) =>
+      user.email.trim().toLowerCase() === normalizedEmail &&
+      user.id !== excludeUserId,
+  );
+
+  if (duplicate) {
+    throw new Error("این ایمیل قبلاً ثبت شده است.");
+  }
+}
+
+async function getAdminUsers(): Promise<User[]> {
+  const users = await getAllUsers();
+  return users.filter((user) => user.role === "admin");
+}
+
+async function ensureNotLastAdmin(userId: number): Promise<void> {
+  const users = await getAllUsers();
+  const targetUser = users.find((user) => user.id === userId);
+
+  if (!targetUser) {
+    throw new Error("کاربر موردنظر پیدا نشد.");
+  }
+
+  if (targetUser.role !== "admin") {
+    return;
+  }
+
+  const adminUsers = users.filter((user) => user.role === "admin");
+
+  if (adminUsers.length <= 1) {
+    throw new Error("امکان حذف یا تغییر آخرین مدیر سیستم وجود ندارد.");
+  }
+}
+
+export const userService = {
+  getAll: getAllUsers,
+
+  getById: getUserById,
+
+  async create(data: CreateUserPayload): Promise<User> {
+    await ensureEmailIsUnique(data.email);
+
+    const payload: Omit<User, "id"> = {
+      name: data.name.trim(),
+      email: data.email.trim().toLowerCase(),
+      password: data.password,
+      role: data.role,
+      status: data.status,
+    };
+
+    return baseApi.create<User>(endpoint, payload);
+  },
+  async update(id: number, data: UpdateUserPayload): Promise<User> {
+    await ensureEmailIsUnique(data.email, id);
+
+    const existingUser = await getUserById(id);
+
+    if (existingUser.role === "admin" && data.role !== "admin") {
+      await ensureNotLastAdmin(id);
+    }
+
+    if (
+      existingUser.role === "admin" &&
+      existingUser.status === "active" &&
+      data.status === "inactive"
+    ) {
+      await ensureNotLastAdminIfDeactivating(existingUser);
+    }
+
+    const payload: User = {
+      ...existingUser,
+      name: data.name.trim(),
+      email: data.email.trim().toLowerCase(),
+      role: data.role,
+      status: data.status,
+    };
+
+    return baseApi.update<User>(endpoint, id, payload);
+  },
+
+  async delete(id: number): Promise<void> {
+    await ensureNotLastAdmin(id);
+    await baseApi.delete(endpoint, id);
+  },
+
+  async toggleStatus(id: number): Promise<User> {
+    const user = await getUserById(id);
+
+    await ensureNotLastAdminIfDeactivating(user);
+
+    const nextStatus: RecordStatus =
+      user.status === "active" ? "inactive" : "active";
+
+    return baseApi.update<User>(endpoint, id, {
+      ...user,
+      status: nextStatus,
+    });
+  },
+
+  async changeRole(id: number, role: UserRole): Promise<User> {
+    const user = await getUserById(id);
+
+    if (user.role === "admin" && role !== "admin") {
+      await ensureNotLastAdmin(id);
+    }
+
+    return baseApi.update<User>(endpoint, id, {
+      ...user,
+      role,
+    });
+  },
+
+  getAdminUsers,
+};
+
+async function ensureNotLastAdminIfDeactivating(user: User): Promise<void> {
+  if (user.role !== "admin") {
+    return;
+  }
+
+  if (user.status === "inactive") {
+    return;
+  }
+
+  const admins = await getAdminUsers();
+  const activeAdmins = admins.filter((admin) => admin.status === "active");
+
+  if (activeAdmins.length <= 1) {
+    throw new Error("امکان غیرفعال‌سازی آخرین مدیر سیستم وجود ندارد.");
+  }
+}
+</file>
+
+<file path="src/types/announcement.ts">
+import type { ID, UserRole } from "#/types/common.ts";
+
+export type TargetAudience = "students" | "teacher" | "both";
+
+export interface Announcement {
+  id: ID;
+  title: string;
+  content: string;
+  classId: ID | 0;
+  authorId: ID;
+  createdAt: string;
+  seenBy: ID[];
+  targetRoles?: UserRole[];
+  targetAudience?: TargetAudience;
+}
+</file>
+
+<file path="src/types/assignment.ts">
+import type { ID } from "#/types/common.ts";
+
+export interface Assignment {
+  id: ID;
+  title: string;
+  description: string;
+  classId: ID;
+  teacherId: ID;
+  deadline: string;
+}
+</file>
+
+<file path="src/types/attendance.ts">
+import type { AttendanceStatus, ID } from "#/types/common.ts";
+
+export interface Attendance {
+  id: ID;
+  classId: ID;
+  sessionId: ID;
+  studentId: ID;
+  status: AttendanceStatus;
+}
+</file>
+
+<file path="src/types/auth.ts">
+import type { User } from "./user";
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+}
+
+export interface AuthContextType extends AuthState {
+  login: (payload: LoginPayload) => Promise<void>;
+  logout: () => void;
+}
+</file>
+
+<file path="src/types/class.ts">
+export type ClassStatus = "active" | "inactive";
+
+export interface ClassItem {
+  id: number;
+  title: string;
+  teacherId: number | null;
+  studentIds: number[];
+  capacity: number;
+  status: ClassStatus;
+  description?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ClassFormValues {
+  title: string;
+  teacherId: number | null;
+  studentIds: number[];
+  capacity: number;
+  status: ClassStatus;
+  description?: string;
+}
+</file>
+
+<file path="src/types/common.ts">
+export type ID = number;
+
+export type UserRole = "admin" | "teacher" | "student";
+
+export type RecordStatus = "active" | "inactive";
+
+export type AttendanceStatus = "present" | "absent" | "late";
+
+export type SubmissionStatus = "submitted" | "graded" | "pending";
+</file>
+
+<file path="src/types/session.ts">
+export interface Session {
+  id: number;
+  classId: number;
+  title: string;
+  description?: string;
+  date: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SessionFormValues {
+  title: string;
+  classId: number;
+  date: string;
+  description?: string;
+}
+</file>
+
+<file path="src/types/submission.ts">
+import type { ID, SubmissionStatus } from "#/types/common.ts";
+
+export interface Submission {
+  id: ID;
+  assignmentId: ID;
+  studentId: ID;
+  content: string;
+  submittedAt: string;
+  status: SubmissionStatus;
+  grade?: number;
+  feedback?: string;
+}
+</file>
+
+<file path="src/types/user.ts">
+import type { ID, RecordStatus, UserRole } from "./common";
+
+export interface User {
+  id: ID;
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  status: RecordStatus;
+}
+
+export interface CreateUserPayload {
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  status: RecordStatus;
+}
+
+export interface UpdateUserPayload {
+  name: string;
+  email: string;
+  role: UserRole;
+  status: RecordStatus;
+}
+
+export interface UserFilters {
+  searchName: string;
+  searchEmail: string;
+  role: "" | UserRole;
+  status: "" | RecordStatus;
+}
+</file>
+
+<file path="src/utils/constants.ts">
+export const STORAGE_KEYS = {
+  authUser: "educonnect_auth_user",
+};
+</file>
+
+<file path="src/utils/formatDate.ts">
+export const formatDate = (date: string): string => {
+  return new Date(date).toLocaleDateString("fa-IR");
+};
+</file>
+
+<file path="tailwind.config.js">
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+</file>
+
+<file path="tsconfig.app.json">
+{
+	"compilerOptions": {
+		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+		"target": "es2023",
+		"lib": ["ES2023", "DOM"],
+		"module": "esnext",
+		"types": ["vite/client"],
+		"skipLibCheck": true,
+
+		/* Bundler mode */
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": true,
+		"moduleDetection": "force",
+		"noEmit": true,
+		"jsx": "react-jsx",
+
+		/* Linting */
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"erasableSyntaxOnly": true,
+		"noFallthroughCasesInSwitch": true
+	},
+	"include": ["src"]
+}
+</file>
+
+<file path="tsconfig.json">
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}
+</file>
+
+<file path="tsconfig.node.json">
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023"],
+    "module": "esnext",
+    "types": ["node"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["vite.config.ts"]
+}
+</file>
+
+<file path="vite.config.ts">
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
+// import tsconfigPaths from 'vite-tsconfig-paths'
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '#': path.resolve(__dirname, './src'),
+    },
+  },
+})
+</file>
+
+</files>

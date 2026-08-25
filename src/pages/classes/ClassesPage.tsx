@@ -1,0 +1,380 @@
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import EmptyState from "#/components/common/EmptyState.tsx";
+import Loading from "#/components/common/Loading.tsx";
+import Button from "#/components/ui/Button.tsx";
+import Card from "#/components/ui/Card.tsx";
+import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
+import SearchInput from "#/components/ui/SearchInput.tsx";
+import Select from "#/components/ui/Select.tsx";
+import StatusChip from "#/components/ui/StatusChip.tsx";
+import Table from "#/components/ui/Table.tsx";
+import { useAuth } from "#/context/AuthContext.ts";
+import { classService } from "#/services/modules/classService.ts";
+import { userService } from "#/services/modules/userService.ts";
+import type { ClassItem, ClassStatus } from "#/types/class.ts";
+import type { User } from "#/types/user.ts";
+import ClassForm from "./ClassForm";
+
+export default function ClassesPage() {
+  const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
+
+  const [classes, setClasses] = useState<ClassItem[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<ClassStatus | "">("");
+  const [teacherFilter, setTeacherFilter] = useState<string>("");
+
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<ClassItem | null>(null);
+
+  const [statusChangeTarget, setStatusChangeTarget] =
+    useState<ClassItem | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ClassItem | null>(null);
+
+  const [actionError, setActionError] = useState("");
+  const [actionSuccess, setActionSuccess] = useState("");
+
+  const isAdmin = currentUser?.role === "admin";
+
+  // ✅ تابع کمکی: آیا کاربر فعلی می‌تواند این کلاس را مدیریت کند؟
+  const canManageClass = (c: ClassItem) => {
+    if (isAdmin) return true;
+    if (currentUser?.role === "teacher") {
+      return String(c.teacherId) === String(currentUser.id);
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    let ignore = false;
+    Promise.all([classService.getAll(), userService.getAll()])
+      .then(([classesData, usersData]) => {
+        if (!ignore) {
+          setClasses(classesData);
+          setUsers(usersData);
+        }
+      })
+      .catch(() => {
+        if (!ignore) setError("دریافت اطلاعات با خطا مواجه شد.");
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const teachers = useMemo(
+    () => users.filter((u) => u.role === "teacher"),
+    [users],
+  );
+
+  const filteredClasses = useMemo(() => {
+    return classes.filter((c) => {
+      if (!isAdmin && currentUser?.role === "teacher") {
+        if (String(c.teacherId) !== String(currentUser.id)) return false;
+      }
+      const matchesSearch = (c.title || "")
+        .toLowerCase()
+        .includes(search.toLowerCase());
+      const matchesStatus = statusFilter ? c.status === statusFilter : true;
+      const matchesTeacher = teacherFilter
+        ? String(c.teacherId) === teacherFilter
+        : true;
+      return matchesSearch && matchesStatus && matchesTeacher;
+    });
+  }, [classes, search, statusFilter, teacherFilter, isAdmin, currentUser]);
+
+  const resetMessages = () => {
+    setActionError("");
+    setActionSuccess("");
+  };
+
+  const fetchData = async () => {
+    try {
+      const [classesData, usersData] = await Promise.all([
+        classService.getAll(),
+        userService.getAll(),
+      ]);
+      setClasses(classesData);
+      setUsers(usersData);
+    } catch {
+      setError("دریافت اطلاعات با خطا مواجه شد.");
+    }
+  };
+
+  const handleStatusChangeClick = (classItem: ClassItem) => {
+    resetMessages();
+    setStatusChangeTarget(classItem);
+  };
+
+  const confirmStatusChange = async () => {
+    if (!statusChangeTarget) return;
+    try {
+      if (statusChangeTarget.status === "active") {
+        await classService.deactivate(statusChangeTarget.id);
+        setActionSuccess(`کلاس "${statusChangeTarget.title}" غیرفعال شد.`);
+      } else {
+        await classService.activate(statusChangeTarget.id);
+        setActionSuccess(`کلاس "${statusChangeTarget.title}" فعال شد.`);
+      }
+      setStatusChangeTarget(null);
+      await fetchData();
+    } catch {
+      setActionError("تغییر وضعیت کلاس ناموفق بود.");
+      setStatusChangeTarget(null);
+    }
+  };
+
+  const handleDeleteClick = (classItem: ClassItem) => {
+    resetMessages();
+    setDeleteTarget(classItem);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await classService.delete(deleteTarget.id);
+      setActionSuccess(`کلاس "${deleteTarget.title}" با موفقیت حذف شد.`);
+      setDeleteTarget(null);
+      await fetchData();
+    } catch {
+      setActionError("حذف کلاس ناموفق بود.");
+      setDeleteTarget(null);
+    }
+  };
+
+  const handleEdit = (classItem: ClassItem) => {
+    resetMessages();
+    setEditing(classItem);
+    setShowForm(true);
+  };
+
+  const handleCreate = () => {
+    resetMessages();
+    setEditing(null);
+    setShowForm(true);
+  };
+
+  const getTeacherName = (teacherId: number | string | null | undefined) => {
+    if (teacherId === null || teacherId === undefined) return "—";
+    const teacher = users.find((u) => String(u.id) === String(teacherId));
+    return teacher?.name ?? "—";
+  };
+
+  return (
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
+          مدیریت کلاس‌ها
+        </h1>
+        {(isAdmin || currentUser?.role === "teacher") && (
+          <Button onClick={handleCreate} className="w-full sm:w-auto">
+            ایجاد کلاس جدید
+          </Button>
+        )}
+      </div>
+
+      {actionSuccess && (
+        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+          {actionSuccess}
+        </div>
+      )}
+      {actionError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {actionError}
+        </div>
+      )}
+
+      <div className="grid gap-3 rounded-xl border border-gray-200 bg-white p-3 sm:gap-4 sm:p-4 md:grid-cols-2 xl:grid-cols-4">
+        <SearchInput
+          label="جستجو"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="عنوان کلاس"
+        />
+        <Select
+          label="وضعیت"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as ClassStatus | "")}
+          options={[
+            { label: "همه وضعیت‌ها", value: "" },
+            { label: "فعال", value: "active" },
+            { label: "غیرفعال", value: "inactive" },
+          ]}
+        />
+        {isAdmin && (
+          <Select
+            label="استاد"
+            value={teacherFilter}
+            onChange={(e) => setTeacherFilter(e.target.value)}
+            options={[
+              { label: "همه اساتید", value: "" },
+              ...teachers.map((t) => ({ label: t.name, value: String(t.id) })),
+            ]}
+          />
+        )}
+        <div className="flex items-end">
+          <Button
+            variant="secondary"
+            className="w-full"
+            onClick={() => {
+              setSearch("");
+              setStatusFilter("");
+              setTeacherFilter("");
+            }}
+          >
+            پاک‌کردن فیلترها
+          </Button>
+        </div>
+      </div>
+
+      <Card title="لیست کلاس‌ها">
+        {loading ? (
+          <Loading />
+        ) : error ? (
+          <div className="text-sm text-red-600">{error}</div>
+        ) : classes.length === 0 ? (
+          <EmptyState
+            title="کلاسی ثبت نشده است"
+            description="هنوز هیچ کلاسی در سیستم وجود ندارد."
+          />
+        ) : filteredClasses.length === 0 ? (
+          <EmptyState
+            title="کلاسی پیدا نشد"
+            description="هیچ کلاسی با فیلترهای انتخاب‌شده پیدا نشد."
+          />
+        ) : (
+          <div className="-mx-5 overflow-x-auto sm:mx-0">
+            <Table
+              getRowKey={(c) => c.id}
+              columns={[
+                {
+                  key: "title",
+                  title: "عنوان",
+                  render: (c) => (
+                    <button
+                      onClick={() => navigate(`/classes/${c.id}`)}
+                      className="font-medium text-blue-600 hover:underline"
+                    >
+                      {c.title || "(بدون عنوان)"}
+                    </button>
+                  ),
+                },
+                {
+                  key: "teacherId",
+                  title: "استاد",
+                  render: (c) => getTeacherName(c.teacherId),
+                },
+                {
+                  key: "capacity",
+                  title: "ظرفیت",
+                  render: (c) => (
+                    <span>
+                      {(c.studentIds || []).length}/{c.capacity || 0}
+                    </span>
+                  ),
+                },
+                {
+                  key: "status",
+                  title: "وضعیت",
+                  render: (c) => <StatusChip status={c.status || "inactive"} />,
+                },
+                {
+                  key: "actions",
+                  title: "عملیات",
+                  render: (c) => (
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant="secondary"
+                        onClick={() => navigate(`/classes/${c.id}`)}
+                      >
+                        جزئیات
+                      </Button>
+                      {canManageClass(c) && (
+                        <>
+                          <Button
+                            variant="secondary"
+                            onClick={() => handleEdit(c)}
+                          >
+                            ویرایش
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            onClick={() => handleStatusChangeClick(c)}
+                          >
+                            {c.status === "active"
+                              ? "غیرفعال کردن"
+                              : "فعال کردن"}
+                          </Button>
+                          <Button
+                            variant="danger"
+                            onClick={() => handleDeleteClick(c)}
+                          >
+                            حذف
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  ),
+                },
+              ]}
+              data={filteredClasses}
+            />
+          </div>
+        )}
+      </Card>
+
+      {showForm && (
+        <ClassForm
+          key={`class-form-${editing?.id ?? "new"}-${showForm}`}
+          users={users}
+          initialData={editing}
+          onClose={() => {
+            setShowForm(false);
+            setEditing(null);
+          }}
+          onSuccess={async (message) => {
+            setActionSuccess(message);
+            setShowForm(false);
+            setEditing(null);
+            await fetchData();
+          }}
+          onError={(message) => {
+            setActionError(message);
+          }}
+        />
+      )}
+
+      <ConfirmDialog
+        isOpen={!!statusChangeTarget}
+        title={
+          statusChangeTarget?.status === "active"
+            ? "غیرفعال کردن کلاس"
+            : "فعال کردن کلاس"
+        }
+        message={
+          statusChangeTarget?.status === "active"
+            ? `آیا از غیرفعال کردن کلاس "${statusChangeTarget?.title ?? ""}" مطمئن هستید؟`
+            : `آیا از فعال کردن کلاس "${statusChangeTarget?.title ?? ""}" مطمئن هستید؟`
+        }
+        onClose={() => setStatusChangeTarget(null)}
+        onConfirm={confirmStatusChange}
+      />
+
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        title="حذف کلاس"
+        message={`آیا از حذف کامل کلاس "${deleteTarget?.title ?? ""}" مطمئن هستید؟ این عمل قابل بازگشت نیست.`}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+      />
+    </div>
+  );
+}

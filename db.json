@@ -1,0 +1,581 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Admin User",
+      "email": "admin@educonnect.com",
+      "password": "123456",
+      "role": "admin",
+      "status": "active"
+    },
+    {
+      "id": "2",
+      "name": "مدیر سیستم",
+      "email": "admin2@educonnect.com",
+      "password": "123456",
+      "role": "admin",
+      "status": "inactive"
+    },
+    {
+      "id": "3",
+      "name": "محمد حسینی",
+      "email": "mh419421@gmail.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "active"
+    },
+    {
+      "id": "4",
+      "name": "سارا محمدی",
+      "email": "teacher2@educonnect.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "active"
+    },
+    {
+      "id": "5",
+      "name": "علی رضایی",
+      "email": "teacher3@educonnect.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "active"
+    },
+    {
+      "id": "6",
+      "name": "رضا کریمی",
+      "email": "teacher4@educonnect.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "inactive"
+    },
+    {
+      "id": "7",
+      "name": "Student User 1",
+      "email": "mh4194214@gmail.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "8",
+      "name": "زهرا احمدی",
+      "email": "student2@educonnect.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "9",
+      "name": "امیر حسنی",
+      "email": "student3@educonnect.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "10",
+      "name": "فاطمه نوری",
+      "email": "student4@educonnect.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "11",
+      "name": "حسین موسوی",
+      "email": "student5@educonnect.com",
+      "password": "123456",
+      "role": "student",
+      "status": "inactive"
+    },
+    {
+      "id": "12",
+      "name": "مریم صادقی",
+      "email": "student6@educonnect.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "name": "T_U_1",
+      "email": "mh41942122334@gmail.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "active",
+      "id": "k8pFsZdoCRc"
+    }
+  ],
+  "classes": [
+    {
+      "id": "1",
+      "title": "پیشرفته React",
+      "teacherId": 3,
+      "studentIds": [
+        7,
+        8,
+        11
+      ],
+      "capacity": 20,
+      "status": "active",
+      "description": "بررسی عمیق الگوها و بهترین شیوه‌های React",
+      "createdAt": "2025-07-01T10:00:00.000Z",
+      "updatedAt": "2025-07-01T10:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "title": "Backend با Node.js",
+      "teacherId": 4,
+      "studentIds": [
+        9,
+        10
+      ],
+      "capacity": 25,
+      "status": "active",
+      "description": "توسعه سمت سرور با Node.js و Express",
+      "createdAt": "2025-07-05T10:00:00.000Z",
+      "updatedAt": "2025-07-05T10:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "title": "برنامه‌نویسی Python",
+      "teacherId": 5,
+      "studentIds": [
+        7,
+        10,
+        12
+      ],
+      "capacity": 30,
+      "status": "active",
+      "description": "مبانی و مفاهیم پیشرفته Python",
+      "createdAt": "2025-07-10T10:00:00.000Z",
+      "updatedAt": "2025-07-10T10:00:00.000Z"
+    },
+    {
+      "id": "4",
+      "title": "طراحی پایگاه داده",
+      "teacherId": 3,
+      "studentIds": [
+        9,
+        10,
+        12
+      ],
+      "capacity": 20,
+      "status": "active",
+      "description": "طراحی و پیاده‌سازی پایگاه داده‌های رابطه‌ای",
+      "createdAt": "2025-07-15T10:00:00.000Z",
+      "updatedAt": "2026-06-20T17:36:23.412Z"
+    },
+    {
+      "id": "5",
+      "title": "شبکه‌های کامپیوتری",
+      "teacherId": 5,
+      "studentIds": [
+        8,
+        11
+      ],
+      "capacity": 25,
+      "status": "inactive",
+      "description": "مبانی شبکه و پروتکل‌های ارتباطی",
+      "createdAt": "2025-06-01T10:00:00.000Z",
+      "updatedAt": "2025-09-01T10:00:00.000Z"
+    },
+    {
+      "id": "6",
+      "title": "مبانی توسعه وب",
+      "teacherId": 4,
+      "studentIds": [],
+      "capacity": 30,
+      "status": "inactive",
+      "description": "آشنایی با HTML، CSS و JavaScript",
+      "createdAt": "2025-06-15T10:00:00.000Z",
+      "updatedAt": "2025-08-15T10:00:00.000Z"
+    }
+  ],
+  "sessions": [
+    {
+      "id": "1",
+      "classId": 1,
+      "title": "جلسه 1 - مقدمه‌ای بر React",
+      "date": "2025-08-01",
+      "description": "آشنایی با مفاهیم پایه React و JSX",
+      "createdAt": "2025-07-25T10:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "classId": 1,
+      "title": "جلسه 2 - Components و Props",
+      "date": "2025-08-08",
+      "description": "ساخت کامپوننت‌ها و مدیریت Props",
+      "createdAt": "2025-08-02T10:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "classId": 1,
+      "title": "جلسه 3 - State و Hooks",
+      "date": "2025-08-15",
+      "description": "مدیریت State و استفاده از Hooks",
+      "createdAt": "2025-08-09T10:00:00.000Z"
+    },
+    {
+      "id": "4",
+      "classId": 2,
+      "title": "جلسه 1 - مقدمه Node.js",
+      "date": "2025-08-03",
+      "description": "آشنایی با محیط Node.js و npm",
+      "createdAt": "2025-07-28T10:00:00.000Z"
+    },
+    {
+      "id": "5",
+      "classId": 2,
+      "title": "جلسه 2 - Express Framework",
+      "date": "2025-08-10",
+      "description": "ساخت API با Express",
+      "createdAt": "2025-08-04T10:00:00.000Z"
+    },
+    {
+      "id": "6",
+      "classId": 2,
+      "title": "جلسه 3 - اتصال به دیتابیس",
+      "date": "2025-08-17",
+      "description": "استفاده از MongoDB با Mongoose",
+      "createdAt": "2025-08-11T10:00:00.000Z"
+    },
+    {
+      "id": "7",
+      "classId": 3,
+      "title": "جلسه 1 - مبانی Python",
+      "date": "2025-08-05",
+      "description": "نحوه نصب و سینتکس پایه Python",
+      "createdAt": "2025-07-30T10:00:00.000Z"
+    },
+    {
+      "id": "8",
+      "classId": 3,
+      "title": "جلسه 2 - توابع و ماژول‌ها",
+      "date": "2025-08-12",
+      "description": "تعریف توابع و استفاده از ماژول‌ها",
+      "createdAt": "2025-08-06T10:00:00.000Z"
+    },
+    {
+      "id": "9",
+      "classId": 3,
+      "title": "جلسه 3 - شی‌گرایی",
+      "date": "2025-08-19",
+      "description": "مفاهیم OOP در Python",
+      "createdAt": "2025-08-13T10:00:00.000Z"
+    },
+    {
+      "id": "10",
+      "classId": 4,
+      "title": "جلسه 1 - مدل‌سازی داده",
+      "date": "2025-08-07",
+      "description": "طراحی ERD و نرمال‌سازی",
+      "createdAt": "2025-08-01T10:00:00.000Z"
+    },
+    {
+      "id": "11",
+      "classId": 4,
+      "title": "جلسه 2 - SQL مقدماتی",
+      "date": "2025-08-14",
+      "description": "دستورات SELECT، INSERT، UPDATE",
+      "createdAt": "2025-08-08T10:00:00.000Z"
+    },
+    {
+      "id": "12",
+      "classId": 5,
+      "title": "جلسه 1 - مدل OSI",
+      "date": "2025-07-10",
+      "description": "بررسی لایه‌های مدل OSI",
+      "createdAt": "2025-07-05T10:00:00.000Z"
+    },
+    {
+      "id": "13",
+      "classId": 5,
+      "title": "جلسه 2 - پروتکل TCP/IP",
+      "date": "2025-07-17",
+      "description": "آشنایی با پروتکل‌های اینترنت",
+      "createdAt": "2025-07-11T10:00:00.000Z"
+    }
+  ],
+  "attendance": [
+    {
+      "id": "a1",
+      "sessionId": 1,
+      "classId": 1,
+      "studentId": 7,
+      "status": "present"
+    },
+    {
+      "id": "a2",
+      "sessionId": 1,
+      "classId": 1,
+      "studentId": 8,
+      "status": "late"
+    },
+    {
+      "id": "a3",
+      "sessionId": 1,
+      "classId": 1,
+      "studentId": 11,
+      "status": "absent"
+    },
+    {
+      "id": "a4",
+      "sessionId": 2,
+      "classId": 1,
+      "studentId": 7,
+      "status": "present"
+    },
+    {
+      "id": "a5",
+      "sessionId": 2,
+      "classId": 1,
+      "studentId": 8,
+      "status": "absent"
+    },
+    {
+      "id": "a6",
+      "sessionId": 2,
+      "classId": 1,
+      "studentId": 11,
+      "status": "late"
+    },
+    {
+      "id": "a7",
+      "sessionId": 3,
+      "classId": 1,
+      "studentId": 7,
+      "status": "present"
+    },
+    {
+      "id": "a8",
+      "sessionId": 3,
+      "classId": 1,
+      "studentId": 8,
+      "status": "absent"
+    },
+    {
+      "id": "a9",
+      "sessionId": 3,
+      "classId": 1,
+      "studentId": 11,
+      "status": "present"
+    },
+    {
+      "id": "a10",
+      "sessionId": 4,
+      "classId": 2,
+      "studentId": 9,
+      "status": "present"
+    },
+    {
+      "id": "a11",
+      "sessionId": 4,
+      "classId": 2,
+      "studentId": 10,
+      "status": "present"
+    },
+    {
+      "id": "a12",
+      "sessionId": 5,
+      "classId": 2,
+      "studentId": 9,
+      "status": "late"
+    },
+    {
+      "id": "a13",
+      "sessionId": 5,
+      "classId": 2,
+      "studentId": 10,
+      "status": "present"
+    },
+    {
+      "id": "a14",
+      "sessionId": 6,
+      "classId": 2,
+      "studentId": 9,
+      "status": "present"
+    },
+    {
+      "id": "a15",
+      "sessionId": 6,
+      "classId": 2,
+      "studentId": 10,
+      "status": "absent"
+    },
+    {
+      "id": "a16",
+      "sessionId": 7,
+      "classId": 3,
+      "studentId": 7,
+      "status": "present"
+    },
+    {
+      "id": "a17",
+      "sessionId": 7,
+      "classId": 3,
+      "studentId": 10,
+      "status": "present"
+    },
+    {
+      "id": "a18",
+      "sessionId": 7,
+      "classId": 3,
+      "studentId": 12,
+      "status": "present"
+    },
+    {
+      "id": "a19",
+      "sessionId": 8,
+      "classId": 3,
+      "studentId": 7,
+      "status": "present"
+    },
+    {
+      "id": "a20",
+      "sessionId": 8,
+      "classId": 3,
+      "studentId": 10,
+      "status": "late"
+    },
+    {
+      "id": "a21",
+      "sessionId": 8,
+      "classId": 3,
+      "studentId": 12,
+      "status": "absent"
+    },
+    {
+      "id": "a22",
+      "sessionId": 9,
+      "classId": 3,
+      "studentId": 7,
+      "status": "absent"
+    },
+    {
+      "id": "a23",
+      "sessionId": 9,
+      "classId": 3,
+      "studentId": 10,
+      "status": "present"
+    },
+    {
+      "id": "a24",
+      "sessionId": 9,
+      "classId": 3,
+      "studentId": 12,
+      "status": "present"
+    },
+    {
+      "id": "a25",
+      "sessionId": 10,
+      "classId": 4,
+      "studentId": 9,
+      "status": "present"
+    },
+    {
+      "id": "a26",
+      "sessionId": 10,
+      "classId": 4,
+      "studentId": 10,
+      "status": "present"
+    },
+    {
+      "id": "a27",
+      "sessionId": 10,
+      "classId": 4,
+      "studentId": 12,
+      "status": "absent"
+    },
+    {
+      "id": "a28",
+      "sessionId": 11,
+      "classId": 4,
+      "studentId": 9,
+      "status": "absent"
+    },
+    {
+      "id": "a29",
+      "sessionId": 11,
+      "classId": 4,
+      "studentId": 10,
+      "status": "present"
+    },
+    {
+      "id": "a30",
+      "sessionId": 11,
+      "classId": 4,
+      "studentId": 12,
+      "status": "present"
+    },
+    {
+      "id": "a31",
+      "sessionId": 12,
+      "classId": 5,
+      "studentId": 8,
+      "status": "present"
+    },
+    {
+      "id": "a32",
+      "sessionId": 12,
+      "classId": 5,
+      "studentId": 11,
+      "status": "present"
+    },
+    {
+      "id": "a33",
+      "sessionId": 13,
+      "classId": 5,
+      "studentId": 8,
+      "status": "late"
+    },
+    {
+      "id": "a34",
+      "sessionId": 13,
+      "classId": 5,
+      "studentId": 11,
+      "status": "absent"
+    }
+  ],
+  "announcements": [
+    {
+      "id": "1",
+      "title": "اطلاعیه عمومی برای همه",
+      "content": "این یک اطلاعیه عمومی است که برای همه کاربران قابل مشاهده است.",
+      "classId": 0,
+      "authorId": "1",
+      "createdAt": "2025-07-01T10:00:00.000Z",
+      "seenBy": [
+        "3",
+        "4"
+      ],
+      "targetRoles": [
+        "student",
+        "teacher"
+      ]
+    },
+    {
+      "id": "2",
+      "title": "اطلاعیه مخصوص دانشجویان کلاس React",
+      "content": "این اطلاعیه فقط برای دانشجویان کلاس پیشرفته React است.",
+      "classId": 1,
+      "authorId": 3,
+      "createdAt": "2025-07-05T10:00:00.000Z",
+      "seenBy": [],
+      "targetAudience": "students"
+    },
+    {
+      "title": "1",
+      "content": "55",
+      "classId": 4,
+      "authorId": "3",
+      "targetAudience": "students",
+      "seenBy": [],
+      "createdAt": "2026-06-26T18:37:21.005Z",
+      "id": "5MpWlTIzgg0"
+    }
+  ],
+  "assignments": [],
+  "submissions": [],
+  "$schema": "./node_modules/json-server/schema.json"
+}

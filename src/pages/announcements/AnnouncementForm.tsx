@@ -1,0 +1,190 @@
+import { useState } from "react";
+import Button from "#/components/ui/Button.tsx";
+import Input from "#/components/ui/Input.tsx";
+import Modal from "#/components/ui/Modal.tsx";
+import Select from "#/components/ui/Select.tsx";
+import Textarea from "#/components/ui/Textarea.tsx";
+import { announcementService } from "#/services/modules/announcementService.ts";
+import type { Announcement, TargetAudience } from "#/types/announcement.ts";
+import type { ClassItem } from "#/types/class.ts";
+import type { UserRole } from "#/types/common.ts";
+
+interface Props {
+  isOpen: boolean;
+  initialData?: Announcement | null;
+  classes: ClassItem[]; // کلاس‌های فیلتر شده از قبل
+  authorId: number;
+  userRole: UserRole;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+export default function AnnouncementForm({
+  isOpen,
+  initialData,
+  classes,
+  authorId,
+  userRole,
+  onClose,
+  onSuccess,
+}: Props) {
+  const [title, setTitle] = useState(initialData?.title ?? "");
+  const [content, setContent] = useState(initialData?.content ?? "");
+  const [classId, setClassId] = useState<number>(initialData?.classId ?? 0);
+  const [targetRoles, setTargetRoles] = useState<UserRole[]>(
+    initialData?.targetRoles ?? ["admin", "teacher", "student"],
+  );
+  const [targetAudience, setTargetAudience] = useState<TargetAudience>(
+    initialData?.targetAudience ?? "students",
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const isAdmin = userRole === "admin";
+
+  const handleSubmit = async () => {
+    if (!title.trim() || !content.trim()) {
+      setError("عنوان و محتوا الزامی است.");
+      return;
+    }
+    try {
+      setIsSubmitting(true);
+      const basePayload = {
+        title,
+        content,
+        classId,
+        authorId,
+      };
+
+      // ✅ اصلاح تایپ‌اسکریپت با تعیین نوع Partial<Announcement> و cast کردن مقدار
+      const payload: Partial<Announcement> = isAdmin
+        ? classId === 0
+          ? { ...basePayload, targetRoles, targetAudience: undefined }
+          : { ...basePayload, targetAudience, targetRoles: undefined }
+        : {
+            ...basePayload,
+            targetAudience: "students" as TargetAudience,
+            targetRoles: undefined,
+          };
+
+      if (initialData) {
+        await announcementService.update(initialData.id, payload);
+        await announcementService.resetSeenBy(initialData.id);
+      } else {
+        await announcementService.create(
+          payload as Omit<Announcement, "id" | "createdAt" | "seenBy">,
+        );
+      }
+      onSuccess();
+    } catch {
+      setError("خطا در ذخیره اطلاعیه.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const toggleRole = (role: UserRole) => {
+    setTargetRoles((prev) =>
+      prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role],
+    );
+  };
+
+  // گزینه‌های کلاس: مدیر همه را می‌بیند، استاد فقط کلاس‌های خودش را (بدون عمومی)
+  const classOptions = isAdmin
+    ? [
+        { label: "همه (عمومی)", value: 0 },
+        ...classes.map((c) => ({ label: c.title, value: c.id })),
+      ]
+    : classes.map((c) => ({ label: c.title, value: c.id }));
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      title={initialData ? "ویرایش اطلاعیه" : "ایجاد اطلاعیه جدید"}
+      onClose={onClose}
+    >
+      <div className="space-y-4">
+        <Input
+          label="عنوان"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="عنوان اطلاعیه"
+        />
+        <Select
+          label="مخاطب (کلاس)"
+          value={classId}
+          onChange={(e) => setClassId(Number(e.target.value))}
+          options={classOptions}
+        />
+
+        {/* بخش targetRoles فقط برای مدیر و فقط وقتی کلاس عمومی است */}
+        {isAdmin && classId === 0 && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              قابل مشاهده برای (نقش‌ها):
+            </label>
+            <div className="flex flex-wrap gap-3">
+              {(["admin", "teacher", "student"] as UserRole[]).map((role) => (
+                <label
+                  key={role}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={targetRoles.includes(role)}
+                    onChange={() => toggleRole(role)}
+                    className="h-4 w-4"
+                  />
+                  <span className="text-sm text-gray-700 capitalize">
+                    {role === "admin"
+                      ? "مدیر"
+                      : role === "teacher"
+                        ? "استاد"
+                        : "دانشجو"}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* بخش targetAudience فقط برای مدیر و فقط وقتی کلاس خاص است */}
+        {isAdmin && classId !== 0 && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              مخاطبان در کلاس:
+            </label>
+            <Select
+              value={targetAudience}
+              onChange={(e) =>
+                setTargetAudience(e.target.value as TargetAudience)
+              }
+              options={[
+                { label: "دانشجویان کلاس", value: "students" },
+                { label: "استاد کلاس", value: "teacher" },
+                { label: "دانشجویان و استاد کلاس", value: "both" },
+              ]}
+            />
+          </div>
+        )}
+
+        <Textarea
+          label="محتوا"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={5}
+          placeholder="متن اطلاعیه..."
+        />
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        <div className="flex justify-end gap-2 pt-2">
+          <Button variant="secondary" onClick={onClose}>
+            انصراف
+          </Button>
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
