@@ -23,7 +23,7 @@ function Modal({ isOpen, title, children, onClose }: ModalProps) {
             onClick={onClose}
             className="text-sm text-gray-500 hover:text-gray-700"
           >
-            Close
+            بستن
           </button>
         </div>
         <div>{children}</div>

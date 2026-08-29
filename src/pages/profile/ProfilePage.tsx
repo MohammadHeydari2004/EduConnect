@@ -17,18 +17,13 @@ function ProfilePage() {
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [classes, setClasses] = useState<ClassItem[]>([]);
-
-  // ✅ اصلاح: استفاده از string برای جلوگیری از مشکل مقایسه string/number
   const [fetchedUserId, setFetchedUserId] = useState<string | null>(null);
-
-  // ✅ اصلاح: مقایسه string با string
   const loading =
     user?.role === "student" && fetchedUserId !== String(user?.id);
 
   useEffect(() => {
     if (!user || user.role !== "student") return;
     let ignore = false;
-
     Promise.all([
       attendanceService.getByStudent(user.id),
       sessionService.getAll(),
@@ -45,7 +40,6 @@ function ProfilePage() {
       .catch(() => {
         if (!ignore) setFetchedUserId(String(user.id));
       });
-
     return () => {
       ignore = true;
     };
@@ -57,7 +51,6 @@ function ProfilePage() {
     user.role === "student"
       ? attendanceService.calculateStudentStats(attendances)
       : null;
-
   const sessionDetails =
     user.role === "student"
       ? attendances.map((a) => {
@@ -74,30 +67,52 @@ function ProfilePage() {
         })
       : [];
 
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "مدیر";
+      case "teacher":
+        return "استاد";
+      case "student":
+        return "دانشجو";
+      default:
+        return role;
+    }
+  };
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "active":
+        return "فعال";
+      case "inactive":
+        return "غیرفعال";
+      default:
+        return status;
+    }
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6">
-      <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">Profile</h1>
-      <Card title="User Information">
+      <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">پروفایل</h1>
+      <Card title="اطلاعات کاربری">
         <div className="space-y-3 text-sm text-gray-700 sm:text-base">
           <p className="flex flex-col gap-1 sm:flex-row sm:gap-2">
-            <span className="font-semibold">Name:</span>
+            <span className="font-semibold">نام:</span>
             <span>{user.name}</span>
           </p>
           <p className="flex flex-col gap-1 break-all sm:flex-row sm:gap-2">
-            <span className="font-semibold">Email:</span>
+            <span className="font-semibold">ایمیل:</span>
             <span>{user.email}</span>
           </p>
           <p className="flex flex-col gap-1 sm:flex-row sm:gap-2">
-            <span className="font-semibold">Role:</span>
-            <span className="capitalize">{user.role}</span>
+            <span className="font-semibold">نقش:</span>
+            <span>{getRoleLabel(user.role)}</span>
           </p>
           <p className="flex flex-col gap-1 sm:flex-row sm:gap-2">
-            <span className="font-semibold">Status:</span>
-            <span className="capitalize">{user.status}</span>
+            <span className="font-semibold">وضعیت:</span>
+            <span>{getStatusLabel(user.status)}</span>
           </p>
         </div>
       </Card>
-
       {user.role === "student" && (
         <>
           {loading ? (
@@ -107,9 +122,7 @@ function ProfilePage() {
               <Card title="آمار حضور و غیاب">
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                   <div className="rounded-lg bg-gray-50 p-3 text-center">
-                    <div className="text-xs text-gray-500">
-                      کل جلسات ثبت‌شده
-                    </div>
+                    <div className="text-xs text-gray-500">کل جلسات</div>
                     <div className="mt-1 text-xl font-bold text-gray-800">
                       {stats.total}
                     </div>
@@ -143,18 +156,14 @@ function ProfilePage() {
                   <div className="h-3 w-full overflow-hidden rounded-full bg-gray-200">
                     <div
                       className="h-full bg-blue-600 transition-all"
-                      style={{
-                        width: `${Math.min(stats.percentage, 100)}%`,
-                      }}
+                      style={{ width: `${Math.min(stats.percentage, 100)}%` }}
                     />
                   </div>
                   <p className="mt-2 text-xs text-gray-500">
-                    {stats.attended} جلسه از {stats.total} جلسه (present + late
-                    به‌عنوان «حاضر» محاسبه می‌شود).
+                    {stats.attended} جلسه از {stats.total} جلسه
                   </p>
                 </div>
               </Card>
-
               <Card title="جزئیات جلسات">
                 {sessionDetails.length === 0 ? (
                   <EmptyState

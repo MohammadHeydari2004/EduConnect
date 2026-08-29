@@ -4,8 +4,8 @@ interface EmptyStateProps {
 }
 
 function EmptyState({
-  title = "No data found",
-  description = "There is nothing to display here yet.",
+  title = "داده‌ای یافت نشد",
+  description = "هنوز موردی برای نمایش وجود ندارد.",
 }: EmptyStateProps) {
   return (
     <div className="rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center">

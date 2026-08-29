@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-
 import Button from "#/components/ui/Button.tsx";
 import { useAuth } from "#/context/AuthContext.ts";
 
@@ -12,24 +11,36 @@ function Header() {
     navigate("/login");
   };
 
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "مدیر";
+      case "teacher":
+        return "استاد";
+      case "student":
+        return "دانشجو";
+      default:
+        return role;
+    }
+  };
+
   return (
     <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6">
       <div>
         <h1 className="text-xl font-bold text-blue-600">EduConnect</h1>
       </div>
-
       <div className="flex items-center gap-3">
         {isAuthenticated && user ? (
           <>
             <div className="text-sm text-gray-600">
-              {user.name} ({user.role})
+              {user.name} ({getRoleLabel(user.role)})
             </div>
             <Button variant="secondary" onClick={handleLogout}>
-              Logout
+              خروج
             </Button>
           </>
         ) : (
-          <div className="text-sm text-gray-500">Guest</div>
+          <div className="text-sm text-gray-500">مهمان</div>
         )}
       </div>
     </header>

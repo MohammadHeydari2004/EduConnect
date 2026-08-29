@@ -9,11 +9,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
   const emailRef = useRef<HTMLInputElement>(null);
-
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -25,9 +21,7 @@ function LoginPage() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
+  if (isAuthenticated) return <Navigate to="/" replace />;
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -37,11 +31,8 @@ function LoginPage() {
       await login(formData);
       navigate("/");
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Login failed");
-      }
+      if (err instanceof Error) setError(err.message);
+      else setError("ورود ناموفق بود");
     } finally {
       setIsSubmitting(false);
     }
@@ -50,26 +41,26 @@ function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md">
-        <Card title="Login to EduConnect">
+        <Card title="ورود به EduConnect">
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
-              label="Email"
+              label="ایمیل"
               type="email"
-              placeholder="Enter your email"
+              placeholder="ایمیل خود را وارد کنید"
               value={formData.email}
               onChange={(e) => handleChange("email", e.target.value)}
               ref={emailRef}
             />
             <Input
-              label="Password"
+              label="رمز عبور"
               type="password"
-              placeholder="Enter your password"
+              placeholder="رمز عبور خود را وارد کنید"
               value={formData.password}
               onChange={(e) => handleChange("password", e.target.value)}
             />
             {error && <p className="text-sm text-red-600">{error}</p>}
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Logging in..." : "Login"}
+              {isSubmitting ? "در حال ورود..." : "ورود"}
             </Button>
           </form>
         </Card>

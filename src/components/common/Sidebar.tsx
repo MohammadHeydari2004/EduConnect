@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-
 import { useAuth } from "#/context/AuthContext.ts";
 import type { UserRole } from "#/types/common.ts";
 
@@ -11,22 +10,22 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", path: "/", roles: ["admin", "teacher", "student"] },
-  { label: "Users", path: "/users", roles: ["admin"] },
-  { label: "Classes", path: "/classes", roles: ["admin", "teacher"] },
-  { label: "Attendance", path: "/attendance", roles: ["admin", "teacher"] },
+  { label: "داشبورد", path: "/", roles: ["admin", "teacher", "student"] },
+  { label: "کاربران", path: "/users", roles: ["admin"] },
+  { label: "کلاس‌ها", path: "/classes", roles: ["admin", "teacher"] },
+  { label: "حضور و غیاب", path: "/attendance", roles: ["admin", "teacher"] },
   {
-    label: "Announcements",
+    label: "اطلاعیه‌ها",
     path: "/announcements",
     roles: ["admin", "teacher", "student"],
   },
   {
-    label: "Assignments",
+    label: "تکالیف",
     path: "/assignments",
     roles: ["admin", "teacher", "student"],
   },
   {
-    label: "Profile",
+    label: "پروفایل",
     path: "/profile",
     roles: ["admin", "teacher", "student"],
   },
@@ -45,7 +44,7 @@ function Sidebar() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-4 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg md:hidden"
-        aria-label="Toggle menu"
+        aria-label="منو"
       >
         <svg
           className="h-6 w-6"
@@ -70,17 +69,15 @@ function Sidebar() {
           )}
         </svg>
       </button>
-
       {isOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/50 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
-
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-gray-200 bg-white p-4 transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed inset-y-0 right-0 z-40 w-64 transform border-l border-gray-200 bg-white p-4 transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${
+          isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <nav className="flex flex-col gap-2 pt-4 md:pt-0">

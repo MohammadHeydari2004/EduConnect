@@ -11,21 +11,20 @@ interface ConfirmDialogProps {
 
 function ConfirmDialog({
   isOpen,
-  title = "Confirm Action",
-  message = "Are you sure you want to continue?",
+  title = "تأیید عملیات",
+  message = "آیا از انجام این عملیات مطمئن هستید؟",
   onConfirm,
   onClose,
 }: ConfirmDialogProps) {
   return (
     <Modal isOpen={isOpen} title={title} onClose={onClose}>
       <p className="mb-6 text-sm text-gray-600">{message}</p>
-
       <div className="flex justify-end gap-2">
         <Button variant="secondary" onClick={onClose}>
-          Cancel
+          انصراف
         </Button>
         <Button variant="danger" onClick={onConfirm}>
-          Confirm
+          تأیید
         </Button>
       </div>
     </Modal>

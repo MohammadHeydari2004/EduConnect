@@ -6,6 +6,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+repomix-output.xml*
+repomix-output.xml
 
 node_modules
 dist

@@ -7,6 +7,7 @@ export interface Submission {
   content: string;
   submittedAt: string;
   status: SubmissionStatus;
-  grade?: number;
-  feedback?: string;
+  grade?: number | null;
+  feedback?: string | null;
+  updatedAt?: string;
 }

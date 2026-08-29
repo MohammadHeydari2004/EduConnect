@@ -14,6 +14,7 @@ import UnauthorizedPage from "#/pages/UnauthorizedPage.tsx";
 import NotFoundPage from "#/pages/NotFoundPage.tsx";
 import ProtectedRoute from "#/routes/ProtectedRoute.tsx";
 import RoleGuard from "#/routes/RoleGuard.tsx";
+import SubmissionsPage from "#/pages/assignments/SubmissionsPage.tsx";
 
 function App() {
   return (
@@ -85,6 +86,15 @@ function App() {
           element={
             <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
               <AssignmentsPage />
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="assignments/:id/submissions"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher"]}>
+              <SubmissionsPage />
             </RoleGuard>
           }
         />
