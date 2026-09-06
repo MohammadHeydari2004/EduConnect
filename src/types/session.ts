@@ -1,6 +1,8 @@
+import type { ID } from "./common";
+
 export interface Session {
-  id: number;
-  classId: number;
+  id: ID;
+  classId: ID;
   title: string;
   description?: string;
   date: string;
@@ -10,7 +12,7 @@ export interface Session {
 
 export interface SessionFormValues {
   title: string;
-  classId: number;
+  classId: ID;
   date: string;
   description?: string;
 }

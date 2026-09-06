@@ -32,13 +32,14 @@ export default function AssignmentForm({
     initialData?.description ?? "",
   );
   const [classId, setClassId] = useState<number>(
-    initialData?.classId ?? availableClasses[0]?.id ?? 0,
+    Number(initialData?.classId ?? availableClasses[0]?.id ?? 0),
   );
   const [deadline, setDeadline] = useState(
     initialData?.deadline
       ? new Date(initialData.deadline).toISOString().split("T")[0]
       : "",
   );
+
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -53,6 +54,7 @@ export default function AssignmentForm({
       const finalTeacherId = isAdmin
         ? (selectedClass?.teacherId ?? teacherId)
         : teacherId;
+
       const payload = {
         title: title.trim(),
         description: description.trim(),
@@ -60,6 +62,7 @@ export default function AssignmentForm({
         teacherId: finalTeacherId,
         deadline: new Date(deadline).toISOString(),
       };
+
       if (initialData) {
         await assignmentService.update(initialData.id, payload);
       } else {

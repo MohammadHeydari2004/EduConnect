@@ -15,7 +15,7 @@ interface TableProps<T> {
 function Table<T>({ columns, data, getRowKey }: TableProps<T>) {
   return (
     <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-      <table className="min-w-full text-left text-sm">
+      <table className="min-w-full text-center text-sm">
         <thead className="bg-gray-50">
           <tr>
             {columns.map((column) => (
@@ -37,7 +37,7 @@ function Table<T>({ columns, data, getRowKey }: TableProps<T>) {
               {columns.map((column) => (
                 <td
                   key={String(column.key)}
-                  className="px-3 py-3 text-gray-600 sm:px-4"
+                  className="px-3 py-3 text-gray-600 sm:px-4 m-auto"
                 >
                   {column.render
                     ? column.render(item)

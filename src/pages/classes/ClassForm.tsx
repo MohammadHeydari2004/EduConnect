@@ -23,8 +23,12 @@ export default function ClassForm({
   onSuccess,
   onError,
 }: Props) {
-  const teachers = users.filter((u) => u.role === "teacher");
-  const students = users.filter((u) => u.role === "student");
+  const teachers = users.filter(
+    (u) => u.role === "teacher" && u.status === "active",
+  );
+  const students = users.filter(
+    (u) => u.role === "student" && u.status === "active",
+  );
 
   const [form, setForm] = useState<ClassFormValues>(() => ({
     title: initialData?.title || "",
@@ -81,7 +85,7 @@ export default function ClassForm({
         ...prev,
         studentIds: exists
           ? prev.studentIds.filter((s) => String(s) !== stringId)
-          : [...prev.studentIds, id as number],
+          : [...prev.studentIds, id],
       };
     });
     if (errors.students) setErrors((prev) => ({ ...prev, students: "" }));

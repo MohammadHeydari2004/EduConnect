@@ -38,31 +38,21 @@ function UsersPage() {
   const [actionError, setActionError] = useState("");
   const [actionSuccess, setActionSuccess] = useState("");
 
-  const fetchUsers = async () => {
-    try {
-      setError("");
-      const data = await userService.getAll();
-      setUsers(data);
-    } catch {
-      setError("دریافت لیست کاربران با خطا مواجه شد.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // ✅ اصلاح شد: انتقال منطق به داخل useEffect برای جلوگیری از خطای Exhaustive Deps
   useEffect(() => {
     let ignore = false;
-    userService
-      .getAll()
-      .then((data) => {
+    const loadUsers = async () => {
+      try {
+        setError("");
+        const data = await userService.getAll();
         if (!ignore) setUsers(data);
-      })
-      .catch(() => {
+      } catch {
         if (!ignore) setError("دریافت لیست کاربران با خطا مواجه شد.");
-      })
-      .finally(() => {
+      } finally {
         if (!ignore) setLoading(false);
-      });
+      }
+    };
+    loadUsers();
     return () => {
       ignore = true;
     };
@@ -94,7 +84,10 @@ function UsersPage() {
     await userService.create(values);
     setActionSuccess("کاربر با موفقیت ایجاد شد.");
     setIsCreateOpen(false);
-    await fetchUsers();
+    setLoading(true);
+    const data = await userService.getAll();
+    setUsers(data);
+    setLoading(false);
   };
 
   const handleOpenEdit = (user: User) => {
@@ -113,7 +106,10 @@ function UsersPage() {
     setActionSuccess("اطلاعات کاربر با موفقیت ویرایش شد.");
     setIsEditOpen(false);
     setSelectedUser(null);
-    await fetchUsers();
+    setLoading(true);
+    const data = await userService.getAll();
+    setUsers(data);
+    setLoading(false);
   };
 
   const handleOpenDelete = (user: User) => {
@@ -126,14 +122,16 @@ function UsersPage() {
     if (!selectedUser || !currentUser) return;
     try {
       resetMessages();
-      if (selectedUser.id === currentUser.id) {
+      if (selectedUser.id === currentUser.id)
         throw new Error("شما نمی‌توانید حساب کاربری خودتان را حذف کنید.");
-      }
       await userService.delete(selectedUser.id);
       setActionSuccess("کاربر با موفقیت حذف شد.");
       setIsDeleteConfirmOpen(false);
       setSelectedUser(null);
-      await fetchUsers();
+      setLoading(true);
+      const data = await userService.getAll();
+      setUsers(data);
+      setLoading(false);
     } catch (err) {
       setActionError(
         err instanceof Error ? err.message : "حذف کاربر ناموفق بود.",
@@ -146,12 +144,14 @@ function UsersPage() {
     if (!currentUser) return;
     try {
       resetMessages();
-      if (user.id === currentUser.id) {
+      if (user.id === currentUser.id)
         throw new Error("شما نمی‌توانید وضعیت حساب خودتان را تغییر دهید.");
-      }
       await userService.toggleStatus(user.id);
       setActionSuccess("وضعیت کاربر با موفقیت تغییر کرد.");
-      await fetchUsers();
+      setLoading(true);
+      const data = await userService.getAll();
+      setUsers(data);
+      setLoading(false);
     } catch (err) {
       setActionError(
         err instanceof Error ? err.message : "تغییر وضعیت کاربر ناموفق بود.",
@@ -256,6 +256,7 @@ function UsersPage() {
           setSelectedUser(null);
         }}
       />
+
       <ConfirmDialog
         isOpen={isDeleteConfirmOpen}
         title="حذف کاربر"

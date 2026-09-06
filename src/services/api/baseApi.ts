@@ -1,4 +1,4 @@
-import axiosInstance from "#/services/api/axiosInstance.ts";
+import axiosInstance from "./axiosInstance";
 
 export const baseApi = {
   getAll: async <T>(endpoint: string): Promise<T[]> => {

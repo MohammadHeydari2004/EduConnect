@@ -1,3 +1,4 @@
+// src/pages/classes/ClassesPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EmptyState from "#/components/common/EmptyState.tsx";
@@ -31,7 +32,6 @@ export default function ClassesPage() {
 
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<ClassItem | null>(null);
-
   const [statusChangeTarget, setStatusChangeTarget] =
     useState<ClassItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ClassItem | null>(null);
@@ -41,30 +41,34 @@ export default function ClassesPage() {
 
   const isAdmin = currentUser?.role === "admin";
 
-  // ✅ تابع کمکی: آیا کاربر فعلی می‌تواند این کلاس را مدیریت کند؟
   const canManageClass = (c: ClassItem) => {
     if (isAdmin) return true;
-    if (currentUser?.role === "teacher") {
+    if (currentUser?.role === "teacher")
       return String(c.teacherId) === String(currentUser.id);
-    }
     return false;
+  };
+
+  const fetchData = async () => {
+    try {
+      const [classesData, usersData] = await Promise.all([
+        classService.getAll(),
+        userService.getAll(),
+      ]);
+      setClasses(classesData);
+      setUsers(usersData);
+    } catch {
+      setError("دریافت اطلاعات با خطا مواجه شد.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     let ignore = false;
-    Promise.all([classService.getAll(), userService.getAll()])
-      .then(([classesData, usersData]) => {
-        if (!ignore) {
-          setClasses(classesData);
-          setUsers(usersData);
-        }
-      })
-      .catch(() => {
-        if (!ignore) setError("دریافت اطلاعات با خطا مواجه شد.");
-      })
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
+    const loadData = async () => {
+      if (!ignore) await fetchData();
+    };
+    loadData();
     return () => {
       ignore = true;
     };
@@ -96,24 +100,10 @@ export default function ClassesPage() {
     setActionSuccess("");
   };
 
-  const fetchData = async () => {
-    try {
-      const [classesData, usersData] = await Promise.all([
-        classService.getAll(),
-        userService.getAll(),
-      ]);
-      setClasses(classesData);
-      setUsers(usersData);
-    } catch {
-      setError("دریافت اطلاعات با خطا مواجه شد.");
-    }
-  };
-
   const handleStatusChangeClick = (classItem: ClassItem) => {
     resetMessages();
     setStatusChangeTarget(classItem);
   };
-
   const confirmStatusChange = async () => {
     if (!statusChangeTarget) return;
     try {
@@ -136,7 +126,6 @@ export default function ClassesPage() {
     resetMessages();
     setDeleteTarget(classItem);
   };
-
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     try {
@@ -155,7 +144,6 @@ export default function ClassesPage() {
     setEditing(classItem);
     setShowForm(true);
   };
-
   const handleCreate = () => {
     resetMessages();
     setEditing(null);
@@ -164,8 +152,7 @@ export default function ClassesPage() {
 
   const getTeacherName = (teacherId: number | string | null | undefined) => {
     if (teacherId === null || teacherId === undefined) return "—";
-    const teacher = users.find((u) => String(u.id) === String(teacherId));
-    return teacher?.name ?? "—";
+    return users.find((u) => String(u.id) === String(teacherId))?.name ?? "—";
   };
 
   return (
@@ -192,7 +179,7 @@ export default function ClassesPage() {
         </div>
       )}
 
-      <div className="grid gap-3 rounded-xl border border-gray-200 bg-white p-3 sm:gap-4 sm:p-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 rounded-xl border border-gray-200 bg-white p-3 sm:gap-4 sm:p-4 md:grid-cols-2 xl:grid-cols-4">
         <SearchInput
           label="جستجو"
           value={search}
@@ -367,7 +354,6 @@ export default function ClassesPage() {
         onClose={() => setStatusChangeTarget(null)}
         onConfirm={confirmStatusChange}
       />
-
       <ConfirmDialog
         isOpen={!!deleteTarget}
         title="حذف کلاس"

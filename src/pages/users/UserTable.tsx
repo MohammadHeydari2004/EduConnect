@@ -2,10 +2,11 @@ import Button from "#/components/ui/Button.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
 import type { User } from "#/types/user.ts";
+import type { ID } from "#/types/common.ts";
 
 interface UserTableProps {
   users: User[];
-  currentUserId?: number;
+  currentUserId?: ID;
   onView: (user: User) => void;
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
@@ -30,7 +31,7 @@ function UserTable({
           render: (user) => (
             <div className="font-medium text-gray-800">
               {user.name}
-              {user.id === currentUserId && (
+              {String(user.id) === String(currentUserId) && (
                 <span className="mr-2 text-xs text-blue-600">(شما)</span>
               )}
             </div>

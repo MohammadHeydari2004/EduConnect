@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+// src/pages/auth/LoginPage.tsx
+import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
@@ -8,14 +9,10 @@ import { useAuth } from "#/context/AuthContext.ts";
 function LoginPage() {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
-  const emailRef = useRef<HTMLInputElement>(null);
+
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    emailRef.current?.focus();
-  }, []);
 
   const handleChange = (field: "email" | "password", value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -49,7 +46,7 @@ function LoginPage() {
               placeholder="ایمیل خود را وارد کنید"
               value={formData.email}
               onChange={(e) => handleChange("email", e.target.value)}
-              ref={emailRef}
+              autoFocus
             />
             <Input
               label="رمز عبور"

@@ -1,7 +1,7 @@
 {
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "name": "مدیر کل",
       "email": "admin1@edu.com",
       "password": "123456",
@@ -9,7 +9,7 @@
       "status": "active"
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "مدیر دوم",
       "email": "admin2@edu.com",
       "password": "123456",
@@ -17,7 +17,7 @@
       "status": "inactive"
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "محمد حسینی",
       "email": "teacher1@edu.com",
       "password": "123456",
@@ -25,7 +25,7 @@
       "status": "active"
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "سارا محمدی",
       "email": "teacher2@edu.com",
       "password": "123456",
@@ -33,7 +33,7 @@
       "status": "active"
     },
     {
-      "id": 5,
+      "id": "5",
       "name": "علی رضایی",
       "email": "teacher3@edu.com",
       "password": "123456",
@@ -41,7 +41,7 @@
       "status": "inactive"
     },
     {
-      "id": 6,
+      "id": "6",
       "name": "زهرا احمدی",
       "email": "student1@edu.com",
       "password": "123456",
@@ -49,7 +49,7 @@
       "status": "active"
     },
     {
-      "id": 7,
+      "id": "7",
       "name": "امیر حسنی",
       "email": "student2@edu.com",
       "password": "123456",
@@ -57,7 +57,7 @@
       "status": "active"
     },
     {
-      "id": 8,
+      "id": "8",
       "name": "فاطمه نوری",
       "email": "student3@edu.com",
       "password": "123456",
@@ -65,7 +65,7 @@
       "status": "active"
     },
     {
-      "id": 9,
+      "id": "9",
       "name": "حسین موسوی",
       "email": "student4@edu.com",
       "password": "123456",
@@ -75,21 +75,28 @@
   ],
   "classes": [
     {
-      "id": 1,
+      "id": "1",
       "title": "پیشرفته React",
       "teacherId": 3,
-      "studentIds": [6, 7, 8],
+      "studentIds": [
+        6,
+        7,
+        8
+      ],
       "capacity": 20,
       "status": "active",
       "description": "بررسی عمیق الگوها و بهترین شیوه‌های React",
       "createdAt": "2025-07-01T10:00:00.000Z",
-      "updatedAt": "2025-07-01T10:00:00.000Z"
+      "updatedAt": "2026-07-04T17:43:36.091Z"
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "Backend با Node.js",
       "teacherId": 4,
-      "studentIds": [6, 7],
+      "studentIds": [
+        6,
+        7
+      ],
       "capacity": 25,
       "status": "active",
       "description": "توسعه سمت سرور با Node.js و Express",
@@ -97,20 +104,22 @@
       "updatedAt": "2025-07-05T10:00:00.000Z"
     },
     {
-      "id": 3,
-      "title": "برنامه‌نویسی Python",
+      "title": "تست ‍۱ ",
       "teacherId": 5,
-      "studentIds": [8, 9],
-      "capacity": 30,
-      "status": "inactive",
-      "description": "مبانی و مفاهیم پیشرفته Python",
-      "createdAt": "2025-07-10T10:00:00.000Z",
-      "updatedAt": "2025-07-10T10:00:00.000Z"
+      "studentIds": [
+        "6",
+        "7"
+      ],
+      "capacity": 10,
+      "status": "active",
+      "description": "هاها",
+      "createdAt": "2026-07-04T17:42:36.037Z",
+      "id": "COkhXPy79kk"
     }
   ],
   "sessions": [
     {
-      "id": 1,
+      "id": "1",
       "classId": 1,
       "title": "جلسه 1 - مقدمه‌ای بر React",
       "date": "2025-08-01",
@@ -118,7 +127,7 @@
       "createdAt": "2025-07-25T10:00:00.000Z"
     },
     {
-      "id": 2,
+      "id": "2",
       "classId": 1,
       "title": "جلسه 2 - Components و Props",
       "date": "2025-08-08",
@@ -126,7 +135,7 @@
       "createdAt": "2025-08-02T10:00:00.000Z"
     },
     {
-      "id": 3,
+      "id": "3",
       "classId": 2,
       "title": "جلسه 1 - مقدمه Node.js",
       "date": "2025-08-03",
@@ -134,7 +143,7 @@
       "createdAt": "2025-07-28T10:00:00.000Z"
     },
     {
-      "id": 4,
+      "id": "4",
       "classId": 2,
       "title": "جلسه 2 - Express Framework",
       "date": "2025-08-10",
@@ -142,7 +151,7 @@
       "createdAt": "2025-08-04T10:00:00.000Z"
     },
     {
-      "id": 5,
+      "id": "5",
       "classId": 3,
       "title": "جلسه 1 - مبانی Python",
       "date": "2025-08-05",
@@ -150,12 +159,20 @@
       "createdAt": "2025-07-30T10:00:00.000Z"
     },
     {
-      "id": 6,
+      "id": "6",
       "classId": 3,
       "title": "جلسه 2 - توابع و ماژول‌ها",
       "date": "2025-08-12",
       "description": "تعریف توابع و استفاده از ماژول‌ها",
       "createdAt": "2025-08-06T10:00:00.000Z"
+    },
+    {
+      "title": "تست ۱",
+      "date": "2026-07-06",
+      "description": "تست ۱",
+      "classId": 1,
+      "createdAt": "2026-07-04T17:48:10.115Z",
+      "id": "MOyInPrPCVw"
     }
   ],
   "attendance": [
@@ -164,14 +181,14 @@
       "sessionId": 1,
       "classId": 1,
       "studentId": 6,
-      "status": "present"
+      "status": "late"
     },
     {
       "id": "a2",
       "sessionId": 1,
       "classId": 1,
       "studentId": 7,
-      "status": "late"
+      "status": "absent"
     },
     {
       "id": "a3",
@@ -260,39 +277,80 @@
   ],
   "announcements": [
     {
-      "id": 1,
+      "id": "1",
       "title": "اطلاعیه عمومی برای همه",
       "content": "این یک اطلاعیه عمومی است که برای همه کاربران قابل مشاهده است.",
       "classId": 0,
       "authorId": 1,
       "createdAt": "2025-07-01T10:00:00.000Z",
-      "seenBy": [3, 4],
-      "targetRoles": ["student", "teacher"]
+      "seenBy": [
+        3,
+        4
+      ],
+      "targetRoles": [
+        "student",
+        "teacher"
+      ]
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "اطلاعیه مخصوص دانشجویان کلاس React",
       "content": "این اطلاعیه فقط برای دانشجویان کلاس پیشرفته React است.",
       "classId": 1,
       "authorId": 3,
       "createdAt": "2025-07-05T10:00:00.000Z",
-      "seenBy": [],
+      "seenBy": [
+        "3",
+        "6"
+      ],
       "targetAudience": "students"
     },
     {
-      "id": 3,
+      "id": "3",
       "title": "اطلاعیه مخصوص استاد کلاس Node",
       "content": "این اطلاعیه فقط برای استاد کلاس Backend است.",
       "classId": 2,
       "authorId": 4,
       "createdAt": "2025-07-10T10:00:00.000Z",
-      "seenBy": [],
+      "seenBy": [
+        "1"
+      ],
       "targetAudience": "teacher"
+    },
+    {
+      "title": "تست ۱",
+      "content": "تست ۱",
+      "classId": 0,
+      "authorId": "1",
+      "targetRoles": [
+        "admin",
+        "teacher",
+        "student"
+      ],
+      "seenBy": [
+        "6",
+        "1"
+      ],
+      "createdAt": "2026-07-04T17:44:26.700Z",
+      "id": "kA2r7dyFim4"
+    },
+    {
+      "title": "تست دیده شدن",
+      "content": "تست دیده شدن توسط دانشجویان",
+      "classId": "1",
+      "authorId": "1",
+      "targetAudience": "students",
+      "seenBy": [
+        "6",
+        "1"
+      ],
+      "createdAt": "2026-07-04T18:14:22.877Z",
+      "id": "bWageD_NRTU"
     }
   ],
   "assignments": [
     {
-      "id": 1,
+      "id": "1",
       "title": "تکلیف 1: React Hooks",
       "description": "یک کامپوننت با useState و useEffect پیاده‌سازی کنید.",
       "classId": 1,
@@ -300,7 +358,7 @@
       "deadline": "2025-08-25T23:59:59.000Z"
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "تکلیف 2: Express API",
       "description": "یک REST API ساده برای مدیریت کاربران بنویسید.",
       "classId": 2,
@@ -315,9 +373,10 @@
       "studentId": 7,
       "content": "https://github.com/mh419421/react-hooks-hw",
       "submittedAt": "2025-08-20T14:30:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null
+      "status": "graded",
+      "grade": 18,
+      "feedback": "عالی بود",
+      "updatedAt": "2026-07-04T17:50:44.835Z"
     },
     {
       "id": "s2",
@@ -329,6 +388,24 @@
       "grade": 14,
       "feedback": "تاخیر داشتی ولی کد خوب بود.",
       "updatedAt": "2025-08-27T09:00:00.000Z"
+    },
+    {
+      "assignmentId": 2,
+      "studentId": 6,
+      "content": "test 1",
+      "status": "submitted",
+      "submittedAt": "2026-07-04T18:06:35.454Z",
+      "id": "q2lzEnE1spE",
+      "updatedAt": "2026-07-04T18:06:49.558Z"
+    },
+    {
+      "assignmentId": 1,
+      "studentId": 6,
+      "content": "تست ۲3",
+      "status": "submitted",
+      "submittedAt": "2026-07-04T18:07:08.526Z",
+      "id": "qkrACzmpOoo",
+      "updatedAt": "2026-07-04T18:07:14.046Z"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

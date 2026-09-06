@@ -177,6 +177,15 @@ export default function ClassDetailsPage() {
           </h1>
           <StatusChip status={classItem.status || "inactive"} />
         </div>
+
+        {/* ✅ اضافه شد: دکمه مشاهده تکالیف کلاس برای بهبود جریان داده */}
+        <Button
+          variant="secondary"
+          onClick={() => navigate(`/classes/${classId}/assignments`)}
+          className="w-full sm:w-auto"
+        >
+          مشاهده تکالیف کلاس
+        </Button>
       </div>
 
       {actionSuccess && (
@@ -240,51 +249,6 @@ export default function ClassDetailsPage() {
         </Card>
       </div>
 
-      {/* <Card title={`جلسات (${sessions.length})`}>
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-gray-600">
-            لیست جلسات برگزار شده و برنامه‌ریزی شده
-          </p>
-          {canManage && classItem.status !== "inactive" && (
-            <Button
-              onClick={() => setShowSessionForm(true)}
-              className="w-full sm:w-auto"
-            >
-              افزودن جلسه
-            </Button>
-          )}
-        </div>
-        {sessions.length === 0 ? (
-          <EmptyState
-            title="جلسه‌ای ثبت نشده"
-            description="هنوز جلسه‌ای برای این کلاس تعریف نشده است."
-          />
-        ) : (
-          <div className="space-y-2">
-            {[...sessions]
-              .sort(
-                (a, b) =>
-                  new Date(a.date).getTime() - new Date(b.date).getTime(),
-              )
-              .map((s) => (
-                <div
-                  key={s.id}
-                  className="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div>
-                    <div className="font-medium text-gray-800">{s.title}</div>
-                    {s.description && (
-                      <div className="mt-1 text-xs text-gray-500">
-                        {s.description}
-                      </div>
-                    )}
-                  </div>
-                  <div className="text-sm text-gray-600">{s.date}</div>
-                </div>
-              ))}
-          </div>
-        )}
-      </Card> */}
       <Card title={`جلسات (${sessions.length})`}>
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-gray-600">

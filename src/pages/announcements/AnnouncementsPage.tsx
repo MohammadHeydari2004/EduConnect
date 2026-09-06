@@ -33,9 +33,8 @@ export default function AnnouncementsPage() {
   const canManageItem = (item: Announcement) => {
     if (!currentUser) return false;
     if (currentUser.role === "admin") return true;
-    if (currentUser.role === "teacher") {
+    if (currentUser.role === "teacher")
       return String(item.authorId) === String(currentUser.id);
-    }
     return false;
   };
 
@@ -63,59 +62,37 @@ export default function AnnouncementsPage() {
 
   useEffect(() => {
     let ignore = false;
-    Promise.all([
-      announcementService.getAll(),
-      classService.getAll(),
-      userService.getAll(),
-    ])
-      .then(([a, c, u]) => {
-        if (!ignore) {
-          setAnnouncements(
-            a.sort(
-              (x, y) =>
-                new Date(y.createdAt).getTime() -
-                new Date(x.createdAt).getTime(),
-            ),
-          );
-          setClasses(c);
-          setUsers(u);
-        }
-      })
-      .catch(() => {
-        // مدیریت خطا
-      })
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
-
+    const loadData = async () => {
+      if (!ignore) await fetchData();
+    };
+    loadData();
     return () => {
       ignore = true;
     };
   }, []);
 
-  // ✅ کلاس‌های قابل انتخاب برای فرم: مدیر همه، استاد فقط کلاس‌های خودش
   const formClasses = useMemo(() => {
     if (isAdmin) return classes;
-    if (isTeacher && currentUser) {
+    if (isTeacher && currentUser)
       return classes.filter(
         (c) => String(c.teacherId) === String(currentUser.id),
       );
-    }
     return [];
   }, [classes, isAdmin, isTeacher, currentUser]);
 
   const filteredAnnouncements = useMemo(() => {
     if (!currentUser) return [];
-
     return announcements.filter((a) => {
-      // 1. Public Announcements (classId === 0)
-      if (a.classId === 0) {
+      if (currentUser.role === "admin") return true;
+
+      if (a.classId === 0 || a.classId === "0") {
         const roles = a.targetRoles ?? ["admin", "teacher", "student"];
         return roles.includes(currentUser.role);
       }
 
-      // 2. Class-specific Announcements
-      const targetClass = classes.find((c) => c.id === a.classId);
+      const targetClass = classes.find(
+        (c) => String(c.id) === String(a.classId),
+      );
       if (!targetClass) return false;
 
       const audience = a.targetAudience ?? "students";
@@ -130,23 +107,23 @@ export default function AnnouncementsPage() {
       if (audience === "both")
         return isTeacherOfThisClass || isStudentInThisClass;
 
+      // اگر نویسنده خود کاربر است، در هر صورت ببیند
+      if (String(a.authorId) === String(currentUser.id)) return true;
+
       return false;
     });
   }, [announcements, classes, currentUser]);
 
-  const getAuthorName = (authorId: number | string) => {
-    return (
-      users.find((u) => String(u.id) === String(authorId))?.name ?? "نامشخص"
-    );
-  };
-
-  const getClassName = (classId: number) => {
-    if (classId === 0) return "همه (عمومی)";
-    return classes.find((c) => c.id === classId)?.title ?? "نامشخص";
-  };
+  const getAuthorName = (authorId: number | string) =>
+    users.find((u) => String(u.id) === String(authorId))?.name ?? "نامشخص";
+  const getClassName = (classId: number | string) =>
+    classId === 0 || classId === "0"
+      ? "همه (عمومی)"
+      : (classes.find((c) => String(c.id) === String(classId))?.title ??
+        "نامشخص");
 
   const getTargetDescription = (item: Announcement) => {
-    if (item.classId === 0) {
+    if (item.classId === 0 || item.classId === "0") {
       const roles = item.targetRoles ?? ["admin", "teacher", "student"];
       return roles
         .map((r) =>
@@ -193,7 +170,6 @@ export default function AnnouncementsPage() {
         <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
           اطلاعیه‌ها
         </h1>
-        {/* ✅ فقط مدیر و استاد می‌توانند اطلاعیه جدید ایجاد کنند */}
         {canCreate && (
           <Button
             onClick={() => {
@@ -222,9 +198,7 @@ export default function AnnouncementsPage() {
                 <div className="flex flex-col h-full">
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h3
-                      className={`text-lg font-semibold ${
-                        isSeen ? "text-gray-600" : "text-blue-700"
-                      }`}
+                      className={`text-lg font-semibold ${isSeen ? "text-gray-600" : "text-blue-700"}`}
                     >
                       {item.title}
                       {isSeen ? (
@@ -291,9 +265,9 @@ export default function AnnouncementsPage() {
         key={`announcement-form-${editingItem?.id ?? "new"}-${isFormOpen}`}
         isOpen={isFormOpen}
         initialData={editingItem}
-        classes={formClasses} // ✅ ارسال کلاس‌های فیلتر شده
+        classes={formClasses}
         authorId={currentUser?.id ?? 0}
-        userRole={currentUser?.role ?? "student"} // ✅ ارسال نقش کاربر
+        userRole={currentUser?.role ?? "student"}
         onClose={() => {
           setIsFormOpen(false);
           setEditingItem(null);

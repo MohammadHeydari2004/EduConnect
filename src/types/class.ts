@@ -1,10 +1,12 @@
+import type { ID } from "./common";
+
 export type ClassStatus = "active" | "inactive";
 
 export interface ClassItem {
-  id: number;
+  id: ID;
   title: string;
-  teacherId: number | null;
-  studentIds: number[];
+  teacherId: ID | null;
+  studentIds: ID[];
   capacity: number;
   status: ClassStatus;
   description?: string;
@@ -14,8 +16,8 @@ export interface ClassItem {
 
 export interface ClassFormValues {
   title: string;
-  teacherId: number | null;
-  studentIds: number[];
+  teacherId: ID | null;
+  studentIds: ID[];
   capacity: number;
   status: ClassStatus;
   description?: string;

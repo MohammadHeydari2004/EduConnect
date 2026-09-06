@@ -13,17 +13,12 @@ export const assignmentService = {
   },
   create: (data: Omit<Assignment, "id">) =>
     baseApi.create<Assignment>(endpoint, data),
-  update: async (id: number | string, data: Partial<Assignment>) => {
-    const updated = await baseApi.update<Assignment>(endpoint, id, data);
-    const allSubmissions = await baseApi.getAll<Submission>("/submissions");
-    const relatedSubmissions = allSubmissions.filter(
-      (s) => String(s.assignmentId) === String(id),
-    );
-    for (const sub of relatedSubmissions) {
-      await baseApi.delete("/submissions", sub.id);
-    }
-    return updated;
+
+  // ✅ اصلاح شد: ویرایش تکلیف دیگر نباید پاسخ‌های دانشجویان را حذف کند
+  update: (id: number | string, data: Partial<Assignment>) => {
+    return baseApi.update<Assignment>(endpoint, id, data);
   },
+
   delete: async (id: number | string) => {
     const allSubmissions = await baseApi.getAll<Submission>("/submissions");
     const relatedSubmissions = allSubmissions.filter(

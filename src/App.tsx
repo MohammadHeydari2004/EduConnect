@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
-
 import MainLayout from "#/layouts/MainLayout.tsx";
 import DashboardPage from "#/pages/dashboard/DashboardPage.tsx";
 import UsersPage from "#/pages/users/UsersPage.tsx";
@@ -19,11 +18,8 @@ import SubmissionsPage from "#/pages/assignments/SubmissionsPage.tsx";
 function App() {
   return (
     <Routes>
-      {/* مسیرهای عمومی */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
-
-      {/* Layout Route برای صفحات محافظت‌شده */}
       <Route
         element={
           <ProtectedRoute>
@@ -34,7 +30,6 @@ function App() {
         }
       >
         <Route path="/" element={<DashboardPage />} />
-
         <Route
           path="users"
           element={
@@ -43,7 +38,6 @@ function App() {
             </RoleGuard>
           }
         />
-
         <Route
           path="classes"
           element={
@@ -52,8 +46,6 @@ function App() {
             </RoleGuard>
           }
         />
-
-        {/* ✅ مسیر جدید برای جزئیات کلاس */}
         <Route
           path="classes/:id"
           element={
@@ -62,7 +54,6 @@ function App() {
             </RoleGuard>
           }
         />
-
         <Route
           path="attendance"
           element={
@@ -71,7 +62,6 @@ function App() {
             </RoleGuard>
           }
         />
-
         <Route
           path="announcements"
           element={
@@ -80,9 +70,18 @@ function App() {
             </RoleGuard>
           }
         />
-
         <Route
           path="assignments"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
+              <AssignmentsPage />
+            </RoleGuard>
+          }
+        />
+
+        {/* ✅ اصلاح مسیر: دریافت classId به جای id مبهم */}
+        <Route
+          path="classes/:classId/assignments"
           element={
             <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
               <AssignmentsPage />
@@ -98,7 +97,6 @@ function App() {
             </RoleGuard>
           }
         />
-
         <Route
           path="profile"
           element={
@@ -108,12 +106,9 @@ function App() {
           }
         />
       </Route>
-
-      {/* ریدایرکت و صفحات خطا */}
       <Route path="/home" element={<Navigate to="/" replace />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
-
 export default App;

@@ -17,7 +17,6 @@ export default function SubmissionsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
-
   const [assignment, setAssignment] = useState<Assignment | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -27,7 +26,6 @@ export default function SubmissionsPage() {
   >({});
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
   const assignmentId = id as string;
 
   useEffect(() => {
@@ -39,11 +37,17 @@ export default function SubmissionsPage() {
     ])
       .then(([a, s, u]) => {
         if (!ignore) {
-          const isTeacher = currentUser?.role === "teacher";
-          if (!(isTeacher && String(a.teacherId) === String(currentUser?.id))) {
+          const isAdmin = currentUser?.role === "admin";
+          const isTeacherOwner =
+            currentUser?.role === "teacher" &&
+            String(a.teacherId) === String(currentUser?.id);
+
+          // ✅ اصلاح دسترسی: ادمین هم باید بتواند نمرات را ببیند
+          if (!isAdmin && !isTeacherOwner) {
             navigate("/assignments", { replace: true });
             return;
           }
+
           setAssignment(a);
           setSubmissions(s);
           setUsers(u);
@@ -71,10 +75,8 @@ export default function SubmissionsPage() {
     };
   }, [assignmentId, navigate, currentUser]);
 
-  const getUserName = (userId: number | string) => {
-    return users.find((u) => String(u.id) === String(userId))?.name ?? "—";
-  };
-
+  const getUserName = (userId: number | string) =>
+    users.find((u) => String(u.id) === String(userId))?.name ?? "—";
   const handleGradeChange = (
     submissionId: string,
     field: "grade" | "feedback",
@@ -104,13 +106,13 @@ export default function SubmissionsPage() {
         feedback: data.feedback || null,
         status: "graded",
       });
-      setSuccessMessage(
-        "نمره با موفقیت ذخیره شد. در حال بازگشت به صفحه تکالیف...",
-      );
+      // setSuccessMessage("نمره با موفقیت ذخیره شد. در حال بازگشت...");
+      // setErrorMessage("");
+      // setTimeout(() => navigate("/assignments"), 1500);
+
+      setSuccessMessage("نمره با موفقیت ذخیره شد.");
       setErrorMessage("");
-      setTimeout(() => {
-        navigate("/assignments");
-      }, 1500);
+      // بدون navigate خودکار
     } catch {
       setErrorMessage("خطا در ثبت نمره.");
       setSuccessMessage("");
@@ -127,7 +129,6 @@ export default function SubmissionsPage() {
       <h1 className="text-xl font-bold text-gray-800">
         پاسخ‌های تکلیف: {assignment?.title}
       </h1>
-
       {successMessage && (
         <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
           {successMessage}

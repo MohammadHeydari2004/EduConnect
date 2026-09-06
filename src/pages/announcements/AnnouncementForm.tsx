@@ -7,13 +7,13 @@ import Textarea from "#/components/ui/Textarea.tsx";
 import { announcementService } from "#/services/modules/announcementService.ts";
 import type { Announcement, TargetAudience } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
-import type { UserRole } from "#/types/common.ts";
+import type { ID, UserRole } from "#/types/common.ts";
 
 interface Props {
   isOpen: boolean;
   initialData?: Announcement | null;
-  classes: ClassItem[]; // کلاس‌های فیلتر شده از قبل
-  authorId: number;
+  classes: ClassItem[];
+  authorId: ID;
   userRole: UserRole;
   onClose: () => void;
   onSuccess: () => void;
@@ -30,7 +30,9 @@ export default function AnnouncementForm({
 }: Props) {
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [content, setContent] = useState(initialData?.content ?? "");
-  const [classId, setClassId] = useState<number>(initialData?.classId ?? 0);
+  const [classId, setClassId] = useState<number | string>(
+    initialData?.classId ?? 0,
+  );
   const [targetRoles, setTargetRoles] = useState<UserRole[]>(
     initialData?.targetRoles ?? ["admin", "teacher", "student"],
   );
@@ -47,6 +49,7 @@ export default function AnnouncementForm({
       setError("عنوان و محتوا الزامی است.");
       return;
     }
+
     try {
       setIsSubmitting(true);
       const basePayload = {
@@ -56,9 +59,8 @@ export default function AnnouncementForm({
         authorId,
       };
 
-      // ✅ اصلاح تایپ‌اسکریپت با تعیین نوع Partial<Announcement> و cast کردن مقدار
       const payload: Partial<Announcement> = isAdmin
-        ? classId === 0
+        ? classId === 0 || classId === "0"
           ? { ...basePayload, targetRoles, targetAudience: undefined }
           : { ...basePayload, targetAudience, targetRoles: undefined }
         : {
@@ -89,7 +91,6 @@ export default function AnnouncementForm({
     );
   };
 
-  // گزینه‌های کلاس: مدیر همه را می‌بیند، استاد فقط کلاس‌های خودش را (بدون عمومی)
   const classOptions = isAdmin
     ? [
         { label: "همه (عمومی)", value: 0 },
@@ -113,12 +114,11 @@ export default function AnnouncementForm({
         <Select
           label="مخاطب (کلاس)"
           value={classId}
-          onChange={(e) => setClassId(Number(e.target.value))}
+          onChange={(e) => setClassId(e.target.value)}
           options={classOptions}
         />
 
-        {/* بخش targetRoles فقط برای مدیر و فقط وقتی کلاس عمومی است */}
-        {isAdmin && classId === 0 && (
+        {isAdmin && (classId === 0 || classId === "0") && (
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
               قابل مشاهده برای (نقش‌ها):
@@ -148,8 +148,7 @@ export default function AnnouncementForm({
           </div>
         )}
 
-        {/* بخش targetAudience فقط برای مدیر و فقط وقتی کلاس خاص است */}
-        {isAdmin && classId !== 0 && (
+        {isAdmin && classId !== 0 && classId !== "0" && (
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
               مخاطبان در کلاس:
@@ -175,7 +174,9 @@ export default function AnnouncementForm({
           rows={5}
           placeholder="متن اطلاعیه..."
         />
+
         {error && <p className="text-sm text-red-600">{error}</p>}
+
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="secondary" onClick={onClose}>
             انصراف

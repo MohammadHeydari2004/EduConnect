@@ -43,7 +43,7 @@ function Sidebar() {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-4 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg md:hidden"
+        className="fixed bottom-4 left-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg md:hidden"
         aria-label="منو"
       >
         <svg
@@ -69,12 +69,14 @@ function Sidebar() {
           )}
         </svg>
       </button>
+
       {isOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/50 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
+
       <aside
         className={`fixed inset-y-0 right-0 z-40 w-64 transform border-l border-gray-200 bg-white p-4 transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${
           isOpen ? "translate-x-0" : "translate-x-full"
