@@ -6,7 +6,7 @@ export interface Announcement {
   id: ID;
   title: string;
   content: string;
-  classId: ID | 0;
+  classId: ID;
   authorId: ID;
   createdAt: string;
   seenBy: ID[];

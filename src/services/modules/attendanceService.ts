@@ -1,40 +1,34 @@
 import { baseApi } from "#/services/api/baseApi.ts";
 import type { Attendance } from "#/types/attendance.ts";
-import type { AttendanceStatus } from "#/types/common.ts";
+import type { AttendanceStatus, ID } from "#/types/common.ts";
 
 const endpoint = "/attendance";
 
 export const attendanceService = {
   getAll: () => baseApi.getAll<Attendance>(endpoint),
-
-  getBySession: async (sessionId: number | string): Promise<Attendance[]> => {
+  getBySession: async (sessionId: ID): Promise<Attendance[]> => {
     const all = await baseApi.getAll<Attendance>(endpoint);
-    return all.filter((a) => String(a.sessionId) === String(sessionId));
+    return all.filter((a) => a.sessionId === sessionId);
   },
-
-  getByStudent: async (studentId: number | string): Promise<Attendance[]> => {
+  getByStudent: async (studentId: ID): Promise<Attendance[]> => {
     const all = await baseApi.getAll<Attendance>(endpoint);
-    return all.filter((a) => String(a.studentId) === String(studentId));
+    return all.filter((a) => a.studentId === studentId);
   },
-
-  getByClass: async (classId: number | string): Promise<Attendance[]> => {
+  getByClass: async (classId: ID): Promise<Attendance[]> => {
     const all = await baseApi.getAll<Attendance>(endpoint);
-    return all.filter((a) => String(a.classId) === String(classId));
+    return all.filter((a) => a.classId === classId);
   },
-
   saveAttendanceForSession: async (
-    sessionId: number | string,
-    classId: number | string,
-    records: Array<{ studentId: number | string; status: AttendanceStatus }>,
+    sessionId: ID,
+    classId: ID,
+    records: Array<{ studentId: ID; status: AttendanceStatus }>,
   ): Promise<Attendance[]> => {
     const existing = await attendanceService.getBySession(sessionId);
     const results: Attendance[] = [];
-
     for (const record of records) {
       const existingRecord = existing.find(
-        (a) => String(a.studentId) === String(record.studentId),
+        (a) => a.studentId === record.studentId,
       );
-
       if (existingRecord) {
         const updated = await baseApi.update<Attendance>(
           endpoint,
@@ -44,27 +38,23 @@ export const attendanceService = {
         results.push(updated);
       } else {
         const created = await baseApi.create<Attendance>(endpoint, {
-          sessionId: Number(sessionId),
-          classId: Number(classId),
-          studentId: Number(record.studentId),
+          sessionId,
+          classId,
+          studentId: record.studentId,
           status: record.status,
-        } as unknown as Omit<Attendance, "id">);
+        } as Omit<Attendance, "id">);
         results.push(created);
       }
     }
-
     return results;
   },
-
   updateStatus: async (
-    id: number | string,
+    id: ID,
     status: AttendanceStatus,
   ): Promise<Attendance> => {
     return baseApi.update<Attendance>(endpoint, id, { status });
   },
-
-  delete: (id: number | string) => baseApi.delete(endpoint, id),
-
+  delete: (id: ID) => baseApi.delete(endpoint, id),
   calculateStudentStats: (attendances: Attendance[]) => {
     const present = attendances.filter((a) => a.status === "present").length;
     const late = attendances.filter((a) => a.status === "late").length;
@@ -72,7 +62,6 @@ export const attendanceService = {
     const total = attendances.length;
     const attended = present + late;
     const percentage = total > 0 ? (attended / total) * 100 : 0;
-
     return { present, late, absent, total, attended, percentage };
   },
 };

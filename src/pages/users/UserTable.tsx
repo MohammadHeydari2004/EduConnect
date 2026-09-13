@@ -31,7 +31,7 @@ function UserTable({
           render: (user) => (
             <div className="font-medium text-gray-800">
               {user.name}
-              {String(user.id) === String(currentUserId) && (
+              {user.id === currentUserId && (
                 <span className="mr-2 text-xs text-blue-600">(شما)</span>
               )}
             </div>

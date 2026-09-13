@@ -15,11 +15,12 @@ import type { User } from "#/types/user.ts";
 import SessionForm from "./SessionForm";
 
 export default function ClassDetailsPage() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
-  const classId = Number(id);
-  const isInvalidId = Number.isNaN(classId);
+
+  const classId = id;
+  const isInvalidId = !classId;
 
   const [classItem, setClassItem] = useState<ClassItem | null>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -36,7 +37,7 @@ export default function ClassDetailsPage() {
   const isTeacherOfThisClass =
     currentUser?.role === "teacher" &&
     classItem !== null &&
-    String(classItem.teacherId) === String(currentUser.id);
+    classItem.teacherId === currentUser.id;
   const canManage = isAdmin || isTeacherOfThisClass;
 
   const getErrorMessage = (err: unknown): string => {
@@ -56,13 +57,13 @@ export default function ClassDetailsPage() {
     try {
       setError("");
       const [c, u, s] = await Promise.all([
-        classService.getById(classId),
+        classService.getById(classId!),
         userService.getAll(),
         sessionService.getAll(),
       ]);
       setClassItem(c);
       setUsers(u);
-      setSessions(s.filter((x) => String(x.classId) === String(classId)));
+      setSessions(s.filter((x) => x.classId === classId));
     } catch (err) {
       setError(getErrorMessage(err));
     }
@@ -72,7 +73,7 @@ export default function ClassDetailsPage() {
     if (isInvalidId) return;
     let ignore = false;
     Promise.all([
-      classService.getById(classId),
+      classService.getById(classId!),
       userService.getAll(),
       sessionService.getAll(),
     ])
@@ -80,7 +81,7 @@ export default function ClassDetailsPage() {
         if (!ignore) {
           setClassItem(c);
           setUsers(u);
-          setSessions(s.filter((x) => String(x.classId) === String(classId)));
+          setSessions(s.filter((x) => x.classId === classId));
         }
       })
       .catch((err) => {
@@ -99,7 +100,7 @@ export default function ClassDetailsPage() {
       !loading &&
       classItem &&
       currentUser?.role === "teacher" &&
-      String(classItem.teacherId) !== String(currentUser.id)
+      classItem.teacherId !== currentUser.id
     ) {
       navigate("/unauthorized", { replace: true });
     }
@@ -107,16 +108,12 @@ export default function ClassDetailsPage() {
 
   const students = useMemo(() => {
     if (!classItem) return [];
-    return users.filter((u) =>
-      (classItem.studentIds || []).map(String).includes(String(u.id)),
-    );
+    return users.filter((u) => (classItem.studentIds || []).includes(u.id));
   }, [users, classItem]);
 
   const teacher = useMemo(() => {
     if (!classItem || classItem.teacherId === null) return null;
-    return (
-      users.find((u) => String(u.id) === String(classItem.teacherId)) ?? null
-    );
+    return users.find((u) => u.id === classItem.teacherId) ?? null;
   }, [users, classItem]);
 
   if (isInvalidId) {
@@ -178,7 +175,6 @@ export default function ClassDetailsPage() {
           <StatusChip status={classItem.status || "inactive"} />
         </div>
 
-        {/* ✅ اضافه شد: دکمه مشاهده تکالیف کلاس برای بهبود جریان داده */}
         <Button
           variant="secondary"
           onClick={() => navigate(`/classes/${classId}/assignments`)}

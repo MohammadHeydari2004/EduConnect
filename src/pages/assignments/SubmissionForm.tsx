@@ -4,11 +4,12 @@ import Modal from "#/components/ui/Modal.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
 import { submissionService } from "#/services/modules/submissionService.ts";
 import type { Submission } from "#/types/submission.ts";
+import type { ID } from "#/types/common.ts";
 
 interface Props {
   isOpen: boolean;
-  assignmentId: number | string;
-  studentId: number | string;
+  assignmentId: ID;
+  studentId: ID;
   existingSubmission?: Submission | null;
   onClose: () => void;
   onSuccess: (message: string) => void;
@@ -38,8 +39,8 @@ export default function SubmissionForm({
         onSuccess("پاسخ شما با موفقیت ویرایش شد.");
       } else {
         await submissionService.create({
-          assignmentId: Number(assignmentId),
-          studentId: Number(studentId),
+          assignmentId,
+          studentId,
           content: content.trim(),
           status: "submitted",
         });

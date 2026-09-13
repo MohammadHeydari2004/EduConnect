@@ -13,6 +13,7 @@ import { formatDate } from "#/utils/formatDate.ts";
 import type { Announcement } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
+import type { ID } from "#/types/common.ts";
 import AnnouncementForm from "./AnnouncementForm";
 
 export default function AnnouncementsPage() {
@@ -33,8 +34,7 @@ export default function AnnouncementsPage() {
   const canManageItem = (item: Announcement) => {
     if (!currentUser) return false;
     if (currentUser.role === "admin") return true;
-    if (currentUser.role === "teacher")
-      return String(item.authorId) === String(currentUser.id);
+    if (currentUser.role === "teacher") return item.authorId === currentUser.id;
     return false;
   };
 
@@ -53,8 +53,8 @@ export default function AnnouncementsPage() {
       );
       setClasses(c);
       setUsers(u);
-    } catch {
-      // مدیریت خطا
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -74,9 +74,7 @@ export default function AnnouncementsPage() {
   const formClasses = useMemo(() => {
     if (isAdmin) return classes;
     if (isTeacher && currentUser)
-      return classes.filter(
-        (c) => String(c.teacherId) === String(currentUser.id),
-      );
+      return classes.filter((c) => c.teacherId === currentUser.id);
     return [];
   }, [classes, isAdmin, isTeacher, currentUser]);
 
@@ -84,46 +82,39 @@ export default function AnnouncementsPage() {
     if (!currentUser) return [];
     return announcements.filter((a) => {
       if (currentUser.role === "admin") return true;
-
-      if (a.classId === 0 || a.classId === "0") {
+      if (a.classId === "0") {
         const roles = a.targetRoles ?? ["admin", "teacher", "student"];
         return roles.includes(currentUser.role);
       }
 
-      const targetClass = classes.find(
-        (c) => String(c.id) === String(a.classId),
-      );
+      const targetClass = classes.find((c) => c.id === a.classId);
       if (!targetClass) return false;
 
       const audience = a.targetAudience ?? "students";
-      const isTeacherOfThisClass =
-        String(targetClass.teacherId) === String(currentUser.id);
-      const isStudentInThisClass = (targetClass.studentIds || [])
-        .map(String)
-        .includes(String(currentUser.id));
+      const isTeacherOfThisClass = targetClass.teacherId === currentUser.id;
+      const isStudentInThisClass = (targetClass.studentIds || []).includes(
+        currentUser.id,
+      );
 
       if (audience === "teacher") return isTeacherOfThisClass;
       if (audience === "students") return isStudentInThisClass;
       if (audience === "both")
         return isTeacherOfThisClass || isStudentInThisClass;
 
-      // اگر نویسنده خود کاربر است، در هر صورت ببیند
-      if (String(a.authorId) === String(currentUser.id)) return true;
+      if (a.authorId === currentUser.id) return true;
 
       return false;
     });
   }, [announcements, classes, currentUser]);
-
-  const getAuthorName = (authorId: number | string) =>
-    users.find((u) => String(u.id) === String(authorId))?.name ?? "نامشخص";
-  const getClassName = (classId: number | string) =>
-    classId === 0 || classId === "0"
+  const getAuthorName = (authorId: ID) =>
+    users.find((u) => u.id === authorId)?.name ?? "نامشخص";
+  const getClassName = (classId: ID) =>
+    classId === "0"
       ? "همه (عمومی)"
-      : (classes.find((c) => String(c.id) === String(classId))?.title ??
-        "نامشخص");
+      : (classes.find((c) => c.id === classId)?.title ?? "نامشخص");
 
   const getTargetDescription = (item: Announcement) => {
-    if (item.classId === 0 || item.classId === "0") {
+    if (item.classId === "0") {
       const roles = item.targetRoles ?? ["admin", "teacher", "student"];
       return roles
         .map((r) =>
@@ -157,8 +148,8 @@ export default function AnnouncementsPage() {
       await announcementService.delete(deleteTarget.id);
       setDeleteTarget(null);
       await fetchData();
-    } catch {
-      // مدیریت خطا
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -195,8 +186,8 @@ export default function AnnouncementsPage() {
               : true;
             return (
               <Card key={item.id}>
-                <div className="flex flex-col h-full">
-                  <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="flex h-full flex-col">
+                  <div className="mb-2 flex items-start justify-between gap-2">
                     <h3
                       className={`text-lg font-semibold ${isSeen ? "text-gray-600" : "text-blue-700"}`}
                     >
@@ -214,20 +205,20 @@ export default function AnnouncementsPage() {
                       )}
                     </h3>
                   </div>
-                  <p className="text-xs text-gray-500 mb-1">
+                  <p className="mb-1 text-xs text-gray-500">
                     مخاطب: {getClassName(item.classId)}
                   </p>
-                  <p className="text-xs text-gray-500 mb-1">
+                  <p className="mb-1 text-xs text-gray-500">
                     دسترسی: {getTargetDescription(item)}
                   </p>
-                  <p className="text-xs text-gray-500 mb-3">
+                  <p className="mb-3 text-xs text-gray-500">
                     نویسنده: {getAuthorName(item.authorId)} | تاریخ:{" "}
                     {formatDate(item.createdAt)}
                   </p>
-                  <p className="text-sm text-gray-700 line-clamp-3 mb-4 flex-grow">
+                  <p className="mb-4 line-clamp-3 flex-grow text-sm text-gray-700">
                     {item.content}
                   </p>
-                  <div className="flex flex-wrap gap-2 mt-auto">
+                  <div className="mt-auto flex flex-wrap gap-2">
                     <Button
                       variant="secondary"
                       onClick={() => handleView(item)}
@@ -266,7 +257,7 @@ export default function AnnouncementsPage() {
         isOpen={isFormOpen}
         initialData={editingItem}
         classes={formClasses}
-        authorId={currentUser?.id ?? 0}
+        authorId={currentUser?.id ?? ""}
         userRole={currentUser?.role ?? "student"}
         onClose={() => {
           setIsFormOpen(false);

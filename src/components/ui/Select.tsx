@@ -24,9 +24,7 @@ function Select({
         <label className="text-sm font-medium text-gray-700">{label}</label>
       )}
       <select
-        className={`rounded-lg border px-3 py-2 text-sm outline-none focus:border-blue-500 ${
-          error ? "border-red-500" : "border-gray-300"
-        } ${className}`}
+        className={`rounded-lg border px-3 py-2 text-sm outline-none focus:border-blue-500 ${error ? "border-red-500" : "border-gray-300"} ${className}`}
         {...props}
       >
         {options.map((option) => (

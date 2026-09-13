@@ -78,9 +78,7 @@ function Sidebar() {
       )}
 
       <aside
-        className={`fixed inset-y-0 right-0 z-40 w-64 transform border-l border-gray-200 bg-white p-4 transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed inset-y-0 right-0 z-40 w-64 transform border-l border-gray-200 bg-white p-4 transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${isOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <nav className="flex flex-col gap-2 pt-4 md:pt-0">
           {filteredNavItems.map((item) => (
@@ -89,11 +87,7 @@ function Sidebar() {
               to={item.path}
               onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
-                `rounded-lg px-4 py-2 text-sm font-medium transition ${
-                  isActive
-                    ? "bg-blue-100 text-blue-700"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`
+                `rounded-lg px-4 py-2 text-sm font-medium transition ${isActive ? "bg-blue-100 text-blue-700" : "text-gray-700 hover:bg-gray-100"}`
               }
             >
               {item.label}

@@ -7,12 +7,13 @@ import Textarea from "#/components/ui/Textarea.tsx";
 import { assignmentService } from "#/services/modules/assignmentService.ts";
 import type { Assignment } from "#/types/assignment.ts";
 import type { ClassItem } from "#/types/class.ts";
+import type { ID } from "#/types/common.ts";
 
 interface Props {
   isOpen: boolean;
   initialData?: Assignment | null;
   availableClasses: ClassItem[];
-  teacherId: number;
+  teacherId: ID;
   isAdmin: boolean;
   onClose: () => void;
   onSuccess: () => void;
@@ -31,15 +32,14 @@ export default function AssignmentForm({
   const [description, setDescription] = useState(
     initialData?.description ?? "",
   );
-  const [classId, setClassId] = useState<number>(
-    Number(initialData?.classId ?? availableClasses[0]?.id ?? 0),
+  const [classId, setClassId] = useState<ID>(
+    initialData?.classId ?? availableClasses[0]?.id ?? "",
   );
   const [deadline, setDeadline] = useState(
     initialData?.deadline
       ? new Date(initialData.deadline).toISOString().split("T")[0]
       : "",
   );
-
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -92,7 +92,7 @@ export default function AssignmentForm({
         <Select
           label="کلاس"
           value={classId}
-          onChange={(e) => setClassId(Number(e.target.value))}
+          onChange={(e) => setClassId(e.target.value)}
           options={availableClasses.map((c) => ({
             label: c.title,
             value: c.id,

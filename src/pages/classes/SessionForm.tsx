@@ -4,9 +4,10 @@ import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
 import { sessionService } from "#/services/modules/sessionService.ts";
+import type { ID } from "#/types/common.ts";
 
 interface Props {
-  classId: number;
+  classId: ID;
   onClose: () => void;
   onSuccess: (message: string) => void;
   onError: (message: string) => void;

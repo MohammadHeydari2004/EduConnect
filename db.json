@@ -71,17 +71,25 @@
       "password": "123456",
       "role": "student",
       "status": "inactive"
+    },
+    {
+      "name": "Test without class",
+      "email": "mh4194212222@gmail.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active",
+      "id": "Au7Jx0mOI40"
     }
   ],
   "classes": [
     {
       "id": "1",
       "title": "پیشرفته React",
-      "teacherId": 3,
+      "teacherId": "3",
       "studentIds": [
-        6,
-        7,
-        8
+        "6",
+        "7",
+        "8"
       ],
       "capacity": 20,
       "status": "active",
@@ -92,10 +100,10 @@
     {
       "id": "2",
       "title": "Backend با Node.js",
-      "teacherId": 4,
+      "teacherId": "4",
       "studentIds": [
-        6,
-        7
+        "6",
+        "7"
       ],
       "capacity": 25,
       "status": "active",
@@ -104,8 +112,9 @@
       "updatedAt": "2025-07-05T10:00:00.000Z"
     },
     {
-      "title": "تست ‍۱ ",
-      "teacherId": 5,
+      "id": "COkhXPy79kk",
+      "title": "تست ۱",
+      "teacherId": "5",
       "studentIds": [
         "6",
         "7"
@@ -113,14 +122,13 @@
       "capacity": 10,
       "status": "active",
       "description": "هاها",
-      "createdAt": "2026-07-04T17:42:36.037Z",
-      "id": "COkhXPy79kk"
+      "createdAt": "2026-07-04T17:42:36.037Z"
     }
   ],
   "sessions": [
     {
       "id": "1",
-      "classId": 1,
+      "classId": "1",
       "title": "جلسه 1 - مقدمه‌ای بر React",
       "date": "2025-08-01",
       "description": "آشنایی با مفاهیم پایه React و JSX",
@@ -128,7 +136,7 @@
     },
     {
       "id": "2",
-      "classId": 1,
+      "classId": "1",
       "title": "جلسه 2 - Components و Props",
       "date": "2025-08-08",
       "description": "ساخت کامپوننت‌ها و مدیریت Props",
@@ -136,7 +144,7 @@
     },
     {
       "id": "3",
-      "classId": 2,
+      "classId": "2",
       "title": "جلسه 1 - مقدمه Node.js",
       "date": "2025-08-03",
       "description": "آشنایی با محیط Node.js و npm",
@@ -144,7 +152,7 @@
     },
     {
       "id": "4",
-      "classId": 2,
+      "classId": "2",
       "title": "جلسه 2 - Express Framework",
       "date": "2025-08-10",
       "description": "ساخت API با Express",
@@ -152,7 +160,7 @@
     },
     {
       "id": "5",
-      "classId": 3,
+      "classId": "COkhXPy79kk",
       "title": "جلسه 1 - مبانی Python",
       "date": "2025-08-05",
       "description": "نحوه نصب و سینتکس پایه Python",
@@ -160,118 +168,118 @@
     },
     {
       "id": "6",
-      "classId": 3,
+      "classId": "COkhXPy79kk",
       "title": "جلسه 2 - توابع و ماژول‌ها",
       "date": "2025-08-12",
       "description": "تعریف توابع و استفاده از ماژول‌ها",
       "createdAt": "2025-08-06T10:00:00.000Z"
     },
     {
+      "id": "MOyInPrPCVw",
       "title": "تست ۱",
       "date": "2026-07-06",
       "description": "تست ۱",
-      "classId": 1,
-      "createdAt": "2026-07-04T17:48:10.115Z",
-      "id": "MOyInPrPCVw"
+      "classId": "1",
+      "createdAt": "2026-07-04T17:48:10.115Z"
     }
   ],
   "attendance": [
     {
       "id": "a1",
-      "sessionId": 1,
-      "classId": 1,
-      "studentId": 6,
+      "sessionId": "1",
+      "classId": "1",
+      "studentId": "6",
       "status": "late"
     },
     {
       "id": "a2",
-      "sessionId": 1,
-      "classId": 1,
-      "studentId": 7,
+      "sessionId": "1",
+      "classId": "1",
+      "studentId": "7",
       "status": "absent"
     },
     {
       "id": "a3",
-      "sessionId": 1,
-      "classId": 1,
-      "studentId": 8,
+      "sessionId": "1",
+      "classId": "1",
+      "studentId": "8",
       "status": "absent"
     },
     {
       "id": "a4",
-      "sessionId": 2,
-      "classId": 1,
-      "studentId": 6,
+      "sessionId": "2",
+      "classId": "1",
+      "studentId": "6",
       "status": "present"
     },
     {
       "id": "a5",
-      "sessionId": 2,
-      "classId": 1,
-      "studentId": 7,
+      "sessionId": "2",
+      "classId": "1",
+      "studentId": "7",
       "status": "absent"
     },
     {
       "id": "a6",
-      "sessionId": 2,
-      "classId": 1,
-      "studentId": 8,
+      "sessionId": "2",
+      "classId": "1",
+      "studentId": "8",
       "status": "late"
     },
     {
       "id": "a7",
-      "sessionId": 3,
-      "classId": 2,
-      "studentId": 6,
+      "sessionId": "3",
+      "classId": "2",
+      "studentId": "6",
       "status": "present"
     },
     {
       "id": "a8",
-      "sessionId": 3,
-      "classId": 2,
-      "studentId": 7,
+      "sessionId": "3",
+      "classId": "2",
+      "studentId": "7",
       "status": "late"
     },
     {
       "id": "a9",
-      "sessionId": 4,
-      "classId": 2,
-      "studentId": 6,
+      "sessionId": "4",
+      "classId": "2",
+      "studentId": "6",
       "status": "absent"
     },
     {
       "id": "a10",
-      "sessionId": 4,
-      "classId": 2,
-      "studentId": 7,
+      "sessionId": "4",
+      "classId": "2",
+      "studentId": "7",
       "status": "present"
     },
     {
       "id": "a11",
-      "sessionId": 5,
-      "classId": 3,
-      "studentId": 8,
+      "sessionId": "5",
+      "classId": "COkhXPy79kk",
+      "studentId": "8",
       "status": "present"
     },
     {
       "id": "a12",
-      "sessionId": 5,
-      "classId": 3,
-      "studentId": 9,
+      "sessionId": "5",
+      "classId": "COkhXPy79kk",
+      "studentId": "9",
       "status": "absent"
     },
     {
       "id": "a13",
-      "sessionId": 6,
-      "classId": 3,
-      "studentId": 8,
+      "sessionId": "6",
+      "classId": "COkhXPy79kk",
+      "studentId": "8",
       "status": "late"
     },
     {
       "id": "a14",
-      "sessionId": 6,
-      "classId": 3,
-      "studentId": 9,
+      "sessionId": "6",
+      "classId": "COkhXPy79kk",
+      "studentId": "9",
       "status": "present"
     }
   ],
@@ -280,12 +288,14 @@
       "id": "1",
       "title": "اطلاعیه عمومی برای همه",
       "content": "این یک اطلاعیه عمومی است که برای همه کاربران قابل مشاهده است.",
-      "classId": 0,
-      "authorId": 1,
+      "classId": "0",
+      "authorId": "1",
       "createdAt": "2025-07-01T10:00:00.000Z",
       "seenBy": [
-        3,
-        4
+        "3",
+        "4",
+        "6",
+        "1"
       ],
       "targetRoles": [
         "student",
@@ -296,8 +306,8 @@
       "id": "2",
       "title": "اطلاعیه مخصوص دانشجویان کلاس React",
       "content": "این اطلاعیه فقط برای دانشجویان کلاس پیشرفته React است.",
-      "classId": 1,
-      "authorId": 3,
+      "classId": "1",
+      "authorId": "3",
       "createdAt": "2025-07-05T10:00:00.000Z",
       "seenBy": [
         "3",
@@ -309,8 +319,8 @@
       "id": "3",
       "title": "اطلاعیه مخصوص استاد کلاس Node",
       "content": "این اطلاعیه فقط برای استاد کلاس Backend است.",
-      "classId": 2,
-      "authorId": 4,
+      "classId": "2",
+      "authorId": "4",
       "createdAt": "2025-07-10T10:00:00.000Z",
       "seenBy": [
         "1"
@@ -318,23 +328,22 @@
       "targetAudience": "teacher"
     },
     {
-      "title": "تست ۱",
+      "id": "kA2r7dyFim4",
+      "title": "تست ۱ استاد",
       "content": "تست ۱",
-      "classId": 0,
+      "classId": "0",
       "authorId": "1",
       "targetRoles": [
-        "admin",
         "teacher",
-        "student"
+        "admin"
       ],
       "seenBy": [
-        "6",
         "1"
       ],
-      "createdAt": "2026-07-04T17:44:26.700Z",
-      "id": "kA2r7dyFim4"
+      "createdAt": "2026-07-04T17:44:26.700Z"
     },
     {
+      "id": "bWageD_NRTU",
       "title": "تست دیده شدن",
       "content": "تست دیده شدن توسط دانشجویان",
       "classId": "1",
@@ -344,8 +353,7 @@
         "6",
         "1"
       ],
-      "createdAt": "2026-07-04T18:14:22.877Z",
-      "id": "bWageD_NRTU"
+      "createdAt": "2026-07-04T18:14:22.877Z"
     }
   ],
   "assignments": [
@@ -353,24 +361,40 @@
       "id": "1",
       "title": "تکلیف 1: React Hooks",
       "description": "یک کامپوننت با useState و useEffect پیاده‌سازی کنید.",
-      "classId": 1,
-      "teacherId": 3,
+      "classId": "1",
+      "teacherId": "3",
       "deadline": "2025-08-25T23:59:59.000Z"
     },
     {
       "id": "2",
       "title": "تکلیف 2: Express API",
       "description": "یک REST API ساده برای مدیریت کاربران بنویسید.",
-      "classId": 2,
-      "teacherId": 4,
+      "classId": "2",
+      "teacherId": "4",
       "deadline": "2025-08-30T23:59:59.000Z"
+    },
+    {
+      "title": "تست",
+      "description": "۱",
+      "classId": "2",
+      "teacherId": "4",
+      "deadline": "2026-07-08T00:00:00.000Z",
+      "id": "dby2K090MPU"
+    },
+    {
+      "title": "تست تاخیر",
+      "description": "تاخیر",
+      "classId": "2",
+      "teacherId": "4",
+      "deadline": "2026-07-01T00:00:00.000Z",
+      "id": "sKFDJxpXw8c"
     }
   ],
   "submissions": [
     {
       "id": "s1",
-      "assignmentId": 1,
-      "studentId": 7,
+      "assignmentId": "1",
+      "studentId": "7",
       "content": "https://github.com/mh419421/react-hooks-hw",
       "submittedAt": "2025-08-20T14:30:00.000Z",
       "status": "graded",
@@ -380,8 +404,8 @@
     },
     {
       "id": "s2",
-      "assignmentId": 1,
-      "studentId": 8,
+      "assignmentId": "1",
+      "studentId": "8",
       "content": "من نتوانستم تحویل بدهم.",
       "submittedAt": "2025-08-26T10:00:00.000Z",
       "status": "graded",
@@ -390,22 +414,41 @@
       "updatedAt": "2025-08-27T09:00:00.000Z"
     },
     {
-      "assignmentId": 2,
-      "studentId": 6,
-      "content": "test 1",
-      "status": "submitted",
-      "submittedAt": "2026-07-04T18:06:35.454Z",
       "id": "q2lzEnE1spE",
-      "updatedAt": "2026-07-04T18:06:49.558Z"
+      "assignmentId": "2",
+      "studentId": "6",
+      "content": "test 1",
+      "status": "graded",
+      "submittedAt": "2026-07-04T18:06:35.454Z",
+      "updatedAt": "2026-07-06T18:47:47.594Z",
+      "grade": 5,
+      "feedback": "تست"
     },
     {
-      "assignmentId": 1,
-      "studentId": 6,
+      "id": "qkrACzmpOoo",
+      "assignmentId": "1",
+      "studentId": "6",
       "content": "تست ۲3",
       "status": "submitted",
       "submittedAt": "2026-07-04T18:07:08.526Z",
-      "id": "qkrACzmpOoo",
       "updatedAt": "2026-07-04T18:07:14.046Z"
+    },
+    {
+      "assignmentId": "2",
+      "studentId": "7",
+      "content": "تست ۱",
+      "status": "submitted",
+      "submittedAt": "2026-07-06T18:49:03.594Z",
+      "id": "Mb32A_p96Ws",
+      "updatedAt": "2026-07-06T18:49:07.570Z"
+    },
+    {
+      "assignmentId": "sKFDJxpXw8c",
+      "studentId": "6",
+      "content": "تست تاخیر",
+      "status": "submitted",
+      "submittedAt": "2026-07-06T18:55:52.672Z",
+      "id": "HjlwsziipsU"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

@@ -30,9 +30,10 @@ export default function AnnouncementForm({
 }: Props) {
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [content, setContent] = useState(initialData?.content ?? "");
-  const [classId, setClassId] = useState<number | string>(
-    initialData?.classId ?? 0,
+  const [classId, setClassId] = useState<string>(
+    initialData?.classId?.toString() ?? "0",
   );
+
   const [targetRoles, setTargetRoles] = useState<UserRole[]>(
     initialData?.targetRoles ?? ["admin", "teacher", "student"],
   );
@@ -41,7 +42,6 @@ export default function AnnouncementForm({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-
   const isAdmin = userRole === "admin";
 
   const handleSubmit = async () => {
@@ -49,18 +49,12 @@ export default function AnnouncementForm({
       setError("عنوان و محتوا الزامی است.");
       return;
     }
-
     try {
       setIsSubmitting(true);
-      const basePayload = {
-        title,
-        content,
-        classId,
-        authorId,
-      };
+      const basePayload = { title, content, classId, authorId };
 
       const payload: Partial<Announcement> = isAdmin
-        ? classId === 0 || classId === "0"
+        ? classId === "0"
           ? { ...basePayload, targetRoles, targetAudience: undefined }
           : { ...basePayload, targetAudience, targetRoles: undefined }
         : {
@@ -93,7 +87,7 @@ export default function AnnouncementForm({
 
   const classOptions = isAdmin
     ? [
-        { label: "همه (عمومی)", value: 0 },
+        { label: "همه (عمومی)", value: "0" },
         ...classes.map((c) => ({ label: c.title, value: c.id })),
       ]
     : classes.map((c) => ({ label: c.title, value: c.id }));
@@ -118,7 +112,7 @@ export default function AnnouncementForm({
           options={classOptions}
         />
 
-        {isAdmin && (classId === 0 || classId === "0") && (
+        {isAdmin && classId === "0" && (
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
               قابل مشاهده برای (نقش‌ها):
@@ -127,7 +121,7 @@ export default function AnnouncementForm({
               {(["admin", "teacher", "student"] as UserRole[]).map((role) => (
                 <label
                   key={role}
-                  className="flex items-center gap-2 cursor-pointer"
+                  className="flex cursor-pointer items-center gap-2"
                 >
                   <input
                     type="checkbox"
@@ -135,7 +129,7 @@ export default function AnnouncementForm({
                     onChange={() => toggleRole(role)}
                     className="h-4 w-4"
                   />
-                  <span className="text-sm text-gray-700 capitalize">
+                  <span className="text-sm capitalize text-gray-700">
                     {role === "admin"
                       ? "مدیر"
                       : role === "teacher"
@@ -147,8 +141,7 @@ export default function AnnouncementForm({
             </div>
           </div>
         )}
-
-        {isAdmin && classId !== 0 && classId !== "0" && (
+        {isAdmin && classId !== "0" && (
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
               مخاطبان در کلاس:

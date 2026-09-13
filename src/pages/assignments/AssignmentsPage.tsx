@@ -17,6 +17,7 @@ import type { Assignment } from "#/types/assignment.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { Submission } from "#/types/submission.ts";
 import type { User } from "#/types/user.ts";
+import type { ID } from "#/types/common.ts";
 import AssignmentForm from "./AssignmentForm";
 import SubmissionForm from "./SubmissionForm";
 
@@ -39,9 +40,6 @@ const initialState: PageState = {
 };
 
 export default function AssignmentsPage() {
-  const { classId: classIdParam } = useParams<{ classId?: string }>();
-  const navigate = useNavigate();
-  const { user: currentUser } = useAuth();
   const [state, setState] = useState<PageState>(initialState);
   const [actionMessage, setActionMessage] = useState("");
   const [showAssignmentForm, setShowAssignmentForm] = useState(false);
@@ -57,31 +55,33 @@ export default function AssignmentsPage() {
   const [submittingAssignment, setSubmittingAssignment] =
     useState<Assignment | null>(null);
 
-  const classId = classIdParam ? Number(classIdParam) : null;
-  const isClassPage = !!classIdParam;
+  const { classId: classIdParam } = useParams<{ classId?: string }>();
+  const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
+
   const isAdmin = currentUser?.role === "admin";
   const isTeacher = currentUser?.role === "teacher";
   const isStudent = currentUser?.role === "student";
+
+  const classId = classIdParam ?? null;
+  const isClassPage = !!classIdParam;
 
   const { loading, error, assignments, submissions, users, classes } = state;
 
   const myClasses = useMemo(() => {
     if (!currentUser) return [];
     if (isAdmin) return classes;
-    if (isTeacher)
-      return classes.filter(
-        (c) => String(c.teacherId) === String(currentUser.id),
-      );
+    if (isTeacher) return classes.filter((c) => c.teacherId === currentUser.id);
     if (isStudent)
       return classes.filter((c) =>
-        (c.studentIds || []).map(String).includes(String(currentUser.id)),
+        (c.studentIds || []).includes(currentUser.id),
       );
     return [];
   }, [classes, currentUser, isAdmin, isTeacher, isStudent]);
 
   const canManageAssignment = (a: Assignment) => {
     if (isAdmin) return true;
-    if (isTeacher) return String(a.teacherId) === String(currentUser?.id);
+    if (isTeacher) return a.teacherId === currentUser?.id;
     return false;
   };
 
@@ -126,26 +126,19 @@ export default function AssignmentsPage() {
     };
   }, []);
 
-  const getSubmissionForUser = (assignmentId: number | string) =>
+  const getSubmissionForUser = (assignmentId: ID) =>
     submissions.find(
-      (s) =>
-        String(s.assignmentId) === String(assignmentId) &&
-        String(s.studentId) === String(currentUser?.id),
+      (s) => s.assignmentId === assignmentId && s.studentId === currentUser?.id,
     );
 
-  const getTeacherName = (teacherId: number | string) =>
-    users.find((u) => String(u.id) === String(teacherId))?.name ?? "—";
-  const getClassName = (cId: number | string) =>
-    classes.find((c) => String(c.id) === String(cId))?.title ?? "—";
+  const getTeacherName = (teacherId: ID) =>
+    users.find((u) => u.id === teacherId)?.name ?? "—";
+  const getClassName = (cId: ID) =>
+    classes.find((c) => c.id === cId)?.title ?? "—";
 
-  const handleViewSubmissions = (assignmentId: number | string) =>
+  const handleViewSubmissions = (assignmentId: ID) =>
     navigate(`/assignments/${assignmentId}/submissions`);
 
-  // const handleSubmit = (assignment: Assignment) => {
-  //   const existing = getSubmissionForUser(assignment.id);
-  //   setSubmissionToEdit(existing || null);
-  //   setShowSubmissionForm(true);
-  // };
   const handleSubmit = (assignment: Assignment) => {
     setSubmissionToEdit(getSubmissionForUser(assignment.id) || null);
     setSubmittingAssignment(assignment);
@@ -194,23 +187,18 @@ export default function AssignmentsPage() {
   };
 
   if (loading) return <Loading />;
-  if (error) return <div className="text-red-600 p-4">{error}</div>;
+  if (error) return <div className="p-4 text-red-600">{error}</div>;
 
   const filteredAssignments = assignments.filter((a) => {
-    if (isClassPage && classId && String(a.classId) !== String(classId))
-      return false;
+    if (isClassPage && classId && a.classId !== classId) return false;
 
     if (isStudent) {
-      const cls = classes.find((c) => String(c.id) === String(a.classId));
-      if (
-        !cls ||
-        !(cls.studentIds || []).map(String).includes(String(currentUser?.id))
-      )
+      const cls = classes.find((c) => c.id === a.classId);
+      if (!cls || !(cls.studentIds || []).includes(currentUser?.id ?? ""))
         return false;
     } else if (isTeacher) {
-      const cls = classes.find((c) => String(c.id) === String(a.classId));
-      if (!cls || String(cls.teacherId) !== String(currentUser?.id))
-        return false;
+      const cls = classes.find((c) => c.id === a.classId);
+      if (!cls || cls.teacherId !== currentUser?.id) return false;
     }
     return true;
   });
@@ -264,7 +252,23 @@ export default function AssignmentsPage() {
                 {
                   key: "deadline",
                   title: "ددلاین",
-                  render: (a) => formatDate(a.deadline),
+                  render: (a) => {
+                    const isExpired = new Date(a.deadline) < new Date();
+                    return (
+                      <span
+                        className={
+                          isExpired ? "text-red-600 font-semibold" : ""
+                        }
+                      >
+                        {formatDate(a.deadline)}
+                        {isExpired && (
+                          <span className="mr-1 text-xs text-red-500">
+                            (منقضی شده)
+                          </span>
+                        )}
+                      </span>
+                    );
+                  },
                 },
                 {
                   key: "teacher",
@@ -285,7 +289,7 @@ export default function AssignmentsPage() {
                     }
                     if ((isAdmin || isTeacher) && canManageAssignment(a)) {
                       const subs = submissions.filter(
-                        (s) => String(s.assignmentId) === String(a.id),
+                        (s) => s.assignmentId === a.id,
                       );
                       return (
                         <span className="text-sm text-gray-600">
@@ -321,7 +325,7 @@ export default function AssignmentsPage() {
                               ویرایش پاسخ
                             </Button>
                           ) : (
-                            <span className="text-xs text-gray-500 py-2">
+                            <span className="py-2 text-xs text-gray-500">
                               نمره نهایی شده
                             </span>
                           ))}
@@ -366,7 +370,7 @@ export default function AssignmentsPage() {
           isOpen={true}
           initialData={editingAssignment}
           availableClasses={myClasses}
-          teacherId={Number(currentUser?.id)}
+          teacherId={currentUser?.id ?? ""}
           isAdmin={isAdmin}
           onClose={() => setShowAssignmentForm(false)}
           onSuccess={() => handleSuccess("تکلیف با موفقیت ذخیره شد.")}
@@ -376,13 +380,10 @@ export default function AssignmentsPage() {
       {showSubmissionForm && currentUser && (
         <SubmissionForm
           isOpen={true}
-          // assignmentId={
-          //   submissionToEdit?.assignmentId ?? editingAssignment?.id ?? 0
-          // }
           assignmentId={
-            submissionToEdit?.assignmentId ?? submittingAssignment?.id ?? 0
+            submissionToEdit?.assignmentId ?? submittingAssignment?.id ?? ""
           }
-          studentId={Number(currentUser.id)}
+          studentId={currentUser.id}
           existingSubmission={submissionToEdit}
           onClose={() => setShowSubmissionForm(false)}
           onSuccess={handleSuccess}

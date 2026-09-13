@@ -21,7 +21,6 @@ import type { User } from "#/types/user.ts";
 export default function AttendancePage() {
   const { user: currentUser } = useAuth();
   const [searchParams] = useSearchParams();
-
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -36,9 +35,28 @@ export default function AttendancePage() {
     searchParams.get("sessionId") || "",
   );
 
-  const [attendanceMap, setAttendanceMap] = useState<
+  const [draftAttendanceMap, setDraftAttendanceMap] = useState<
     Record<string, AttendanceStatus>
   >({});
+
+  const [prevSessionId, setPrevSessionId] = useState<string | null>(null);
+
+  if (selectedSessionId !== prevSessionId) {
+    setPrevSessionId(selectedSessionId);
+
+    if (!selectedSessionId) {
+      setDraftAttendanceMap({});
+    } else {
+      const sessionAttendances = attendances.filter(
+        (a) => a.sessionId === selectedSessionId,
+      );
+      const map: Record<string, AttendanceStatus> = {};
+      for (const a of sessionAttendances) {
+        map[a.studentId] = a.status;
+      }
+      setDraftAttendanceMap(map);
+    }
+  }
 
   const [isSaving, setIsSaving] = useState(false);
   const [actionMessage, setActionMessage] = useState("");
@@ -79,9 +97,7 @@ export default function AttendancePage() {
   const availableClasses = useMemo(() => {
     if (isAdmin) return classes;
     if (isTeacher) {
-      return classes.filter(
-        (c) => String(c.teacherId) === String(currentUser?.id),
-      );
+      return classes.filter((c) => c.teacherId === currentUser?.id);
     }
     return [];
   }, [classes, isAdmin, isTeacher, currentUser]);
@@ -89,61 +105,38 @@ export default function AttendancePage() {
   const availableSessions = useMemo(() => {
     if (!selectedClassId) return [];
     return sessions
-      .filter((s) => String(s.classId) === selectedClassId)
+      .filter((s) => s.classId === selectedClassId)
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [sessions, selectedClassId]);
 
   const classStudents = useMemo(() => {
     if (!selectedClassId) return [];
-    const cls = classes.find((c) => String(c.id) === selectedClassId);
+    const cls = classes.find((c) => c.id === selectedClassId);
     if (!cls) return [];
-    return users.filter((u) =>
-      (cls.studentIds || []).map(String).includes(String(u.id)),
-    );
+    return users.filter((u) => (cls.studentIds || []).includes(u.id));
   }, [classes, users, selectedClassId]);
 
-  useEffect(() => {
-    if (!selectedSessionId) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setAttendanceMap({});
-      return;
-    }
-    const sessionAttendances = attendances.filter(
-      (a) => String(a.sessionId) === selectedSessionId,
-    );
-    const map: Record<string, AttendanceStatus> = {};
-    for (const a of sessionAttendances) {
-      map[String(a.studentId)] = a.status;
-    }
-    setAttendanceMap(map);
-  }, [selectedSessionId, attendances]);
-
   const handleStatusChange = (studentId: string, status: AttendanceStatus) => {
-    setAttendanceMap((prev) => ({ ...prev, [studentId]: status }));
+    setDraftAttendanceMap((prev) => ({ ...prev, [studentId]: status }));
   };
 
   const handleSave = async () => {
     if (!selectedSessionId || !selectedClassId) return;
-
     setIsSaving(true);
     setActionMessage("");
     setActionError("");
-
     try {
       const records = classStudents.map((student) => ({
         studentId: student.id,
-        status: attendanceMap[String(student.id)] || "absent",
+        status: draftAttendanceMap[student.id] || "absent",
       }));
-
       await attendanceService.saveAttendanceForSession(
         selectedSessionId,
         selectedClassId,
         records,
       );
-
       const updated = await attendanceService.getAll();
       setAttendances(updated);
-
       setActionMessage("حضور و غیاب با موفقیت ذخیره شد.");
     } catch {
       setActionError("ذخیره حضور و غیاب با خطا مواجه شد.");
@@ -155,15 +148,12 @@ export default function AttendancePage() {
   const studentView = useMemo(() => {
     if (!isStudent || !currentUser) return null;
     const myAttendances = attendances.filter(
-      (a) => String(a.studentId) === String(currentUser.id),
+      (a) => a.studentId === currentUser.id,
     );
     const stats = attendanceService.calculateStudentStats(myAttendances);
-
     const sessionDetails = myAttendances.map((a) => {
-      const session = sessions.find(
-        (s) => String(s.id) === String(a.sessionId),
-      );
-      const cls = classes.find((c) => String(c.id) === String(a.classId));
+      const session = sessions.find((s) => s.id === a.sessionId);
+      const cls = classes.find((c) => c.id === a.classId);
       return {
         ...a,
         sessionTitle: session?.title || "—",
@@ -171,12 +161,10 @@ export default function AttendancePage() {
         classTitle: cls?.title || "—",
       };
     });
-
     return { ...stats, sessionDetails };
   }, [attendances, sessions, classes, isStudent, currentUser]);
 
   if (loading) return <Loading />;
-
   if (error) {
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -190,7 +178,6 @@ export default function AttendancePage() {
       <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
         حضور و غیاب
       </h1>
-
       {actionMessage && (
         <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
           {actionMessage}
@@ -201,7 +188,6 @@ export default function AttendancePage() {
           {actionError}
         </div>
       )}
-
       {isStudent && studentView ? (
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -231,7 +217,6 @@ export default function AttendancePage() {
               </div>
             </Card>
           </div>
-
           <Card title="نوار پیشرفت حضور">
             <div className="h-4 w-full overflow-hidden rounded-full bg-gray-200">
               <div
@@ -244,7 +229,6 @@ export default function AttendancePage() {
               late به‌عنوان «حاضر» محاسبه می‌شود).
             </p>
           </Card>
-
           <Card title="جزئیات جلسات">
             {studentView.sessionDetails.length === 0 ? (
               <EmptyState
@@ -293,7 +277,6 @@ export default function AttendancePage() {
                 onChange={(e) => {
                   setSelectedClassId(e.target.value);
                   setSelectedSessionId("");
-                  setAttendanceMap({});
                   setActionMessage("");
                   setActionError("");
                 }}
@@ -301,7 +284,7 @@ export default function AttendancePage() {
                   { label: "انتخاب کلاس...", value: "" },
                   ...availableClasses.map((c) => ({
                     label: c.title || "(بدون عنوان)",
-                    value: String(c.id),
+                    value: c.id,
                   })),
                 ]}
               />
@@ -318,13 +301,12 @@ export default function AttendancePage() {
                   { label: "انتخاب جلسه...", value: "" },
                   ...availableSessions.map((s) => ({
                     label: `${s.title} - ${s.date}`,
-                    value: String(s.id),
+                    value: s.id,
                   })),
                 ]}
               />
             </div>
           </Card>
-
           {selectedSessionId && (
             <Card title="لیست دانشجویان">
               {classStudents.length === 0 ? (
@@ -361,12 +343,10 @@ export default function AttendancePage() {
                           title: "وضعیت حضور",
                           render: (student) => (
                             <select
-                              value={
-                                attendanceMap[String(student.id)] || "absent"
-                              }
+                              value={draftAttendanceMap[student.id] || "absent"}
                               onChange={(e) =>
                                 handleStatusChange(
-                                  String(student.id),
+                                  student.id,
                                   e.target.value as AttendanceStatus,
                                 )
                               }

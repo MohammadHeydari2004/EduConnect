@@ -7,6 +7,7 @@ import Textarea from "#/components/ui/Textarea.tsx";
 import { classService } from "#/services/modules/classService.ts";
 import type { ClassFormValues, ClassItem, ClassStatus } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
+import type { ID } from "#/types/common.ts";
 
 interface Props {
   users: User[];
@@ -76,15 +77,13 @@ export default function ClassForm({
     }
   };
 
-  const toggleStudent = (id: number | string) => {
+  const toggleStudent = (id: ID) => {
     setForm((prev) => {
-      const stringIds = prev.studentIds.map(String);
-      const stringId = String(id);
-      const exists = stringIds.includes(stringId);
+      const exists = prev.studentIds.includes(id);
       return {
         ...prev,
         studentIds: exists
-          ? prev.studentIds.filter((s) => String(s) !== stringId)
+          ? prev.studentIds.filter((s) => s !== id)
           : [...prev.studentIds, id],
       };
     });
@@ -111,12 +110,12 @@ export default function ClassForm({
           value={form.teacherId ?? ""}
           onChange={(e) => {
             const value = e.target.value;
-            setForm({ ...form, teacherId: value ? Number(value) : null });
+            setForm({ ...form, teacherId: value || null });
             if (errors.teacherId) setErrors({ ...errors, teacherId: "" });
           }}
           options={[
             { label: "انتخاب استاد...", value: "" },
-            ...teachers.map((t) => ({ label: t.name, value: String(t.id) })),
+            ...teachers.map((t) => ({ label: t.name, value: t.id })),
           ]}
           error={errors.teacherId}
         />
@@ -172,7 +171,7 @@ export default function ClassForm({
                 >
                   <input
                     type="checkbox"
-                    checked={form.studentIds.map(String).includes(String(s.id))}
+                    checked={form.studentIds.includes(s.id)}
                     onChange={() => toggleStudent(s.id)}
                     className="h-4 w-4"
                   />

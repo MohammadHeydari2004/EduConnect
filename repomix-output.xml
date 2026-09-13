@@ -40,6 +40,103 @@ The content is organized as follows:
 </file_summary>
 
 <directory_structure>
+src/
+  components/
+    common/
+      EmptyState.tsx
+      Header.tsx
+      Loading.tsx
+      Sidebar.tsx
+    ui/
+      Badge.tsx
+      Button.tsx
+      Card.tsx
+      ConfirmDialog.tsx
+      Input.tsx
+      Modal.tsx
+      SearchInput.tsx
+      Select.tsx
+      StatusChip.tsx
+      Table.tsx
+      Textarea.tsx
+  context/
+    AuthContext.ts
+    AuthProvider.tsx
+  data/
+    constants.ts
+  layouts/
+    MainLayout.tsx
+  pages/
+    announcements/
+      AnnouncementForm.tsx
+      AnnouncementsPage.tsx
+    assignments/
+      AssignmentForm.tsx
+      AssignmentsPage.tsx
+      SubmissionForm.tsx
+      SubmissionsPage.tsx
+    attendance/
+      AttendancePage.tsx
+    auth/
+      LoginPage.tsx
+    classes/
+      ClassDetailsPage.tsx
+      ClassesPage.tsx
+      ClassFilters.tsx
+      ClassForm.tsx
+      ClassSessionsPanel.tsx
+      ClassStudentsPanel.tsx
+      ClassTable.tsx
+      classValidation.ts
+      SessionForm.tsx
+      sessionValidation.ts
+    dashboard/
+      DashboardPage.tsx
+    profile/
+      ProfilePage.tsx
+    users/
+      UserDetails.tsx
+      UserFilters.tsx
+      UserForm.tsx
+      UsersPage.tsx
+      UserTable.tsx
+      userValidation.ts
+    NotFoundPage.tsx
+    UnauthorizedPage.tsx
+  routes/
+    AppRoutes.tsx
+    ProtectedRoute.tsx
+    RoleGuard.tsx
+  services/
+    api/
+      axiosInstance.ts
+      baseApi.ts
+    modules/
+      announcementService.ts
+      assignmentService.ts
+      attendanceService.ts
+      authService.ts
+      classService.ts
+      sessionService.ts
+      submissionService.ts
+      userService.ts
+  types/
+    announcement.ts
+    assignment.ts
+    attendance.ts
+    auth.ts
+    class.ts
+    common.ts
+    session.ts
+    submission.ts
+    user.ts
+  utils/
+    constants.ts
+    formatDate.ts
+  App.css
+  App.tsx
+  index.css
+  main.tsx
 .gitignore
 db.json
 eslint.config.js
@@ -47,81 +144,6 @@ index.html
 package.json
 postcss.config.js
 README.md
-src/App.css
-src/App.tsx
-src/components/common/EmptyState.tsx
-src/components/common/Header.tsx
-src/components/common/Loading.tsx
-src/components/common/Sidebar.tsx
-src/components/ui/Badge.tsx
-src/components/ui/Button.tsx
-src/components/ui/Card.tsx
-src/components/ui/ConfirmDialog.tsx
-src/components/ui/Input.tsx
-src/components/ui/Modal.tsx
-src/components/ui/SearchInput.tsx
-src/components/ui/Select.tsx
-src/components/ui/StatusChip.tsx
-src/components/ui/Table.tsx
-src/components/ui/Textarea.tsx
-src/context/AuthContext.ts
-src/context/AuthProvider.tsx
-src/data/constants.ts
-src/index.css
-src/layouts/MainLayout.tsx
-src/main.tsx
-src/pages/announcements/AnnouncementForm.tsx
-src/pages/announcements/AnnouncementsPage.tsx
-src/pages/assignments/AssignmentForm.tsx
-src/pages/assignments/AssignmentsPage.tsx
-src/pages/assignments/SubmissionForm.tsx
-src/pages/assignments/SubmissionsPage.tsx
-src/pages/attendance/AttendancePage.tsx
-src/pages/auth/LoginPage.tsx
-src/pages/classes/ClassDetailsPage.tsx
-src/pages/classes/ClassesPage.tsx
-src/pages/classes/ClassFilters.tsx
-src/pages/classes/ClassForm.tsx
-src/pages/classes/ClassSessionsPanel.tsx
-src/pages/classes/ClassStudentsPanel.tsx
-src/pages/classes/ClassTable.tsx
-src/pages/classes/classValidation.ts
-src/pages/classes/SessionForm.tsx
-src/pages/classes/sessionValidation.ts
-src/pages/dashboard/DashboardPage.tsx
-src/pages/NotFoundPage.tsx
-src/pages/profile/ProfilePage.tsx
-src/pages/UnauthorizedPage.tsx
-src/pages/users/UserDetails.tsx
-src/pages/users/UserFilters.tsx
-src/pages/users/UserForm.tsx
-src/pages/users/UsersPage.tsx
-src/pages/users/UserTable.tsx
-src/pages/users/userValidation.ts
-src/routes/AppRoutes.tsx
-src/routes/ProtectedRoute.tsx
-src/routes/RoleGuard.tsx
-src/services/api/axiosInstance.ts
-src/services/api/baseApi.ts
-src/services/modules/announcementService.ts
-src/services/modules/assignmentService.ts
-src/services/modules/attendanceService.ts
-src/services/modules/authService.ts
-src/services/modules/classService.ts
-src/services/modules/sessionService.ts
-src/services/modules/submissionService.ts
-src/services/modules/userService.ts
-src/types/announcement.ts
-src/types/assignment.ts
-src/types/attendance.ts
-src/types/auth.ts
-src/types/class.ts
-src/types/common.ts
-src/types/session.ts
-src/types/submission.ts
-src/types/user.ts
-src/utils/constants.ts
-src/utils/formatDate.ts
 tailwind.config.js
 tsconfig.app.json
 tsconfig.json
@@ -131,1004 +153,6 @@ vite.config.ts
 
 <files>
 This section contains the contents of the repository's files.
-
-<file path=".gitignore">
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-</file>
-
-<file path="db.json">
-{
-  "users": [
-    {
-      "id": "1",
-      "name": "مدیر کل",
-      "email": "admin1@edu.com",
-      "password": "123456",
-      "role": "admin",
-      "status": "active"
-    },
-    {
-      "id": "2",
-      "name": "مدیر دوم",
-      "email": "admin2@edu.com",
-      "password": "123456",
-      "role": "admin",
-      "status": "inactive"
-    },
-    {
-      "id": "3",
-      "name": "محمد حسینی",
-      "email": "teacher1@edu.com",
-      "password": "123456",
-      "role": "teacher",
-      "status": "active"
-    },
-    {
-      "id": "4",
-      "name": "سارا محمدی",
-      "email": "teacher2@edu.com",
-      "password": "123456",
-      "role": "teacher",
-      "status": "active"
-    },
-    {
-      "id": "5",
-      "name": "علی رضایی",
-      "email": "teacher3@edu.com",
-      "password": "123456",
-      "role": "teacher",
-      "status": "inactive"
-    },
-    {
-      "id": "6",
-      "name": "زهرا احمدی",
-      "email": "student1@edu.com",
-      "password": "123456",
-      "role": "student",
-      "status": "active"
-    },
-    {
-      "id": "7",
-      "name": "امیر حسنی",
-      "email": "student2@edu.com",
-      "password": "123456",
-      "role": "student",
-      "status": "active"
-    },
-    {
-      "id": "8",
-      "name": "فاطمه نوری",
-      "email": "student3@edu.com",
-      "password": "123456",
-      "role": "student",
-      "status": "active"
-    },
-    {
-      "id": "9",
-      "name": "حسین موسوی",
-      "email": "student4@edu.com",
-      "password": "123456",
-      "role": "student",
-      "status": "inactive"
-    }
-  ],
-  "classes": [
-    {
-      "id": "1",
-      "title": "پیشرفته React",
-      "teacherId": 3,
-      "studentIds": [
-        6,
-        7,
-        8
-      ],
-      "capacity": 20,
-      "status": "active",
-      "description": "بررسی عمیق الگوها و بهترین شیوه‌های React",
-      "createdAt": "2025-07-01T10:00:00.000Z",
-      "updatedAt": "2026-07-04T17:43:36.091Z"
-    },
-    {
-      "id": "2",
-      "title": "Backend با Node.js",
-      "teacherId": 4,
-      "studentIds": [
-        6,
-        7
-      ],
-      "capacity": 25,
-      "status": "active",
-      "description": "توسعه سمت سرور با Node.js و Express",
-      "createdAt": "2025-07-05T10:00:00.000Z",
-      "updatedAt": "2025-07-05T10:00:00.000Z"
-    },
-    {
-      "title": "تست ‍۱ ",
-      "teacherId": 5,
-      "studentIds": [
-        "6",
-        "7"
-      ],
-      "capacity": 10,
-      "status": "active",
-      "description": "هاها",
-      "createdAt": "2026-07-04T17:42:36.037Z",
-      "id": "COkhXPy79kk"
-    }
-  ],
-  "sessions": [
-    {
-      "id": "1",
-      "classId": 1,
-      "title": "جلسه 1 - مقدمه‌ای بر React",
-      "date": "2025-08-01",
-      "description": "آشنایی با مفاهیم پایه React و JSX",
-      "createdAt": "2025-07-25T10:00:00.000Z"
-    },
-    {
-      "id": "2",
-      "classId": 1,
-      "title": "جلسه 2 - Components و Props",
-      "date": "2025-08-08",
-      "description": "ساخت کامپوننت‌ها و مدیریت Props",
-      "createdAt": "2025-08-02T10:00:00.000Z"
-    },
-    {
-      "id": "3",
-      "classId": 2,
-      "title": "جلسه 1 - مقدمه Node.js",
-      "date": "2025-08-03",
-      "description": "آشنایی با محیط Node.js و npm",
-      "createdAt": "2025-07-28T10:00:00.000Z"
-    },
-    {
-      "id": "4",
-      "classId": 2,
-      "title": "جلسه 2 - Express Framework",
-      "date": "2025-08-10",
-      "description": "ساخت API با Express",
-      "createdAt": "2025-08-04T10:00:00.000Z"
-    },
-    {
-      "id": "5",
-      "classId": 3,
-      "title": "جلسه 1 - مبانی Python",
-      "date": "2025-08-05",
-      "description": "نحوه نصب و سینتکس پایه Python",
-      "createdAt": "2025-07-30T10:00:00.000Z"
-    },
-    {
-      "id": "6",
-      "classId": 3,
-      "title": "جلسه 2 - توابع و ماژول‌ها",
-      "date": "2025-08-12",
-      "description": "تعریف توابع و استفاده از ماژول‌ها",
-      "createdAt": "2025-08-06T10:00:00.000Z"
-    },
-    {
-      "title": "تست ۱",
-      "date": "2026-07-06",
-      "description": "تست ۱",
-      "classId": 1,
-      "createdAt": "2026-07-04T17:48:10.115Z",
-      "id": "MOyInPrPCVw"
-    }
-  ],
-  "attendance": [
-    {
-      "id": "a1",
-      "sessionId": 1,
-      "classId": 1,
-      "studentId": 6,
-      "status": "late"
-    },
-    {
-      "id": "a2",
-      "sessionId": 1,
-      "classId": 1,
-      "studentId": 7,
-      "status": "absent"
-    },
-    {
-      "id": "a3",
-      "sessionId": 1,
-      "classId": 1,
-      "studentId": 8,
-      "status": "absent"
-    },
-    {
-      "id": "a4",
-      "sessionId": 2,
-      "classId": 1,
-      "studentId": 6,
-      "status": "present"
-    },
-    {
-      "id": "a5",
-      "sessionId": 2,
-      "classId": 1,
-      "studentId": 7,
-      "status": "absent"
-    },
-    {
-      "id": "a6",
-      "sessionId": 2,
-      "classId": 1,
-      "studentId": 8,
-      "status": "late"
-    },
-    {
-      "id": "a7",
-      "sessionId": 3,
-      "classId": 2,
-      "studentId": 6,
-      "status": "present"
-    },
-    {
-      "id": "a8",
-      "sessionId": 3,
-      "classId": 2,
-      "studentId": 7,
-      "status": "late"
-    },
-    {
-      "id": "a9",
-      "sessionId": 4,
-      "classId": 2,
-      "studentId": 6,
-      "status": "absent"
-    },
-    {
-      "id": "a10",
-      "sessionId": 4,
-      "classId": 2,
-      "studentId": 7,
-      "status": "present"
-    },
-    {
-      "id": "a11",
-      "sessionId": 5,
-      "classId": 3,
-      "studentId": 8,
-      "status": "present"
-    },
-    {
-      "id": "a12",
-      "sessionId": 5,
-      "classId": 3,
-      "studentId": 9,
-      "status": "absent"
-    },
-    {
-      "id": "a13",
-      "sessionId": 6,
-      "classId": 3,
-      "studentId": 8,
-      "status": "late"
-    },
-    {
-      "id": "a14",
-      "sessionId": 6,
-      "classId": 3,
-      "studentId": 9,
-      "status": "present"
-    }
-  ],
-  "announcements": [
-    {
-      "id": "1",
-      "title": "اطلاعیه عمومی برای همه",
-      "content": "این یک اطلاعیه عمومی است که برای همه کاربران قابل مشاهده است.",
-      "classId": 0,
-      "authorId": 1,
-      "createdAt": "2025-07-01T10:00:00.000Z",
-      "seenBy": [
-        3,
-        4
-      ],
-      "targetRoles": [
-        "student",
-        "teacher"
-      ]
-    },
-    {
-      "id": "2",
-      "title": "اطلاعیه مخصوص دانشجویان کلاس React",
-      "content": "این اطلاعیه فقط برای دانشجویان کلاس پیشرفته React است.",
-      "classId": 1,
-      "authorId": 3,
-      "createdAt": "2025-07-05T10:00:00.000Z",
-      "seenBy": [
-        "3",
-        "6"
-      ],
-      "targetAudience": "students"
-    },
-    {
-      "id": "3",
-      "title": "اطلاعیه مخصوص استاد کلاس Node",
-      "content": "این اطلاعیه فقط برای استاد کلاس Backend است.",
-      "classId": 2,
-      "authorId": 4,
-      "createdAt": "2025-07-10T10:00:00.000Z",
-      "seenBy": [
-        "1"
-      ],
-      "targetAudience": "teacher"
-    },
-    {
-      "title": "تست ۱",
-      "content": "تست ۱",
-      "classId": 0,
-      "authorId": "1",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ],
-      "seenBy": [
-        "6",
-        "1"
-      ],
-      "createdAt": "2026-07-04T17:44:26.700Z",
-      "id": "kA2r7dyFim4"
-    },
-    {
-      "title": "تست دیده شدن",
-      "content": "تست دیده شدن توسط دانشجویان",
-      "classId": "1",
-      "authorId": "1",
-      "targetAudience": "students",
-      "seenBy": [
-        "6",
-        "1"
-      ],
-      "createdAt": "2026-07-04T18:14:22.877Z",
-      "id": "bWageD_NRTU"
-    }
-  ],
-  "assignments": [
-    {
-      "id": "1",
-      "title": "تکلیف 1: React Hooks",
-      "description": "یک کامپوننت با useState و useEffect پیاده‌سازی کنید.",
-      "classId": 1,
-      "teacherId": 3,
-      "deadline": "2025-08-25T23:59:59.000Z"
-    },
-    {
-      "id": "2",
-      "title": "تکلیف 2: Express API",
-      "description": "یک REST API ساده برای مدیریت کاربران بنویسید.",
-      "classId": 2,
-      "teacherId": 4,
-      "deadline": "2025-08-30T23:59:59.000Z"
-    }
-  ],
-  "submissions": [
-    {
-      "id": "s1",
-      "assignmentId": 1,
-      "studentId": 7,
-      "content": "https://github.com/mh419421/react-hooks-hw",
-      "submittedAt": "2025-08-20T14:30:00.000Z",
-      "status": "graded",
-      "grade": 18,
-      "feedback": "عالی بود",
-      "updatedAt": "2026-07-04T17:50:44.835Z"
-    },
-    {
-      "id": "s2",
-      "assignmentId": 1,
-      "studentId": 8,
-      "content": "من نتوانستم تحویل بدهم.",
-      "submittedAt": "2025-08-26T10:00:00.000Z",
-      "status": "graded",
-      "grade": 14,
-      "feedback": "تاخیر داشتی ولی کد خوب بود.",
-      "updatedAt": "2025-08-27T09:00:00.000Z"
-    },
-    {
-      "assignmentId": 2,
-      "studentId": 6,
-      "content": "test 1",
-      "status": "submitted",
-      "submittedAt": "2026-07-04T18:06:35.454Z",
-      "id": "q2lzEnE1spE",
-      "updatedAt": "2026-07-04T18:06:49.558Z"
-    },
-    {
-      "assignmentId": 1,
-      "studentId": 6,
-      "content": "تست ۲3",
-      "status": "submitted",
-      "submittedAt": "2026-07-04T18:07:08.526Z",
-      "id": "qkrACzmpOoo",
-      "updatedAt": "2026-07-04T18:07:14.046Z"
-    }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
-}
-</file>
-
-<file path="eslint.config.js">
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
-import { defineConfig, globalIgnores } from 'eslint/config'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-    ],
-    languageOptions: {
-      globals: globals.browser,
-    },
-  },
-])
-</file>
-
-<file path="index.html">
-<!doctype html>
-<html lang="fa" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EduConnect</title>
-    <link
-      href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"
-      rel="stylesheet"
-      type="text/css"
-    />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
-</file>
-
-<file path="package.json">
-{
-  "name": "educonnect",
-  "private": true,
-  "version": "1.6.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "server": "json-server --watch db.json --port 3001"
-  },
-  "dependencies": {
-    "axios": "^1.19.0",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "react-hook-form": "^7.85.0",
-    "react-router-dom": "^7.18.2",
-    "recharts": "^3.10.1"
-  },
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@types/node": "^24.13.3",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.4",
-    "@vitejs/plugin-react": "^6.1.0",
-    "autoprefixer": "^10.5.4",
-    "eslint": "^10.8.1",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.4",
-    "globals": "^17.11.0",
-    "json-server": "^1.0.0-beta.15",
-    "postcss": "^8.5.26",
-    "tailwindcss": "^3.4.19",
-    "typescript": "~6.0.2",
-    "typescript-eslint": "^8.67.0",
-    "vite": "^8.2.2",
-    "vite-tsconfig-paths": "^6.1.1"
-  },
-  "imports": {
-    "#/*": "./src/*"
-  }
-}
-</file>
-
-<file path="postcss.config.js">
-export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-}
-</file>
-
-<file path="README.md">
-# سامانه جامع مدیریت آموزشی EduConnect
-
-## معرفی پروژه
-
-**EduConnect** یک سامانه تحت وب یکپارچه (Single Page Application) است که با هدف مکانیزاسیون و مدیریت هوشمند فرایندهای آموزشی، ارتباطی و نظارتی میان **دانشجویان، اساتید و مدیران گروه** طراحی و پیاده‌سازی شده است. این پروژه با بهره‌گیری از معماری ماژولار و فناوری‌های مدرن فرانت‌اند، محیطی متمرکز برای مدیریت کلاس‌ها، جلسات، حضور و غیاب، تکالیف، اطلاعیه‌ها و گزارش‌های تحلیلی فراهم می‌آورد. هسته داده‌ای این سامانه در حال حاضر بر پایه یک API شبیه‌سازی‌شده (Mock API) با استفاده از `json-server` استوار است که قابلیت توسعه و اتصال به بک‌اند واقعی را بدون تغییر در لایه سرویس‌دهی دارا می‌باشد.
-
-> **نسخه فعلی:** `1.6.0` — این نسخه، تکامل‌یافته‌ی نسخه اولیه (`0.0.0`) است و شامل بازنگری‌های اساسی در معماری تایپ‌ها، بهبود جریان‌های کاربری، رفع باگ‌های منطقی و ارتقاء تجربه کاربری می‌باشد.
-
----
-
-## پشته فناوری (Technology Stack)
-
-این پروژه با رعایت اصول مهندسی نرم‌افزار و با استفاده از ابزارهای زیر توسعه یافته است:
-
-| دسته                     | فناوری                     | نسخه                |
-| :----------------------- | :------------------------- | :------------------ |
-| **هسته اصلی**            | React + TypeScript         | `19.2.8` / `~6.0.2` |
-| **ابزار ساخت (Bundler)** | Vite                       | `^8.2.2`            |
-| **استایل‌دهی**           | Tailwind CSS + PostCSS     | `^3.4.19`           |
-| **مسیریابی**             | React Router DOM           | `^7.18.2`           |
-| **مدیریت فرم**           | React Hook Form            | `^7.85.0`           |
-| **ارتباط با سرویس**      | Axios                      | `^1.19.0`           |
-| **نمودارهای تحلیلی**     | Recharts                   | `^3.10.1`           |
-| **بک‌اند شبیه‌سازی‌شده** | JSON Server                | `^1.0.0-beta.15`    |
-| **ابزارهای کیفیت کد**    | ESLint + TypeScript ESLint | `^10.8.1`           |
-
----
-
-## تکامل پروژه: از نسخه `0.0.0` تا نسخه `1.6.0`
-
-نسخه فعلی (پروژه ۳) نسبت به نسخه اولیه (پروژه ۲) دچار تحولات ساختاری و عملکردی قابل‌توجهی شده است. در ادامه، مهم‌ترین این تغییرات به تفکیک حوزه ارائه می‌گردد:
-
-### ۱. بازنگری بنیادین در سیستم تایپ‌ها (Type System Overhaul)
-
-| حوزه                                 | نسخه قبل (`0.0.0`)    | نسخه فعلی (`1.6.0`)              |
-| :----------------------------------- | :-------------------- | :------------------------------- |
-| تایپ شناسه (`ID`)                    | `number` (صرفاً عددی) | `number \| string` (انعطاف‌پذیر) |
-| تایپ `classId` در فرم اطلاعیه        | `number`              | `number \| string`               |
-| تایپ `authorId` در فرم اطلاعیه       | `number`              | `ID`                             |
-| تایپ `currentUserId` در جدول کاربران | `number`              | `ID`                             |
-| مقایسه شناسه‌ها                      | مقایسه مستقیم (`===`) | مقایسه نرمال‌شده (`String()`)    |
-
-**هدف:** این بازنگری، سامانه را در برابر ناهمگونی داده‌های ورودی از سمت سرور (مانند دریافت شناسه‌های رشته‌ای از JSON Server) مقاوم ساخته و از بروز خطاهای `NaN` یا مقایسه‌های نادرست جلوگیری می‌کند.
-
-### ۲. بهبود معماری مسیریابی (Routing Architecture)
-
-- **مسیر جدید `classes/:classId/assignments`:** در نسخه قبل، دسترسی به تکالیف یک کلاس خاص صرفاً از طریق صفحه عمومی تکالیف ممکن بود. در نسخه فعلی، مسیر اختصاصی برای مشاهده تکالیف هر کلاس تعریف شده که جریان ناوبری (Navigation Flow) را بهبود می‌بخشد.
-- **رفع ابهام پارامترها:** در `AssignmentsPage`، پارامتر `classId` به‌جای `id` مبهم استفاده شده و خوانایی کد و قابلیت نگهداری آن افزایش یافته است.
-
-### ۳. اصلاح و بهبود ماژول تکالیف (Assignments)
-
-| قابلیت                        | نسخه قبل                               | نسخه فعلی                                          |
-| :---------------------------- | :------------------------------------- | :------------------------------------------------- |
-| مدیریت حالت صفحه              | متغیرهای پراکنده `useState`            | آبجکت تجمیعی `PageState`                           |
-| ارسال پاسخ دانشجو             | ارجاع به `editingAssignment` (باگ‌دار) | ارجاع به `submittingAssignment` (اصلاح‌شده)        |
-| ستون «نمره و بازخورد» در جدول | نمایش در جدول اصلی                     | انتقال به صفحه جزئیات پاسخ‌ها                      |
-| ویرایش تکلیف                  | حذف تمام پاسخ‌های دانشجویان            | حفظ پاسخ‌ها (فقط حذف تکلیف، پاسخ‌ها را حذف می‌کند) |
-| دسترسی ادمین به نمرات         | محدود به استاد مالک                    | ادمین نیز مجاز به مشاهده و نمره‌دهی                |
-| ناوبری پس از ثبت نمره         | بازگشت خودکار با `setTimeout`          | نمایش پیام موفقیت بدون ناوبری اجباری               |
-
-### ۴. ارتقاء ماژول اطلاعیه‌رسانی (Announcements)
-
-- **انعطاف‌پذیری تایپی:** پشتیبانی هم‌زمان از شناسه‌های عددی و رشته‌ای برای `classId` و `authorId`.
-- **بهبود منطق فیلترینگ:** اضافه شدن شرط «نویسنده خود کاربر است» برای اطمینان از مشاهده اطلاعیه‌های ایجادشده توسط خود کاربر.
-- **مدیریت دسترسی ویرایش/حذف:** تفکیک دقیق‌تر مجوزها از طریق تابع `canManageItem`.
-
-### ۵. بهبود ماژول کلاس‌ها و جزئیات کلاس
-
-- **دکمه «مشاهده تکالیف کلاس»:** در صفحه جزئیات کلاس (`ClassDetailsPage`)، دکمه‌ای برای دسترسی مستقیم به تکالیف آن کلاس اضافه شده است.
-- **مدیریت خطای شبکه:** پیاده‌سازی تابع `getErrorMessage` برای تشخیص و نمایش پیام‌های اختصاصی خطاهای شبکه (`ERR_NETWORK`, `ECONNABORTED`).
-- **فیلتر کردن کلاس‌ها در فرم اطلاعیه:** اساتید صرفاً کلاس‌های تحت تدریس خود را در فرم ایجاد اطلاعیه مشاهده می‌کنند.
-
-### ۶. بهبودهای رابط کاربری و تجربه کاربری (UI/UX)
-
-| مورد                    | نسخه قبل                          | نسخه فعلی                                  |
-| :---------------------- | :-------------------------------- | :----------------------------------------- |
-| چیدمان جدول             | `text-left`                       | `text-center` + `m-auto`                   |
-| موقعیت دکمه منوی موبایل | `right-4`                         | `left-4`                                   |
-| هدر                     | بدون کلاس‌های ریسپانسیو           | پشتیبانی کامل `sm:`                        |
-| فرم ورود                | `useRef` + `useEffect` برای فوکوس | `autoFocus` (ساده‌سازی)                    |
-| پیام‌های موفقیت/خطا     | ناهمگون                           | یکپارچه با `actionMessage` و `actionError` |
-
-### ۷. ارتقاء وابستگی‌ها (Dependency Upgrades)
-
-کلیه وابستگی‌های اصلی پروژه به آخرین نسخه‌های پایدار ارتقا یافته‌اند:
-
-- **React:** `19.2.6` → `19.2.8`
-- **Axios:** `1.16.1` → `1.19.0`
-- **React Router DOM:** `7.16.0` → `7.18.2`
-- **Vite:** `8.0.12` → `8.2.2`
-- **Recharts:** `3.8.1` → `3.10.1`
-- **ESLint:** `10.3.0` → `10.8.1`
-
-### ۸. بهبود مدیریت کاربران و سرویس‌ها
-
-- **سرویس کاربران:** کلیه توابع (`update`, `delete`, `toggleStatus`, `changeRole`) از تایپ `ID` به‌جای `number` استفاده می‌کنند.
-- **سرویس اطلاعیه‌ها:** تابع `isSeenBy` با مقایسه نرمال‌شده (`String()`) بازنویسی شده است.
-- **سرویس حضور و غیاب:** پشتیبانی کامل از شناسه‌های رشته‌ای و عددی.
-
----
-
-## ویژگی‌های کلیدی سامانه
-
-### ۱. مدیریت کاربران و کنترل دسترسی (RBAC)
-
-- احراز هویت امن و مدیریت نشست (Session) کاربران.
-- تفکیک دقیق سطوح دسترسی برای سه نقش اصلی: **مدیر گروه (Admin)**، **استاد (Teacher)** و **دانشجو (Student)**.
-- قابلیت جستجو، فیلتر، ایجاد، ویرایش و تغییر وضعیت (فعال/غیرفعال) کاربران.
-- جلوگیری از حذف یا غیرفعال‌سازی آخرین مدیر سیستم.
-
-### ۲. مدیریت کلاس‌ها و جلسات آموزشی
-
-- تعریف کلاس‌های درسی با تعیین ظرفیت، استاد مربوطه و لیست دانشجویان.
-- ایجاد و مدیریت جلسات (Sessions) برای هر کلاس به تفکیک تاریخ.
-- نمایش وضعیت کلاس (فعال/غیرفعال) و آمار تکمیل ظرفیت.
-- دسترسی مستقیم به تکالیف هر کلاس از صفحه جزئیات.
-
-### ۳. سیستم حضور و غیاب هوشمند
-
-- ثبت وضعیت حضور دانشجویان (حاضر، غایب، با تأخیر) به ازای هر جلسه توسط استاد.
-- محاسبه خودکار درصد حضور و غیاب هر دانشجو در هر کلاس.
-- مشاهده تاریخچه حضور و غیاب توسط دانشجو در پروفایل اختصاصی.
-- نوار پیشرفت بصری برای نمایش درصد حضور.
-
-### ۴. مدیریت تکالیف و ارزیابی (Assignments)
-
-- تعریف تکلیف با تعیین عنوان، توضیحات و مهلت ارسال (Deadline) توسط استاد.
-- امکان ارسال پاسخ (Submission) توسط دانشجو و پیگیری وضعیت آن.
-- سیستم نمره‌دهی و ارائه بازخورد (Feedback) توسط استاد برای هر پاسخ ارسال‌شده.
-- **ویرایش تکلیف بدون حذف پاسخ‌های موجود** (بهبود یافته در نسخه `1.6.0`).
-- دسترسی ادمین به نمره‌دهی و مشاهده پاسخ‌ها.
-
-### ۵. سامانه اطلاعیه‌رسانی هدفمند
-
-- ایجاد اطلاعیه با قابلیت تعیین مخاطب خاص (کل سیستم، یک کلاس خاص، یا نقش‌های ویژه).
-- ردیابی وضعیت مشاهده (Seen/Unseen) اطلاعیه‌ها توسط کاربران هدف.
-- بازنشانی وضعیت مشاهده هنگام ویرایش اطلاعیه.
-- فیلترینگ هوشمند بر اساس نقش، کلاس و مخاطب هدف.
-
-### ۶. داشبورد و پروفایل کاربری
-
-- **پروفایل دانشجو:** نمای کلی از آمار حضور، درصد شرکت در جلسات و تاریخچه کامل.
-- **پروفایل عمومی:** نمایش اطلاعات کاربری، نقش و وضعیت حساب.
-
----
-
-## ساختار دایرکتوری پروژه (Architecture)
-
-پروژه بر اساس اصل جداسازی دغدغه‌ها (Separation of Concerns) سازماندهی شده است:
-
-```text
-src/
-├── components/          # کامپوننت‌های قابل استفاده مجدد
-│   ├── common/          # کامپوننت‌های مشترک (Header, Sidebar, Loading, EmptyState)
-│   └── ui/              # کامپوننت‌های UI پایه (Button, Modal, Table, Card, ...)
-├── context/             # مدیریت وضعیت سراسری (AuthContext, AuthProvider)
-├── data/                # داده‌های ثابت و پیکربندی‌های اولیه
-├── layouts/             # چیدمان‌های اصلی صفحه (MainLayout)
-├── pages/               # کامپوننت‌های سطح صفحه دسته‌بندی‌شده بر اساس ماژول
-│   ├── announcements/   # ماژول اطلاعیه‌ها
-│   ├── assignments/     # ماژول تکالیف و پاسخ‌ها
-│   ├── attendance/      # ماژول حضور و غیاب
-│   ├── auth/            # صفحه ورود
-│   ├── classes/         # ماژول کلاس‌ها و جلسات
-│   ├── dashboard/       # داشبورد
-│   ├── profile/         # پروفایل کاربری
-│   └── users/           # مدیریت کاربران
-├── routes/              # تعریف مسیرها و محافظ‌های دسترسی
-├── services/            # لایه ارتباط با API
-│   ├── api/             # تنظیمات Axios و API پایه
-│   └── modules/         # سرویس‌های اختصاصی هر ماژول
-├── types/               # تعاریف نوع و اینترفیس‌های TypeScript
-└── utils/               # توابع کمکی و ابزارهای کاربردی
-```
-
----
-
-## راهنمای نصب و راه‌اندازی
-
-برای اجرای پروژه در محیط توسعه، مراحل زیر را به ترتیب دنبال نمایید:
-
-### پیش‌نیازها
-
-- **Node.js** نسخه `18.x` یا بالاتر
-- **npm** نسخه `9.x` یا بالاتر
-
-### مراحل اجرا
-
-**۱. نصب وابستگی‌ها:**
-
-```bash
-npm install
-```
-
-**۲. راه‌اندازی سرور شبیه‌سازی داده (ترمینال اول):**
-
-```bash
-npm run server
-```
-
-> این دستور یک RESTful API محلی روی پورت `3001` ایجاد می‌کند.
-
-**۳. اجرای محیط توسعه فرانت‌اند (ترمینال دوم):**
-
-```bash
-npm run dev
-```
-
-> پروژه روی پورت `5173` در دسترس خواهد بود.
-
-**۴. ساخت نسخه نهایی (Production Build):**
-
-```bash
-npm run build
-npm run preview
-```
-
----
-
-## دستورات npm
-
-| دستور             | توضیحات                           |
-| :---------------- | :-------------------------------- |
-| `npm run dev`     | راه‌اندازی سرور توسعه Vite با HMR |
-| `npm run server`  | اجرای JSON Server روی پورت `3001` |
-| `npm run build`   | کامپایل TypeScript و باندل نهایی  |
-| `npm run preview` | پیش‌نمایش نسخه Production         |
-| `npm run lint`    | بررسی کیفیت کد با ESLint          |
-
----
-
-## اطلاعات ورود پیش‌فرض (جهت تست و ارزیابی)
-
-رمز عبور تمامی کاربران: `123456`
-
-| نقش              | ایمیل              | وضعیت      |
-| :--------------- | :----------------- | :--------- |
-| 👑 **مدیر گروه** | `admin1@edu.com`   | ✅ فعال    |
-| 👑 **مدیر گروه** | `admin2@edu.com`   | ❌ غیرفعال |
-| 👨‍🏫 **استاد**     | `teacher1@edu.com` | ✅ فعال    |
-| 👩‍🏫 **استاد**     | `teacher2@edu.com` | ✅ فعال    |
-| 👨‍🏫 **استاد**     | `teacher3@edu.com` | ❌ غیرفعال |
-| 👩‍🎓 **دانشجو**    | `student1@edu.com` | ✅ فعال    |
-| 👨‍🎓 **دانشجو**    | `student2@edu.com` | ✅ فعال    |
-| 👩‍🎓 **دانشجو**    | `student3@edu.com` | ✅ فعال    |
-| 👨‍🎓 **دانشجو**    | `student4@edu.com` | ❌ غیرفعال |
-
----
-
-## نقش‌ها و سطح دسترسی‌ها
-
-### 👑 مدیر (Admin)
-
-- دسترسی کامل به تمامی بخش‌های سامانه
-- مدیریت کاربران، نقش‌ها و وضعیت حساب‌ها
-- ایجاد اطلاعیه‌های عمومی با تعیین مخاطبان هدف
-- مشاهده و نمره‌دهی به تمامی تکالیف و پاسخ‌ها
-- مدیریت تمامی کلاس‌ها و جلسات
-
-### 👨‍🏫 استاد (Teacher)
-
-- ایجاد و مدیریت کلاس‌های تحت تدریس
-- ایجاد جلسات و ثبت حضور و غیاب
-- تعریف تکلیف و نمره‌دهی به پاسخ‌های دانشجویان
-- ایجاد اطلاعیه برای کلاس‌های خود
-- ویرایش/حذف تکالیف و اطلاعیه‌های ایجادشده توسط خود
-
-### 👨‍🎓 دانشجو (Student)
-
-- مشاهده کلاس‌های ثبت‌نام‌شده
-- ارسال و ویرایش پاسخ تکالیف (پیش از نمره‌دهی)
-- مشاهده آمار حضور و غیاب شخصی
-- مشاهده اطلاعیه‌های مرتبط
-- مشاهده پروفایل و تاریخچه آموزشی
-
----
-
-## نقشه راه توسعه (Development Roadmap)
-
-### فازهای تکمیل‌شده (هسته اصلی — فازهای ۱ تا ۱۰):
-
-1. پایه فنی و اسکلت پروژه
-2. احراز هویت، نقش‌ها و کنترل دسترسی (RBAC)
-3. مدیریت کاربران (CRUD)
-4. مدیریت کلاس‌ها و جلسات
-5. سیستم حضور و غیاب
-6. سیستم اطلاعیه‌رسانی
-7. مدیریت تکالیف و ارسال پاسخ
-8. داشبوردهای اختصاصی و گزارش‌های پایه
-9. یکپارچه‌سازی ماژول‌ها و بهبود تجربه کاربری (UX)
-10. تست سناریوها، رفع اشکال و آماده‌سازی برای ارائه
-
-### فازهای توسعه آتی (Advanced Features):
-
-- **فاز ۱۱:** مرکز اعلان‌ها (Notification Center) و هشدارهای مهلت ارسال
-- **فاز ۱۲:** سیستم چرخه حیات محتوا (Draft, Published, Archived)
-- **فاز ۱۳:** پروفایل پیشرفته و تاریخچه فعالیت‌ها (Activity Log)
-- **فاز ۱۴:** اتاق گفت‌وگوی آموزشی (Discussion Room)
-- **فاز ۱۵:** تقویم آموزشی جامع و سیستم یادآور (Reminders)
-- **فاز ۱۶:** ماژول آزمون‌های آنلاین
-- **فاز ۱۷:** حالت تاریک، جستجوی سراسری و نمودارهای تحلیلی پیشرفته
-
----
-
-## ملاحظات فنی و توسعه
-
-- **مدیریت خطا:** تمامی درخواست‌های شبکه با مکانیزم‌های مدیریت خطا (Try/Catch) و نمایش پیام‌های مناسب به کاربر پوشش داده شده‌اند. در نسخه `1.6.0`، تشخیص خطاهای شبکه (`ERR_NETWORK`, `ECONNABORTED`) به‌صورت اختصاصی پیاده‌سازی شده است.
-- **اعتبارسنجی:** فرم‌ها دارای اعتبارسنجی در سمت کلاینت (Client-side Validation) جهت جلوگیری از ارسال داده‌های ناقص یا نامعتبر هستند.
-- **واکنش‌گرایی:** رابط کاربری با استفاده از کلاس‌های کاربردی Tailwind CSS برای نمایش بهینه در دستگاه‌های موبایل، تبلت و دسکتاپ بهینه‌سازی شده است.
-- **انعطاف‌پذیری تایپی:** با تغییر تایپ `ID` به `number | string`، سامانه در برابر ناهمگونی داده‌های سرور مقاوم شده است.
-- **معماری سرویس‌محور:** کلیه درخواست‌های HTTP در لایه `services` متمرکز شده‌اند و تغییر بک‌اند (از Mock به واقعی) بدون تغییر در لایه نمایش امکان‌پذیر است.
-
----
-
-## خلاصه تغییرات نسخه `1.6.0` نسبت به `0.0.0`
-
-| دسته                                    | تعداد تغییرات         |
-| :-------------------------------------- | :-------------------- |
-| بازنگری تایپ‌ها و انعطاف‌پذیری شناسه‌ها | ۱۵+ فایل              |
-| بهبود مسیریابی و جریان ناوبری           | ۳ مسیر جدید/اصلاح‌شده |
-| رفع باگ‌های منطقی                       | ۵+ مورد               |
-| بهبود UI/UX و ریسپانسیو                 | ۸+ کامپوننت           |
-| ارتقاء وابستگی‌ها                       | ۱۰+ پکیج              |
-| بهبود مدیریت خطا                        | ۴+ ماژول              |
-
----
-
-_توسعه‌یافته با رویکرد مهندسی نرم‌افزار و رعایت استانداردهای کدنویسی مدرن._
-
-**EduConnect © 2026** | نسخه `1.6.0`
-</file>
-
-<file path="src/App.css">
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-</file>
-
-<file path="src/App.tsx">
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
-import MainLayout from "#/layouts/MainLayout.tsx";
-import DashboardPage from "#/pages/dashboard/DashboardPage.tsx";
-import UsersPage from "#/pages/users/UsersPage.tsx";
-import ClassesPage from "#/pages/classes/ClassesPage.tsx";
-import ClassDetailsPage from "#/pages/classes/ClassDetailsPage.tsx";
-import AttendancePage from "#/pages/attendance/AttendancePage.tsx";
-import AnnouncementsPage from "#/pages/announcements/AnnouncementsPage.tsx";
-import AssignmentsPage from "#/pages/assignments/AssignmentsPage.tsx";
-import ProfilePage from "#/pages/profile/ProfilePage.tsx";
-import LoginPage from "#/pages/auth/LoginPage.tsx";
-import UnauthorizedPage from "#/pages/UnauthorizedPage.tsx";
-import NotFoundPage from "#/pages/NotFoundPage.tsx";
-import ProtectedRoute from "#/routes/ProtectedRoute.tsx";
-import RoleGuard from "#/routes/RoleGuard.tsx";
-import SubmissionsPage from "#/pages/assignments/SubmissionsPage.tsx";
-
-function App() {
-  return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/unauthorized" element={<UnauthorizedPage />} />
-      <Route
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <Outlet />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/" element={<DashboardPage />} />
-        <Route
-          path="users"
-          element={
-            <RoleGuard allowedRoles={["admin"]}>
-              <UsersPage />
-            </RoleGuard>
-          }
-        />
-        <Route
-          path="classes"
-          element={
-            <RoleGuard allowedRoles={["admin", "teacher"]}>
-              <ClassesPage />
-            </RoleGuard>
-          }
-        />
-        <Route
-          path="classes/:id"
-          element={
-            <RoleGuard allowedRoles={["admin", "teacher"]}>
-              <ClassDetailsPage />
-            </RoleGuard>
-          }
-        />
-        <Route
-          path="attendance"
-          element={
-            <RoleGuard allowedRoles={["admin", "teacher"]}>
-              <AttendancePage />
-            </RoleGuard>
-          }
-        />
-        <Route
-          path="announcements"
-          element={
-            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
-              <AnnouncementsPage />
-            </RoleGuard>
-          }
-        />
-        <Route
-          path="assignments"
-          element={
-            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
-              <AssignmentsPage />
-            </RoleGuard>
-          }
-        />
-
-        {/* ✅ اصلاح مسیر: دریافت classId به جای id مبهم */}
-        <Route
-          path="classes/:classId/assignments"
-          element={
-            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
-              <AssignmentsPage />
-            </RoleGuard>
-          }
-        />
-
-        <Route
-          path="assignments/:id/submissions"
-          element={
-            <RoleGuard allowedRoles={["admin", "teacher"]}>
-              <SubmissionsPage />
-            </RoleGuard>
-          }
-        />
-        <Route
-          path="profile"
-          element={
-            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
-              <ProfilePage />
-            </RoleGuard>
-          }
-        />
-      </Route>
-      <Route path="/home" element={<Navigate to="/" replace />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
-  );
-}
-export default App;
-</file>
 
 <file path="src/components/common/EmptyState.tsx">
 interface EmptyStateProps {
@@ -1181,14 +205,14 @@ function Header() {
   return (
     <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 sm:px-6">
       <div>
-        <h1 className="text-lg sm:text-xl font-bold text-blue-600">
+        <h1 className="text-lg font-bold text-blue-600 sm:text-xl">
           EduConnect
         </h1>
       </div>
       <div className="flex items-center gap-2 sm:gap-3">
         {isAuthenticated && user ? (
           <>
-            <div className="hidden sm:block text-sm text-gray-600">
+            <div className="hidden text-sm text-gray-600 sm:block">
               {user.name} ({getRoleLabel(user.role)})
             </div>
             <Button variant="secondary" onClick={handleLogout}>
@@ -1299,9 +323,7 @@ function Sidebar() {
       )}
 
       <aside
-        className={`fixed inset-y-0 right-0 z-40 w-64 transform border-l border-gray-200 bg-white p-4 transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed inset-y-0 right-0 z-40 w-64 transform border-l border-gray-200 bg-white p-4 transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${isOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <nav className="flex flex-col gap-2 pt-4 md:pt-0">
           {filteredNavItems.map((item) => (
@@ -1310,11 +332,7 @@ function Sidebar() {
               to={item.path}
               onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
-                `rounded-lg px-4 py-2 text-sm font-medium transition ${
-                  isActive
-                    ? "bg-blue-100 text-blue-700"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`
+                `rounded-lg px-4 py-2 text-sm font-medium transition ${isActive ? "bg-blue-100 text-blue-700" : "text-gray-700 hover:bg-gray-100"}`
               }
             >
               {item.label}
@@ -1469,9 +487,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <input
           ref={ref}
-          className={`rounded-lg border px-3 py-2 text-sm outline-none focus:border-blue-500 ${
-            error ? "border-red-500" : "border-gray-300"
-          } ${className}`}
+          className={`rounded-lg border px-3 py-2 text-sm outline-none focus:border-blue-500 ${error ? "border-red-500" : "border-gray-300"} ${className}`}
           {...props}
         />
         {error && <span className="text-xs text-red-600">{error}</span>}
@@ -1576,9 +592,7 @@ function Select({
         <label className="text-sm font-medium text-gray-700">{label}</label>
       )}
       <select
-        className={`rounded-lg border px-3 py-2 text-sm outline-none focus:border-blue-500 ${
-          error ? "border-red-500" : "border-gray-300"
-        } ${className}`}
+        className={`rounded-lg border px-3 py-2 text-sm outline-none focus:border-blue-500 ${error ? "border-red-500" : "border-gray-300"} ${className}`}
         {...props}
       >
         {options.map((option) => (
@@ -1680,7 +694,7 @@ function Table<T>({ columns, data, getRowKey }: TableProps<T>) {
               {columns.map((column) => (
                 <td
                   key={String(column.key)}
-                  className="px-3 py-3 text-gray-600 sm:px-4 m-auto"
+                  className="m-auto px-3 py-3 text-gray-600 sm:px-4"
                 >
                   {column.render
                     ? column.render(item)
@@ -1801,18 +815,6 @@ export default AuthProvider;
 export const APP_NAME = "EduConnect";
 </file>
 
-<file path="src/index.css">
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-body {
-  font-family: "Vazirmatn", sans-serif;
-  direction: rtl;
-  text-align: right;
-}
-</file>
-
 <file path="src/layouts/MainLayout.tsx">
 import type { ReactNode } from "react";
 
@@ -1827,11 +829,8 @@ function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-
       <div className="flex min-h-[calc(100vh-64px)]">
         <Sidebar />
-
-        {/* ✅ ریسپانسیو: padding کمتر در موبایل */}
         <main className="flex-1 p-3 sm:p-4 md:p-6">
           <div className="mx-auto max-w-7xl">{children}</div>
         </main>
@@ -1841,26 +840,6 @@ function MainLayout({ children }: MainLayoutProps) {
 }
 
 export default MainLayout;
-</file>
-
-<file path="src/main.tsx">
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-
-import App from "./App";
-import AuthProvider from "#/context/AuthProvider.tsx";
-import "./index.css";
-
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
-  </React.StrictMode>,
-);
 </file>
 
 <file path="src/pages/announcements/AnnouncementForm.tsx">
@@ -1896,9 +875,10 @@ export default function AnnouncementForm({
 }: Props) {
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [content, setContent] = useState(initialData?.content ?? "");
-  const [classId, setClassId] = useState<number | string>(
-    initialData?.classId ?? 0,
+  const [classId, setClassId] = useState<string>(
+    initialData?.classId?.toString() ?? "0",
   );
+
   const [targetRoles, setTargetRoles] = useState<UserRole[]>(
     initialData?.targetRoles ?? ["admin", "teacher", "student"],
   );
@@ -1907,7 +887,6 @@ export default function AnnouncementForm({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-
   const isAdmin = userRole === "admin";
 
   const handleSubmit = async () => {
@@ -1915,18 +894,12 @@ export default function AnnouncementForm({
       setError("عنوان و محتوا الزامی است.");
       return;
     }
-
     try {
       setIsSubmitting(true);
-      const basePayload = {
-        title,
-        content,
-        classId,
-        authorId,
-      };
+      const basePayload = { title, content, classId, authorId };
 
       const payload: Partial<Announcement> = isAdmin
-        ? classId === 0 || classId === "0"
+        ? classId === "0"
           ? { ...basePayload, targetRoles, targetAudience: undefined }
           : { ...basePayload, targetAudience, targetRoles: undefined }
         : {
@@ -1959,7 +932,7 @@ export default function AnnouncementForm({
 
   const classOptions = isAdmin
     ? [
-        { label: "همه (عمومی)", value: 0 },
+        { label: "همه (عمومی)", value: "0" },
         ...classes.map((c) => ({ label: c.title, value: c.id })),
       ]
     : classes.map((c) => ({ label: c.title, value: c.id }));
@@ -1984,7 +957,7 @@ export default function AnnouncementForm({
           options={classOptions}
         />
 
-        {isAdmin && (classId === 0 || classId === "0") && (
+        {isAdmin && classId === "0" && (
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
               قابل مشاهده برای (نقش‌ها):
@@ -1993,7 +966,7 @@ export default function AnnouncementForm({
               {(["admin", "teacher", "student"] as UserRole[]).map((role) => (
                 <label
                   key={role}
-                  className="flex items-center gap-2 cursor-pointer"
+                  className="flex cursor-pointer items-center gap-2"
                 >
                   <input
                     type="checkbox"
@@ -2001,7 +974,7 @@ export default function AnnouncementForm({
                     onChange={() => toggleRole(role)}
                     className="h-4 w-4"
                   />
-                  <span className="text-sm text-gray-700 capitalize">
+                  <span className="text-sm capitalize text-gray-700">
                     {role === "admin"
                       ? "مدیر"
                       : role === "teacher"
@@ -2013,8 +986,7 @@ export default function AnnouncementForm({
             </div>
           </div>
         )}
-
-        {isAdmin && classId !== 0 && classId !== "0" && (
+        {isAdmin && classId !== "0" && (
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
               مخاطبان در کلاس:
@@ -2073,6 +1045,7 @@ import { formatDate } from "#/utils/formatDate.ts";
 import type { Announcement } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
+import type { ID } from "#/types/common.ts";
 import AnnouncementForm from "./AnnouncementForm";
 
 export default function AnnouncementsPage() {
@@ -2093,8 +1066,7 @@ export default function AnnouncementsPage() {
   const canManageItem = (item: Announcement) => {
     if (!currentUser) return false;
     if (currentUser.role === "admin") return true;
-    if (currentUser.role === "teacher")
-      return String(item.authorId) === String(currentUser.id);
+    if (currentUser.role === "teacher") return item.authorId === currentUser.id;
     return false;
   };
 
@@ -2113,8 +1085,8 @@ export default function AnnouncementsPage() {
       );
       setClasses(c);
       setUsers(u);
-    } catch {
-      // مدیریت خطا
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -2134,9 +1106,7 @@ export default function AnnouncementsPage() {
   const formClasses = useMemo(() => {
     if (isAdmin) return classes;
     if (isTeacher && currentUser)
-      return classes.filter(
-        (c) => String(c.teacherId) === String(currentUser.id),
-      );
+      return classes.filter((c) => c.teacherId === currentUser.id);
     return [];
   }, [classes, isAdmin, isTeacher, currentUser]);
 
@@ -2144,46 +1114,39 @@ export default function AnnouncementsPage() {
     if (!currentUser) return [];
     return announcements.filter((a) => {
       if (currentUser.role === "admin") return true;
-
-      if (a.classId === 0 || a.classId === "0") {
+      if (a.classId === "0") {
         const roles = a.targetRoles ?? ["admin", "teacher", "student"];
         return roles.includes(currentUser.role);
       }
 
-      const targetClass = classes.find(
-        (c) => String(c.id) === String(a.classId),
-      );
+      const targetClass = classes.find((c) => c.id === a.classId);
       if (!targetClass) return false;
 
       const audience = a.targetAudience ?? "students";
-      const isTeacherOfThisClass =
-        String(targetClass.teacherId) === String(currentUser.id);
-      const isStudentInThisClass = (targetClass.studentIds || [])
-        .map(String)
-        .includes(String(currentUser.id));
+      const isTeacherOfThisClass = targetClass.teacherId === currentUser.id;
+      const isStudentInThisClass = (targetClass.studentIds || []).includes(
+        currentUser.id,
+      );
 
       if (audience === "teacher") return isTeacherOfThisClass;
       if (audience === "students") return isStudentInThisClass;
       if (audience === "both")
         return isTeacherOfThisClass || isStudentInThisClass;
 
-      // اگر نویسنده خود کاربر است، در هر صورت ببیند
-      if (String(a.authorId) === String(currentUser.id)) return true;
+      if (a.authorId === currentUser.id) return true;
 
       return false;
     });
   }, [announcements, classes, currentUser]);
-
-  const getAuthorName = (authorId: number | string) =>
-    users.find((u) => String(u.id) === String(authorId))?.name ?? "نامشخص";
-  const getClassName = (classId: number | string) =>
-    classId === 0 || classId === "0"
+  const getAuthorName = (authorId: ID) =>
+    users.find((u) => u.id === authorId)?.name ?? "نامشخص";
+  const getClassName = (classId: ID) =>
+    classId === "0"
       ? "همه (عمومی)"
-      : (classes.find((c) => String(c.id) === String(classId))?.title ??
-        "نامشخص");
+      : (classes.find((c) => c.id === classId)?.title ?? "نامشخص");
 
   const getTargetDescription = (item: Announcement) => {
-    if (item.classId === 0 || item.classId === "0") {
+    if (item.classId === "0") {
       const roles = item.targetRoles ?? ["admin", "teacher", "student"];
       return roles
         .map((r) =>
@@ -2217,8 +1180,8 @@ export default function AnnouncementsPage() {
       await announcementService.delete(deleteTarget.id);
       setDeleteTarget(null);
       await fetchData();
-    } catch {
-      // مدیریت خطا
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -2255,8 +1218,8 @@ export default function AnnouncementsPage() {
               : true;
             return (
               <Card key={item.id}>
-                <div className="flex flex-col h-full">
-                  <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="flex h-full flex-col">
+                  <div className="mb-2 flex items-start justify-between gap-2">
                     <h3
                       className={`text-lg font-semibold ${isSeen ? "text-gray-600" : "text-blue-700"}`}
                     >
@@ -2274,20 +1237,20 @@ export default function AnnouncementsPage() {
                       )}
                     </h3>
                   </div>
-                  <p className="text-xs text-gray-500 mb-1">
+                  <p className="mb-1 text-xs text-gray-500">
                     مخاطب: {getClassName(item.classId)}
                   </p>
-                  <p className="text-xs text-gray-500 mb-1">
+                  <p className="mb-1 text-xs text-gray-500">
                     دسترسی: {getTargetDescription(item)}
                   </p>
-                  <p className="text-xs text-gray-500 mb-3">
+                  <p className="mb-3 text-xs text-gray-500">
                     نویسنده: {getAuthorName(item.authorId)} | تاریخ:{" "}
                     {formatDate(item.createdAt)}
                   </p>
-                  <p className="text-sm text-gray-700 line-clamp-3 mb-4 flex-grow">
+                  <p className="mb-4 line-clamp-3 flex-grow text-sm text-gray-700">
                     {item.content}
                   </p>
-                  <div className="flex flex-wrap gap-2 mt-auto">
+                  <div className="mt-auto flex flex-wrap gap-2">
                     <Button
                       variant="secondary"
                       onClick={() => handleView(item)}
@@ -2326,7 +1289,7 @@ export default function AnnouncementsPage() {
         isOpen={isFormOpen}
         initialData={editingItem}
         classes={formClasses}
-        authorId={currentUser?.id ?? 0}
+        authorId={currentUser?.id ?? ""}
         userRole={currentUser?.role ?? "student"}
         onClose={() => {
           setIsFormOpen(false);
@@ -2392,12 +1355,13 @@ import Textarea from "#/components/ui/Textarea.tsx";
 import { assignmentService } from "#/services/modules/assignmentService.ts";
 import type { Assignment } from "#/types/assignment.ts";
 import type { ClassItem } from "#/types/class.ts";
+import type { ID } from "#/types/common.ts";
 
 interface Props {
   isOpen: boolean;
   initialData?: Assignment | null;
   availableClasses: ClassItem[];
-  teacherId: number;
+  teacherId: ID;
   isAdmin: boolean;
   onClose: () => void;
   onSuccess: () => void;
@@ -2416,15 +1380,14 @@ export default function AssignmentForm({
   const [description, setDescription] = useState(
     initialData?.description ?? "",
   );
-  const [classId, setClassId] = useState<number>(
-    Number(initialData?.classId ?? availableClasses[0]?.id ?? 0),
+  const [classId, setClassId] = useState<ID>(
+    initialData?.classId ?? availableClasses[0]?.id ?? "",
   );
   const [deadline, setDeadline] = useState(
     initialData?.deadline
       ? new Date(initialData.deadline).toISOString().split("T")[0]
       : "",
   );
-
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -2477,7 +1440,7 @@ export default function AssignmentForm({
         <Select
           label="کلاس"
           value={classId}
-          onChange={(e) => setClassId(Number(e.target.value))}
+          onChange={(e) => setClassId(e.target.value)}
           options={availableClasses.map((c) => ({
             label: c.title,
             value: c.id,
@@ -2531,6 +1494,7 @@ import type { Assignment } from "#/types/assignment.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { Submission } from "#/types/submission.ts";
 import type { User } from "#/types/user.ts";
+import type { ID } from "#/types/common.ts";
 import AssignmentForm from "./AssignmentForm";
 import SubmissionForm from "./SubmissionForm";
 
@@ -2553,9 +1517,6 @@ const initialState: PageState = {
 };
 
 export default function AssignmentsPage() {
-  const { classId: classIdParam } = useParams<{ classId?: string }>();
-  const navigate = useNavigate();
-  const { user: currentUser } = useAuth();
   const [state, setState] = useState<PageState>(initialState);
   const [actionMessage, setActionMessage] = useState("");
   const [showAssignmentForm, setShowAssignmentForm] = useState(false);
@@ -2571,31 +1532,33 @@ export default function AssignmentsPage() {
   const [submittingAssignment, setSubmittingAssignment] =
     useState<Assignment | null>(null);
 
-  const classId = classIdParam ? Number(classIdParam) : null;
-  const isClassPage = !!classIdParam;
+  const { classId: classIdParam } = useParams<{ classId?: string }>();
+  const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
+
   const isAdmin = currentUser?.role === "admin";
   const isTeacher = currentUser?.role === "teacher";
   const isStudent = currentUser?.role === "student";
+
+  const classId = classIdParam ?? null;
+  const isClassPage = !!classIdParam;
 
   const { loading, error, assignments, submissions, users, classes } = state;
 
   const myClasses = useMemo(() => {
     if (!currentUser) return [];
     if (isAdmin) return classes;
-    if (isTeacher)
-      return classes.filter(
-        (c) => String(c.teacherId) === String(currentUser.id),
-      );
+    if (isTeacher) return classes.filter((c) => c.teacherId === currentUser.id);
     if (isStudent)
       return classes.filter((c) =>
-        (c.studentIds || []).map(String).includes(String(currentUser.id)),
+        (c.studentIds || []).includes(currentUser.id),
       );
     return [];
   }, [classes, currentUser, isAdmin, isTeacher, isStudent]);
 
   const canManageAssignment = (a: Assignment) => {
     if (isAdmin) return true;
-    if (isTeacher) return String(a.teacherId) === String(currentUser?.id);
+    if (isTeacher) return a.teacherId === currentUser?.id;
     return false;
   };
 
@@ -2640,26 +1603,19 @@ export default function AssignmentsPage() {
     };
   }, []);
 
-  const getSubmissionForUser = (assignmentId: number | string) =>
+  const getSubmissionForUser = (assignmentId: ID) =>
     submissions.find(
-      (s) =>
-        String(s.assignmentId) === String(assignmentId) &&
-        String(s.studentId) === String(currentUser?.id),
+      (s) => s.assignmentId === assignmentId && s.studentId === currentUser?.id,
     );
 
-  const getTeacherName = (teacherId: number | string) =>
-    users.find((u) => String(u.id) === String(teacherId))?.name ?? "—";
-  const getClassName = (cId: number | string) =>
-    classes.find((c) => String(c.id) === String(cId))?.title ?? "—";
+  const getTeacherName = (teacherId: ID) =>
+    users.find((u) => u.id === teacherId)?.name ?? "—";
+  const getClassName = (cId: ID) =>
+    classes.find((c) => c.id === cId)?.title ?? "—";
 
-  const handleViewSubmissions = (assignmentId: number | string) =>
+  const handleViewSubmissions = (assignmentId: ID) =>
     navigate(`/assignments/${assignmentId}/submissions`);
 
-  // const handleSubmit = (assignment: Assignment) => {
-  //   const existing = getSubmissionForUser(assignment.id);
-  //   setSubmissionToEdit(existing || null);
-  //   setShowSubmissionForm(true);
-  // };
   const handleSubmit = (assignment: Assignment) => {
     setSubmissionToEdit(getSubmissionForUser(assignment.id) || null);
     setSubmittingAssignment(assignment);
@@ -2708,23 +1664,18 @@ export default function AssignmentsPage() {
   };
 
   if (loading) return <Loading />;
-  if (error) return <div className="text-red-600 p-4">{error}</div>;
+  if (error) return <div className="p-4 text-red-600">{error}</div>;
 
   const filteredAssignments = assignments.filter((a) => {
-    if (isClassPage && classId && String(a.classId) !== String(classId))
-      return false;
+    if (isClassPage && classId && a.classId !== classId) return false;
 
     if (isStudent) {
-      const cls = classes.find((c) => String(c.id) === String(a.classId));
-      if (
-        !cls ||
-        !(cls.studentIds || []).map(String).includes(String(currentUser?.id))
-      )
+      const cls = classes.find((c) => c.id === a.classId);
+      if (!cls || !(cls.studentIds || []).includes(currentUser?.id ?? ""))
         return false;
     } else if (isTeacher) {
-      const cls = classes.find((c) => String(c.id) === String(a.classId));
-      if (!cls || String(cls.teacherId) !== String(currentUser?.id))
-        return false;
+      const cls = classes.find((c) => c.id === a.classId);
+      if (!cls || cls.teacherId !== currentUser?.id) return false;
     }
     return true;
   });
@@ -2778,7 +1729,23 @@ export default function AssignmentsPage() {
                 {
                   key: "deadline",
                   title: "ددلاین",
-                  render: (a) => formatDate(a.deadline),
+                  render: (a) => {
+                    const isExpired = new Date(a.deadline) < new Date();
+                    return (
+                      <span
+                        className={
+                          isExpired ? "text-red-600 font-semibold" : ""
+                        }
+                      >
+                        {formatDate(a.deadline)}
+                        {isExpired && (
+                          <span className="mr-1 text-xs text-red-500">
+                            (منقضی شده)
+                          </span>
+                        )}
+                      </span>
+                    );
+                  },
                 },
                 {
                   key: "teacher",
@@ -2799,7 +1766,7 @@ export default function AssignmentsPage() {
                     }
                     if ((isAdmin || isTeacher) && canManageAssignment(a)) {
                       const subs = submissions.filter(
-                        (s) => String(s.assignmentId) === String(a.id),
+                        (s) => s.assignmentId === a.id,
                       );
                       return (
                         <span className="text-sm text-gray-600">
@@ -2835,7 +1802,7 @@ export default function AssignmentsPage() {
                               ویرایش پاسخ
                             </Button>
                           ) : (
-                            <span className="text-xs text-gray-500 py-2">
+                            <span className="py-2 text-xs text-gray-500">
                               نمره نهایی شده
                             </span>
                           ))}
@@ -2880,7 +1847,7 @@ export default function AssignmentsPage() {
           isOpen={true}
           initialData={editingAssignment}
           availableClasses={myClasses}
-          teacherId={Number(currentUser?.id)}
+          teacherId={currentUser?.id ?? ""}
           isAdmin={isAdmin}
           onClose={() => setShowAssignmentForm(false)}
           onSuccess={() => handleSuccess("تکلیف با موفقیت ذخیره شد.")}
@@ -2890,13 +1857,10 @@ export default function AssignmentsPage() {
       {showSubmissionForm && currentUser && (
         <SubmissionForm
           isOpen={true}
-          // assignmentId={
-          //   submissionToEdit?.assignmentId ?? editingAssignment?.id ?? 0
-          // }
           assignmentId={
-            submissionToEdit?.assignmentId ?? submittingAssignment?.id ?? 0
+            submissionToEdit?.assignmentId ?? submittingAssignment?.id ?? ""
           }
-          studentId={Number(currentUser.id)}
+          studentId={currentUser.id}
           existingSubmission={submissionToEdit}
           onClose={() => setShowSubmissionForm(false)}
           onSuccess={handleSuccess}
@@ -2922,11 +1886,12 @@ import Modal from "#/components/ui/Modal.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
 import { submissionService } from "#/services/modules/submissionService.ts";
 import type { Submission } from "#/types/submission.ts";
+import type { ID } from "#/types/common.ts";
 
 interface Props {
   isOpen: boolean;
-  assignmentId: number | string;
-  studentId: number | string;
+  assignmentId: ID;
+  studentId: ID;
   existingSubmission?: Submission | null;
   onClose: () => void;
   onSuccess: (message: string) => void;
@@ -2956,8 +1921,8 @@ export default function SubmissionForm({
         onSuccess("پاسخ شما با موفقیت ویرایش شد.");
       } else {
         await submissionService.create({
-          assignmentId: Number(assignmentId),
-          studentId: Number(studentId),
+          assignmentId,
+          studentId,
           content: content.trim(),
           status: "submitted",
         });
@@ -3047,8 +2012,6 @@ export default function SubmissionsPage() {
           const isTeacherOwner =
             currentUser?.role === "teacher" &&
             String(a.teacherId) === String(currentUser?.id);
-
-          // ✅ اصلاح دسترسی: ادمین هم باید بتواند نمرات را ببیند
           if (!isAdmin && !isTeacherOwner) {
             navigate("/assignments", { replace: true });
             return;
@@ -3083,6 +2046,7 @@ export default function SubmissionsPage() {
 
   const getUserName = (userId: number | string) =>
     users.find((u) => String(u.id) === String(userId))?.name ?? "—";
+
   const handleGradeChange = (
     submissionId: string,
     field: "grade" | "feedback",
@@ -3112,13 +2076,9 @@ export default function SubmissionsPage() {
         feedback: data.feedback || null,
         status: "graded",
       });
-      // setSuccessMessage("نمره با موفقیت ذخیره شد. در حال بازگشت...");
-      // setErrorMessage("");
-      // setTimeout(() => navigate("/assignments"), 1500);
 
       setSuccessMessage("نمره با موفقیت ذخیره شد.");
       setErrorMessage("");
-      // بدون navigate خودکار
     } catch {
       setErrorMessage("خطا در ثبت نمره.");
       setSuccessMessage("");
@@ -3153,46 +2113,65 @@ export default function SubmissionsPage() {
         />
       ) : (
         <div className="grid gap-4">
-          {submissions.map((sub) => (
-            <Card key={sub.id}>
-              <div className="flex flex-col gap-3">
-                <div>
-                  <span className="font-semibold">دانشجو:</span>{" "}
-                  {getUserName(sub.studentId)}
+          {submissions.map((sub) => {
+            const isLate =
+              assignment &&
+              new Date(sub.submittedAt) > new Date(assignment.deadline);
+
+            return (
+              <Card key={sub.id}>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="font-semibold">دانشجو:</span>{" "}
+                      {getUserName(sub.studentId)}
+                    </div>
+                    {isLate && (
+                      <span className="inline-flex rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+                        ارسال با تأخیر
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <span className="font-semibold">پاسخ:</span> {sub.content}
+                  </div>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Input
+                      label="نمره (0-20)"
+                      type="number"
+                      min="0"
+                      max="20"
+                      step="0.5"
+                      value={grading[String(sub.id)]?.grade ?? ""}
+                      onChange={(e) =>
+                        handleGradeChange(
+                          String(sub.id),
+                          "grade",
+                          e.target.value,
+                        )
+                      }
+                    />
+                    <Input
+                      label="بازخورد"
+                      value={grading[String(sub.id)]?.feedback ?? ""}
+                      onChange={(e) =>
+                        handleGradeChange(
+                          String(sub.id),
+                          "feedback",
+                          e.target.value,
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <Button onClick={() => handleSaveGrade(sub)}>
+                      ثبت نمره
+                    </Button>
+                  </div>
                 </div>
-                <div>
-                  <span className="font-semibold">پاسخ:</span> {sub.content}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Input
-                    label="نمره (0-20)"
-                    type="number"
-                    min="0"
-                    max="20"
-                    step="0.5"
-                    value={grading[String(sub.id)]?.grade ?? ""}
-                    onChange={(e) =>
-                      handleGradeChange(String(sub.id), "grade", e.target.value)
-                    }
-                  />
-                  <Input
-                    label="بازخورد"
-                    value={grading[String(sub.id)]?.feedback ?? ""}
-                    onChange={(e) =>
-                      handleGradeChange(
-                        String(sub.id),
-                        "feedback",
-                        e.target.value,
-                      )
-                    }
-                  />
-                </div>
-                <div className="flex justify-end">
-                  <Button onClick={() => handleSaveGrade(sub)}>ثبت نمره</Button>
-                </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>
@@ -3224,7 +2203,6 @@ import type { User } from "#/types/user.ts";
 export default function AttendancePage() {
   const { user: currentUser } = useAuth();
   const [searchParams] = useSearchParams();
-
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -3239,9 +2217,28 @@ export default function AttendancePage() {
     searchParams.get("sessionId") || "",
   );
 
-  const [attendanceMap, setAttendanceMap] = useState<
+  const [draftAttendanceMap, setDraftAttendanceMap] = useState<
     Record<string, AttendanceStatus>
   >({});
+
+  const [prevSessionId, setPrevSessionId] = useState<string | null>(null);
+
+  if (selectedSessionId !== prevSessionId) {
+    setPrevSessionId(selectedSessionId);
+
+    if (!selectedSessionId) {
+      setDraftAttendanceMap({});
+    } else {
+      const sessionAttendances = attendances.filter(
+        (a) => a.sessionId === selectedSessionId,
+      );
+      const map: Record<string, AttendanceStatus> = {};
+      for (const a of sessionAttendances) {
+        map[a.studentId] = a.status;
+      }
+      setDraftAttendanceMap(map);
+    }
+  }
 
   const [isSaving, setIsSaving] = useState(false);
   const [actionMessage, setActionMessage] = useState("");
@@ -3282,9 +2279,7 @@ export default function AttendancePage() {
   const availableClasses = useMemo(() => {
     if (isAdmin) return classes;
     if (isTeacher) {
-      return classes.filter(
-        (c) => String(c.teacherId) === String(currentUser?.id),
-      );
+      return classes.filter((c) => c.teacherId === currentUser?.id);
     }
     return [];
   }, [classes, isAdmin, isTeacher, currentUser]);
@@ -3292,61 +2287,38 @@ export default function AttendancePage() {
   const availableSessions = useMemo(() => {
     if (!selectedClassId) return [];
     return sessions
-      .filter((s) => String(s.classId) === selectedClassId)
+      .filter((s) => s.classId === selectedClassId)
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [sessions, selectedClassId]);
 
   const classStudents = useMemo(() => {
     if (!selectedClassId) return [];
-    const cls = classes.find((c) => String(c.id) === selectedClassId);
+    const cls = classes.find((c) => c.id === selectedClassId);
     if (!cls) return [];
-    return users.filter((u) =>
-      (cls.studentIds || []).map(String).includes(String(u.id)),
-    );
+    return users.filter((u) => (cls.studentIds || []).includes(u.id));
   }, [classes, users, selectedClassId]);
 
-  useEffect(() => {
-    if (!selectedSessionId) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setAttendanceMap({});
-      return;
-    }
-    const sessionAttendances = attendances.filter(
-      (a) => String(a.sessionId) === selectedSessionId,
-    );
-    const map: Record<string, AttendanceStatus> = {};
-    for (const a of sessionAttendances) {
-      map[String(a.studentId)] = a.status;
-    }
-    setAttendanceMap(map);
-  }, [selectedSessionId, attendances]);
-
   const handleStatusChange = (studentId: string, status: AttendanceStatus) => {
-    setAttendanceMap((prev) => ({ ...prev, [studentId]: status }));
+    setDraftAttendanceMap((prev) => ({ ...prev, [studentId]: status }));
   };
 
   const handleSave = async () => {
     if (!selectedSessionId || !selectedClassId) return;
-
     setIsSaving(true);
     setActionMessage("");
     setActionError("");
-
     try {
       const records = classStudents.map((student) => ({
         studentId: student.id,
-        status: attendanceMap[String(student.id)] || "absent",
+        status: draftAttendanceMap[student.id] || "absent",
       }));
-
       await attendanceService.saveAttendanceForSession(
         selectedSessionId,
         selectedClassId,
         records,
       );
-
       const updated = await attendanceService.getAll();
       setAttendances(updated);
-
       setActionMessage("حضور و غیاب با موفقیت ذخیره شد.");
     } catch {
       setActionError("ذخیره حضور و غیاب با خطا مواجه شد.");
@@ -3358,15 +2330,12 @@ export default function AttendancePage() {
   const studentView = useMemo(() => {
     if (!isStudent || !currentUser) return null;
     const myAttendances = attendances.filter(
-      (a) => String(a.studentId) === String(currentUser.id),
+      (a) => a.studentId === currentUser.id,
     );
     const stats = attendanceService.calculateStudentStats(myAttendances);
-
     const sessionDetails = myAttendances.map((a) => {
-      const session = sessions.find(
-        (s) => String(s.id) === String(a.sessionId),
-      );
-      const cls = classes.find((c) => String(c.id) === String(a.classId));
+      const session = sessions.find((s) => s.id === a.sessionId);
+      const cls = classes.find((c) => c.id === a.classId);
       return {
         ...a,
         sessionTitle: session?.title || "—",
@@ -3374,12 +2343,10 @@ export default function AttendancePage() {
         classTitle: cls?.title || "—",
       };
     });
-
     return { ...stats, sessionDetails };
   }, [attendances, sessions, classes, isStudent, currentUser]);
 
   if (loading) return <Loading />;
-
   if (error) {
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -3393,7 +2360,6 @@ export default function AttendancePage() {
       <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
         حضور و غیاب
       </h1>
-
       {actionMessage && (
         <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
           {actionMessage}
@@ -3404,7 +2370,6 @@ export default function AttendancePage() {
           {actionError}
         </div>
       )}
-
       {isStudent && studentView ? (
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -3434,7 +2399,6 @@ export default function AttendancePage() {
               </div>
             </Card>
           </div>
-
           <Card title="نوار پیشرفت حضور">
             <div className="h-4 w-full overflow-hidden rounded-full bg-gray-200">
               <div
@@ -3447,7 +2411,6 @@ export default function AttendancePage() {
               late به‌عنوان «حاضر» محاسبه می‌شود).
             </p>
           </Card>
-
           <Card title="جزئیات جلسات">
             {studentView.sessionDetails.length === 0 ? (
               <EmptyState
@@ -3496,7 +2459,6 @@ export default function AttendancePage() {
                 onChange={(e) => {
                   setSelectedClassId(e.target.value);
                   setSelectedSessionId("");
-                  setAttendanceMap({});
                   setActionMessage("");
                   setActionError("");
                 }}
@@ -3504,7 +2466,7 @@ export default function AttendancePage() {
                   { label: "انتخاب کلاس...", value: "" },
                   ...availableClasses.map((c) => ({
                     label: c.title || "(بدون عنوان)",
-                    value: String(c.id),
+                    value: c.id,
                   })),
                 ]}
               />
@@ -3521,13 +2483,12 @@ export default function AttendancePage() {
                   { label: "انتخاب جلسه...", value: "" },
                   ...availableSessions.map((s) => ({
                     label: `${s.title} - ${s.date}`,
-                    value: String(s.id),
+                    value: s.id,
                   })),
                 ]}
               />
             </div>
           </Card>
-
           {selectedSessionId && (
             <Card title="لیست دانشجویان">
               {classStudents.length === 0 ? (
@@ -3564,12 +2525,10 @@ export default function AttendancePage() {
                           title: "وضعیت حضور",
                           render: (student) => (
                             <select
-                              value={
-                                attendanceMap[String(student.id)] || "absent"
-                              }
+                              value={draftAttendanceMap[student.id] || "absent"}
                               onChange={(e) =>
                                 handleStatusChange(
-                                  String(student.id),
+                                  student.id,
                                   e.target.value as AttendanceStatus,
                                 )
                               }
@@ -3607,7 +2566,6 @@ export default function AttendancePage() {
 </file>
 
 <file path="src/pages/auth/LoginPage.tsx">
-// src/pages/auth/LoginPage.tsx
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Button from "#/components/ui/Button.tsx";
@@ -3696,11 +2654,12 @@ import type { User } from "#/types/user.ts";
 import SessionForm from "./SessionForm";
 
 export default function ClassDetailsPage() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
-  const classId = Number(id);
-  const isInvalidId = Number.isNaN(classId);
+
+  const classId = id;
+  const isInvalidId = !classId;
 
   const [classItem, setClassItem] = useState<ClassItem | null>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -3717,7 +2676,7 @@ export default function ClassDetailsPage() {
   const isTeacherOfThisClass =
     currentUser?.role === "teacher" &&
     classItem !== null &&
-    String(classItem.teacherId) === String(currentUser.id);
+    classItem.teacherId === currentUser.id;
   const canManage = isAdmin || isTeacherOfThisClass;
 
   const getErrorMessage = (err: unknown): string => {
@@ -3737,13 +2696,13 @@ export default function ClassDetailsPage() {
     try {
       setError("");
       const [c, u, s] = await Promise.all([
-        classService.getById(classId),
+        classService.getById(classId!),
         userService.getAll(),
         sessionService.getAll(),
       ]);
       setClassItem(c);
       setUsers(u);
-      setSessions(s.filter((x) => String(x.classId) === String(classId)));
+      setSessions(s.filter((x) => x.classId === classId));
     } catch (err) {
       setError(getErrorMessage(err));
     }
@@ -3753,7 +2712,7 @@ export default function ClassDetailsPage() {
     if (isInvalidId) return;
     let ignore = false;
     Promise.all([
-      classService.getById(classId),
+      classService.getById(classId!),
       userService.getAll(),
       sessionService.getAll(),
     ])
@@ -3761,7 +2720,7 @@ export default function ClassDetailsPage() {
         if (!ignore) {
           setClassItem(c);
           setUsers(u);
-          setSessions(s.filter((x) => String(x.classId) === String(classId)));
+          setSessions(s.filter((x) => x.classId === classId));
         }
       })
       .catch((err) => {
@@ -3780,7 +2739,7 @@ export default function ClassDetailsPage() {
       !loading &&
       classItem &&
       currentUser?.role === "teacher" &&
-      String(classItem.teacherId) !== String(currentUser.id)
+      classItem.teacherId !== currentUser.id
     ) {
       navigate("/unauthorized", { replace: true });
     }
@@ -3788,16 +2747,12 @@ export default function ClassDetailsPage() {
 
   const students = useMemo(() => {
     if (!classItem) return [];
-    return users.filter((u) =>
-      (classItem.studentIds || []).map(String).includes(String(u.id)),
-    );
+    return users.filter((u) => (classItem.studentIds || []).includes(u.id));
   }, [users, classItem]);
 
   const teacher = useMemo(() => {
     if (!classItem || classItem.teacherId === null) return null;
-    return (
-      users.find((u) => String(u.id) === String(classItem.teacherId)) ?? null
-    );
+    return users.find((u) => u.id === classItem.teacherId) ?? null;
   }, [users, classItem]);
 
   if (isInvalidId) {
@@ -3859,7 +2814,6 @@ export default function ClassDetailsPage() {
           <StatusChip status={classItem.status || "inactive"} />
         </div>
 
-        {/* ✅ اضافه شد: دکمه مشاهده تکالیف کلاس برای بهبود جریان داده */}
         <Button
           variant="secondary"
           onClick={() => navigate(`/classes/${classId}/assignments`)}
@@ -4011,7 +2965,6 @@ export default function ClassDetailsPage() {
 </file>
 
 <file path="src/pages/classes/ClassesPage.tsx">
-// src/pages/classes/ClassesPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EmptyState from "#/components/common/EmptyState.tsx";
@@ -4028,6 +2981,7 @@ import { classService } from "#/services/modules/classService.ts";
 import { userService } from "#/services/modules/userService.ts";
 import type { ClassItem, ClassStatus } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
+import type { ID } from "#/types/common.ts";
 import ClassForm from "./ClassForm";
 
 export default function ClassesPage() {
@@ -4056,8 +3010,7 @@ export default function ClassesPage() {
 
   const canManageClass = (c: ClassItem) => {
     if (isAdmin) return true;
-    if (currentUser?.role === "teacher")
-      return String(c.teacherId) === String(currentUser.id);
+    if (currentUser?.role === "teacher") return c.teacherId === currentUser.id;
     return false;
   };
 
@@ -4095,14 +3048,14 @@ export default function ClassesPage() {
   const filteredClasses = useMemo(() => {
     return classes.filter((c) => {
       if (!isAdmin && currentUser?.role === "teacher") {
-        if (String(c.teacherId) !== String(currentUser.id)) return false;
+        if (c.teacherId !== currentUser.id) return false;
       }
       const matchesSearch = (c.title || "")
         .toLowerCase()
         .includes(search.toLowerCase());
       const matchesStatus = statusFilter ? c.status === statusFilter : true;
       const matchesTeacher = teacherFilter
-        ? String(c.teacherId) === teacherFilter
+        ? c.teacherId === teacherFilter
         : true;
       return matchesSearch && matchesStatus && matchesTeacher;
     });
@@ -4163,9 +3116,9 @@ export default function ClassesPage() {
     setShowForm(true);
   };
 
-  const getTeacherName = (teacherId: number | string | null | undefined) => {
+  const getTeacherName = (teacherId: ID | null | undefined) => {
     if (teacherId === null || teacherId === undefined) return "—";
-    return users.find((u) => String(u.id) === String(teacherId))?.name ?? "—";
+    return users.find((u) => u.id === teacherId)?.name ?? "—";
   };
 
   return (
@@ -4216,7 +3169,7 @@ export default function ClassesPage() {
             onChange={(e) => setTeacherFilter(e.target.value)}
             options={[
               { label: "همه اساتید", value: "" },
-              ...teachers.map((t) => ({ label: t.name, value: String(t.id) })),
+              ...teachers.map((t) => ({ label: t.name, value: t.id })),
             ]}
           />
         )}
@@ -4393,6 +3346,7 @@ import Textarea from "#/components/ui/Textarea.tsx";
 import { classService } from "#/services/modules/classService.ts";
 import type { ClassFormValues, ClassItem, ClassStatus } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
+import type { ID } from "#/types/common.ts";
 
 interface Props {
   users: User[];
@@ -4462,15 +3416,13 @@ export default function ClassForm({
     }
   };
 
-  const toggleStudent = (id: number | string) => {
+  const toggleStudent = (id: ID) => {
     setForm((prev) => {
-      const stringIds = prev.studentIds.map(String);
-      const stringId = String(id);
-      const exists = stringIds.includes(stringId);
+      const exists = prev.studentIds.includes(id);
       return {
         ...prev,
         studentIds: exists
-          ? prev.studentIds.filter((s) => String(s) !== stringId)
+          ? prev.studentIds.filter((s) => s !== id)
           : [...prev.studentIds, id],
       };
     });
@@ -4497,12 +3449,12 @@ export default function ClassForm({
           value={form.teacherId ?? ""}
           onChange={(e) => {
             const value = e.target.value;
-            setForm({ ...form, teacherId: value ? Number(value) : null });
+            setForm({ ...form, teacherId: value || null });
             if (errors.teacherId) setErrors({ ...errors, teacherId: "" });
           }}
           options={[
             { label: "انتخاب استاد...", value: "" },
-            ...teachers.map((t) => ({ label: t.name, value: String(t.id) })),
+            ...teachers.map((t) => ({ label: t.name, value: t.id })),
           ]}
           error={errors.teacherId}
         />
@@ -4558,7 +3510,7 @@ export default function ClassForm({
                 >
                   <input
                     type="checkbox"
-                    checked={form.studentIds.map(String).includes(String(s.id))}
+                    checked={form.studentIds.includes(s.id)}
                     onChange={() => toggleStudent(s.id)}
                     className="h-4 w-4"
                   />
@@ -4606,9 +3558,10 @@ import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
 import { sessionService } from "#/services/modules/sessionService.ts";
+import type { ID } from "#/types/common.ts";
 
 interface Props {
-  classId: number;
+  classId: ID;
   onClose: () => void;
   onSuccess: (message: string) => void;
   onError: (message: string) => void;
@@ -4714,27 +3667,6 @@ function DashboardPage() {
 export default DashboardPage;
 </file>
 
-<file path="src/pages/NotFoundPage.tsx">
-import { Link } from "react-router-dom";
-
-function NotFoundPage() {
-  return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-      <h1 className="mb-2 text-5xl font-bold text-blue-600">۴۰۴</h1>
-      <p className="mb-4 text-gray-600">صفحه مورد نظر یافت نشد</p>
-      <Link
-        to="/"
-        className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-      >
-        بازگشت به داشبورد
-      </Link>
-    </div>
-  );
-}
-
-export default NotFoundPage;
-</file>
-
 <file path="src/pages/profile/ProfilePage.tsx">
 import { useEffect, useState } from "react";
 import EmptyState from "#/components/common/EmptyState.tsx";
@@ -4756,8 +3688,7 @@ function ProfilePage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [fetchedUserId, setFetchedUserId] = useState<string | null>(null);
-  const loading =
-    user?.role === "student" && fetchedUserId !== String(user?.id);
+  const loading = user?.role === "student" && fetchedUserId !== user?.id;
 
   useEffect(() => {
     if (!user || user.role !== "student") return;
@@ -4772,11 +3703,11 @@ function ProfilePage() {
           setAttendances(a);
           setSessions(s);
           setClasses(c);
-          setFetchedUserId(String(user.id));
+          setFetchedUserId(user.id);
         }
       })
       .catch(() => {
-        if (!ignore) setFetchedUserId(String(user.id));
+        if (!ignore) setFetchedUserId(user.id);
       });
     return () => {
       ignore = true;
@@ -4792,10 +3723,8 @@ function ProfilePage() {
   const sessionDetails =
     user.role === "student"
       ? attendances.map((a) => {
-          const session = sessions.find(
-            (s) => String(s.id) === String(a.sessionId),
-          );
-          const cls = classes.find((c) => String(c.id) === String(a.classId));
+          const session = sessions.find((s) => s.id === a.sessionId);
+          const cls = classes.find((c) => c.id === a.classId);
           return {
             ...a,
             sessionTitle: session?.title || "—",
@@ -4946,29 +3875,7 @@ function ProfilePage() {
     </div>
   );
 }
-
 export default ProfilePage;
-</file>
-
-<file path="src/pages/UnauthorizedPage.tsx">
-import { Link } from "react-router-dom";
-
-function UnauthorizedPage() {
-  return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-      <h1 className="mb-2 text-4xl font-bold text-red-600">۴۰۳</h1>
-      <p className="mb-4 text-gray-600">شما دسترسی به این صفحه را ندارید.</p>
-      <Link
-        to="/"
-        className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-      >
-        بازگشت به داشبورد
-      </Link>
-    </div>
-  );
-}
-
-export default UnauthorizedPage;
 </file>
 
 <file path="src/pages/users/UserDetails.tsx">
@@ -5332,7 +4239,6 @@ function UsersPage() {
   const [actionError, setActionError] = useState("");
   const [actionSuccess, setActionSuccess] = useState("");
 
-  // ✅ اصلاح شد: انتقال منطق به داخل useEffect برای جلوگیری از خطای Exhaustive Deps
   useEffect(() => {
     let ignore = false;
     const loadUsers = async () => {
@@ -5602,7 +4508,7 @@ function UserTable({
           render: (user) => (
             <div className="font-medium text-gray-800">
               {user.name}
-              {String(user.id) === String(currentUserId) && (
+              {user.id === currentUserId && (
                 <span className="mr-2 text-xs text-blue-600">(شما)</span>
               )}
             </div>
@@ -5664,61 +4570,81 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function validateCreateUser(values: CreateUserPayload): UserFormErrors {
   const errors: UserFormErrors = {};
-
-  if (!values.name.trim()) {
-    errors.name = "نام الزامی است.";
-  } else if (values.name.trim().length < 3) {
+  if (!values.name.trim()) errors.name = "نام الزامی است.";
+  else if (values.name.trim().length < 3)
     errors.name = "نام باید حداقل 3 کاراکتر باشد.";
-  }
 
-  if (!values.email.trim()) {
-    errors.email = "ایمیل الزامی است.";
-  } else if (!emailRegex.test(values.email.trim())) {
+  if (!values.email.trim()) errors.email = "ایمیل الزامی است.";
+  else if (!emailRegex.test(values.email.trim()))
     errors.email = "فرمت ایمیل معتبر نیست.";
-  }
 
-  if (!values.password.trim()) {
-    errors.password = "رمز عبور الزامی است.";
-  } else if (values.password.trim().length < 6) {
+  if (!values.password.trim()) errors.password = "رمز عبور الزامی است.";
+  else if (values.password.trim().length < 6)
     errors.password = "رمز عبور باید حداقل 6 کاراکتر باشد.";
-  }
 
-  if (!values.role) {
-    errors.role = "نقش الزامی است.";
-  }
-
-  if (!values.status) {
-    errors.status = "وضعیت الزامی است.";
-  }
+  if (!values.role) errors.role = "نقش الزامی است.";
+  if (!values.status) errors.status = "وضعیت الزامی است.";
 
   return errors;
 }
 
 export function validateUpdateUser(values: UpdateUserPayload): UserFormErrors {
   const errors: UserFormErrors = {};
-
-  if (!values.name.trim()) {
-    errors.name = "نام الزامی است.";
-  } else if (values.name.trim().length < 3) {
+  if (!values.name.trim()) errors.name = "نام الزامی است.";
+  else if (values.name.trim().length < 3)
     errors.name = "نام باید حداقل 3 کاراکتر باشد.";
-  }
 
-  if (!values.email.trim()) {
-    errors.email = "ایمیل الزامی است.";
-  } else if (!emailRegex.test(values.email.trim())) {
+  if (!values.email.trim()) errors.email = "ایمیل الزامی است.";
+  else if (!emailRegex.test(values.email.trim()))
     errors.email = "فرمت ایمیل معتبر نیست.";
-  }
 
-  if (!values.role) {
-    errors.role = "نقش الزامی است.";
-  }
-
-  if (!values.status) {
-    errors.status = "وضعیت الزامی است.";
-  }
+  if (!values.role) errors.role = "نقش الزامی است.";
+  if (!values.status) errors.status = "وضعیت الزامی است.";
 
   return errors;
 }
+</file>
+
+<file path="src/pages/NotFoundPage.tsx">
+import { Link } from "react-router-dom";
+
+function NotFoundPage() {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+      <h1 className="mb-2 text-5xl font-bold text-blue-600">۴۰۴</h1>
+      <p className="mb-4 text-gray-600">صفحه مورد نظر یافت نشد</p>
+      <Link
+        to="/"
+        className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+      >
+        بازگشت به داشبورد
+      </Link>
+    </div>
+  );
+}
+
+export default NotFoundPage;
+</file>
+
+<file path="src/pages/UnauthorizedPage.tsx">
+import { Link } from "react-router-dom";
+
+function UnauthorizedPage() {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+      <h1 className="mb-2 text-4xl font-bold text-red-600">۴۰۳</h1>
+      <p className="mb-4 text-gray-600">شما دسترسی به این صفحه را ندارید.</p>
+      <Link
+        to="/"
+        className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+      >
+        بازگشت به داشبورد
+      </Link>
+    </div>
+  );
+}
+
+export default UnauthorizedPage;
 </file>
 
 <file path="src/routes/AppRoutes.tsx">
@@ -5793,33 +4719,26 @@ export default axiosInstance;
 
 <file path="src/services/api/baseApi.ts">
 import axiosInstance from "./axiosInstance";
+import type { ID } from "#/types/common.ts";
 
 export const baseApi = {
   getAll: async <T>(endpoint: string): Promise<T[]> => {
     const response = await axiosInstance.get<T[]>(endpoint);
     return response.data;
   },
-
-  getById: async <T>(endpoint: string, id: number | string): Promise<T> => {
+  getById: async <T>(endpoint: string, id: ID): Promise<T> => {
     const response = await axiosInstance.get<T>(`${endpoint}/${id}`);
     return response.data;
   },
-
   create: async <T>(endpoint: string, data: Omit<T, "id">): Promise<T> => {
     const response = await axiosInstance.post<T>(endpoint, data);
     return response.data;
   },
-
-  update: async <T>(
-    endpoint: string,
-    id: number | string,
-    data: Partial<T>,
-  ): Promise<T> => {
+  update: async <T>(endpoint: string, id: ID, data: Partial<T>): Promise<T> => {
     const response = await axiosInstance.patch<T>(`${endpoint}/${id}`, data);
     return response.data;
   },
-
-  delete: async (endpoint: string, id: number | string): Promise<void> => {
+  delete: async (endpoint: string, id: ID): Promise<void> => {
     await axiosInstance.delete(`${endpoint}/${id}`);
   },
 };
@@ -5868,28 +4787,26 @@ export const announcementService = {
 import { baseApi } from "#/services/api/baseApi.ts";
 import type { Assignment } from "#/types/assignment.ts";
 import type { Submission } from "#/types/submission.ts";
+import type { ID } from "#/types/common.ts";
 
 const endpoint = "/assignments";
 
 export const assignmentService = {
   getAll: () => baseApi.getAll<Assignment>(endpoint),
-  getById: (id: number | string) => baseApi.getById<Assignment>(endpoint, id),
-  getByClass: async (classId: number | string): Promise<Assignment[]> => {
+  getById: (id: ID) => baseApi.getById<Assignment>(endpoint, id),
+  getByClass: async (classId: ID): Promise<Assignment[]> => {
     const all = await baseApi.getAll<Assignment>(endpoint);
-    return all.filter((a) => String(a.classId) === String(classId));
+    return all.filter((a) => a.classId === classId);
   },
   create: (data: Omit<Assignment, "id">) =>
     baseApi.create<Assignment>(endpoint, data),
-
-  // ✅ اصلاح شد: ویرایش تکلیف دیگر نباید پاسخ‌های دانشجویان را حذف کند
-  update: (id: number | string, data: Partial<Assignment>) => {
+  update: (id: ID, data: Partial<Assignment>) => {
     return baseApi.update<Assignment>(endpoint, id, data);
   },
-
-  delete: async (id: number | string) => {
+  delete: async (id: ID) => {
     const allSubmissions = await baseApi.getAll<Submission>("/submissions");
     const relatedSubmissions = allSubmissions.filter(
-      (s) => String(s.assignmentId) === String(id),
+      (s) => s.assignmentId === id,
     );
     for (const sub of relatedSubmissions) {
       await baseApi.delete("/submissions", sub.id);
@@ -5902,41 +4819,35 @@ export const assignmentService = {
 <file path="src/services/modules/attendanceService.ts">
 import { baseApi } from "#/services/api/baseApi.ts";
 import type { Attendance } from "#/types/attendance.ts";
-import type { AttendanceStatus } from "#/types/common.ts";
+import type { AttendanceStatus, ID } from "#/types/common.ts";
 
 const endpoint = "/attendance";
 
 export const attendanceService = {
   getAll: () => baseApi.getAll<Attendance>(endpoint),
-
-  getBySession: async (sessionId: number | string): Promise<Attendance[]> => {
+  getBySession: async (sessionId: ID): Promise<Attendance[]> => {
     const all = await baseApi.getAll<Attendance>(endpoint);
-    return all.filter((a) => String(a.sessionId) === String(sessionId));
+    return all.filter((a) => a.sessionId === sessionId);
   },
-
-  getByStudent: async (studentId: number | string): Promise<Attendance[]> => {
+  getByStudent: async (studentId: ID): Promise<Attendance[]> => {
     const all = await baseApi.getAll<Attendance>(endpoint);
-    return all.filter((a) => String(a.studentId) === String(studentId));
+    return all.filter((a) => a.studentId === studentId);
   },
-
-  getByClass: async (classId: number | string): Promise<Attendance[]> => {
+  getByClass: async (classId: ID): Promise<Attendance[]> => {
     const all = await baseApi.getAll<Attendance>(endpoint);
-    return all.filter((a) => String(a.classId) === String(classId));
+    return all.filter((a) => a.classId === classId);
   },
-
   saveAttendanceForSession: async (
-    sessionId: number | string,
-    classId: number | string,
-    records: Array<{ studentId: number | string; status: AttendanceStatus }>,
+    sessionId: ID,
+    classId: ID,
+    records: Array<{ studentId: ID; status: AttendanceStatus }>,
   ): Promise<Attendance[]> => {
     const existing = await attendanceService.getBySession(sessionId);
     const results: Attendance[] = [];
-
     for (const record of records) {
       const existingRecord = existing.find(
-        (a) => String(a.studentId) === String(record.studentId),
+        (a) => a.studentId === record.studentId,
       );
-
       if (existingRecord) {
         const updated = await baseApi.update<Attendance>(
           endpoint,
@@ -5946,27 +4857,23 @@ export const attendanceService = {
         results.push(updated);
       } else {
         const created = await baseApi.create<Attendance>(endpoint, {
-          sessionId: Number(sessionId),
-          classId: Number(classId),
-          studentId: Number(record.studentId),
+          sessionId,
+          classId,
+          studentId: record.studentId,
           status: record.status,
-        } as unknown as Omit<Attendance, "id">);
+        } as Omit<Attendance, "id">);
         results.push(created);
       }
     }
-
     return results;
   },
-
   updateStatus: async (
-    id: number | string,
+    id: ID,
     status: AttendanceStatus,
   ): Promise<Attendance> => {
     return baseApi.update<Attendance>(endpoint, id, { status });
   },
-
-  delete: (id: number | string) => baseApi.delete(endpoint, id),
-
+  delete: (id: ID) => baseApi.delete(endpoint, id),
   calculateStudentStats: (attendances: Attendance[]) => {
     const present = attendances.filter((a) => a.status === "present").length;
     const late = attendances.filter((a) => a.status === "late").length;
@@ -5974,7 +4881,6 @@ export const attendanceService = {
     const total = attendances.length;
     const attended = present + late;
     const percentage = total > 0 ? (attended / total) * 100 : 0;
-
     return { present, late, absent, total, attended, percentage };
   },
 };
@@ -6076,38 +4982,35 @@ export const sessionService = {
 <file path="src/services/modules/submissionService.ts">
 import { baseApi } from "#/services/api/baseApi.ts";
 import type { Submission } from "#/types/submission.ts";
+import type { ID } from "#/types/common.ts";
 
 const endpoint = "/submissions";
 
 export const submissionService = {
   getAll: () => baseApi.getAll<Submission>(endpoint),
-  getByAssignment: async (
-    assignmentId: number | string,
-  ): Promise<Submission[]> => {
+  getByAssignment: async (assignmentId: ID): Promise<Submission[]> => {
     const all = await baseApi.getAll<Submission>(endpoint);
-    return all.filter((s) => String(s.assignmentId) === String(assignmentId));
+    return all.filter((s) => s.assignmentId === assignmentId);
   },
-  getByStudent: async (studentId: number | string): Promise<Submission[]> => {
+  getByStudent: async (studentId: ID): Promise<Submission[]> => {
     const all = await baseApi.getAll<Submission>(endpoint);
-    return all.filter((s) => String(s.studentId) === String(studentId));
+    return all.filter((s) => s.studentId === studentId);
   },
   create: async (
     data: Omit<Submission, "id" | "submittedAt">,
   ): Promise<Submission> => {
     const payload = {
       ...data,
-      assignmentId: Number(data.assignmentId),
-      studentId: Number(data.studentId),
       submittedAt: new Date().toISOString(),
     };
     return baseApi.create<Submission>(endpoint, payload);
   },
-  update: (id: number | string, data: Partial<Submission>) =>
+  update: (id: ID, data: Partial<Submission>) =>
     baseApi.update<Submission>(endpoint, id, {
       ...data,
       updatedAt: new Date().toISOString(),
     }),
-  delete: (id: number | string) => baseApi.delete(endpoint, id),
+  delete: (id: ID) => baseApi.delete(endpoint, id),
 };
 </file>
 
@@ -6139,7 +5042,7 @@ async function ensureEmailIsUnique(
   const duplicate = users.find(
     (user) =>
       user.email.trim().toLowerCase() === normalizedEmail &&
-      String(user.id) !== String(excludeUserId),
+      user.id !== excludeUserId,
   );
   if (duplicate) {
     throw new Error("این ایمیل قبلاً ثبت شده است.");
@@ -6153,16 +5056,22 @@ async function getAdminUsers(): Promise<User[]> {
 
 async function ensureNotLastAdmin(userId: ID): Promise<void> {
   const users = await getAllUsers();
-  const targetUser = users.find((user) => String(user.id) === String(userId));
-  if (!targetUser) {
-    throw new Error("کاربر موردنظر پیدا نشد.");
-  }
-  if (targetUser.role !== "admin") {
-    return;
-  }
+  const targetUser = users.find((user) => user.id === userId);
+  if (!targetUser) throw new Error("کاربر موردنظر پیدا نشد.");
+  if (targetUser.role !== "admin") return;
+
   const adminUsers = users.filter((user) => user.role === "admin");
   if (adminUsers.length <= 1) {
     throw new Error("امکان حذف یا تغییر آخرین مدیر سیستم وجود ندارد.");
+  }
+}
+
+async function ensureNotLastAdminIfDeactivating(user: User): Promise<void> {
+  if (user.role !== "admin" || user.status === "inactive") return;
+  const admins = await getAdminUsers();
+  const activeAdmins = admins.filter((admin) => admin.status === "active");
+  if (activeAdmins.length <= 1) {
+    throw new Error("امکان غیرفعال‌سازی آخرین مدیر سیستم وجود ندارد.");
   }
 }
 
@@ -6183,6 +5092,7 @@ export const userService = {
   async update(id: ID, data: UpdateUserPayload): Promise<User> {
     await ensureEmailIsUnique(data.email, id);
     const existingUser = await getUserById(id);
+
     if (existingUser.role === "admin" && data.role !== "admin") {
       await ensureNotLastAdmin(id);
     }
@@ -6193,6 +5103,7 @@ export const userService = {
     ) {
       await ensureNotLastAdminIfDeactivating(existingUser);
     }
+
     const payload: User = {
       ...existingUser,
       name: data.name.trim(),
@@ -6211,37 +5122,15 @@ export const userService = {
     await ensureNotLastAdminIfDeactivating(user);
     const nextStatus: RecordStatus =
       user.status === "active" ? "inactive" : "active";
-    return baseApi.update<User>(endpoint, id, {
-      ...user,
-      status: nextStatus,
-    });
+    return baseApi.update<User>(endpoint, id, { ...user, status: nextStatus });
   },
   async changeRole(id: ID, role: UserRole): Promise<User> {
     const user = await getUserById(id);
-    if (user.role === "admin" && role !== "admin") {
-      await ensureNotLastAdmin(id);
-    }
-    return baseApi.update<User>(endpoint, id, {
-      ...user,
-      role,
-    });
+    if (user.role === "admin" && role !== "admin") await ensureNotLastAdmin(id);
+    return baseApi.update<User>(endpoint, id, { ...user, role });
   },
   getAdminUsers,
 };
-
-async function ensureNotLastAdminIfDeactivating(user: User): Promise<void> {
-  if (user.role !== "admin") {
-    return;
-  }
-  if (user.status === "inactive") {
-    return;
-  }
-  const admins = await getAdminUsers();
-  const activeAdmins = admins.filter((admin) => admin.status === "active");
-  if (activeAdmins.length <= 1) {
-    throw new Error("امکان غیرفعال‌سازی آخرین مدیر سیستم وجود ندارد.");
-  }
-}
 </file>
 
 <file path="src/types/announcement.ts">
@@ -6253,7 +5142,7 @@ export interface Announcement {
   id: ID;
   title: string;
   content: string;
-  classId: ID | 0;
+  classId: ID;
   authorId: ID;
   createdAt: string;
   seenBy: ID[];
@@ -6335,14 +5224,10 @@ export interface ClassFormValues {
 </file>
 
 <file path="src/types/common.ts">
-export type ID = number | string;
-
+export type ID = string;
 export type UserRole = "admin" | "teacher" | "student";
-
 export type RecordStatus = "active" | "inactive";
-
 export type AttendanceStatus = "present" | "absent" | "late";
-
 export type SubmissionStatus = "submitted" | "graded" | "pending";
 </file>
 
@@ -6430,6 +5315,982 @@ export const formatDate = (date: string): string => {
 };
 </file>
 
+<file path="src/App.css">
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+</file>
+
+<file path="src/App.tsx">
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import MainLayout from "#/layouts/MainLayout.tsx";
+import DashboardPage from "#/pages/dashboard/DashboardPage.tsx";
+import UsersPage from "#/pages/users/UsersPage.tsx";
+import ClassesPage from "#/pages/classes/ClassesPage.tsx";
+import ClassDetailsPage from "#/pages/classes/ClassDetailsPage.tsx";
+import AttendancePage from "#/pages/attendance/AttendancePage.tsx";
+import AnnouncementsPage from "#/pages/announcements/AnnouncementsPage.tsx";
+import AssignmentsPage from "#/pages/assignments/AssignmentsPage.tsx";
+import ProfilePage from "#/pages/profile/ProfilePage.tsx";
+import LoginPage from "#/pages/auth/LoginPage.tsx";
+import UnauthorizedPage from "#/pages/UnauthorizedPage.tsx";
+import NotFoundPage from "#/pages/NotFoundPage.tsx";
+import ProtectedRoute from "#/routes/ProtectedRoute.tsx";
+import RoleGuard from "#/routes/RoleGuard.tsx";
+import SubmissionsPage from "#/pages/assignments/SubmissionsPage.tsx";
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      <Route
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Outlet />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/" element={<DashboardPage />} />
+        <Route
+          path="users"
+          element={
+            <RoleGuard allowedRoles={["admin"]}>
+              <UsersPage />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="classes"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher"]}>
+              <ClassesPage />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="classes/:id"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher"]}>
+              <ClassDetailsPage />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="attendance"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher"]}>
+              <AttendancePage />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="announcements"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
+              <AnnouncementsPage />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="assignments"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
+              <AssignmentsPage />
+            </RoleGuard>
+          }
+        />
+
+        {/* ✅ اصلاح مسیر: دریافت classId به جای id مبهم */}
+        <Route
+          path="classes/:classId/assignments"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
+              <AssignmentsPage />
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="assignments/:id/submissions"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher"]}>
+              <SubmissionsPage />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="profile"
+          element={
+            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
+              <ProfilePage />
+            </RoleGuard>
+          }
+        />
+      </Route>
+      <Route path="/home" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
+  );
+}
+export default App;
+</file>
+
+<file path="src/index.css">
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Vazirmatn", sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+</file>
+
+<file path="src/main.tsx">
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+
+import App from "./App";
+import AuthProvider from "#/context/AuthProvider.tsx";
+import "./index.css";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
+  </React.StrictMode>,
+);
+</file>
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+</file>
+
+<file path="db.json">
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "مدیر کل",
+      "email": "admin1@edu.com",
+      "password": "123456",
+      "role": "admin",
+      "status": "active"
+    },
+    {
+      "id": "2",
+      "name": "مدیر دوم",
+      "email": "admin2@edu.com",
+      "password": "123456",
+      "role": "admin",
+      "status": "inactive"
+    },
+    {
+      "id": "3",
+      "name": "محمد حسینی",
+      "email": "teacher1@edu.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "active"
+    },
+    {
+      "id": "4",
+      "name": "سارا محمدی",
+      "email": "teacher2@edu.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "active"
+    },
+    {
+      "id": "5",
+      "name": "علی رضایی",
+      "email": "teacher3@edu.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "inactive"
+    },
+    {
+      "id": "6",
+      "name": "زهرا احمدی",
+      "email": "student1@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "7",
+      "name": "امیر حسنی",
+      "email": "student2@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "8",
+      "name": "فاطمه نوری",
+      "email": "student3@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "9",
+      "name": "حسین موسوی",
+      "email": "student4@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "inactive"
+    },
+    {
+      "name": "Test without class",
+      "email": "mh4194212222@gmail.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active",
+      "id": "Au7Jx0mOI40"
+    }
+  ],
+  "classes": [
+    {
+      "id": "1",
+      "title": "پیشرفته React",
+      "teacherId": "3",
+      "studentIds": [
+        "6",
+        "7",
+        "8"
+      ],
+      "capacity": 20,
+      "status": "active",
+      "description": "بررسی عمیق الگوها و بهترین شیوه‌های React",
+      "createdAt": "2025-07-01T10:00:00.000Z",
+      "updatedAt": "2026-07-04T17:43:36.091Z"
+    },
+    {
+      "id": "2",
+      "title": "Backend با Node.js",
+      "teacherId": "4",
+      "studentIds": [
+        "6",
+        "7"
+      ],
+      "capacity": 25,
+      "status": "active",
+      "description": "توسعه سمت سرور با Node.js و Express",
+      "createdAt": "2025-07-05T10:00:00.000Z",
+      "updatedAt": "2025-07-05T10:00:00.000Z"
+    },
+    {
+      "id": "COkhXPy79kk",
+      "title": "تست ۱",
+      "teacherId": "5",
+      "studentIds": [
+        "6",
+        "7"
+      ],
+      "capacity": 10,
+      "status": "active",
+      "description": "هاها",
+      "createdAt": "2026-07-04T17:42:36.037Z"
+    }
+  ],
+  "sessions": [
+    {
+      "id": "1",
+      "classId": "1",
+      "title": "جلسه 1 - مقدمه‌ای بر React",
+      "date": "2025-08-01",
+      "description": "آشنایی با مفاهیم پایه React و JSX",
+      "createdAt": "2025-07-25T10:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "classId": "1",
+      "title": "جلسه 2 - Components و Props",
+      "date": "2025-08-08",
+      "description": "ساخت کامپوننت‌ها و مدیریت Props",
+      "createdAt": "2025-08-02T10:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "classId": "2",
+      "title": "جلسه 1 - مقدمه Node.js",
+      "date": "2025-08-03",
+      "description": "آشنایی با محیط Node.js و npm",
+      "createdAt": "2025-07-28T10:00:00.000Z"
+    },
+    {
+      "id": "4",
+      "classId": "2",
+      "title": "جلسه 2 - Express Framework",
+      "date": "2025-08-10",
+      "description": "ساخت API با Express",
+      "createdAt": "2025-08-04T10:00:00.000Z"
+    },
+    {
+      "id": "5",
+      "classId": "COkhXPy79kk",
+      "title": "جلسه 1 - مبانی Python",
+      "date": "2025-08-05",
+      "description": "نحوه نصب و سینتکس پایه Python",
+      "createdAt": "2025-07-30T10:00:00.000Z"
+    },
+    {
+      "id": "6",
+      "classId": "COkhXPy79kk",
+      "title": "جلسه 2 - توابع و ماژول‌ها",
+      "date": "2025-08-12",
+      "description": "تعریف توابع و استفاده از ماژول‌ها",
+      "createdAt": "2025-08-06T10:00:00.000Z"
+    },
+    {
+      "id": "MOyInPrPCVw",
+      "title": "تست ۱",
+      "date": "2026-07-06",
+      "description": "تست ۱",
+      "classId": "1",
+      "createdAt": "2026-07-04T17:48:10.115Z"
+    }
+  ],
+  "attendance": [
+    {
+      "id": "a1",
+      "sessionId": "1",
+      "classId": "1",
+      "studentId": "6",
+      "status": "late"
+    },
+    {
+      "id": "a2",
+      "sessionId": "1",
+      "classId": "1",
+      "studentId": "7",
+      "status": "absent"
+    },
+    {
+      "id": "a3",
+      "sessionId": "1",
+      "classId": "1",
+      "studentId": "8",
+      "status": "absent"
+    },
+    {
+      "id": "a4",
+      "sessionId": "2",
+      "classId": "1",
+      "studentId": "6",
+      "status": "present"
+    },
+    {
+      "id": "a5",
+      "sessionId": "2",
+      "classId": "1",
+      "studentId": "7",
+      "status": "absent"
+    },
+    {
+      "id": "a6",
+      "sessionId": "2",
+      "classId": "1",
+      "studentId": "8",
+      "status": "late"
+    },
+    {
+      "id": "a7",
+      "sessionId": "3",
+      "classId": "2",
+      "studentId": "6",
+      "status": "present"
+    },
+    {
+      "id": "a8",
+      "sessionId": "3",
+      "classId": "2",
+      "studentId": "7",
+      "status": "late"
+    },
+    {
+      "id": "a9",
+      "sessionId": "4",
+      "classId": "2",
+      "studentId": "6",
+      "status": "absent"
+    },
+    {
+      "id": "a10",
+      "sessionId": "4",
+      "classId": "2",
+      "studentId": "7",
+      "status": "present"
+    },
+    {
+      "id": "a11",
+      "sessionId": "5",
+      "classId": "COkhXPy79kk",
+      "studentId": "8",
+      "status": "present"
+    },
+    {
+      "id": "a12",
+      "sessionId": "5",
+      "classId": "COkhXPy79kk",
+      "studentId": "9",
+      "status": "absent"
+    },
+    {
+      "id": "a13",
+      "sessionId": "6",
+      "classId": "COkhXPy79kk",
+      "studentId": "8",
+      "status": "late"
+    },
+    {
+      "id": "a14",
+      "sessionId": "6",
+      "classId": "COkhXPy79kk",
+      "studentId": "9",
+      "status": "present"
+    }
+  ],
+  "announcements": [
+    {
+      "id": "1",
+      "title": "اطلاعیه عمومی برای همه",
+      "content": "این یک اطلاعیه عمومی است که برای همه کاربران قابل مشاهده است.",
+      "classId": "0",
+      "authorId": "1",
+      "createdAt": "2025-07-01T10:00:00.000Z",
+      "seenBy": [
+        "3",
+        "4",
+        "6",
+        "1"
+      ],
+      "targetRoles": [
+        "student",
+        "teacher"
+      ]
+    },
+    {
+      "id": "2",
+      "title": "اطلاعیه مخصوص دانشجویان کلاس React",
+      "content": "این اطلاعیه فقط برای دانشجویان کلاس پیشرفته React است.",
+      "classId": "1",
+      "authorId": "3",
+      "createdAt": "2025-07-05T10:00:00.000Z",
+      "seenBy": [
+        "3",
+        "6"
+      ],
+      "targetAudience": "students"
+    },
+    {
+      "id": "3",
+      "title": "اطلاعیه مخصوص استاد کلاس Node",
+      "content": "این اطلاعیه فقط برای استاد کلاس Backend است.",
+      "classId": "2",
+      "authorId": "4",
+      "createdAt": "2025-07-10T10:00:00.000Z",
+      "seenBy": [
+        "1"
+      ],
+      "targetAudience": "teacher"
+    },
+    {
+      "id": "kA2r7dyFim4",
+      "title": "تست ۱ استاد",
+      "content": "تست ۱",
+      "classId": "0",
+      "authorId": "1",
+      "targetRoles": [
+        "teacher",
+        "admin"
+      ],
+      "seenBy": [
+        "1"
+      ],
+      "createdAt": "2026-07-04T17:44:26.700Z"
+    },
+    {
+      "id": "bWageD_NRTU",
+      "title": "تست دیده شدن",
+      "content": "تست دیده شدن توسط دانشجویان",
+      "classId": "1",
+      "authorId": "1",
+      "targetAudience": "students",
+      "seenBy": [
+        "6",
+        "1"
+      ],
+      "createdAt": "2026-07-04T18:14:22.877Z"
+    }
+  ],
+  "assignments": [
+    {
+      "id": "1",
+      "title": "تکلیف 1: React Hooks",
+      "description": "یک کامپوننت با useState و useEffect پیاده‌سازی کنید.",
+      "classId": "1",
+      "teacherId": "3",
+      "deadline": "2025-08-25T23:59:59.000Z"
+    },
+    {
+      "id": "2",
+      "title": "تکلیف 2: Express API",
+      "description": "یک REST API ساده برای مدیریت کاربران بنویسید.",
+      "classId": "2",
+      "teacherId": "4",
+      "deadline": "2025-08-30T23:59:59.000Z"
+    },
+    {
+      "title": "تست",
+      "description": "۱",
+      "classId": "2",
+      "teacherId": "4",
+      "deadline": "2026-07-08T00:00:00.000Z",
+      "id": "dby2K090MPU"
+    },
+    {
+      "title": "تست تاخیر",
+      "description": "تاخیر",
+      "classId": "2",
+      "teacherId": "4",
+      "deadline": "2026-07-01T00:00:00.000Z",
+      "id": "sKFDJxpXw8c"
+    }
+  ],
+  "submissions": [
+    {
+      "id": "s1",
+      "assignmentId": "1",
+      "studentId": "7",
+      "content": "https://github.com/mh419421/react-hooks-hw",
+      "submittedAt": "2025-08-20T14:30:00.000Z",
+      "status": "graded",
+      "grade": 18,
+      "feedback": "عالی بود",
+      "updatedAt": "2026-07-04T17:50:44.835Z"
+    },
+    {
+      "id": "s2",
+      "assignmentId": "1",
+      "studentId": "8",
+      "content": "من نتوانستم تحویل بدهم.",
+      "submittedAt": "2025-08-26T10:00:00.000Z",
+      "status": "graded",
+      "grade": 14,
+      "feedback": "تاخیر داشتی ولی کد خوب بود.",
+      "updatedAt": "2025-08-27T09:00:00.000Z"
+    },
+    {
+      "id": "q2lzEnE1spE",
+      "assignmentId": "2",
+      "studentId": "6",
+      "content": "test 1",
+      "status": "graded",
+      "submittedAt": "2026-07-04T18:06:35.454Z",
+      "updatedAt": "2026-07-06T18:47:47.594Z",
+      "grade": 5,
+      "feedback": "تست"
+    },
+    {
+      "id": "qkrACzmpOoo",
+      "assignmentId": "1",
+      "studentId": "6",
+      "content": "تست ۲3",
+      "status": "submitted",
+      "submittedAt": "2026-07-04T18:07:08.526Z",
+      "updatedAt": "2026-07-04T18:07:14.046Z"
+    },
+    {
+      "assignmentId": "2",
+      "studentId": "7",
+      "content": "تست ۱",
+      "status": "submitted",
+      "submittedAt": "2026-07-06T18:49:03.594Z",
+      "id": "Mb32A_p96Ws",
+      "updatedAt": "2026-07-06T18:49:07.570Z"
+    },
+    {
+      "assignmentId": "sKFDJxpXw8c",
+      "studentId": "6",
+      "content": "تست تاخیر",
+      "status": "submitted",
+      "submittedAt": "2026-07-06T18:55:52.672Z",
+      "id": "HjlwsziipsU"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
+</file>
+
+<file path="eslint.config.js">
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import tseslint from 'typescript-eslint'
+import { defineConfig, globalIgnores } from 'eslint/config'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      tseslint.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      globals: globals.browser,
+    },
+  },
+])
+</file>
+
+<file path="index.html">
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduConnect</title>
+    <link
+      href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+</file>
+
+<file path="package.json">
+{
+  "name": "educonnect",
+  "private": true,
+  "version": "1.7.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "server": "json-server --watch db.json --port 3001"
+  },
+  "dependencies": {
+    "axios": "^1.16.1",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-hook-form": "^7.77.0",
+    "react-router-dom": "^7.16.0",
+    "recharts": "^3.8.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.12.4",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "autoprefixer": "^10.5.0",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "json-server": "^1.0.0-beta.15",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^3.4.19",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.59.2",
+    "vite": "^8.0.12",
+    "vite-tsconfig-paths": "^6.1.1"
+  },
+  "imports": {
+    "#/*": "./src/*"
+  }
+}
+</file>
+
+<file path="postcss.config.js">
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+</file>
+
+<file path="README.md">
+در ادامه، متن کامل و ساختاریافته‌ی فایل `README.md` متناسب با پروژه‌ی **EduConnect** ارائه می‌گردد. این متن بر اساس تحلیل دقیق کدهای موجود در مخزن، مستندسازی اهداف سامانه و فازبندی اجرایی تدوین شده است.
+
+---
+
+# EduConnect
+
+**سامانه‌ی جامع مدیریت آموزشی، ارتباطی و نظارتی میان دانشجو، استاد و مدیر گروه**
+
+---
+
+## 📌 معرفی پروژه
+
+**EduConnect** یک سامانه‌ی آموزشی یکپارچه و چندنقشی است که با هدف شبیه‌سازی فرایندهای واقعی مدیریت آموزشی در بستر فرانت‌اند طراحی و پیاده‌سازی شده است. این سامانه محیطی متمرکز برای مدیریت کلاس‌ها، جلسات آموزشی، حضور و غیاب، اطلاعیه‌ها، تکالیف، داشبوردهای تحلیلی و کنترل سطح دسترسی کاربران فراهم می‌آورد.
+
+این پروژه به‌عنوان یک **پروژه‌ی دانشگاهی** با معماری کاملاً سمت‌کلاینت و با استفاده از یک **API شبیه‌سازی‌شده (Mock API)** توسعه یافته است و تمرکز اصلی آن بر پیاده‌سازی صحیح منطق نقش‌محور، تجربه‌ی کاربری یکپارچه و ساختار ماژولار کد است.
+
+---
+
+## 🎯 اهداف سامانه
+
+- ایجاد بستر یکپارچه برای تعامل آموزشی میان دانشجویان، اساتید و مدیر گروه
+- پیاده‌سازی کامل مدیریت نقش‌ها و سطوح دسترسی (Role-Based Access Control)
+- مدیریت چرخه‌ی آموزشی شامل کلاس، جلسه، حضور و غیاب، اطلاعیه و تکلیف
+- ارائه‌ی داشبوردهای اختصاصی و آماری متناسب با هر نقش
+- شبیه‌سازی جریان‌های واقعی سامانه‌های آموزشی در مقیاس فرانت‌اند
+
+---
+
+## 🧰 فناوری‌ها و ابزارهای به‌کاررفته
+
+| دسته‌بندی | فناوری |
+|---|---|
+| فریم‌ورک رابط کاربری | React 19 |
+| زبان برنامه‌نویسی | TypeScript |
+| باندلر و ابزار توسعه | Vite |
+| استایل‌دهی | Tailwind CSS |
+| مسیریابی | React Router DOM v7 |
+| مدیریت فرم‌ها | React Hook Form |
+| نمایش نمودار و گزارش | Recharts |
+| لایه‌ی ارتباط با API | Axios |
+| سرور شبیه‌سازی‌شده | json-server |
+| فونت | وزیرمتن (Vazirmatn) |
+| جهت‌گیری رابط کاربری | راست‌به‌چپ (RTL) |
+
+---
+
+## 📦 پیش‌نیازها
+
+پیش از راه‌اندازی پروژه، اطمینان حاصل شود که موارد زیر بر روی سیستم نصب هستند:
+
+- **Node.js** نسخه‌ی 18 یا بالاتر
+- **npm** یا **pnpm** یا **yarn**
+- دسترسی به ترمینال جهت اجرای دستورات
+
+---
+
+## 🚀 نصب و راه‌اندازی
+
+### 1. دریافت مخزن
+
+```bash
+git clone <repository-url>
+cd educonnect
+```
+
+### 2. نصب وابستگی‌ها
+
+```bash
+npm install
+```
+
+### 3. اجرای سرور شبیه‌سازی‌شده
+
+در یک ترمینال جداگانه، سرور داده‌ای را اجرا نمایید:
+
+```bash
+npm run server
+```
+
+این دستور، فایل `db.json` را در پورت `3001` به‌عنوان REST API شبیه‌سازی می‌کند.
+
+### 4. اجرای محیط توسعه
+
+در ترمینال اصلی:
+
+```bash
+npm run dev
+```
+
+پروژه به‌صورت پیش‌فرض در آدرس `http://localhost:5173` در دسترس خواهد بود.
+
+### 5. ساخت نسخه‌ی نهایی
+
+```bash
+npm run build
+```
+
+---
+
+## 👥 نقش‌های کاربری و حساب‌های نمونه
+
+سامانه دارای سه نقش اصلی است. هر نقش دارای داشبورد، منو و سطوح دسترسی مستقل می‌باشد:
+
+| نقش | ایمیل | رمز عبور |
+|---|---|---|
+| مدیر گروه | `admin1@edu.com` | `123456` |
+| استاد | `teacher1@edu.com` | `123456` |
+| دانشجو | `student1@edu.com` | `123456` |
+
+> سایر حساب‌های تستی در فایل `db.json` قابل مشاهده هستند.
+
+---
+
+## 🗂️ ساختار ماژولار سامانه
+
+پروژه بر اساس اصل **Separation of Concerns** و معماری لایه‌ای سازمان‌دهی شده است:
+
+```
+src/
+├── components/
+│   ├── common/          # کامپوننت‌های عمومی (Header, Sidebar, EmptyState, ...)
+│   └── ui/              # کامپوننت‌های پایه (Button, Input, Table, Modal, ...)
+├── context/             # مدیریت وضعیت سراسری (AuthContext)
+├── layouts/             # چیدمان‌های اصلی صفحات
+├── pages/
+│   ├── auth/            # صفحه‌ی ورود
+│   ├── dashboard/       # داشبورد نقش‌محور
+│   ├── users/           # مدیریت کاربران
+│   ├── classes/         # مدیریت کلاس‌ها، جلسات و جزئیات
+│   ├── attendance/      # ثبت و مشاهده حضور و غیاب
+│   └── profile/         # پروفایل کاربری
+├── services/            # لایه‌ی ارتباط با API و توابع کمکی
+├── types/               # تعریف Interfaceها و Typeهای TypeScript
+├── utils/               # توابع کمکی، ثابت‌ها و فرمت‌دهنده‌ها
+└── App.tsx              # تعریف مسیرها و ساختار اصلی اپلیکیشن
+```
+
+---
+
+## ⚙️ ماژول‌ها و امکانات پیاده‌سازی‌شده
+
+### 🔐 احراز هویت و مدیریت دسترسی
+- ورود شبیه‌سازی‌شده و مدیریت نشست کاربر
+- محافظت از مسیرها (Protected Routes)
+- کنترل دسترسی مبتنی بر نقش (Role Guard)
+- منوی پویا متناسب با نقش کاربر
+
+### 👤 مدیریت کاربران
+- فهرست کاربران با قابلیت جستجو و فیلتر
+- ایجاد، ویرایش، حذف و تغییر وضعیت کاربران
+- تغییر نقش کاربری توسط مدیر گروه
+
+### 🏫 مدیریت کلاس‌ها و جلسات
+- ایجاد و مدیریت کلاس‌ها
+- تخصیص استاد و دانشجویان
+- تعریف جلسات آموزشی برای هر کلاس
+- مشاهده‌ی جزئیات کامل هر کلاس
+
+### ✅ حضور و غیاب
+- ثبت حضور دانشجویان در هر جلسه
+- وضعیت‌های حاضر، غایب و تأخیر
+- محاسبه‌ی درصد حضور هر دانشجو
+- نمای مدیریتی برای مشاهده‌ی آمار کلی
+
+### 📢 اطلاعیه‌ها
+- ایجاد اطلاعیه توسط استاد و مدیر گروه
+- مخاطب‌گذاری بر اساس کلاس یا نقش
+- مدیریت وضعیت مشاهده‌شده / مشاهده‌نشده
+
+### 📝 تکالیف
+- تعریف تکلیف و تعیین مهلت تحویل
+- ارسال پاسخ توسط دانشجو
+- مشاهده‌ی وضعیت ارسال‌ها
+- نمره‌دهی و بازخورد توسط استاد
+
+### 📊 داشبورد و گزارش‌گیری
+- داشبورد اختصاصی برای هر نقش
+- کارت‌های آماری و نمودارهای تحلیلی
+- نمایش خلاصه‌ی فعالیت‌ها و داده‌های کلیدی
+
+---
+
+## 🔄 فازبندی توسعه‌ی پروژه
+
+فرایند توسعه‌ی این سامانه بر اساس رویکرد **Dependency-Driven Development** و در دو بخش اصلی برنامه‌ریزی شده است:
+
+### فازهای هسته (ضروری)
+1. پایه‌ی فنی و اسکلت پروژه
+2. احراز هویت، نقش‌ها و کنترل دسترسی
+3. مدیریت کاربران
+4. کلاس‌ها و جلسات
+5. حضور و غیاب
+6. اطلاعیه‌ها
+7. تکالیف
+8. داشبورد و گزارش‌های پایه
+9. یکپارچه‌سازی و بهبود تجربه‌ی کاربری
+10. تست نهایی، رفع باگ و آماده‌سازی ارائه
+
+### فازهای توسعه‌ای (تکمیلی)
+- مرکز نوتیفیکیشن و هشدارهای هوشمند
+- سیستم وضعیت‌ها و چرخه‌ی حیات محتوا
+- پروفایل پیشرفته و تاریخچه‌ی فعالیت‌ها
+- گفت‌وگوی آموزشی
+- تقویم و یادآورها
+- سیستم آزمون‌ها
+- بهبودهای نهایی و قابلیت‌های رزومه‌ای
+
+---
+
+## 🖼️ تصاویر محیط کاربری
+
+> در صورت تمایل، اسکرین‌شات‌های پروژه را در پوشه‌ی `docs/screenshots` قرار داده و در این بخش لینک‌دهی نمایید.
+
+---
+
+## 📄 مجوز استفاده
+
+این پروژه صرفاً جهت اهداف آموزشی و دانشگاهی توسعه یافته است.
+
+---
+
+## 👨‍💻 توسعه‌دهنده
+
+**محمد**  
+توسعه‌دهنده‌ی فرانت‌اند | علاقه‌مند به معماری نرم‌افزار و تجربه‌ی کاربری
+
+---
+
+> **توجه:** این سامانه به‌صورت کامل سمت‌کلاینت بوده و از هیچ پایگاه‌داده‌ی واقعی استفاده نمی‌کند. تمامی داده‌ها به‌صورت محلی و از طریق `json-server` شبیه‌سازی می‌شوند.
+
+---
+
+در صورت نیاز به تنظیمات بیشتر، افزودن بخش «مشارکت»، «نقشه‌ی راه» یا «مستندسازی فنی API»، می‌توان این ساختار را توسعه داد.
+</file>
+
 <file path="tailwind.config.js">
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -6447,29 +6308,29 @@ export default {
 
 <file path="tsconfig.app.json">
 {
-	"compilerOptions": {
-		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-		"target": "es2023",
-		"lib": ["ES2023", "DOM"],
-		"module": "esnext",
-		"types": ["vite/client"],
-		"skipLibCheck": true,
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023", "DOM"],
+    "module": "esnext",
+    "types": ["vite/client"],
+    "skipLibCheck": true,
 
-		/* Bundler mode */
-		"moduleResolution": "bundler",
-		"allowImportingTsExtensions": true,
-		"verbatimModuleSyntax": true,
-		"moduleDetection": "force",
-		"noEmit": true,
-		"jsx": "react-jsx",
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
 
-		/* Linting */
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"erasableSyntaxOnly": true,
-		"noFallthroughCasesInSwitch": true
-	},
-	"include": ["src"]
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src"]
 }
 </file>
 

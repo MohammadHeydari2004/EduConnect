@@ -18,8 +18,7 @@ function ProfilePage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [fetchedUserId, setFetchedUserId] = useState<string | null>(null);
-  const loading =
-    user?.role === "student" && fetchedUserId !== String(user?.id);
+  const loading = user?.role === "student" && fetchedUserId !== user?.id;
 
   useEffect(() => {
     if (!user || user.role !== "student") return;
@@ -34,11 +33,11 @@ function ProfilePage() {
           setAttendances(a);
           setSessions(s);
           setClasses(c);
-          setFetchedUserId(String(user.id));
+          setFetchedUserId(user.id);
         }
       })
       .catch(() => {
-        if (!ignore) setFetchedUserId(String(user.id));
+        if (!ignore) setFetchedUserId(user.id);
       });
     return () => {
       ignore = true;
@@ -54,10 +53,8 @@ function ProfilePage() {
   const sessionDetails =
     user.role === "student"
       ? attendances.map((a) => {
-          const session = sessions.find(
-            (s) => String(s.id) === String(a.sessionId),
-          );
-          const cls = classes.find((c) => String(c.id) === String(a.classId));
+          const session = sessions.find((s) => s.id === a.sessionId);
+          const cls = classes.find((c) => c.id === a.classId);
           return {
             ...a,
             sessionTitle: session?.title || "—",
@@ -208,5 +205,4 @@ function ProfilePage() {
     </div>
   );
 }
-
 export default ProfilePage;

@@ -25,7 +25,7 @@ async function ensureEmailIsUnique(
   const duplicate = users.find(
     (user) =>
       user.email.trim().toLowerCase() === normalizedEmail &&
-      String(user.id) !== String(excludeUserId),
+      user.id !== excludeUserId,
   );
   if (duplicate) {
     throw new Error("این ایمیل قبلاً ثبت شده است.");
@@ -39,16 +39,22 @@ async function getAdminUsers(): Promise<User[]> {
 
 async function ensureNotLastAdmin(userId: ID): Promise<void> {
   const users = await getAllUsers();
-  const targetUser = users.find((user) => String(user.id) === String(userId));
-  if (!targetUser) {
-    throw new Error("کاربر موردنظر پیدا نشد.");
-  }
-  if (targetUser.role !== "admin") {
-    return;
-  }
+  const targetUser = users.find((user) => user.id === userId);
+  if (!targetUser) throw new Error("کاربر موردنظر پیدا نشد.");
+  if (targetUser.role !== "admin") return;
+
   const adminUsers = users.filter((user) => user.role === "admin");
   if (adminUsers.length <= 1) {
     throw new Error("امکان حذف یا تغییر آخرین مدیر سیستم وجود ندارد.");
+  }
+}
+
+async function ensureNotLastAdminIfDeactivating(user: User): Promise<void> {
+  if (user.role !== "admin" || user.status === "inactive") return;
+  const admins = await getAdminUsers();
+  const activeAdmins = admins.filter((admin) => admin.status === "active");
+  if (activeAdmins.length <= 1) {
+    throw new Error("امکان غیرفعال‌سازی آخرین مدیر سیستم وجود ندارد.");
   }
 }
 
@@ -69,6 +75,7 @@ export const userService = {
   async update(id: ID, data: UpdateUserPayload): Promise<User> {
     await ensureEmailIsUnique(data.email, id);
     const existingUser = await getUserById(id);
+
     if (existingUser.role === "admin" && data.role !== "admin") {
       await ensureNotLastAdmin(id);
     }
@@ -79,6 +86,7 @@ export const userService = {
     ) {
       await ensureNotLastAdminIfDeactivating(existingUser);
     }
+
     const payload: User = {
       ...existingUser,
       name: data.name.trim(),
@@ -97,34 +105,12 @@ export const userService = {
     await ensureNotLastAdminIfDeactivating(user);
     const nextStatus: RecordStatus =
       user.status === "active" ? "inactive" : "active";
-    return baseApi.update<User>(endpoint, id, {
-      ...user,
-      status: nextStatus,
-    });
+    return baseApi.update<User>(endpoint, id, { ...user, status: nextStatus });
   },
   async changeRole(id: ID, role: UserRole): Promise<User> {
     const user = await getUserById(id);
-    if (user.role === "admin" && role !== "admin") {
-      await ensureNotLastAdmin(id);
-    }
-    return baseApi.update<User>(endpoint, id, {
-      ...user,
-      role,
-    });
+    if (user.role === "admin" && role !== "admin") await ensureNotLastAdmin(id);
+    return baseApi.update<User>(endpoint, id, { ...user, role });
   },
   getAdminUsers,
 };
-
-async function ensureNotLastAdminIfDeactivating(user: User): Promise<void> {
-  if (user.role !== "admin") {
-    return;
-  }
-  if (user.status === "inactive") {
-    return;
-  }
-  const admins = await getAdminUsers();
-  const activeAdmins = admins.filter((admin) => admin.status === "active");
-  if (activeAdmins.length <= 1) {
-    throw new Error("امکان غیرفعال‌سازی آخرین مدیر سیستم وجود ندارد.");
-  }
-}

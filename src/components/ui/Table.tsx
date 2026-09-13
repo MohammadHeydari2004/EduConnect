@@ -37,7 +37,7 @@ function Table<T>({ columns, data, getRowKey }: TableProps<T>) {
               {columns.map((column) => (
                 <td
                   key={String(column.key)}
-                  className="px-3 py-3 text-gray-600 sm:px-4 m-auto"
+                  className="m-auto px-3 py-3 text-gray-600 sm:px-4"
                 >
                   {column.render
                     ? column.render(item)

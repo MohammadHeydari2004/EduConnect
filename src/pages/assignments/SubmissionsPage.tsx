@@ -41,8 +41,6 @@ export default function SubmissionsPage() {
           const isTeacherOwner =
             currentUser?.role === "teacher" &&
             String(a.teacherId) === String(currentUser?.id);
-
-          // ✅ اصلاح دسترسی: ادمین هم باید بتواند نمرات را ببیند
           if (!isAdmin && !isTeacherOwner) {
             navigate("/assignments", { replace: true });
             return;
@@ -77,6 +75,7 @@ export default function SubmissionsPage() {
 
   const getUserName = (userId: number | string) =>
     users.find((u) => String(u.id) === String(userId))?.name ?? "—";
+
   const handleGradeChange = (
     submissionId: string,
     field: "grade" | "feedback",
@@ -106,13 +105,9 @@ export default function SubmissionsPage() {
         feedback: data.feedback || null,
         status: "graded",
       });
-      // setSuccessMessage("نمره با موفقیت ذخیره شد. در حال بازگشت...");
-      // setErrorMessage("");
-      // setTimeout(() => navigate("/assignments"), 1500);
 
       setSuccessMessage("نمره با موفقیت ذخیره شد.");
       setErrorMessage("");
-      // بدون navigate خودکار
     } catch {
       setErrorMessage("خطا در ثبت نمره.");
       setSuccessMessage("");
@@ -147,46 +142,65 @@ export default function SubmissionsPage() {
         />
       ) : (
         <div className="grid gap-4">
-          {submissions.map((sub) => (
-            <Card key={sub.id}>
-              <div className="flex flex-col gap-3">
-                <div>
-                  <span className="font-semibold">دانشجو:</span>{" "}
-                  {getUserName(sub.studentId)}
+          {submissions.map((sub) => {
+            const isLate =
+              assignment &&
+              new Date(sub.submittedAt) > new Date(assignment.deadline);
+
+            return (
+              <Card key={sub.id}>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="font-semibold">دانشجو:</span>{" "}
+                      {getUserName(sub.studentId)}
+                    </div>
+                    {isLate && (
+                      <span className="inline-flex rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+                        ارسال با تأخیر
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <span className="font-semibold">پاسخ:</span> {sub.content}
+                  </div>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Input
+                      label="نمره (0-20)"
+                      type="number"
+                      min="0"
+                      max="20"
+                      step="0.5"
+                      value={grading[String(sub.id)]?.grade ?? ""}
+                      onChange={(e) =>
+                        handleGradeChange(
+                          String(sub.id),
+                          "grade",
+                          e.target.value,
+                        )
+                      }
+                    />
+                    <Input
+                      label="بازخورد"
+                      value={grading[String(sub.id)]?.feedback ?? ""}
+                      onChange={(e) =>
+                        handleGradeChange(
+                          String(sub.id),
+                          "feedback",
+                          e.target.value,
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <Button onClick={() => handleSaveGrade(sub)}>
+                      ثبت نمره
+                    </Button>
+                  </div>
                 </div>
-                <div>
-                  <span className="font-semibold">پاسخ:</span> {sub.content}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Input
-                    label="نمره (0-20)"
-                    type="number"
-                    min="0"
-                    max="20"
-                    step="0.5"
-                    value={grading[String(sub.id)]?.grade ?? ""}
-                    onChange={(e) =>
-                      handleGradeChange(String(sub.id), "grade", e.target.value)
-                    }
-                  />
-                  <Input
-                    label="بازخورد"
-                    value={grading[String(sub.id)]?.feedback ?? ""}
-                    onChange={(e) =>
-                      handleGradeChange(
-                        String(sub.id),
-                        "feedback",
-                        e.target.value,
-                      )
-                    }
-                  />
-                </div>
-                <div className="flex justify-end">
-                  <Button onClick={() => handleSaveGrade(sub)}>ثبت نمره</Button>
-                </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

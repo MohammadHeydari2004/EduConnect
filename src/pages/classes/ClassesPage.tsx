@@ -1,4 +1,3 @@
-// src/pages/classes/ClassesPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EmptyState from "#/components/common/EmptyState.tsx";
@@ -15,6 +14,7 @@ import { classService } from "#/services/modules/classService.ts";
 import { userService } from "#/services/modules/userService.ts";
 import type { ClassItem, ClassStatus } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
+import type { ID } from "#/types/common.ts";
 import ClassForm from "./ClassForm";
 
 export default function ClassesPage() {
@@ -43,8 +43,7 @@ export default function ClassesPage() {
 
   const canManageClass = (c: ClassItem) => {
     if (isAdmin) return true;
-    if (currentUser?.role === "teacher")
-      return String(c.teacherId) === String(currentUser.id);
+    if (currentUser?.role === "teacher") return c.teacherId === currentUser.id;
     return false;
   };
 
@@ -82,14 +81,14 @@ export default function ClassesPage() {
   const filteredClasses = useMemo(() => {
     return classes.filter((c) => {
       if (!isAdmin && currentUser?.role === "teacher") {
-        if (String(c.teacherId) !== String(currentUser.id)) return false;
+        if (c.teacherId !== currentUser.id) return false;
       }
       const matchesSearch = (c.title || "")
         .toLowerCase()
         .includes(search.toLowerCase());
       const matchesStatus = statusFilter ? c.status === statusFilter : true;
       const matchesTeacher = teacherFilter
-        ? String(c.teacherId) === teacherFilter
+        ? c.teacherId === teacherFilter
         : true;
       return matchesSearch && matchesStatus && matchesTeacher;
     });
@@ -150,9 +149,9 @@ export default function ClassesPage() {
     setShowForm(true);
   };
 
-  const getTeacherName = (teacherId: number | string | null | undefined) => {
+  const getTeacherName = (teacherId: ID | null | undefined) => {
     if (teacherId === null || teacherId === undefined) return "—";
-    return users.find((u) => String(u.id) === String(teacherId))?.name ?? "—";
+    return users.find((u) => u.id === teacherId)?.name ?? "—";
   };
 
   return (
@@ -203,7 +202,7 @@ export default function ClassesPage() {
             onChange={(e) => setTeacherFilter(e.target.value)}
             options={[
               { label: "همه اساتید", value: "" },
-              ...teachers.map((t) => ({ label: t.name, value: String(t.id) })),
+              ...teachers.map((t) => ({ label: t.name, value: t.id })),
             ]}
           />
         )}
