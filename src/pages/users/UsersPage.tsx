@@ -1,17 +1,18 @@
-import { useEffect, useMemo, useState } from "react";
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
-import { useAuth } from "#/context/AuthContext.ts";
-import { userService } from "#/services/modules/userService.ts";
+import { useAuth } from "#/contexts/AuthContext.ts";
+import { useToast } from "#/hooks/useToast.ts";
+import { userService } from "#/services/user.ts";
 import type {
   CreateUserPayload,
   UpdateUserPayload,
   User,
   UserFilters as UserFiltersType,
 } from "#/types/user.ts";
+import { useEffect, useMemo, useState } from "react";
 import UserDetails from "./UserDetails";
 import UserFilters from "./UserFilters";
 import UserForm from "./UserForm";
@@ -26,6 +27,7 @@ const initialFilters: UserFiltersType = {
 
 function UsersPage() {
   const { user: currentUser } = useAuth();
+  const { addToast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [filters, setFilters] = useState<UserFiltersType>(initialFilters);
   const [loading, setLoading] = useState(true);
@@ -35,8 +37,6 @@ function UsersPage() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
-  const [actionError, setActionError] = useState("");
-  const [actionSuccess, setActionSuccess] = useState("");
 
   useEffect(() => {
     let ignore = false;
@@ -73,58 +73,66 @@ function UsersPage() {
     });
   }, [users, filters]);
 
-  const resetMessages = () => {
-    setActionError("");
-    setActionSuccess("");
-  };
-
   const handleCreate = async (values: CreateUserPayload) => {
-    resetMessages();
-    await userService.create(values);
-    setActionSuccess("کاربر با موفقیت ایجاد شد.");
-    setIsCreateOpen(false);
-    setLoading(true);
-    const data = await userService.getAll();
-    setUsers(data);
-    setLoading(false);
+    try {
+      await userService.create(values);
+      addToast("کاربر با موفقیت ایجاد شد.", "success");
+      setIsCreateOpen(false);
+      setLoading(true);
+      const data = await userService.getAll();
+      setUsers(data);
+      setLoading(false);
+    } catch (err) {
+      addToast(
+        err instanceof Error ? err.message : "ایجاد کاربر ناموفق بود.",
+        "error",
+      );
+    }
   };
 
   const handleOpenEdit = (user: User) => {
-    resetMessages();
     setSelectedUser(user);
     setIsEditOpen(true);
   };
 
   const handleUpdate = async (values: UpdateUserPayload) => {
     if (!selectedUser) return;
-    resetMessages();
     if (currentUser?.id === selectedUser.id && values.status === "inactive") {
-      throw new Error("شما نمی‌توانید حساب کاربری خودتان را غیرفعال کنید.");
+      addToast("شما نمی‌توانید حساب کاربری خودتان را غیرفعال کنید.", "error");
+      return;
     }
-    await userService.update(selectedUser.id, values);
-    setActionSuccess("اطلاعات کاربر با موفقیت ویرایش شد.");
-    setIsEditOpen(false);
-    setSelectedUser(null);
-    setLoading(true);
-    const data = await userService.getAll();
-    setUsers(data);
-    setLoading(false);
+    try {
+      await userService.update(selectedUser.id, values);
+      addToast("اطلاعات کاربر با موفقیت ویرایش شد.", "success");
+      setIsEditOpen(false);
+      setSelectedUser(null);
+      setLoading(true);
+      const data = await userService.getAll();
+      setUsers(data);
+      setLoading(false);
+    } catch (err) {
+      addToast(
+        err instanceof Error ? err.message : "ویرایش کاربر ناموفق بود.",
+        "error",
+      );
+    }
   };
 
   const handleOpenDelete = (user: User) => {
-    resetMessages();
     setSelectedUser(user);
     setIsDeleteConfirmOpen(true);
   };
 
   const handleDelete = async () => {
     if (!selectedUser || !currentUser) return;
+    if (selectedUser.id === currentUser.id) {
+      addToast("شما نمی‌توانید حساب کاربری خودتان را حذف کنید.", "error");
+      setIsDeleteConfirmOpen(false);
+      return;
+    }
     try {
-      resetMessages();
-      if (selectedUser.id === currentUser.id)
-        throw new Error("شما نمی‌توانید حساب کاربری خودتان را حذف کنید.");
       await userService.delete(selectedUser.id);
-      setActionSuccess("کاربر با موفقیت حذف شد.");
+      addToast("کاربر با موفقیت حذف شد.", "success");
       setIsDeleteConfirmOpen(false);
       setSelectedUser(null);
       setLoading(true);
@@ -132,8 +140,9 @@ function UsersPage() {
       setUsers(data);
       setLoading(false);
     } catch (err) {
-      setActionError(
+      addToast(
         err instanceof Error ? err.message : "حذف کاربر ناموفق بود.",
+        "error",
       );
       setIsDeleteConfirmOpen(false);
     }
@@ -141,25 +150,26 @@ function UsersPage() {
 
   const handleToggleStatus = async (user: User) => {
     if (!currentUser) return;
+    if (user.id === currentUser.id) {
+      addToast("شما نمی‌توانید وضعیت حساب خودتان را تغییر دهید.", "error");
+      return;
+    }
     try {
-      resetMessages();
-      if (user.id === currentUser.id)
-        throw new Error("شما نمی‌توانید وضعیت حساب خودتان را تغییر دهید.");
       await userService.toggleStatus(user.id);
-      setActionSuccess("وضعیت کاربر با موفقیت تغییر کرد.");
+      addToast("وضعیت کاربر با موفقیت تغییر کرد.", "success");
       setLoading(true);
       const data = await userService.getAll();
       setUsers(data);
       setLoading(false);
     } catch (err) {
-      setActionError(
+      addToast(
         err instanceof Error ? err.message : "تغییر وضعیت کاربر ناموفق بود.",
+        "error",
       );
     }
   };
 
   const handleView = (user: User) => {
-    resetMessages();
     setSelectedUser(user);
     setIsDetailsOpen(true);
   };
@@ -172,7 +182,6 @@ function UsersPage() {
         </h1>
         <Button
           onClick={() => {
-            resetMessages();
             setIsCreateOpen(true);
           }}
           className="w-full sm:w-auto"
@@ -180,24 +189,11 @@ function UsersPage() {
           ایجاد کاربر
         </Button>
       </div>
-
-      {actionSuccess && (
-        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-          {actionSuccess}
-        </div>
-      )}
-      {actionError && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {actionError}
-        </div>
-      )}
-
       <UserFilters
         filters={filters}
         onChange={setFilters}
         onReset={() => setFilters(initialFilters)}
       />
-
       <Card title="لیست کاربران">
         {loading ? (
           <Loading />
@@ -226,7 +222,6 @@ function UsersPage() {
           </div>
         )}
       </Card>
-
       <UserForm
         key={`create-${isCreateOpen}`}
         isOpen={isCreateOpen}
@@ -255,7 +250,6 @@ function UsersPage() {
           setSelectedUser(null);
         }}
       />
-
       <ConfirmDialog
         isOpen={isDeleteConfirmOpen}
         title="حذف کاربر"

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Button from "#/components/ui/Button.tsx";
 import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
@@ -8,11 +7,12 @@ import type {
   UpdateUserPayload,
   User,
 } from "#/types/user.ts";
+import { useState } from "react";
 import {
   validateCreateUser,
   validateUpdateUser,
   type UserFormErrors,
-} from "./userValidation";
+} from "./validators";
 
 interface UserFormProps {
   isOpen: boolean;

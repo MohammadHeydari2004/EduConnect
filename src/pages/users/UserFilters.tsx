@@ -1,6 +1,6 @@
+import Button from "#/components/ui/Button.tsx";
 import SearchInput from "#/components/ui/SearchInput.tsx";
 import Select from "#/components/ui/Select.tsx";
-import Button from "#/components/ui/Button.tsx";
 import type { UserFilters as UserFiltersType } from "#/types/user.ts";
 
 interface UserFiltersProps {

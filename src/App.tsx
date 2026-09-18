@@ -1,19 +1,19 @@
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import MainLayout from "#/layouts/MainLayout.tsx";
-import DashboardPage from "#/pages/dashboard/DashboardPage.tsx";
-import UsersPage from "#/pages/users/UsersPage.tsx";
-import ClassesPage from "#/pages/classes/ClassesPage.tsx";
-import ClassDetailsPage from "#/pages/classes/ClassDetailsPage.tsx";
-import AttendancePage from "#/pages/attendance/AttendancePage.tsx";
 import AnnouncementsPage from "#/pages/announcements/AnnouncementsPage.tsx";
 import AssignmentsPage from "#/pages/assignments/AssignmentsPage.tsx";
+import SubmissionsPage from "#/pages/assignments/SubmissionsPage.tsx";
+import AttendancePage from "#/pages/attendance/AttendancePage.tsx";
+import ClassDetailsPage from "#/pages/classes/ClassDetailsPage.tsx";
+import ClassesPage from "#/pages/classes/ClassesPage.tsx";
+import DashboardPage from "#/pages/dashboard/DashboardContainer.tsx";
+import NotFoundPage from "#/pages/errors/NotFoundPage.tsx";
+import UnauthorizedPage from "#/pages/errors/UnauthorizedPage.tsx";
+import LoginPage from "#/pages/LoginPage.tsx";
 import ProfilePage from "#/pages/profile/ProfilePage.tsx";
-import LoginPage from "#/pages/auth/LoginPage.tsx";
-import UnauthorizedPage from "#/pages/UnauthorizedPage.tsx";
-import NotFoundPage from "#/pages/NotFoundPage.tsx";
+import UsersPage from "#/pages/users/UsersPage.tsx";
 import ProtectedRoute from "#/routes/ProtectedRoute.tsx";
 import RoleGuard from "#/routes/RoleGuard.tsx";
-import SubmissionsPage from "#/pages/assignments/SubmissionsPage.tsx";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 
 function App() {
   return (
@@ -57,7 +57,7 @@ function App() {
         <Route
           path="attendance"
           element={
-            <RoleGuard allowedRoles={["admin", "teacher"]}>
+            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
               <AttendancePage />
             </RoleGuard>
           }
@@ -79,7 +79,6 @@ function App() {
           }
         />
 
-        {/* ✅ اصلاح مسیر: دریافت classId به جای id مبهم */}
         <Route
           path="classes/:classId/assignments"
           element={

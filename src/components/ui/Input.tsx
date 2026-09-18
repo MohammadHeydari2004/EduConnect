@@ -14,7 +14,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <input
           ref={ref}
-          className={`rounded-lg border px-3 py-2 text-sm outline-none focus:border-blue-500 ${error ? "border-red-500" : "border-gray-300"} ${className}`}
+          className={`rounded-lg border px-3 py-2 text-sm outline-hidden focus:border-blue-500 ${error ? "border-red-500" : "border-gray-300"} ${className}`}
           {...props}
         />
         {error && <span className="text-xs text-red-600">{error}</span>}

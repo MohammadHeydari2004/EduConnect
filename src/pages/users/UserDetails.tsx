@@ -1,5 +1,5 @@
-import Modal from "#/components/ui/Modal.tsx";
 import Card from "#/components/ui/Card.tsx";
+import Modal from "#/components/ui/Modal.tsx";
 import type { User } from "#/types/user.ts";
 
 interface UserDetailsProps {
@@ -7,6 +7,30 @@ interface UserDetailsProps {
   user: User | null;
   onClose: () => void;
 }
+
+const getRoleLabel = (role: string) => {
+  switch (role) {
+    case "admin":
+      return "مدیر";
+    case "teacher":
+      return "استاد";
+    case "student":
+      return "دانشجو";
+    default:
+      return role;
+  }
+};
+
+const getStatusLabel = (status: string) => {
+  switch (status) {
+    case "active":
+      return "فعال";
+    case "inactive":
+      return "غیرفعال";
+    default:
+      return status;
+  }
+};
 
 function UserDetails({ isOpen, user, onClose }: UserDetailsProps) {
   if (!user) return null;
@@ -22,10 +46,12 @@ function UserDetails({ isOpen, user, onClose }: UserDetailsProps) {
             <span className="font-semibold">ایمیل:</span> {user.email}
           </p>
           <p>
-            <span className="font-semibold">نقش:</span> {user.role}
+            <span className="font-semibold">نقش:</span>{" "}
+            {getRoleLabel(user.role)}
           </p>
           <p>
-            <span className="font-semibold">وضعیت:</span> {user.status}
+            <span className="font-semibold">وضعیت:</span>{" "}
+            {getStatusLabel(user.status)}
           </p>
         </div>
       </Card>

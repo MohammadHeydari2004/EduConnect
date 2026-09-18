@@ -2,454 +2,1137 @@
   "users": [
     {
       "id": "1",
-      "name": "مدیر کل",
-      "email": "admin1@edu.com",
+      "name": "مدیر سیستم",
+      "email": "admin@edu.com",
       "password": "123456",
       "role": "admin",
       "status": "active"
     },
     {
       "id": "2",
-      "name": "مدیر دوم",
-      "email": "admin2@edu.com",
-      "password": "123456",
-      "role": "admin",
-      "status": "inactive"
-    },
-    {
-      "id": "3",
-      "name": "محمد حسینی",
+      "name": "علی محمدی",
       "email": "teacher1@edu.com",
       "password": "123456",
       "role": "teacher",
       "status": "active"
     },
     {
-      "id": "4",
-      "name": "سارا محمدی",
+      "id": "3",
+      "name": "سارا احمدی",
       "email": "teacher2@edu.com",
       "password": "123456",
       "role": "teacher",
       "status": "active"
     },
     {
-      "id": "5",
-      "name": "علی رضایی",
+      "id": "4",
+      "name": "رضا کریمی",
       "email": "teacher3@edu.com",
       "password": "123456",
       "role": "teacher",
       "status": "inactive"
     },
     {
+      "id": "5",
+      "name": "مریم حسینی",
+      "email": "teacher4@edu.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "active"
+    },
+    {
       "id": "6",
-      "name": "زهرا احمدی",
+      "name": "حسن رضایی",
+      "email": "teacher5@edu.com",
+      "password": "123456",
+      "role": "teacher",
+      "status": "active"
+    },
+    {
+      "id": "7",
+      "name": "زهرا نوری",
       "email": "student1@edu.com",
       "password": "123456",
       "role": "student",
       "status": "active"
     },
     {
-      "id": "7",
-      "name": "امیر حسنی",
+      "id": "8",
+      "name": "امیر جعفری",
       "email": "student2@edu.com",
       "password": "123456",
       "role": "student",
       "status": "active"
     },
     {
-      "id": "8",
-      "name": "فاطمه نوری",
+      "id": "9",
+      "name": "فاطمه موسوی",
       "email": "student3@edu.com",
       "password": "123456",
       "role": "student",
       "status": "active"
     },
     {
-      "id": "9",
-      "name": "حسین موسوی",
+      "id": "10",
+      "name": "محمد تقوی",
       "email": "student4@edu.com",
       "password": "123456",
       "role": "student",
-      "status": "inactive"
+      "status": "active"
     },
     {
-      "name": "Test without class",
-      "email": "mh4194212222@gmail.com",
+      "id": "11",
+      "name": "نرگس صادقی",
+      "email": "student5@edu.com",
       "password": "123456",
       "role": "student",
-      "status": "active",
-      "id": "Au7Jx0mOI40"
+      "status": "active"
+    },
+    {
+      "id": "12",
+      "name": "حمید عباسی",
+      "email": "student6@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "13",
+      "name": "لیلا مرادی",
+      "email": "student7@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "14",
+      "name": "کیان فرهادی",
+      "email": "student8@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "15",
+      "name": "سیمین کاظمی",
+      "email": "student9@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "16",
+      "name": "پویا نجفی",
+      "email": "student10@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "17",
+      "name": "هدیه شریفی",
+      "email": "student11@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "18",
+      "name": "آرش ملکی",
+      "email": "student12@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "19",
+      "name": "بهار رستمی",
+      "email": "student13@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "20",
+      "name": "سعید حیدری",
+      "email": "student14@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "21",
+      "name": "طناز قاسمی",
+      "email": "student15@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "active"
+    },
+    {
+      "id": "22",
+      "name": "دانشجوی غیرفعال",
+      "email": "inactive@edu.com",
+      "password": "123456",
+      "role": "student",
+      "status": "inactive"
     }
   ],
   "classes": [
     {
-      "id": "1",
-      "title": "پیشرفته React",
-      "teacherId": "3",
+      "id": "c1",
+      "title": "مبانی برنامه‌نویسی",
+      "teacherId": "2",
       "studentIds": [
-        "6",
         "7",
-        "8"
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21"
       ],
-      "capacity": 20,
+      "capacity": 30,
       "status": "active",
-      "description": "بررسی عمیق الگوها و بهترین شیوه‌های React",
-      "createdAt": "2025-07-01T10:00:00.000Z",
-      "updatedAt": "2026-07-04T17:43:36.091Z"
+      "description": "آشنایی با مفاهیم پایه برنامه‌نویسی",
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "updatedAt": "2025-01-01T10:00:00.000Z"
     },
     {
-      "id": "2",
-      "title": "Backend با Node.js",
-      "teacherId": "4",
+      "id": "c2",
+      "title": "ساختمان داده‌ها",
+      "teacherId": "2",
       "studentIds": [
-        "6",
-        "7"
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21"
       ],
       "capacity": 25,
       "status": "active",
-      "description": "توسعه سمت سرور با Node.js و Express",
-      "createdAt": "2025-07-05T10:00:00.000Z",
-      "updatedAt": "2025-07-05T10:00:00.000Z"
+      "description": "بررسی الگوریتم‌ها و ساختمان داده",
+      "createdAt": "2025-01-02T10:00:00.000Z",
+      "updatedAt": "2025-01-02T10:00:00.000Z"
     },
     {
-      "id": "COkhXPy79kk",
-      "title": "تست ۱",
-      "teacherId": "5",
+      "id": "c3",
+      "title": "طراحی وب",
+      "teacherId": "2",
       "studentIds": [
-        "6",
-        "7"
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21"
       ],
-      "capacity": 10,
+      "capacity": 20,
       "status": "active",
-      "description": "هاها",
-      "createdAt": "2026-07-04T17:42:36.037Z"
+      "description": "HTML, CSS, JavaScript",
+      "createdAt": "2025-01-03T10:00:00.000Z",
+      "updatedAt": "2025-01-03T10:00:00.000Z"
+    },
+    {
+      "id": "c4",
+      "title": "پایگاه داده",
+      "teacherId": "2",
+      "studentIds": [
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21"
+      ],
+      "capacity": 25,
+      "status": "active",
+      "description": "SQL و NoSQL",
+      "createdAt": "2025-01-04T10:00:00.000Z",
+      "updatedAt": "2025-01-04T10:00:00.000Z"
+    },
+    {
+      "id": "c5",
+      "title": "هوش مصنوعی",
+      "teacherId": "2",
+      "studentIds": [
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21"
+      ],
+      "capacity": 15,
+      "status": "active",
+      "description": "مقدمات هوش مصنوعی",
+      "createdAt": "2025-01-05T10:00:00.000Z",
+      "updatedAt": "2025-01-05T10:00:00.000Z"
+    },
+    {
+      "id": "c6",
+      "title": "شبکه‌های کامپیوتری",
+      "teacherId": "3",
+      "studentIds": [
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21"
+      ],
+      "capacity": 30,
+      "status": "active",
+      "description": "مفاهیم شبکه و پروتکل‌ها",
+      "createdAt": "2025-02-01T10:00:00.000Z",
+      "updatedAt": "2025-02-01T10:00:00.000Z"
+    },
+    {
+      "id": "c7",
+      "title": "سیستم عامل",
+      "teacherId": "3",
+      "studentIds": [
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21"
+      ],
+      "capacity": 25,
+      "status": "active",
+      "description": "مدیریت منابع و پردازش",
+      "createdAt": "2025-02-02T10:00:00.000Z",
+      "updatedAt": "2025-02-02T10:00:00.000Z"
+    },
+    {
+      "id": "c8",
+      "title": "مهندسی نرم‌افزار",
+      "teacherId": "3",
+      "studentIds": [
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21"
+      ],
+      "capacity": 20,
+      "status": "active",
+      "description": "چرخه حیات توسعه نرم‌افزار",
+      "createdAt": "2025-02-03T10:00:00.000Z",
+      "updatedAt": "2025-02-03T10:00:00.000Z"
+    },
+    {
+      "id": "c9",
+      "title": "امنیت اطلاعات",
+      "teacherId": "3",
+      "studentIds": [
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21"
+      ],
+      "capacity": 20,
+      "status": "active",
+      "description": "رمزنگاری و امنیت شبکه",
+      "createdAt": "2025-02-04T10:00:00.000Z",
+      "updatedAt": "2025-02-04T10:00:00.000Z"
+    },
+    {
+      "id": "c10",
+      "title": "رایانش ابری",
+      "teacherId": "3",
+      "studentIds": [
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21"
+      ],
+      "capacity": 15,
+      "status": "active",
+      "description": "سرویس‌های ابری و DevOps",
+      "createdAt": "2025-02-05T10:00:00.000Z",
+      "updatedAt": "2025-02-05T10:00:00.000Z"
     }
   ],
   "sessions": [
     {
-      "id": "1",
-      "classId": "1",
-      "title": "جلسه 1 - مقدمه‌ای بر React",
-      "date": "2025-08-01",
-      "description": "آشنایی با مفاهیم پایه React و JSX",
-      "createdAt": "2025-07-25T10:00:00.000Z"
+      "id": "s1",
+      "classId": "c1",
+      "title": "جلسه اول: معرفی",
+      "date": "2025-03-01",
+      "description": "معرفی درس و سرفصل‌ها",
+      "createdAt": "2025-02-25T10:00:00.000Z"
     },
     {
-      "id": "2",
-      "classId": "1",
-      "title": "جلسه 2 - Components و Props",
-      "date": "2025-08-08",
-      "description": "ساخت کامپوننت‌ها و مدیریت Props",
-      "createdAt": "2025-08-02T10:00:00.000Z"
+      "id": "s2",
+      "classId": "c1",
+      "title": "جلسه دوم: متغیرها",
+      "date": "2025-03-08",
+      "description": "انواع داده و متغیرها",
+      "createdAt": "2025-03-01T10:00:00.000Z"
     },
     {
-      "id": "3",
-      "classId": "2",
-      "title": "جلسه 1 - مقدمه Node.js",
-      "date": "2025-08-03",
-      "description": "آشنایی با محیط Node.js و npm",
-      "createdAt": "2025-07-28T10:00:00.000Z"
+      "id": "s3",
+      "classId": "c1",
+      "title": "جلسه سوم: حلقه‌ها",
+      "date": "2025-03-15",
+      "description": "حلقه‌های For و While",
+      "createdAt": "2025-03-08T10:00:00.000Z"
     },
     {
-      "id": "4",
-      "classId": "2",
-      "title": "جلسه 2 - Express Framework",
-      "date": "2025-08-10",
-      "description": "ساخت API با Express",
-      "createdAt": "2025-08-04T10:00:00.000Z"
+      "id": "s4",
+      "classId": "c1",
+      "title": "جلسه چهارم: توابع",
+      "date": "2025-03-22",
+      "description": "تعریف و فراخوانی توابع",
+      "createdAt": "2025-03-15T10:00:00.000Z"
     },
     {
-      "id": "5",
-      "classId": "COkhXPy79kk",
-      "title": "جلسه 1 - مبانی Python",
-      "date": "2025-08-05",
-      "description": "نحوه نصب و سینتکس پایه Python",
-      "createdAt": "2025-07-30T10:00:00.000Z"
+      "id": "s5",
+      "classId": "c1",
+      "title": "جلسه پنجم: آرایه‌ها",
+      "date": "2025-03-29",
+      "description": "کار با آرایه‌ها",
+      "createdAt": "2025-03-22T10:00:00.000Z"
     },
     {
-      "id": "6",
-      "classId": "COkhXPy79kk",
-      "title": "جلسه 2 - توابع و ماژول‌ها",
-      "date": "2025-08-12",
-      "description": "تعریف توابع و استفاده از ماژول‌ها",
-      "createdAt": "2025-08-06T10:00:00.000Z"
+      "id": "s6",
+      "classId": "c2",
+      "title": "جلسه اول: لیست‌ها",
+      "date": "2025-03-02",
+      "description": "ساختمان داده لیست پیوندی",
+      "createdAt": "2025-02-26T10:00:00.000Z"
     },
     {
-      "id": "MOyInPrPCVw",
-      "title": "تست ۱",
-      "date": "2026-07-06",
-      "description": "تست ۱",
-      "classId": "1",
-      "createdAt": "2026-07-04T17:48:10.115Z"
+      "id": "s7",
+      "classId": "c2",
+      "title": "جلسه دوم: پشته",
+      "date": "2025-03-09",
+      "description": "ساختار داده پشته",
+      "createdAt": "2025-03-02T10:00:00.000Z"
+    },
+    {
+      "id": "s8",
+      "classId": "c2",
+      "title": "جلسه سوم: صف",
+      "date": "2025-03-16",
+      "description": "ساختار داده صف",
+      "createdAt": "2025-03-09T10:00:00.000Z"
+    },
+    {
+      "id": "s9",
+      "classId": "c2",
+      "title": "جلسه چهارم: درخت",
+      "date": "2025-03-23",
+      "description": "درخت‌های باینری",
+      "createdAt": "2025-03-16T10:00:00.000Z"
+    },
+    {
+      "id": "s10",
+      "classId": "c2",
+      "title": "جلسه پنجم: گراف",
+      "date": "2025-03-30",
+      "description": "الگوریتم‌های گراف",
+      "createdAt": "2025-03-23T10:00:00.000Z"
+    },
+    {
+      "title": "test 1",
+      "date": "2026-07-08",
+      "description": "teat 1",
+      "classId": "c10",
+      "createdAt": "2026-07-07T23:05:02.594Z",
+      "id": "NiEJr_22DS4"
+    },
+    {
+      "title": "test",
+      "date": "2026-07-16",
+      "description": "test",
+      "classId": "c3",
+      "createdAt": "2026-07-07T23:08:11.595Z",
+      "id": "Tg3zMd89vUA"
     }
   ],
   "attendance": [
     {
       "id": "a1",
-      "sessionId": "1",
-      "classId": "1",
-      "studentId": "6",
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "7",
       "status": "late"
     },
     {
       "id": "a2",
-      "sessionId": "1",
-      "classId": "1",
-      "studentId": "7",
-      "status": "absent"
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "8",
+      "status": "late"
     },
     {
       "id": "a3",
-      "sessionId": "1",
-      "classId": "1",
-      "studentId": "8",
-      "status": "absent"
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "9",
+      "status": "present"
     },
     {
       "id": "a4",
-      "sessionId": "2",
-      "classId": "1",
-      "studentId": "6",
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "7",
       "status": "present"
     },
     {
       "id": "a5",
-      "sessionId": "2",
-      "classId": "1",
-      "studentId": "7",
-      "status": "absent"
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "8",
+      "status": "present"
     },
     {
       "id": "a6",
-      "sessionId": "2",
-      "classId": "1",
-      "studentId": "8",
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "9",
       "status": "late"
     },
     {
       "id": "a7",
-      "sessionId": "3",
-      "classId": "2",
-      "studentId": "6",
-      "status": "present"
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "7",
+      "status": "absent"
     },
     {
       "id": "a8",
-      "sessionId": "3",
-      "classId": "2",
-      "studentId": "7",
-      "status": "late"
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "8",
+      "status": "present"
     },
     {
       "id": "a9",
-      "sessionId": "4",
-      "classId": "2",
-      "studentId": "6",
-      "status": "absent"
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "9",
+      "status": "present"
     },
     {
-      "id": "a10",
-      "sessionId": "4",
-      "classId": "2",
+      "sessionId": "s5",
+      "classId": "c1",
       "studentId": "7",
-      "status": "present"
+      "status": "present",
+      "id": "l1Wwwcn0RgU"
     },
     {
-      "id": "a11",
-      "sessionId": "5",
-      "classId": "COkhXPy79kk",
+      "sessionId": "s5",
+      "classId": "c1",
       "studentId": "8",
-      "status": "present"
+      "status": "absent",
+      "id": "XrjWS1NPPzA"
     },
     {
-      "id": "a12",
-      "sessionId": "5",
-      "classId": "COkhXPy79kk",
+      "sessionId": "s5",
+      "classId": "c1",
       "studentId": "9",
-      "status": "absent"
+      "status": "absent",
+      "id": "YqUfnLTVC3Y"
     },
     {
-      "id": "a13",
-      "sessionId": "6",
-      "classId": "COkhXPy79kk",
+      "sessionId": "s5",
+      "classId": "c1",
+      "studentId": "10",
+      "status": "absent",
+      "id": "pAgE0n1K-SY"
+    },
+    {
+      "sessionId": "s5",
+      "classId": "c1",
+      "studentId": "11",
+      "status": "absent",
+      "id": "Tvf-FJqilEI"
+    },
+    {
+      "sessionId": "s5",
+      "classId": "c1",
+      "studentId": "12",
+      "status": "absent",
+      "id": "PvMINL-mt6k"
+    },
+    {
+      "sessionId": "s5",
+      "classId": "c1",
+      "studentId": "13",
+      "status": "absent",
+      "id": "auLVw_WUCJM"
+    },
+    {
+      "sessionId": "s5",
+      "classId": "c1",
+      "studentId": "14",
+      "status": "absent",
+      "id": "ePqXo87gkrU"
+    },
+    {
+      "sessionId": "s5",
+      "classId": "c1",
+      "studentId": "15",
+      "status": "absent",
+      "id": "FOdtyxmAaJY"
+    },
+    {
+      "sessionId": "s5",
+      "classId": "c1",
+      "studentId": "16",
+      "status": "absent",
+      "id": "uFDVQXFcf0I"
+    },
+    {
+      "sessionId": "s5",
+      "classId": "c1",
+      "studentId": "17",
+      "status": "absent",
+      "id": "mxgZS04uEPo"
+    },
+    {
+      "sessionId": "s5",
+      "classId": "c1",
+      "studentId": "18",
+      "status": "absent",
+      "id": "RMH4I8tS9J8"
+    },
+    {
+      "sessionId": "s5",
+      "classId": "c1",
+      "studentId": "19",
+      "status": "absent",
+      "id": "sBHaiMwWEAk"
+    },
+    {
+      "sessionId": "s5",
+      "classId": "c1",
+      "studentId": "20",
+      "status": "absent",
+      "id": "VaugwxMud8A"
+    },
+    {
+      "sessionId": "s5",
+      "classId": "c1",
+      "studentId": "21",
+      "status": "absent",
+      "id": "-FDzeIjhFpU"
+    },
+    {
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "10",
+      "status": "present",
+      "id": "2000kpVg1TQ"
+    },
+    {
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "11",
+      "status": "absent",
+      "id": "Fse9Uz3VCUQ"
+    },
+    {
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "12",
+      "status": "absent",
+      "id": "wCLY3d0_Neg"
+    },
+    {
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "13",
+      "status": "absent",
+      "id": "zQNY9UP8apU"
+    },
+    {
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "14",
+      "status": "absent",
+      "id": "O9DX2N2Ta30"
+    },
+    {
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "15",
+      "status": "absent",
+      "id": "To2BoghIFYs"
+    },
+    {
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "16",
+      "status": "absent",
+      "id": "zTz-gMigecE"
+    },
+    {
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "17",
+      "status": "absent",
+      "id": "3u3heDu6NPU"
+    },
+    {
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "18",
+      "status": "absent",
+      "id": "YMRdu1EzWa8"
+    },
+    {
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "19",
+      "status": "absent",
+      "id": "7pLURcWPqJ8"
+    },
+    {
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "20",
+      "status": "absent",
+      "id": "JI5GPmI-azE"
+    },
+    {
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "21",
+      "status": "absent",
+      "id": "3o0jXuG_6gU"
+    },
+    {
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
+      "studentId": "7",
+      "status": "absent",
+      "id": "-b328Oi1IdU"
+    },
+    {
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
       "studentId": "8",
-      "status": "late"
+      "status": "absent",
+      "id": "PfTs-6hSRwU"
     },
     {
-      "id": "a14",
-      "sessionId": "6",
-      "classId": "COkhXPy79kk",
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
       "studentId": "9",
-      "status": "present"
+      "status": "absent",
+      "id": "9a0PFVj09Ck"
+    },
+    {
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
+      "studentId": "10",
+      "status": "absent",
+      "id": "D855fGwiJ5M"
+    },
+    {
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
+      "studentId": "11",
+      "status": "absent",
+      "id": "pKzN0m9IcE0"
+    },
+    {
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
+      "studentId": "12",
+      "status": "absent",
+      "id": "9jUEi7iD-r0"
+    },
+    {
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
+      "studentId": "13",
+      "status": "absent",
+      "id": "lgTfiPTQiNQ"
+    },
+    {
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
+      "studentId": "14",
+      "status": "absent",
+      "id": "F6CaKrkxKb8"
+    },
+    {
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
+      "studentId": "15",
+      "status": "absent",
+      "id": "H5PUTp0QfiQ"
+    },
+    {
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
+      "studentId": "16",
+      "status": "present",
+      "id": "tUA7qxmBgZE"
+    },
+    {
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
+      "studentId": "17",
+      "status": "absent",
+      "id": "3rHarAcWTaY"
+    },
+    {
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
+      "studentId": "18",
+      "status": "absent",
+      "id": "UA8wErXwmmk"
+    },
+    {
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
+      "studentId": "19",
+      "status": "late",
+      "id": "zFMVCtkrV9g"
+    },
+    {
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
+      "studentId": "20",
+      "status": "absent",
+      "id": "6Zg8nLNbo1Y"
+    },
+    {
+      "sessionId": "NiEJr_22DS4",
+      "classId": "c10",
+      "studentId": "21",
+      "status": "absent",
+      "id": "jqhznFlaoB8"
     }
   ],
   "announcements": [
     {
-      "id": "1",
-      "title": "اطلاعیه عمومی برای همه",
-      "content": "این یک اطلاعیه عمومی است که برای همه کاربران قابل مشاهده است.",
+      "id": "ann1",
+      "title": "شروع ترم جدید",
+      "content": "ترم جدید آموزشی از هفته آینده آغاز می‌شود.",
       "classId": "0",
       "authorId": "1",
-      "createdAt": "2025-07-01T10:00:00.000Z",
-      "seenBy": [
-        "3",
-        "4",
-        "6",
-        "1"
-      ],
-      "targetRoles": [
-        "student",
-        "teacher"
-      ]
+      "createdAt": "2025-02-20T10:00:00.000Z",
+      "seenBy": ["2", "3", "7", "8"],
+      "targetRoles": ["admin", "teacher", "student"]
     },
     {
-      "id": "2",
-      "title": "اطلاعیه مخصوص دانشجویان کلاس React",
-      "content": "این اطلاعیه فقط برای دانشجویان کلاس پیشرفته React است.",
-      "classId": "1",
-      "authorId": "3",
-      "createdAt": "2025-07-05T10:00:00.000Z",
-      "seenBy": [
-        "3",
-        "6"
-      ],
+      "id": "ann2",
+      "title": "قطعی سرور",
+      "content": "سرور دانشگاه روز پنجشنبه از ساعت ۲ تا ۴ قطع خواهد بود.",
+      "classId": "0",
+      "authorId": "1",
+      "createdAt": "2025-03-01T10:00:00.000Z",
+      "seenBy": ["2", "3"],
+      "targetRoles": ["admin", "teacher"]
+    },
+    {
+      "id": "ann3",
+      "title": "تغییر زمان کلاس",
+      "content": "کلاس مبانی برنامه‌نویسی روز شنبه تشکیل نمی‌شود.",
+      "classId": "c1",
+      "authorId": "2",
+      "createdAt": "2025-03-05T10:00:00.000Z",
+      "seenBy": ["7", "8"],
       "targetAudience": "students"
     },
     {
-      "id": "3",
-      "title": "اطلاعیه مخصوص استاد کلاس Node",
-      "content": "این اطلاعیه فقط برای استاد کلاس Backend است.",
-      "classId": "2",
-      "authorId": "4",
-      "createdAt": "2025-07-10T10:00:00.000Z",
-      "seenBy": [
-        "1"
-      ],
-      "targetAudience": "teacher"
+      "id": "ann4",
+      "title": "منابع تکمیلی",
+      "content": "لطفاً فصل سوم کتاب را مطالعه کنید.",
+      "classId": "c1",
+      "authorId": "2",
+      "createdAt": "2025-03-10T10:00:00.000Z",
+      "seenBy": ["8"],
+      "targetAudience": "students"
     },
     {
-      "id": "kA2r7dyFim4",
-      "title": "تست ۱ استاد",
-      "content": "تست ۱",
+      "id": "ann5",
+      "title": "جلسه هماهنگی اساتید",
+      "content": "جلسه هماهنگی اساتید گروه کامپیوتر روز دوشنبه برگزار می‌شود.",
       "classId": "0",
-      "authorId": "1",
-      "targetRoles": [
-        "teacher",
-        "admin"
-      ],
-      "seenBy": [
-        "1"
-      ],
-      "createdAt": "2026-07-04T17:44:26.700Z"
+      "authorId": "2",
+      "createdAt": "2025-03-12T10:00:00.000Z",
+      "seenBy": ["3", "2"],
+      "targetRoles": ["teacher"]
     },
     {
-      "id": "bWageD_NRTU",
-      "title": "تست دیده شدن",
-      "content": "تست دیده شدن توسط دانشجویان",
-      "classId": "1",
-      "authorId": "1",
-      "targetAudience": "students",
-      "seenBy": [
-        "6",
-        "1"
-      ],
-      "createdAt": "2026-07-04T18:14:22.877Z"
+      "id": "ann6",
+      "title": "برگزاری کارگاه",
+      "content": "کارگاه React پیشرفته برای اساتید محترم برگزار می‌گردد.",
+      "classId": "0",
+      "authorId": "3",
+      "createdAt": "2025-03-15T10:00:00.000Z",
+      "seenBy": ["2", "1"],
+      "targetRoles": ["teacher"]
+    },
+    {
+      "id": "ann7",
+      "title": "تحویل پروژه پایانی",
+      "content": "آخرین مهلت تحویل پروژه‌های پایان ترم تمدید شد.",
+      "classId": "c2",
+      "authorId": "2",
+      "createdAt": "2025-04-01T10:00:00.000Z",
+      "seenBy": ["7", "1"],
+      "targetAudience": "students"
+    },
+    {
+      "id": "ann8",
+      "title": "نمرات میان‌ترم",
+      "content": "نمرات میان‌ترم در سامانه بارگذاری شد.",
+      "classId": "c1",
+      "authorId": "2",
+      "createdAt": "2025-04-05T10:00:00.000Z",
+      "seenBy": ["1", "2", "8"],
+      "targetAudience": "both"
     }
   ],
   "assignments": [
     {
-      "id": "1",
-      "title": "تکلیف 1: React Hooks",
-      "description": "یک کامپوننت با useState و useEffect پیاده‌سازی کنید.",
-      "classId": "1",
-      "teacherId": "3",
-      "deadline": "2025-08-25T23:59:59.000Z"
+      "id": "as1",
+      "title": "تمرین متغیرها",
+      "description": "برنامه‌ای بنویسید که دو عدد را از ورودی گرفته و جمع کند.",
+      "classId": "c1",
+      "teacherId": "2",
+      "deadline": "2025-03-10T23:59:59.000Z"
     },
     {
-      "id": "2",
-      "title": "تکلیف 2: Express API",
-      "description": "یک REST API ساده برای مدیریت کاربران بنویسید.",
-      "classId": "2",
-      "teacherId": "4",
-      "deadline": "2025-08-30T23:59:59.000Z"
+      "id": "as2",
+      "title": "تمرین حلقه‌ها",
+      "description": "جدول ضرب را با استفاده از حلقه چاپ کنید.",
+      "classId": "c1",
+      "teacherId": "2",
+      "deadline": "2025-03-17T23:59:59.000Z"
     },
     {
-      "title": "تست",
-      "description": "۱",
-      "classId": "2",
-      "teacherId": "4",
-      "deadline": "2026-07-08T00:00:00.000Z",
-      "id": "dby2K090MPU"
+      "id": "as3",
+      "title": "تمرین توابع",
+      "description": "تابعی بنویسید که فاکتوریل یک عدد را محاسبه کند.",
+      "classId": "c1",
+      "teacherId": "2",
+      "deadline": "2025-03-24T23:59:59.000Z"
     },
     {
-      "title": "تست تاخیر",
-      "description": "تاخیر",
-      "classId": "2",
-      "teacherId": "4",
-      "deadline": "2026-07-01T00:00:00.000Z",
-      "id": "sKFDJxpXw8c"
+      "id": "as4",
+      "title": "تمرین آرایه‌ها",
+      "description": "بزرگترین عنصر آرایه را پیدا کنید.",
+      "classId": "c1",
+      "teacherId": "2",
+      "deadline": "2025-03-31T23:59:59.000Z"
+    },
+    {
+      "id": "as5",
+      "title": "پروژه کوچک",
+      "description": "یک ماشین حساب ساده بسازید.",
+      "classId": "c1",
+      "teacherId": "2",
+      "deadline": "2025-04-10T23:59:59.000Z"
+    },
+    {
+      "id": "as6",
+      "title": "پیاده‌سازی لیست پیوندی",
+      "description": "ساختار داده لیست پیوندی یکانی را پیاده‌سازی کنید.",
+      "classId": "c2",
+      "teacherId": "2",
+      "deadline": "2025-03-12T23:59:59.000Z"
+    },
+    {
+      "id": "as7",
+      "title": "پیاده‌سازی پشته",
+      "description": "ساختار داده پشته را با آرایه پیاده‌سازی کنید.",
+      "classId": "c2",
+      "teacherId": "2",
+      "deadline": "2025-03-19T23:59:59.000Z"
+    },
+    {
+      "id": "as8",
+      "title": "پیاده‌سازی صف",
+      "description": "ساختار داده صف را پیاده‌سازی کنید.",
+      "classId": "c2",
+      "teacherId": "2",
+      "deadline": "2025-03-26T23:59:59.000Z"
+    },
+    {
+      "id": "as9",
+      "title": "درخت باینری",
+      "description": "درخت باینری جستجو را پیاده‌سازی کنید.",
+      "classId": "c2",
+      "teacherId": "2",
+      "deadline": "2025-04-02T23:59:59.000Z"
+    },
+    {
+      "id": "as10",
+      "title": "الگوریتم‌های گراف",
+      "description": "الگوریتم BFS را پیاده‌سازی کنید.",
+      "classId": "c2",
+      "teacherId": "2",
+      "deadline": "2025-04-09T23:59:59.000Z"
+    },
+    {
+      "title": "test",
+      "description": "test",
+      "classId": "c4",
+      "teacherId": "2",
+      "deadline": "2026-07-14T00:00:00.000Z",
+      "id": "Qa5AB1p4Lw4"
     }
   ],
   "submissions": [
     {
-      "id": "s1",
-      "assignmentId": "1",
+      "id": "sub1",
+      "assignmentId": "as1",
       "studentId": "7",
-      "content": "https://github.com/mh419421/react-hooks-hw",
-      "submittedAt": "2025-08-20T14:30:00.000Z",
+      "content": "https://github.com/student7/hw1",
+      "submittedAt": "2025-03-09T10:00:00.000Z",
       "status": "graded",
       "grade": 18,
       "feedback": "عالی بود",
-      "updatedAt": "2026-07-04T17:50:44.835Z"
+      "updatedAt": "2025-03-10T10:00:00.000Z"
     },
     {
-      "id": "s2",
-      "assignmentId": "1",
+      "id": "sub2",
+      "assignmentId": "as1",
       "studentId": "8",
-      "content": "من نتوانستم تحویل بدهم.",
-      "submittedAt": "2025-08-26T10:00:00.000Z",
+      "content": "https://github.com/student8/hw1",
+      "submittedAt": "2025-03-10T20:00:00.000Z",
       "status": "graded",
-      "grade": 14,
-      "feedback": "تاخیر داشتی ولی کد خوب بود.",
-      "updatedAt": "2025-08-27T09:00:00.000Z"
+      "grade": 15,
+      "feedback": "خوب بود اما نیاز به تمیزی بیشتر دارد",
+      "updatedAt": "2025-03-11T10:00:00.000Z"
     },
     {
-      "id": "q2lzEnE1spE",
-      "assignmentId": "2",
-      "studentId": "6",
-      "content": "test 1",
+      "id": "sub3",
+      "assignmentId": "as1",
+      "studentId": "9",
+      "content": "https://github.com/student9/hw1",
+      "submittedAt": "2025-03-11T10:00:00.000Z",
       "status": "graded",
-      "submittedAt": "2026-07-04T18:06:35.454Z",
-      "updatedAt": "2026-07-06T18:47:47.594Z",
-      "grade": 5,
-      "feedback": "تست"
+      "grade": 12,
+      "feedback": "test 1",
+      "updatedAt": "2026-07-07T23:04:36.164Z"
     },
     {
-      "id": "qkrACzmpOoo",
-      "assignmentId": "1",
-      "studentId": "6",
-      "content": "تست ۲3",
-      "status": "submitted",
-      "submittedAt": "2026-07-04T18:07:08.526Z",
-      "updatedAt": "2026-07-04T18:07:14.046Z"
-    },
-    {
-      "assignmentId": "2",
+      "id": "sub4",
+      "assignmentId": "as2",
       "studentId": "7",
-      "content": "تست ۱",
-      "status": "submitted",
-      "submittedAt": "2026-07-06T18:49:03.594Z",
-      "id": "Mb32A_p96Ws",
-      "updatedAt": "2026-07-06T18:49:07.570Z"
+      "content": "https://github.com/student7/hw2",
+      "submittedAt": "2025-03-16T10:00:00.000Z",
+      "status": "graded",
+      "grade": 16,
+      "feedback": "test ",
+      "updatedAt": "2026-07-07T23:06:11.675Z"
     },
     {
-      "assignmentId": "sKFDJxpXw8c",
-      "studentId": "6",
-      "content": "تست تاخیر",
-      "status": "submitted",
-      "submittedAt": "2026-07-06T18:55:52.672Z",
-      "id": "HjlwsziipsU"
+      "assignmentId": "Qa5AB1p4Lw4",
+      "studentId": "8",
+      "content": "test",
+      "status": "graded",
+      "submittedAt": "2026-07-07T23:08:43.154Z",
+      "id": "WzQKOVNRmVM",
+      "grade": 16,
+      "feedback": "test 2",
+      "updatedAt": "2026-07-07T23:09:53.354Z"
     }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+  ]
 }

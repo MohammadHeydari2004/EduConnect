@@ -11,7 +11,7 @@ function Textarea({ label, className = "", ...props }: TextareaProps) {
         <label className="text-sm font-medium text-gray-700">{label}</label>
       )}
       <textarea
-        className={`rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 ${className}`}
+        className={`rounded-lg border border-gray-300 px-3 py-2 text-sm outline-hidden focus:border-blue-500 ${className}`}
         {...props}
       />
     </div>

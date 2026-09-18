@@ -1,10 +1,11 @@
-import { useState } from "react";
 import Button from "#/components/ui/Button.tsx";
 import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
-import { sessionService } from "#/services/modules/sessionService.ts";
+import { sessionService } from "#/services/session.ts";
 import type { ID } from "#/types/common.ts";
+import { useState } from "react";
+import { validateSessionForm, type SessionFormErrors } from "./validators";
 
 interface Props {
   classId: ID;
@@ -22,23 +23,19 @@ export default function SessionForm({
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<SessionFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const validate = (): boolean => {
-    const newErrors: Record<string, string> = {};
-    if (!title.trim()) {
-      newErrors.title = "عنوان الزامی است.";
-    } else if (title.trim().length < 3) {
-      newErrors.title = "عنوان باید حداقل 3 کاراکتر باشد.";
-    }
-    if (!date) newErrors.date = "تاریخ الزامی است.";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async () => {
-    if (!validate()) return;
+    const validationErrors = validateSessionForm({
+      title,
+      date,
+      description,
+      classId,
+    });
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
+
     try {
       setIsSubmitting(true);
       await sessionService.create({
@@ -65,7 +62,7 @@ export default function SessionForm({
           value={title}
           onChange={(e) => {
             setTitle(e.target.value);
-            if (errors.title) setErrors({ ...errors, title: "" });
+            if (errors.title) setErrors({ ...errors, title: undefined });
           }}
           error={errors.title}
           placeholder="مثلاً: جلسه اول - مقدمه"
@@ -76,7 +73,7 @@ export default function SessionForm({
           value={date}
           onChange={(e) => {
             setDate(e.target.value);
-            if (errors.date) setErrors({ ...errors, date: "" });
+            if (errors.date) setErrors({ ...errors, date: undefined });
           }}
           error={errors.date}
         />

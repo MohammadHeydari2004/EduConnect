@@ -1,13 +1,14 @@
-import { useState } from "react";
 import Button from "#/components/ui/Button.tsx";
 import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Select from "#/components/ui/Select.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
-import { assignmentService } from "#/services/modules/assignmentService.ts";
+import { assignmentService } from "#/services/assignment.ts";
 import type { Assignment } from "#/types/assignment.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID } from "#/types/common.ts";
+import { useState } from "react";
+import { validateAssignmentForm } from "./validators";
 
 interface Props {
   isOpen: boolean;
@@ -35,17 +36,22 @@ export default function AssignmentForm({
   const [classId, setClassId] = useState<ID>(
     initialData?.classId ?? availableClasses[0]?.id ?? "",
   );
-  const [deadline, setDeadline] = useState(
+  const [deadline, setDeadline] = useState<string>(
     initialData?.deadline
-      ? new Date(initialData.deadline).toISOString().split("T")[0]
+      ? (new Date(initialData.deadline).toISOString().split("T")[0] ?? "")
       : "",
   );
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!title.trim() || !deadline || !classId) {
-      setError("عنوان، ددلاین و انتخاب کلاس الزامی هستند.");
+    const validationErrors = validateAssignmentForm({
+      title,
+      deadline,
+      classId,
+    });
+    if (Object.keys(validationErrors).length > 0) {
+      setError(validationErrors.form || "خطا در اعتبارسنجی");
       return;
     }
     try {
@@ -54,7 +60,6 @@ export default function AssignmentForm({
       const finalTeacherId = isAdmin
         ? (selectedClass?.teacherId ?? teacherId)
         : teacherId;
-
       const payload = {
         title: title.trim(),
         description: description.trim(),
@@ -62,7 +67,6 @@ export default function AssignmentForm({
         teacherId: finalTeacherId,
         deadline: new Date(deadline).toISOString(),
       };
-
       if (initialData) {
         await assignmentService.update(initialData.id, payload);
       } else {

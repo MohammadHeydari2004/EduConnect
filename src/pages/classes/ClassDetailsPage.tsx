@@ -1,24 +1,36 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
-import { useAuth } from "#/context/AuthContext.ts";
-import { classService } from "#/services/modules/classService.ts";
-import { sessionService } from "#/services/modules/sessionService.ts";
-import { userService } from "#/services/modules/userService.ts";
+import { useAuth } from "#/contexts/AuthContext.ts";
+import { useToast } from "#/hooks/useToast.ts";
+import { classService } from "#/services/class.ts";
+import { sessionService } from "#/services/session.ts";
+import { userService } from "#/services/user.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { Session } from "#/types/session.ts";
 import type { User } from "#/types/user.ts";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import SessionForm from "./SessionForm";
+
+function getErrorMessage(err: unknown): string {
+  if (err && typeof err === "object" && "code" in err) {
+    const axiosErr = err as { code?: string; message?: string };
+    if (axiosErr.code === "ERR_NETWORK")
+      return "سرور در دسترس نیست. لطفاً json-server را بررسی کنید.";
+    if (axiosErr.code === "ECONNABORTED")
+      return "زمان درخواست به پایان رسید. لطفاً دوباره تلاش کنید.";
+  }
+  return "دریافت اطلاعات کلاس با خطا مواجه شد.";
+}
 
 export default function ClassDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
-
+  const { addToast } = useToast();
   const classId = id;
   const isInvalidId = !classId;
 
@@ -30,9 +42,20 @@ export default function ClassDetailsPage() {
     isInvalidId ? "شناسه کلاس نامعتبر است." : "",
   );
   const [showSessionForm, setShowSessionForm] = useState(false);
-  const [actionError, setActionError] = useState("");
-  const [actionSuccess, setActionSuccess] = useState("");
 
+  const [prevClassId, setPrevClassId] = useState(classId);
+  if (classId !== prevClassId) {
+    setPrevClassId(classId);
+    if (!isInvalidId) {
+      setLoading(true);
+      setError("");
+      setClassItem(null);
+      setUsers([]);
+      setSessions([]);
+    }
+  }
+
+  const ignoreRef = useRef(false);
   const isAdmin = currentUser?.role === "admin";
   const isTeacherOfThisClass =
     currentUser?.role === "teacher" &&
@@ -40,58 +63,53 @@ export default function ClassDetailsPage() {
     classItem.teacherId === currentUser.id;
   const canManage = isAdmin || isTeacherOfThisClass;
 
-  const getErrorMessage = (err: unknown): string => {
-    if (err && typeof err === "object" && "code" in err) {
-      const axiosErr = err as { code?: string; message?: string };
-      if (axiosErr.code === "ERR_NETWORK") {
-        return "سرور در دسترس نیست. لطفاً json-server را بررسی کنید.";
-      }
-      if (axiosErr.code === "ECONNABORTED") {
-        return "زمان درخواست به پایان رسید. لطفاً دوباره تلاش کنید.";
-      }
-    }
-    return "دریافت اطلاعات کلاس با خطا مواجه شد.";
-  };
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
-      setError("");
       const [c, u, s] = await Promise.all([
         classService.getById(classId!),
         userService.getAll(),
         sessionService.getAll(),
       ]);
-      setClassItem(c);
-      setUsers(u);
-      setSessions(s.filter((x) => x.classId === classId));
+      if (!ignoreRef.current) {
+        setError("");
+        setClassItem(c);
+        setUsers(u);
+        setSessions(s.filter((x) => x.classId === classId));
+      }
     } catch (err) {
-      setError(getErrorMessage(err));
+      if (!ignoreRef.current) setError(getErrorMessage(err));
+    } finally {
+      if (!ignoreRef.current) setLoading(false);
     }
-  };
+  }, [classId]);
 
   useEffect(() => {
     if (isInvalidId) return;
-    let ignore = false;
-    Promise.all([
-      classService.getById(classId!),
-      userService.getAll(),
-      sessionService.getAll(),
-    ])
-      .then(([c, u, s]) => {
-        if (!ignore) {
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const [c, u, s] = await Promise.all([
+          classService.getById(classId!),
+          userService.getAll(),
+          sessionService.getAll(),
+        ]);
+        if (!cancelled) {
+          setError("");
           setClassItem(c);
           setUsers(u);
           setSessions(s.filter((x) => x.classId === classId));
         }
-      })
-      .catch((err) => {
-        if (!ignore) setError(getErrorMessage(err));
-      })
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
+      } catch (err) {
+        if (!cancelled) setError(getErrorMessage(err));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
     return () => {
-      ignore = true;
+      cancelled = true;
     };
   }, [classId, isInvalidId]);
 
@@ -101,22 +119,20 @@ export default function ClassDetailsPage() {
       classItem &&
       currentUser?.role === "teacher" &&
       classItem.teacherId !== currentUser.id
-    ) {
+    )
       navigate("/unauthorized", { replace: true });
-    }
   }, [loading, classItem, currentUser, navigate]);
 
   const students = useMemo(() => {
     if (!classItem) return [];
     return users.filter((u) => (classItem.studentIds || []).includes(u.id));
   }, [users, classItem]);
-
   const teacher = useMemo(() => {
     if (!classItem || classItem.teacherId === null) return null;
     return users.find((u) => u.id === classItem.teacherId) ?? null;
   }, [users, classItem]);
 
-  if (isInvalidId) {
+  if (isInvalidId)
     return (
       <div className="space-y-4">
         <Button variant="secondary" onClick={() => navigate("/classes")}>
@@ -127,11 +143,8 @@ export default function ClassDetailsPage() {
         </div>
       </div>
     );
-  }
-
   if (loading) return <Loading />;
-
-  if (error) {
+  if (error)
     return (
       <div className="space-y-4">
         <Button variant="secondary" onClick={() => navigate("/classes")}>
@@ -142,9 +155,7 @@ export default function ClassDetailsPage() {
         </div>
       </div>
     );
-  }
-
-  if (!classItem) {
+  if (!classItem)
     return (
       <div className="space-y-4">
         <Button variant="secondary" onClick={() => navigate("/classes")}>
@@ -156,7 +167,6 @@ export default function ClassDetailsPage() {
         />
       </div>
     );
-  }
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -174,7 +184,6 @@ export default function ClassDetailsPage() {
           </h1>
           <StatusChip status={classItem.status || "inactive"} />
         </div>
-
         <Button
           variant="secondary"
           onClick={() => navigate(`/classes/${classId}/assignments`)}
@@ -183,18 +192,6 @@ export default function ClassDetailsPage() {
           مشاهده تکالیف کلاس
         </Button>
       </div>
-
-      {actionSuccess && (
-        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-          {actionSuccess}
-        </div>
-      )}
-      {actionError && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {actionError}
-        </div>
-      )}
-
       <div className="grid gap-4 md:grid-cols-2">
         <Card title="اطلاعات کلاس">
           <div className="space-y-3 text-sm text-gray-700">
@@ -222,7 +219,6 @@ export default function ClassDetailsPage() {
             </p>
           </div>
         </Card>
-
         <Card title={`دانشجویان (${students.length})`}>
           {students.length === 0 ? (
             <EmptyState
@@ -244,7 +240,6 @@ export default function ClassDetailsPage() {
           )}
         </Card>
       </div>
-
       <Card title={`جلسات (${sessions.length})`}>
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-gray-600">
@@ -304,19 +299,18 @@ export default function ClassDetailsPage() {
           </div>
         )}
       </Card>
-
       {showSessionForm && (
         <SessionForm
           key={`session-form-${classId}-${showSessionForm}`}
           classId={classId}
           onClose={() => setShowSessionForm(false)}
-          onSuccess={async (message) => {
-            setActionSuccess(message);
+          onSuccess={(message) => {
+            addToast(message, "success");
             setShowSessionForm(false);
-            await fetchData();
+            fetchData();
           }}
           onError={(message) => {
-            setActionError(message);
+            addToast(message, "error");
           }}
         />
       )}

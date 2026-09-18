@@ -1,5 +1,3 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
 import Button from "#/components/ui/Button.tsx";
@@ -9,35 +7,33 @@ import SearchInput from "#/components/ui/SearchInput.tsx";
 import Select from "#/components/ui/Select.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
-import { useAuth } from "#/context/AuthContext.ts";
-import { classService } from "#/services/modules/classService.ts";
-import { userService } from "#/services/modules/userService.ts";
+import { useAuth } from "#/contexts/AuthContext.ts";
+import { useToast } from "#/hooks/useToast.ts";
+import { classService } from "#/services/class.ts";
+import { userService } from "#/services/user.ts";
 import type { ClassItem, ClassStatus } from "#/types/class.ts";
-import type { User } from "#/types/user.ts";
 import type { ID } from "#/types/common.ts";
+import type { User } from "#/types/user.ts";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ClassForm from "./ClassForm";
 
 export default function ClassesPage() {
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
-
+  const { addToast } = useToast();
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ClassStatus | "">("");
   const [teacherFilter, setTeacherFilter] = useState<string>("");
-
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<ClassItem | null>(null);
   const [statusChangeTarget, setStatusChangeTarget] =
     useState<ClassItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ClassItem | null>(null);
-
-  const [actionError, setActionError] = useState("");
-  const [actionSuccess, setActionSuccess] = useState("");
 
   const isAdmin = currentUser?.role === "admin";
 
@@ -94,59 +90,35 @@ export default function ClassesPage() {
     });
   }, [classes, search, statusFilter, teacherFilter, isAdmin, currentUser]);
 
-  const resetMessages = () => {
-    setActionError("");
-    setActionSuccess("");
-  };
-
-  const handleStatusChangeClick = (classItem: ClassItem) => {
-    resetMessages();
-    setStatusChangeTarget(classItem);
-  };
   const confirmStatusChange = async () => {
     if (!statusChangeTarget) return;
     try {
       if (statusChangeTarget.status === "active") {
         await classService.deactivate(statusChangeTarget.id);
-        setActionSuccess(`کلاس "${statusChangeTarget.title}" غیرفعال شد.`);
+        addToast(`کلاس "${statusChangeTarget.title}" غیرفعال شد.`, "success");
       } else {
         await classService.activate(statusChangeTarget.id);
-        setActionSuccess(`کلاس "${statusChangeTarget.title}" فعال شد.`);
+        addToast(`کلاس "${statusChangeTarget.title}" فعال شد.`, "success");
       }
       setStatusChangeTarget(null);
       await fetchData();
     } catch {
-      setActionError("تغییر وضعیت کلاس ناموفق بود.");
+      addToast("تغییر وضعیت کلاس ناموفق بود.", "error");
       setStatusChangeTarget(null);
     }
   };
 
-  const handleDeleteClick = (classItem: ClassItem) => {
-    resetMessages();
-    setDeleteTarget(classItem);
-  };
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     try {
       await classService.delete(deleteTarget.id);
-      setActionSuccess(`کلاس "${deleteTarget.title}" با موفقیت حذف شد.`);
+      addToast(`کلاس "${deleteTarget.title}" با موفقیت حذف شد.`, "success");
       setDeleteTarget(null);
       await fetchData();
     } catch {
-      setActionError("حذف کلاس ناموفق بود.");
+      addToast("حذف کلاس ناموفق بود.", "error");
       setDeleteTarget(null);
     }
-  };
-
-  const handleEdit = (classItem: ClassItem) => {
-    resetMessages();
-    setEditing(classItem);
-    setShowForm(true);
-  };
-  const handleCreate = () => {
-    resetMessages();
-    setEditing(null);
-    setShowForm(true);
   };
 
   const getTeacherName = (teacherId: ID | null | undefined) => {
@@ -161,22 +133,17 @@ export default function ClassesPage() {
           مدیریت کلاس‌ها
         </h1>
         {(isAdmin || currentUser?.role === "teacher") && (
-          <Button onClick={handleCreate} className="w-full sm:w-auto">
+          <Button
+            onClick={() => {
+              setEditing(null);
+              setShowForm(true);
+            }}
+            className="w-full sm:w-auto"
+          >
             ایجاد کلاس جدید
           </Button>
         )}
       </div>
-
-      {actionSuccess && (
-        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-          {actionSuccess}
-        </div>
-      )}
-      {actionError && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {actionError}
-        </div>
-      )}
 
       <div className="grid grid-cols-1 gap-3 rounded-xl border border-gray-200 bg-white p-3 sm:gap-4 sm:p-4 md:grid-cols-2 xl:grid-cols-4">
         <SearchInput
@@ -237,83 +204,140 @@ export default function ClassesPage() {
             description="هیچ کلاسی با فیلترهای انتخاب‌شده پیدا نشد."
           />
         ) : (
-          <div className="-mx-5 overflow-x-auto sm:mx-0">
-            <Table
-              getRowKey={(c) => c.id}
-              columns={[
-                {
-                  key: "title",
-                  title: "عنوان",
-                  render: (c) => (
-                    <button
+          <Table
+            getRowKey={(c) => c.id}
+            columns={[
+              {
+                key: "title",
+                title: "عنوان",
+                render: (c) => (
+                  <button
+                    onClick={() => navigate(`/classes/${c.id}`)}
+                    className="font-medium text-blue-600 hover:underline"
+                  >
+                    {c.title || "(بدون عنوان)"}
+                  </button>
+                ),
+              },
+              {
+                key: "teacherId",
+                title: "استاد",
+                render: (c) => getTeacherName(c.teacherId),
+              },
+              {
+                key: "capacity",
+                title: "ظرفیت",
+                render: (c) => (
+                  <span>
+                    {(c.studentIds || []).length}/{c.capacity || 0}
+                  </span>
+                ),
+              },
+              {
+                key: "status",
+                title: "وضعیت",
+                render: (c) => <StatusChip status={c.status || "inactive"} />,
+              },
+              {
+                key: "actions",
+                title: "عملیات",
+                render: (c) => (
+                  <div className="flex flex-wrap justify-center gap-2">
+                    <Button
+                      variant="secondary"
                       onClick={() => navigate(`/classes/${c.id}`)}
-                      className="font-medium text-blue-600 hover:underline"
                     >
-                      {c.title || "(بدون عنوان)"}
+                      جزئیات
+                    </Button>
+                    {canManageClass(c) && (
+                      <>
+                        <Button
+                          variant="secondary"
+                          onClick={() => {
+                            setEditing(c);
+                            setShowForm(true);
+                          }}
+                        >
+                          ویرایش
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          onClick={() => setStatusChangeTarget(c)}
+                        >
+                          {c.status === "active" ? "غیرفعال کردن" : "فعال کردن"}
+                        </Button>
+                        <Button
+                          variant="danger"
+                          onClick={() => setDeleteTarget(c)}
+                        >
+                          حذف
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                ),
+              },
+            ]}
+            data={filteredClasses}
+            renderMobileCard={(c) => (
+              <div className="space-y-2 text-right">
+                <div className="flex items-center justify-between gap-2">
+                  <button
+                    onClick={() => navigate(`/classes/${c.id}`)}
+                    className="text-base font-bold text-blue-600 hover:underline"
+                  >
+                    {c.title || "(بدون عنوان)"}
+                  </button>
+                  <StatusChip status={c.status || "inactive"} />
+                </div>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+                  <span>
+                    <span className="text-gray-500">استاد:</span>{" "}
+                    {getTeacherName(c.teacherId)}
+                  </span>
+                  <span>
+                    <span className="text-gray-500">ظرفیت:</span>{" "}
+                    {(c.studentIds || []).length}/{c.capacity || 0}
+                  </span>
+                </div>
+              </div>
+            )}
+            renderMobileActions={(c) => (
+              <>
+                <button
+                  onClick={() => navigate(`/classes/${c.id}`)}
+                  className="w-full rounded-md px-3 py-2 text-right text-sm text-gray-700 hover:bg-gray-50"
+                >
+                  جزئیات
+                </button>
+                {canManageClass(c) && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setEditing(c);
+                        setShowForm(true);
+                      }}
+                      className="w-full rounded-md px-3 py-2 text-right text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      ویرایش
                     </button>
-                  ),
-                },
-                {
-                  key: "teacherId",
-                  title: "استاد",
-                  render: (c) => getTeacherName(c.teacherId),
-                },
-                {
-                  key: "capacity",
-                  title: "ظرفیت",
-                  render: (c) => (
-                    <span>
-                      {(c.studentIds || []).length}/{c.capacity || 0}
-                    </span>
-                  ),
-                },
-                {
-                  key: "status",
-                  title: "وضعیت",
-                  render: (c) => <StatusChip status={c.status || "inactive"} />,
-                },
-                {
-                  key: "actions",
-                  title: "عملیات",
-                  render: (c) => (
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        variant="secondary"
-                        onClick={() => navigate(`/classes/${c.id}`)}
-                      >
-                        جزئیات
-                      </Button>
-                      {canManageClass(c) && (
-                        <>
-                          <Button
-                            variant="secondary"
-                            onClick={() => handleEdit(c)}
-                          >
-                            ویرایش
-                          </Button>
-                          <Button
-                            variant="secondary"
-                            onClick={() => handleStatusChangeClick(c)}
-                          >
-                            {c.status === "active"
-                              ? "غیرفعال کردن"
-                              : "فعال کردن"}
-                          </Button>
-                          <Button
-                            variant="danger"
-                            onClick={() => handleDeleteClick(c)}
-                          >
-                            حذف
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  ),
-                },
-              ]}
-              data={filteredClasses}
-            />
-          </div>
+                    <button
+                      onClick={() => setStatusChangeTarget(c)}
+                      className="w-full rounded-md px-3 py-2 text-right text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      {c.status === "active" ? "غیرفعال کردن" : "فعال کردن"}
+                    </button>
+                    <button
+                      onClick={() => setDeleteTarget(c)}
+                      className="w-full rounded-md px-3 py-2 text-right text-sm text-red-600 hover:bg-red-50"
+                    >
+                      حذف
+                    </button>
+                  </>
+                )}
+              </>
+            )}
+          />
         )}
       </Card>
 
@@ -326,14 +350,14 @@ export default function ClassesPage() {
             setShowForm(false);
             setEditing(null);
           }}
-          onSuccess={async (message) => {
-            setActionSuccess(message);
+          onSuccess={(message) => {
+            addToast(message, "success");
             setShowForm(false);
             setEditing(null);
-            await fetchData();
+            fetchData();
           }}
           onError={(message) => {
-            setActionError(message);
+            addToast(message, "error");
           }}
         />
       )}
@@ -353,6 +377,7 @@ export default function ClassesPage() {
         onClose={() => setStatusChangeTarget(null)}
         onConfirm={confirmStatusChange}
       />
+
       <ConfirmDialog
         isOpen={!!deleteTarget}
         title="حذف کلاس"

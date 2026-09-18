@@ -1,5 +1,3 @@
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
 import Button from "#/components/ui/Button.tsx";
@@ -7,19 +5,23 @@ import Card from "#/components/ui/Card.tsx";
 import Select from "#/components/ui/Select.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
-import { useAuth } from "#/context/AuthContext.ts";
-import { attendanceService } from "#/services/modules/attendanceService.ts";
-import { classService } from "#/services/modules/classService.ts";
-import { sessionService } from "#/services/modules/sessionService.ts";
-import { userService } from "#/services/modules/userService.ts";
+import { useAuth } from "#/contexts/AuthContext.ts";
+import { useToast } from "#/hooks/useToast.ts";
+import { attendanceService } from "#/services/attendance.ts";
+import { classService } from "#/services/class.ts";
+import { sessionService } from "#/services/session.ts";
+import { userService } from "#/services/user.ts";
 import type { Attendance } from "#/types/attendance.ts";
-import type { AttendanceStatus } from "#/types/common.ts";
 import type { ClassItem } from "#/types/class.ts";
+import type { AttendanceStatus } from "#/types/common.ts";
 import type { Session } from "#/types/session.ts";
 import type { User } from "#/types/user.ts";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export default function AttendancePage() {
   const { user: currentUser } = useAuth();
+  const { addToast } = useToast();
   const [searchParams] = useSearchParams();
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -27,23 +29,22 @@ export default function AttendancePage() {
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const [selectedClassId, setSelectedClassId] = useState<string>(
     searchParams.get("classId") || "",
   );
   const [selectedSessionId, setSelectedSessionId] = useState<string>(
     searchParams.get("sessionId") || "",
   );
-
   const [draftAttendanceMap, setDraftAttendanceMap] = useState<
     Record<string, AttendanceStatus>
   >({});
+  const [prevSessionId, setPrevSessionId] = useState(selectedSessionId);
+  const [prevAttendancesLength, setPrevAttendancesLength] = useState(
+    attendances.length,
+  );
 
-  const [prevSessionId, setPrevSessionId] = useState<string | null>(null);
-
-  if (selectedSessionId !== prevSessionId) {
+  if (prevSessionId !== selectedSessionId) {
     setPrevSessionId(selectedSessionId);
-
     if (!selectedSessionId) {
       setDraftAttendanceMap({});
     } else {
@@ -56,49 +57,58 @@ export default function AttendancePage() {
       }
       setDraftAttendanceMap(map);
     }
+  } else if (
+    prevAttendancesLength !== attendances.length &&
+    selectedSessionId
+  ) {
+    setPrevAttendancesLength(attendances.length);
+    const sessionAttendances = attendances.filter(
+      (a) => a.sessionId === selectedSessionId,
+    );
+    const map: Record<string, AttendanceStatus> = {};
+    for (const a of sessionAttendances) {
+      map[a.studentId] = a.status;
+    }
+    setDraftAttendanceMap(map);
   }
 
   const [isSaving, setIsSaving] = useState(false);
-  const [actionMessage, setActionMessage] = useState("");
-  const [actionError, setActionError] = useState("");
-
   const isAdmin = currentUser?.role === "admin";
   const isTeacher = currentUser?.role === "teacher";
   const isStudent = currentUser?.role === "student";
   const canManage = isAdmin || isTeacher;
 
   useEffect(() => {
-    let ignore = false;
-    Promise.all([
-      classService.getAll(),
-      userService.getAll(),
-      sessionService.getAll(),
-      attendanceService.getAll(),
-    ])
-      .then(([c, u, s, a]) => {
-        if (!ignore) {
+    let cancelled = false;
+    (async () => {
+      try {
+        const [c, u, s, a] = await Promise.all([
+          classService.getAll(),
+          userService.getAll(),
+          sessionService.getAll(),
+          attendanceService.getAll(),
+        ]);
+        if (!cancelled) {
           setClasses(c);
           setUsers(u);
           setSessions(s);
           setAttendances(a);
         }
-      })
-      .catch(() => {
-        if (!ignore) setError("دریافت اطلاعات با خطا مواجه شد.");
-      })
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
+      } catch {
+        if (!cancelled) setError("دریافت اطلاعات با خطا مواجه شد.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
     return () => {
-      ignore = true;
+      cancelled = true;
     };
   }, []);
 
   const availableClasses = useMemo(() => {
     if (isAdmin) return classes;
-    if (isTeacher) {
+    if (isTeacher)
       return classes.filter((c) => c.teacherId === currentUser?.id);
-    }
     return [];
   }, [classes, isAdmin, isTeacher, currentUser]);
 
@@ -123,8 +133,6 @@ export default function AttendancePage() {
   const handleSave = async () => {
     if (!selectedSessionId || !selectedClassId) return;
     setIsSaving(true);
-    setActionMessage("");
-    setActionError("");
     try {
       const records = classStudents.map((student) => ({
         studentId: student.id,
@@ -137,9 +145,9 @@ export default function AttendancePage() {
       );
       const updated = await attendanceService.getAll();
       setAttendances(updated);
-      setActionMessage("حضور و غیاب با موفقیت ذخیره شد.");
+      addToast("حضور و غیاب با موفقیت ذخیره شد.", "success");
     } catch {
-      setActionError("ذخیره حضور و غیاب با خطا مواجه شد.");
+      addToast("ذخیره حضور و غیاب با خطا مواجه شد.", "error");
     } finally {
       setIsSaving(false);
     }
@@ -165,29 +173,18 @@ export default function AttendancePage() {
   }, [attendances, sessions, classes, isStudent, currentUser]);
 
   if (loading) return <Loading />;
-  if (error) {
+  if (error)
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
         {error}
       </div>
     );
-  }
 
   return (
     <div className="space-y-4 sm:space-y-6">
       <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
         حضور و غیاب
       </h1>
-      {actionMessage && (
-        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-          {actionMessage}
-        </div>
-      )}
-      {actionError && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {actionError}
-        </div>
-      )}
       {isStudent && studentView ? (
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -277,8 +274,6 @@ export default function AttendancePage() {
                 onChange={(e) => {
                   setSelectedClassId(e.target.value);
                   setSelectedSessionId("");
-                  setActionMessage("");
-                  setActionError("");
                 }}
                 options={[
                   { label: "انتخاب کلاس...", value: "" },
@@ -291,11 +286,7 @@ export default function AttendancePage() {
               <Select
                 label="جلسه"
                 value={selectedSessionId}
-                onChange={(e) => {
-                  setSelectedSessionId(e.target.value);
-                  setActionMessage("");
-                  setActionError("");
-                }}
+                onChange={(e) => setSelectedSessionId(e.target.value)}
                 disabled={!selectedClassId}
                 options={[
                   { label: "انتخاب جلسه...", value: "" },
@@ -350,7 +341,7 @@ export default function AttendancePage() {
                                   e.target.value as AttendanceStatus,
                                 )
                               }
-                              className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-blue-500"
+                              className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm outline-hidden focus:border-blue-500"
                             >
                               <option value="present">حاضر</option>
                               <option value="late">با تأخیر</option>

@@ -1,23 +1,25 @@
-import { useEffect, useMemo, useState } from "react";
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
 import Modal from "#/components/ui/Modal.tsx";
-import { useAuth } from "#/context/AuthContext.ts";
-import { announcementService } from "#/services/modules/announcementService.ts";
-import { classService } from "#/services/modules/classService.ts";
-import { userService } from "#/services/modules/userService.ts";
-import { formatDate } from "#/utils/formatDate.ts";
+import { useAuth } from "#/contexts/AuthContext.ts";
+import { useToast } from "#/hooks/useToast.ts";
+import { announcementService } from "#/services/announcement.ts";
+import { classService } from "#/services/class.ts";
+import { userService } from "#/services/user.ts";
 import type { Announcement } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
-import type { User } from "#/types/user.ts";
 import type { ID } from "#/types/common.ts";
+import type { User } from "#/types/user.ts";
+import { formatDate } from "#/utils/formatDate.ts";
+import { useEffect, useMemo, useState } from "react";
 import AnnouncementForm from "./AnnouncementForm";
 
 export default function AnnouncementsPage() {
   const { user: currentUser } = useAuth();
+  const { addToast } = useToast();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -82,37 +84,32 @@ export default function AnnouncementsPage() {
     if (!currentUser) return [];
     return announcements.filter((a) => {
       if (currentUser.role === "admin") return true;
+      if (a.authorId === currentUser.id) return true;
       if (a.classId === "0") {
         const roles = a.targetRoles ?? ["admin", "teacher", "student"];
         return roles.includes(currentUser.role);
       }
-
       const targetClass = classes.find((c) => c.id === a.classId);
       if (!targetClass) return false;
-
       const audience = a.targetAudience ?? "students";
       const isTeacherOfThisClass = targetClass.teacherId === currentUser.id;
       const isStudentInThisClass = (targetClass.studentIds || []).includes(
         currentUser.id,
       );
-
       if (audience === "teacher") return isTeacherOfThisClass;
       if (audience === "students") return isStudentInThisClass;
       if (audience === "both")
         return isTeacherOfThisClass || isStudentInThisClass;
-
-      if (a.authorId === currentUser.id) return true;
-
       return false;
     });
   }, [announcements, classes, currentUser]);
+
   const getAuthorName = (authorId: ID) =>
     users.find((u) => u.id === authorId)?.name ?? "نامشخص";
   const getClassName = (classId: ID) =>
     classId === "0"
       ? "همه (عمومی)"
       : (classes.find((c) => c.id === classId)?.title ?? "نامشخص");
-
   const getTargetDescription = (item: Announcement) => {
     if (item.classId === "0") {
       const roles = item.targetRoles ?? ["admin", "teacher", "student"];
@@ -148,8 +145,10 @@ export default function AnnouncementsPage() {
       await announcementService.delete(deleteTarget.id);
       setDeleteTarget(null);
       await fetchData();
+      addToast("اطلاعیه با موفقیت حذف شد.", "success");
     } catch (err) {
       console.error(err);
+      addToast("حذف اطلاعیه ناموفق بود.", "error");
     }
   };
 
@@ -172,7 +171,6 @@ export default function AnnouncementsPage() {
           </Button>
         )}
       </div>
-
       {filteredAnnouncements.length === 0 ? (
         <EmptyState
           title="اطلاعیه‌ای وجود ندارد"
@@ -215,7 +213,7 @@ export default function AnnouncementsPage() {
                     نویسنده: {getAuthorName(item.authorId)} | تاریخ:{" "}
                     {formatDate(item.createdAt)}
                   </p>
-                  <p className="mb-4 line-clamp-3 flex-grow text-sm text-gray-700">
+                  <p className="mb-4 line-clamp-3 grow text-sm text-gray-700">
                     {item.content}
                   </p>
                   <div className="mt-auto flex flex-wrap gap-2">
@@ -251,7 +249,6 @@ export default function AnnouncementsPage() {
           })}
         </div>
       )}
-
       <AnnouncementForm
         key={`announcement-form-${editingItem?.id ?? "new"}-${isFormOpen}`}
         isOpen={isFormOpen}
@@ -269,7 +266,6 @@ export default function AnnouncementsPage() {
           fetchData();
         }}
       />
-
       <Modal
         isOpen={!!viewingItem}
         title={viewingItem?.title ?? ""}
@@ -294,13 +290,12 @@ export default function AnnouncementsPage() {
               {formatDate(viewingItem.createdAt)}
             </p>
             <hr className="my-2" />
-            <p className="whitespace-pre-wrap leading-relaxed">
+            <p className="leading-relaxed whitespace-pre-wrap">
               {viewingItem.content}
             </p>
           </div>
         )}
       </Modal>
-
       <ConfirmDialog
         isOpen={!!deleteTarget}
         title="حذف اطلاعیه"

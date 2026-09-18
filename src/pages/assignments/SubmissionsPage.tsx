@@ -1,32 +1,34 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import Input from "#/components/ui/Input.tsx";
-import { useAuth } from "#/context/AuthContext.ts";
-import { assignmentService } from "#/services/modules/assignmentService.ts";
-import { submissionService } from "#/services/modules/submissionService.ts";
-import { userService } from "#/services/modules/userService.ts";
+import { useAuth } from "#/contexts/AuthContext.ts";
+import { useToast } from "#/hooks/useToast.ts"; // ✅ اصلاح شد
+import { assignmentService } from "#/services/assignment.ts";
+import { submissionService } from "#/services/submission.ts";
+import { userService } from "#/services/user.ts";
 import type { Assignment } from "#/types/assignment.ts";
+import type { ID } from "#/types/common.ts";
 import type { Submission } from "#/types/submission.ts";
 import type { User } from "#/types/user.ts";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function SubmissionsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
+  const { addToast } = useToast();
+
   const [assignment, setAssignment] = useState<Assignment | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [grading, setGrading] = useState<
-    Record<string, { grade: string; feedback: string }>
+    Record<ID, { grade: string; feedback: string }>
   >({});
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const assignmentId = id as string;
+  const assignmentId = id as ID;
 
   useEffect(() => {
     let ignore = false;
@@ -39,22 +41,20 @@ export default function SubmissionsPage() {
         if (!ignore) {
           const isAdmin = currentUser?.role === "admin";
           const isTeacherOwner =
-            currentUser?.role === "teacher" &&
-            String(a.teacherId) === String(currentUser?.id);
+            currentUser?.role === "teacher" && a.teacherId === currentUser?.id;
           if (!isAdmin && !isTeacherOwner) {
             navigate("/assignments", { replace: true });
             return;
           }
-
           setAssignment(a);
           setSubmissions(s);
           setUsers(u);
           const initialGrading: Record<
-            string,
+            ID,
             { grade: string; feedback: string }
           > = {};
           s.forEach((sub) => {
-            initialGrading[String(sub.id)] = {
+            initialGrading[sub.id] = {
               grade: sub.grade?.toString() ?? "",
               feedback: sub.feedback ?? "",
             };
@@ -73,30 +73,28 @@ export default function SubmissionsPage() {
     };
   }, [assignmentId, navigate, currentUser]);
 
-  const getUserName = (userId: number | string) =>
-    users.find((u) => String(u.id) === String(userId))?.name ?? "—";
+  const getUserName = (userId: ID) =>
+    users.find((u) => u.id === userId)?.name ?? "—";
 
   const handleGradeChange = (
-    submissionId: string,
+    submissionId: ID,
     field: "grade" | "feedback",
     value: string,
   ) => {
-    setGrading((prev) => ({
-      ...prev,
-      [submissionId]: { ...prev[submissionId], [field]: value },
-    }));
-    setSuccessMessage("");
-    setErrorMessage("");
+    setGrading((prev) => {
+      const current = prev[submissionId] || { grade: "", feedback: "" };
+      return { ...prev, [submissionId]: { ...current, [field]: value } };
+    });
   };
 
   const handleSaveGrade = async (submission: Submission) => {
-    const data = grading[String(submission.id)];
+    const data = grading[submission.id] || { grade: "", feedback: "" };
     const gradeNum = data.grade ? Number(data.grade) : null;
     if (
       gradeNum !== null &&
       (isNaN(gradeNum) || gradeNum < 0 || gradeNum > 20)
     ) {
-      setErrorMessage("نمره باید عددی بین 0 تا 20 باشد.");
+      addToast("نمره باید عددی بین 0 تا 20 باشد.", "error");
       return;
     }
     try {
@@ -105,12 +103,9 @@ export default function SubmissionsPage() {
         feedback: data.feedback || null,
         status: "graded",
       });
-
-      setSuccessMessage("نمره با موفقیت ذخیره شد.");
-      setErrorMessage("");
+      addToast("نمره با موفقیت ذخیره شد.", "success");
     } catch {
-      setErrorMessage("خطا در ثبت نمره.");
-      setSuccessMessage("");
+      addToast("خطا در ثبت نمره.", "error");
     }
   };
 
@@ -124,17 +119,6 @@ export default function SubmissionsPage() {
       <h1 className="text-xl font-bold text-gray-800">
         پاسخ‌های تکلیف: {assignment?.title}
       </h1>
-      {successMessage && (
-        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-          {successMessage}
-        </div>
-      )}
-      {errorMessage && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {errorMessage}
-        </div>
-      )}
-
       {submissions.length === 0 ? (
         <EmptyState
           title="پاسخی ثبت نشده"
@@ -146,7 +130,6 @@ export default function SubmissionsPage() {
             const isLate =
               assignment &&
               new Date(sub.submittedAt) > new Date(assignment.deadline);
-
             return (
               <Card key={sub.id}>
                 <div className="flex flex-col gap-3">
@@ -171,24 +154,16 @@ export default function SubmissionsPage() {
                       min="0"
                       max="20"
                       step="0.5"
-                      value={grading[String(sub.id)]?.grade ?? ""}
+                      value={grading[sub.id]?.grade ?? ""}
                       onChange={(e) =>
-                        handleGradeChange(
-                          String(sub.id),
-                          "grade",
-                          e.target.value,
-                        )
+                        handleGradeChange(sub.id, "grade", e.target.value)
                       }
                     />
                     <Input
                       label="بازخورد"
-                      value={grading[String(sub.id)]?.feedback ?? ""}
+                      value={grading[sub.id]?.feedback ?? ""}
                       onChange={(e) =>
-                        handleGradeChange(
-                          String(sub.id),
-                          "feedback",
-                          e.target.value,
-                        )
+                        handleGradeChange(sub.id, "feedback", e.target.value)
                       }
                     />
                   </div>

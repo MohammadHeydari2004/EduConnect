@@ -1,13 +1,15 @@
-import { useState } from "react";
 import Button from "#/components/ui/Button.tsx";
 import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Select from "#/components/ui/Select.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
-import { announcementService } from "#/services/modules/announcementService.ts";
+import { useToast } from "#/hooks/useToast.ts";
+import { announcementService } from "#/services/announcement.ts";
 import type { Announcement, TargetAudience } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID, UserRole } from "#/types/common.ts";
+import { useState } from "react";
+import { validateAnnouncementForm } from "./validators";
 
 interface Props {
   isOpen: boolean;
@@ -28,12 +30,12 @@ export default function AnnouncementForm({
   onClose,
   onSuccess,
 }: Props) {
+  const { addToast } = useToast();
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [content, setContent] = useState(initialData?.content ?? "");
   const [classId, setClassId] = useState<string>(
     initialData?.classId?.toString() ?? "0",
   );
-
   const [targetRoles, setTargetRoles] = useState<UserRole[]>(
     initialData?.targetRoles ?? ["admin", "teacher", "student"],
   );
@@ -45,14 +47,14 @@ export default function AnnouncementForm({
   const isAdmin = userRole === "admin";
 
   const handleSubmit = async () => {
-    if (!title.trim() || !content.trim()) {
-      setError("عنوان و محتوا الزامی است.");
+    const validationErrors = validateAnnouncementForm({ title, content });
+    if (Object.keys(validationErrors).length > 0) {
+      setError(validationErrors.form || "خطا در اعتبارسنجی");
       return;
     }
     try {
       setIsSubmitting(true);
       const basePayload = { title, content, classId, authorId };
-
       const payload: Partial<Announcement> = isAdmin
         ? classId === "0"
           ? { ...basePayload, targetRoles, targetAudience: undefined }
@@ -71,9 +73,10 @@ export default function AnnouncementForm({
           payload as Omit<Announcement, "id" | "createdAt" | "seenBy">,
         );
       }
+      addToast("اطلاعیه با موفقیت ذخیره شد.", "success");
       onSuccess();
     } catch {
-      setError("خطا در ذخیره اطلاعیه.");
+      addToast("خطا در ذخیره اطلاعیه.", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -111,7 +114,6 @@ export default function AnnouncementForm({
           onChange={(e) => setClassId(e.target.value)}
           options={classOptions}
         />
-
         {isAdmin && classId === "0" && (
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
@@ -129,7 +131,7 @@ export default function AnnouncementForm({
                     onChange={() => toggleRole(role)}
                     className="h-4 w-4"
                   />
-                  <span className="text-sm capitalize text-gray-700">
+                  <span className="text-sm text-gray-700 capitalize">
                     {role === "admin"
                       ? "مدیر"
                       : role === "teacher"
@@ -159,7 +161,6 @@ export default function AnnouncementForm({
             />
           </div>
         )}
-
         <Textarea
           label="محتوا"
           value={content}
@@ -167,9 +168,7 @@ export default function AnnouncementForm({
           rows={5}
           placeholder="متن اطلاعیه..."
         />
-
         {error && <p className="text-sm text-red-600">{error}</p>}
-
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="secondary" onClick={onClose}>
             انصراف

@@ -7,7 +7,7 @@ interface CardProps {
 
 function Card({ children, title }: CardProps) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-xs">
       {title && (
         <h3 className="mb-4 text-lg font-semibold text-gray-800">{title}</h3>
       )}

@@ -13,7 +13,7 @@ function SearchInput({ label, className = "", ...props }: SearchInputProps) {
       <input
         type="text"
         placeholder="جستجو..."
-        className={`rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 ${className}`}
+        className={`rounded-lg border border-gray-300 px-3 py-2 text-sm outline-hidden focus:border-blue-500 ${className}`}
         {...props}
       />
     </div>

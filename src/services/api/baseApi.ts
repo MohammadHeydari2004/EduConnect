@@ -1,5 +1,5 @@
-import axiosInstance from "./axiosInstance";
 import type { ID } from "#/types/common.ts";
+import axiosInstance from "./axiosInstance";
 
 export const baseApi = {
   getAll: async <T>(endpoint: string): Promise<T[]> => {

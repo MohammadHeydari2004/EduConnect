@@ -1,13 +1,14 @@
-import { useState } from "react";
 import Button from "#/components/ui/Button.tsx";
 import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Select from "#/components/ui/Select.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
-import { classService } from "#/services/modules/classService.ts";
+import { classService } from "#/services/class.ts";
 import type { ClassFormValues, ClassItem, ClassStatus } from "#/types/class.ts";
-import type { User } from "#/types/user.ts";
 import type { ID } from "#/types/common.ts";
+import type { User } from "#/types/user.ts";
+import { useState } from "react";
+import { validateClassForm, type ClassFormErrors } from "./validators";
 
 interface Props {
   users: User[];
@@ -40,27 +41,14 @@ export default function ClassForm({
     description: initialData?.description || "",
   }));
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<ClassFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const validate = (): boolean => {
-    const newErrors: Record<string, string> = {};
-    if (!form.title.trim()) {
-      newErrors.title = "عنوان الزامی است.";
-    } else if (form.title.trim().length < 3) {
-      newErrors.title = "عنوان باید حداقل 3 کاراکتر باشد.";
-    }
-    if (!form.teacherId) newErrors.teacherId = "انتخاب استاد الزامی است.";
-    if (form.capacity < 1) newErrors.capacity = "ظرفیت باید حداقل 1 باشد.";
-    if (form.studentIds.length > form.capacity) {
-      newErrors.students = `تعداد دانشجویان (${form.studentIds.length}) بیشتر از ظرفیت (${form.capacity}) است.`;
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async () => {
-    if (!validate()) return;
+    const validationErrors = validateClassForm(form);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
+
     try {
       setIsSubmitting(true);
       if (initialData) {
@@ -87,7 +75,8 @@ export default function ClassForm({
           : [...prev.studentIds, id],
       };
     });
-    if (errors.students) setErrors((prev) => ({ ...prev, students: "" }));
+    if (errors.students)
+      setErrors((prev) => ({ ...prev, students: undefined }));
   };
 
   const title = initialData ? "ویرایش کلاس" : "ایجاد کلاس جدید";
@@ -100,7 +89,7 @@ export default function ClassForm({
           value={form.title}
           onChange={(e) => {
             setForm({ ...form, title: e.target.value });
-            if (errors.title) setErrors({ ...errors, title: "" });
+            if (errors.title) setErrors({ ...errors, title: undefined });
           }}
           error={errors.title}
           placeholder="مثلاً: مبانی برنامه‌نویسی"
@@ -111,7 +100,8 @@ export default function ClassForm({
           onChange={(e) => {
             const value = e.target.value;
             setForm({ ...form, teacherId: value || null });
-            if (errors.teacherId) setErrors({ ...errors, teacherId: "" });
+            if (errors.teacherId)
+              setErrors({ ...errors, teacherId: undefined });
           }}
           options={[
             { label: "انتخاب استاد...", value: "" },
@@ -126,7 +116,8 @@ export default function ClassForm({
             value={form.capacity}
             onChange={(e) => {
               setForm({ ...form, capacity: Number(e.target.value) });
-              if (errors.capacity) setErrors({ ...errors, capacity: "" });
+              if (errors.capacity)
+                setErrors({ ...errors, capacity: undefined });
             }}
             error={errors.capacity}
           />
@@ -167,7 +158,7 @@ export default function ClassForm({
               {students.map((s) => (
                 <label
                   key={s.id}
-                  className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 hover:bg-gray-50"
+                  className="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1 hover:bg-gray-50"
                 >
                   <input
                     type="checkbox"

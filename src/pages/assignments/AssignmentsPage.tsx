@@ -1,5 +1,3 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
 import Button from "#/components/ui/Button.tsx";
@@ -7,17 +5,19 @@ import Card from "#/components/ui/Card.tsx";
 import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
-import { useAuth } from "#/context/AuthContext.ts";
-import { assignmentService } from "#/services/modules/assignmentService.ts";
-import { classService } from "#/services/modules/classService.ts";
-import { submissionService } from "#/services/modules/submissionService.ts";
-import { userService } from "#/services/modules/userService.ts";
-import { formatDate } from "#/utils/formatDate.ts";
+import { useAuth } from "#/contexts/AuthContext.ts";
+import { assignmentService } from "#/services/assignment.ts";
+import { classService } from "#/services/class.ts";
+import { submissionService } from "#/services/submission.ts";
+import { userService } from "#/services/user.ts";
 import type { Assignment } from "#/types/assignment.ts";
 import type { ClassItem } from "#/types/class.ts";
+import type { ID } from "#/types/common.ts";
 import type { Submission } from "#/types/submission.ts";
 import type { User } from "#/types/user.ts";
-import type { ID } from "#/types/common.ts";
+import { formatDate } from "#/utils/formatDate.ts";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import AssignmentForm from "./AssignmentForm";
 import SubmissionForm from "./SubmissionForm";
 
@@ -62,7 +62,6 @@ export default function AssignmentsPage() {
   const isAdmin = currentUser?.role === "admin";
   const isTeacher = currentUser?.role === "teacher";
   const isStudent = currentUser?.role === "student";
-
   const classId = classIdParam ?? null;
   const isClassPage = !!classIdParam;
 
@@ -133,6 +132,7 @@ export default function AssignmentsPage() {
 
   const getTeacherName = (teacherId: ID) =>
     users.find((u) => u.id === teacherId)?.name ?? "—";
+
   const getClassName = (cId: ID) =>
     classes.find((c) => c.id === cId)?.title ?? "—";
 
@@ -191,7 +191,6 @@ export default function AssignmentsPage() {
 
   const filteredAssignments = assignments.filter((a) => {
     if (isClassPage && classId && a.classId !== classId) return false;
-
     if (isStudent) {
       const cls = classes.find((c) => c.id === a.classId);
       if (!cls || !(cls.studentIds || []).includes(currentUser?.id ?? ""))
@@ -234,134 +233,251 @@ export default function AssignmentsPage() {
         />
       ) : (
         <Card>
-          <div className="-mx-5 overflow-x-auto sm:mx-0">
-            <Table
-              getRowKey={(a) => a.id}
-              columns={[
-                { key: "title", title: "عنوان", render: (a) => a.title },
-                {
-                  key: "className",
-                  title: "کلاس",
-                  render: (a) => getClassName(a.classId),
+          <Table
+            getRowKey={(a) => a.id}
+            columns={[
+              { key: "title", title: "عنوان", render: (a) => a.title },
+              {
+                key: "className",
+                title: "کلاس",
+                render: (a) => getClassName(a.classId),
+              },
+              {
+                key: "description",
+                title: "توضیحات",
+                render: (a) => a.description,
+              },
+              {
+                key: "deadline",
+                title: "ددلاین",
+                render: (a) => {
+                  const isExpired = new Date(a.deadline) < new Date();
+                  return (
+                    <span
+                      className={isExpired ? "font-semibold text-red-600" : ""}
+                    >
+                      {formatDate(a.deadline)}
+                      {isExpired && (
+                        <span className="mr-1 text-xs text-red-500">
+                          (منقضی شده)
+                        </span>
+                      )}
+                    </span>
+                  );
                 },
-                {
-                  key: "description",
-                  title: "توضیحات",
-                  render: (a) => a.description,
-                },
-                {
-                  key: "deadline",
-                  title: "ددلاین",
-                  render: (a) => {
-                    const isExpired = new Date(a.deadline) < new Date();
+              },
+              {
+                key: "teacher",
+                title: "استاد",
+                render: (a) => getTeacherName(a.teacherId),
+              },
+              {
+                key: "status",
+                title: "وضعیت",
+                render: (a) => {
+                  if (isStudent) {
+                    const sub = getSubmissionForUser(a.id);
+                    return sub ? (
+                      <StatusChip status={sub.status} />
+                    ) : (
+                      <span className="text-gray-500">ارسال نشده</span>
+                    );
+                  }
+                  if ((isAdmin || isTeacher) && canManageAssignment(a)) {
+                    const subs = submissions.filter(
+                      (s) => s.assignmentId === a.id,
+                    );
                     return (
-                      <span
-                        className={
-                          isExpired ? "text-red-600 font-semibold" : ""
-                        }
-                      >
-                        {formatDate(a.deadline)}
-                        {isExpired && (
-                          <span className="mr-1 text-xs text-red-500">
-                            (منقضی شده)
-                          </span>
-                        )}
+                      <span className="text-sm text-gray-600">
+                        {subs.filter((s) => s.status === "graded").length}/
+                        {subs.length} نمره داده شده
                       </span>
                     );
-                  },
+                  }
+                  return <span className="text-gray-500">—</span>;
                 },
-                {
-                  key: "teacher",
-                  title: "استاد",
-                  render: (a) => getTeacherName(a.teacherId),
+              },
+              {
+                key: "actions",
+                title: "عملیات",
+                render: (a) => {
+                  const sub = getSubmissionForUser(a.id);
+                  const isGraded = sub?.status === "graded";
+                  return (
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {isStudent &&
+                        (!sub ? (
+                          <Button
+                            variant="secondary"
+                            onClick={() => handleSubmit(a)}
+                          >
+                            ارسال پاسخ
+                          </Button>
+                        ) : !isGraded ? (
+                          <Button
+                            variant="secondary"
+                            onClick={() => handleSubmit(a)}
+                          >
+                            ویرایش پاسخ
+                          </Button>
+                        ) : (
+                          <span className="py-2 text-xs text-gray-500">
+                            نمره نهایی شده
+                          </span>
+                        ))}
+                      {canManageAssignment(a) && (
+                        <>
+                          <Button
+                            variant="secondary"
+                            onClick={() => {
+                              setEditingAssignment(a);
+                              setShowAssignmentForm(true);
+                            }}
+                          >
+                            ویرایش
+                          </Button>
+                          <Button
+                            variant="danger"
+                            onClick={() => setDeleteAssignmentTarget(a)}
+                          >
+                            حذف
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            onClick={() => handleViewSubmissions(a.id)}
+                          >
+                            پاسخ‌ها
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  );
                 },
-                {
-                  key: "status",
-                  title: "وضعیت",
-                  render: (a) => {
-                    if (isStudent) {
-                      const sub = getSubmissionForUser(a.id);
-                      return sub ? (
+              },
+            ]}
+            data={filteredAssignments}
+            renderMobileCard={(a) => {
+              const sub = getSubmissionForUser(a.id);
+              const isGraded = sub?.status === "graded";
+              const isExpired = new Date(a.deadline) < new Date();
+              return (
+                <div className="space-y-2 text-right">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="text-base font-bold text-gray-800">
+                      {a.title}
+                    </span>
+                    {isStudent &&
+                      (sub ? (
                         <StatusChip status={sub.status} />
                       ) : (
-                        <span className="text-gray-500">ارسال نشده</span>
-                      );
-                    }
-                    if ((isAdmin || isTeacher) && canManageAssignment(a)) {
-                      const subs = submissions.filter(
-                        (s) => s.assignmentId === a.id,
-                      );
-                      return (
-                        <span className="text-sm text-gray-600">
-                          {subs.filter((s) => s.status === "graded").length}/
-                          {subs.length} نمره داده شده
+                        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+                          ارسال نشده
                         </span>
-                      );
-                    }
-                    return <span className="text-gray-500">—</span>;
-                  },
-                },
-                {
-                  key: "actions",
-                  title: "عملیات",
-                  render: (a) => {
-                    const sub = getSubmissionForUser(a.id);
-                    const isGraded = sub?.status === "graded";
-                    return (
-                      <div className="flex flex-wrap gap-2">
-                        {isStudent &&
-                          (!sub ? (
-                            <Button
-                              variant="secondary"
-                              onClick={() => handleSubmit(a)}
-                            >
-                              ارسال پاسخ
-                            </Button>
-                          ) : !isGraded ? (
-                            <Button
-                              variant="secondary"
-                              onClick={() => handleSubmit(a)}
-                            >
-                              ویرایش پاسخ
-                            </Button>
-                          ) : (
-                            <span className="py-2 text-xs text-gray-500">
-                              نمره نهایی شده
-                            </span>
-                          ))}
-                        {canManageAssignment(a) && (
-                          <>
-                            <Button
-                              variant="secondary"
-                              onClick={() => {
-                                setEditingAssignment(a);
-                                setShowAssignmentForm(true);
-                              }}
-                            >
-                              ویرایش
-                            </Button>
-                            <Button
-                              variant="danger"
-                              onClick={() => setDeleteAssignmentTarget(a)}
-                            >
-                              حذف
-                            </Button>
-                            <Button
-                              variant="secondary"
-                              onClick={() => handleViewSubmissions(a.id)}
-                            >
-                              پاسخ‌ها
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    );
-                  },
-                },
-              ]}
-              data={filteredAssignments}
-            />
-          </div>
+                      ))}
+                    {!isStudent && canManageAssignment(a) && (
+                      <span className="text-xs text-gray-500">
+                        {
+                          submissions.filter(
+                            (s) =>
+                              s.assignmentId === a.id && s.status === "graded",
+                          ).length
+                        }
+                        /
+                        {
+                          submissions.filter((s) => s.assignmentId === a.id)
+                            .length
+                        }{" "}
+                        نمره
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <span className="text-gray-500">کلاس:</span>{" "}
+                    {getClassName(a.classId)}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <span className="text-gray-500">استاد:</span>{" "}
+                    {getTeacherName(a.teacherId)}
+                  </div>
+                  {a.description && (
+                    <p className="line-clamp-2 text-xs text-gray-500">
+                      {a.description}
+                    </p>
+                  )}
+                  <div
+                    className={`text-sm ${isExpired ? "font-semibold text-red-600" : "text-gray-700"}`}
+                  >
+                    <span className="text-gray-500">ددلاین:</span>{" "}
+                    {formatDate(a.deadline)}
+                    {isExpired && (
+                      <span className="mr-1 text-xs">(منقضی شده)</span>
+                    )}
+                  </div>
+                  {isStudent && isGraded && sub?.grade !== undefined && (
+                    <div className="rounded-lg bg-green-50 px-3 py-1.5 text-sm font-bold text-green-700">
+                      نمره: {sub.grade}
+                    </div>
+                  )}
+                </div>
+              );
+            }}
+            renderMobileActions={(a) => {
+              const sub = getSubmissionForUser(a.id);
+              const isGraded = sub?.status === "graded";
+              return (
+                <>
+                  {isStudent && (
+                    <>
+                      {!sub ? (
+                        <button
+                          onClick={() => handleSubmit(a)}
+                          className="w-full rounded-md px-3 py-2 text-right text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          ارسال پاسخ
+                        </button>
+                      ) : !isGraded ? (
+                        <button
+                          onClick={() => handleSubmit(a)}
+                          className="w-full rounded-md px-3 py-2 text-right text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          ویرایش پاسخ
+                        </button>
+                      ) : (
+                        <div className="w-full rounded-md px-3 py-2 text-right text-sm text-gray-400">
+                          نمره نهایی شده ({sub.grade})
+                        </div>
+                      )}
+                    </>
+                  )}
+                  {canManageAssignment(a) && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setEditingAssignment(a);
+                          setShowAssignmentForm(true);
+                        }}
+                        className="w-full rounded-md px-3 py-2 text-right text-sm text-gray-700 hover:bg-gray-50"
+                      >
+                        ویرایش
+                      </button>
+                      <button
+                        onClick={() => handleViewSubmissions(a.id)}
+                        className="w-full rounded-md px-3 py-2 text-right text-sm text-gray-700 hover:bg-gray-50"
+                      >
+                        مشاهده پاسخ‌ها
+                      </button>
+                      <button
+                        onClick={() => setDeleteAssignmentTarget(a)}
+                        className="w-full rounded-md px-3 py-2 text-right text-sm text-red-600 hover:bg-red-50"
+                      >
+                        حذف
+                      </button>
+                    </>
+                  )}
+                </>
+              );
+            }}
+          />
         </Card>
       )}
 
@@ -385,6 +501,7 @@ export default function AssignmentsPage() {
           }
           studentId={currentUser.id}
           existingSubmission={submissionToEdit}
+          deadline={submittingAssignment?.deadline}
           onClose={() => setShowSubmissionForm(false)}
           onSuccess={handleSuccess}
         />
