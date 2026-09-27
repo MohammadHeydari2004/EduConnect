@@ -1,4 +1,3 @@
-
 import { baseApi } from "#/services/api/baseApi.ts";
 import type { Attendance } from "#/types/attendance.ts";
 import type { ID } from "#/types/common.ts";

@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import Input from "#/components/ui/Input.tsx";
-import { useAuth } from "#/context/AuthContext.ts";
+import { useAuth } from "#/contexts/AuthContext.ts";
+import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const navigate = useNavigate();

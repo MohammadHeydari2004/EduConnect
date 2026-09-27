@@ -38,6 +38,7 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+.vscode
 
 # Environment variables
 .env
@@ -67,6 +68,7 @@ storybook-static
 # Vite
 *.timestamp-*
 
+*.txt
 *.xml
 repomix-output.md
 repomix-output.xml

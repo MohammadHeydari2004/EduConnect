@@ -108,7 +108,7 @@ export default function AdminDashboard({ data }: Props) {
   );
   const recentClasses = useMemo(() => {
     return [...classes]
-      .filter((c) => c.createdAt) 
+      .filter((c) => c.createdAt)
       .sort(
         (a, b) =>
           new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime(),

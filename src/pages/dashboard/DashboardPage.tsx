@@ -1,25 +1,23 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "#/context/AuthContext.ts";
 import Loading from "#/components/common/Loading.tsx";
+import { useAuth } from "#/contexts/AuthContext.ts";
 import AdminDashboard from "#/pages/dashboard/AdminDashboard.tsx";
-import TeacherDashboard from "#/pages/dashboard/TeacherDashboard.tsx";
 import StudentDashboard from "#/pages/dashboard/StudentDashboard.tsx";
-
-import { userService } from "#/services/modules/userService.ts";
+import TeacherDashboard from "#/pages/dashboard/TeacherDashboard.tsx";
+import { announcementService } from "#/services/modules/announcementService.ts";
+import { assignmentService } from "#/services/modules/assignmentService.ts";
+import { attendanceService } from "#/services/modules/attendanceService.ts";
 import { classService } from "#/services/modules/classService.ts";
 import { sessionService } from "#/services/modules/sessionService.ts";
-import { assignmentService } from "#/services/modules/assignmentService.ts";
 import { submissionService } from "#/services/modules/submissionService.ts";
-import { attendanceService } from "#/services/modules/attendanceService.ts";
-import { announcementService } from "#/services/modules/announcementService.ts";
-
-import type { User } from "#/types/user.ts";
+import { userService } from "#/services/modules/userService.ts";
+import type { Announcement } from "#/types/announcement.ts";
+import type { Assignment } from "#/types/assignment.ts";
+import type { Attendance } from "#/types/attendance.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { Session } from "#/types/session.ts";
-import type { Assignment } from "#/types/assignment.ts";
 import type { Submission } from "#/types/submission.ts";
-import type { Attendance } from "#/types/attendance.ts";
-import type { Announcement } from "#/types/announcement.ts";
+import type { User } from "#/types/user.ts";
+import { useEffect, useState } from "react";
 
 export interface DashboardData {
   users: User[];
