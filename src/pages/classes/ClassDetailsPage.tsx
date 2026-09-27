@@ -3,6 +3,7 @@ import Loading from "#/components/common/Loading.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
+import Table from "#/components/ui/Table.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import { classService } from "#/services/class.ts";
@@ -11,7 +12,8 @@ import { userService } from "#/services/user.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { Session } from "#/types/session.ts";
 import type { User } from "#/types/user.ts";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { formatDate } from "#/utils/formatDate.ts";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SessionForm from "./SessionForm";
 
@@ -31,6 +33,7 @@ export default function ClassDetailsPage() {
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
   const { addToast } = useToast();
+
   const classId = id;
   const isInvalidId = !classId;
 
@@ -42,8 +45,9 @@ export default function ClassDetailsPage() {
     isInvalidId ? "شناسه کلاس نامعتبر است." : "",
   );
   const [showSessionForm, setShowSessionForm] = useState(false);
-
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [prevClassId, setPrevClassId] = useState(classId);
+
   if (classId !== prevClassId) {
     setPrevClassId(classId);
     if (!isInvalidId) {
@@ -55,33 +59,12 @@ export default function ClassDetailsPage() {
     }
   }
 
-  const ignoreRef = useRef(false);
   const isAdmin = currentUser?.role === "admin";
   const isTeacherOfThisClass =
     currentUser?.role === "teacher" &&
     classItem !== null &&
     classItem.teacherId === currentUser.id;
   const canManage = isAdmin || isTeacherOfThisClass;
-
-  const fetchData = useCallback(async () => {
-    try {
-      const [c, u, s] = await Promise.all([
-        classService.getById(classId!),
-        userService.getAll(),
-        sessionService.getAll(),
-      ]);
-      if (!ignoreRef.current) {
-        setError("");
-        setClassItem(c);
-        setUsers(u);
-        setSessions(s.filter((x) => x.classId === classId));
-      }
-    } catch (err) {
-      if (!ignoreRef.current) setError(getErrorMessage(err));
-    } finally {
-      if (!ignoreRef.current) setLoading(false);
-    }
-  }, [classId]);
 
   useEffect(() => {
     if (isInvalidId) return;
@@ -99,19 +82,22 @@ export default function ClassDetailsPage() {
           setClassItem(c);
           setUsers(u);
           setSessions(s.filter((x) => x.classId === classId));
+          setLoading(false);
         }
       } catch (err) {
-        if (!cancelled) setError(getErrorMessage(err));
-      } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setError(getErrorMessage(err));
+          setLoading(false);
+        }
       }
     };
 
     load();
+
     return () => {
       cancelled = true;
     };
-  }, [classId, isInvalidId]);
+  }, [classId, isInvalidId, refreshTrigger]);
 
   useEffect(() => {
     if (
@@ -119,14 +105,16 @@ export default function ClassDetailsPage() {
       classItem &&
       currentUser?.role === "teacher" &&
       classItem.teacherId !== currentUser.id
-    )
+    ) {
       navigate("/unauthorized", { replace: true });
+    }
   }, [loading, classItem, currentUser, navigate]);
-
   const students = useMemo(() => {
     if (!classItem) return [];
-    return users.filter((u) => (classItem.studentIds || []).includes(u.id));
+    const studentIdSet = new Set(classItem.studentIds || []);
+    return users.filter((u) => studentIdSet.has(u.id));
   }, [users, classItem]);
+
   const teacher = useMemo(() => {
     if (!classItem || classItem.teacherId === null) return null;
     return users.find((u) => u.id === classItem.teacherId) ?? null;
@@ -136,30 +124,39 @@ export default function ClassDetailsPage() {
     return (
       <div className="space-y-4">
         <Button variant="secondary" onClick={() => navigate("/classes")}>
-          ← بازگشت به لیست کلاس‌ها
+          → بازگشت به لیست کلاس‌ها
         </Button>
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div
+          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          role="alert"
+        >
           شناسه کلاس نامعتبر است.
         </div>
       </div>
     );
+
   if (loading) return <Loading />;
+
   if (error)
     return (
       <div className="space-y-4">
         <Button variant="secondary" onClick={() => navigate("/classes")}>
-          ← بازگشت به لیست کلاس‌ها
+          → بازگشت به لیست کلاس‌ها
         </Button>
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div
+          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          role="alert"
+        >
           {error}
         </div>
       </div>
     );
+
   if (!classItem)
     return (
       <div className="space-y-4">
         <Button variant="secondary" onClick={() => navigate("/classes")}>
-          ← بازگشت به لیست کلاس‌ها
+          → بازگشت به لیست کلاس‌ها
         </Button>
         <EmptyState
           title="کلاس پیدا نشد"
@@ -177,7 +174,7 @@ export default function ClassDetailsPage() {
             onClick={() => navigate("/classes")}
             className="w-full sm:w-auto"
           >
-            ← بازگشت
+            → بازگشت
           </Button>
           <h1 className="text-lg font-bold text-gray-800 sm:text-2xl">
             {classItem.title || "(بدون عنوان)"}
@@ -192,6 +189,7 @@ export default function ClassDetailsPage() {
           مشاهده تکالیف کلاس
         </Button>
       </div>
+
       <div className="grid gap-4 md:grid-cols-2">
         <Card title="اطلاعات کلاس">
           <div className="space-y-3 text-sm text-gray-700">
@@ -226,20 +224,50 @@ export default function ClassDetailsPage() {
               description="هنوز دانشجویی به این کلاس اضافه نشده است."
             />
           ) : (
-            <ul className="space-y-2">
-              {students.map((s) => (
-                <li
-                  key={s.id}
-                  className="flex flex-col gap-1 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <span className="font-medium text-gray-800">{s.name}</span>
-                  <span className="text-xs text-gray-500">{s.email}</span>
-                </li>
-              ))}
-            </ul>
+            <Table
+              getRowKey={(s) => s.id}
+              columns={[
+                {
+                  key: "name",
+                  title: "نام",
+                  render: (s) => (
+                    <span className="font-medium text-gray-800">{s.name}</span>
+                  ),
+                },
+                {
+                  key: "email",
+                  title: "ایمیل",
+                  render: (s) => (
+                    <span className="text-sm text-gray-600 break-all">
+                      {s.email}
+                    </span>
+                  ),
+                },
+                {
+                  key: "status",
+                  title: "وضعیت",
+                  render: (s) => <StatusChip status={s.status} />,
+                },
+              ]}
+              data={students}
+              renderMobileCard={(s) => (
+                <div className="space-y-2 text-right">
+                  <div className="flex items-center justify-between">
+                    <span className="text-base font-bold text-gray-800">
+                      {s.name}
+                    </span>
+                    <StatusChip status={s.status} />
+                  </div>
+                  <div className="text-sm text-gray-600 break-all">
+                    {s.email}
+                  </div>
+                </div>
+              )}
+            />
           )}
         </Card>
       </div>
+
       <Card title={`جلسات (${sessions.length})`}>
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-gray-600">
@@ -264,7 +292,7 @@ export default function ClassDetailsPage() {
             {[...sessions]
               .sort(
                 (a, b) =>
-                  new Date(a.date).getTime() - new Date(b.date).getTime(),
+                  new Date(b.date).getTime() - new Date(a.date).getTime(),
               )
               .map((s) => (
                 <div
@@ -280,7 +308,9 @@ export default function ClassDetailsPage() {
                     )}
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <div className="text-sm text-gray-600">{s.date}</div>
+                    <div className="text-sm text-gray-600">
+                      {formatDate(s.date)}
+                    </div>
                     {canManage && classItem.status !== "inactive" && (
                       <Button
                         variant="secondary"
@@ -299,15 +329,16 @@ export default function ClassDetailsPage() {
           </div>
         )}
       </Card>
+
       {showSessionForm && (
         <SessionForm
           key={`session-form-${classId}-${showSessionForm}`}
-          classId={classId}
+          classId={classId!}
           onClose={() => setShowSessionForm(false)}
           onSuccess={(message) => {
             addToast(message, "success");
             setShowSessionForm(false);
-            fetchData();
+            setRefreshTrigger((prev) => prev + 1);
           }}
           onError={(message) => {
             addToast(message, "error");

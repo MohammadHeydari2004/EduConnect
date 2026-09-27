@@ -30,6 +30,7 @@ function App() {
         }
       >
         <Route path="/" element={<DashboardPage />} />
+
         <Route
           path="users"
           element={
@@ -38,6 +39,7 @@ function App() {
             </RoleGuard>
           }
         />
+
         <Route
           path="classes"
           element={
@@ -46,6 +48,7 @@ function App() {
             </RoleGuard>
           }
         />
+
         <Route
           path="classes/:id"
           element={
@@ -54,6 +57,7 @@ function App() {
             </RoleGuard>
           }
         />
+
         <Route
           path="attendance"
           element={
@@ -62,6 +66,7 @@ function App() {
             </RoleGuard>
           }
         />
+
         <Route
           path="announcements"
           element={
@@ -70,6 +75,7 @@ function App() {
             </RoleGuard>
           }
         />
+
         <Route
           path="assignments"
           element={

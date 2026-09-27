@@ -33,14 +33,6 @@
       "status": "inactive"
     },
     {
-      "id": "5",
-      "name": "مریم حسینی",
-      "email": "teacher4@edu.com",
-      "password": "123456",
-      "role": "teacher",
-      "status": "active"
-    },
-    {
       "id": "6",
       "name": "حسن رضایی",
       "email": "teacher5@edu.com",
@@ -52,14 +44,6 @@
       "id": "7",
       "name": "زهرا نوری",
       "email": "student1@edu.com",
-      "password": "123456",
-      "role": "student",
-      "status": "active"
-    },
-    {
-      "id": "8",
-      "name": "امیر جعفری",
-      "email": "student2@edu.com",
       "password": "123456",
       "role": "student",
       "status": "active"
@@ -197,7 +181,8 @@
         "18",
         "19",
         "20",
-        "21"
+        "21",
+        "22"
       ],
       "capacity": 30,
       "status": "active",
@@ -281,17 +266,16 @@
         "21"
       ],
       "capacity": 25,
-      "status": "active",
+      "status": "inactive",
       "description": "SQL و NoSQL",
       "createdAt": "2025-01-04T10:00:00.000Z",
-      "updatedAt": "2025-01-04T10:00:00.000Z"
+      "updatedAt": "2026-07-28T11:45:27.733Z"
     },
     {
       "id": "c5",
-      "title": "هوش مصنوعی",
+      "title": "هوش مصنوعی 2",
       "teacherId": "2",
       "studentIds": [
-        "7",
         "8",
         "9",
         "10",
@@ -307,11 +291,11 @@
         "20",
         "21"
       ],
-      "capacity": 15,
+      "capacity": 18,
       "status": "active",
       "description": "مقدمات هوش مصنوعی",
       "createdAt": "2025-01-05T10:00:00.000Z",
-      "updatedAt": "2025-01-05T10:00:00.000Z"
+      "updatedAt": "2026-07-28T11:44:44.635Z"
     },
     {
       "id": "c6",
@@ -365,34 +349,7 @@
       "status": "active",
       "description": "مدیریت منابع و پردازش",
       "createdAt": "2025-02-02T10:00:00.000Z",
-      "updatedAt": "2025-02-02T10:00:00.000Z"
-    },
-    {
-      "id": "c8",
-      "title": "مهندسی نرم‌افزار",
-      "teacherId": "3",
-      "studentIds": [
-        "7",
-        "8",
-        "9",
-        "10",
-        "11",
-        "12",
-        "13",
-        "14",
-        "15",
-        "16",
-        "17",
-        "18",
-        "19",
-        "20",
-        "21"
-      ],
-      "capacity": 20,
-      "status": "active",
-      "description": "چرخه حیات توسعه نرم‌افزار",
-      "createdAt": "2025-02-03T10:00:00.000Z",
-      "updatedAt": "2025-02-03T10:00:00.000Z"
+      "updatedAt": "2026-07-28T12:47:46.832Z"
     },
     {
       "id": "c9",
@@ -531,20 +488,52 @@
       "createdAt": "2025-03-23T10:00:00.000Z"
     },
     {
-      "title": "test 1",
-      "date": "2026-07-08",
-      "description": "teat 1",
-      "classId": "c10",
-      "createdAt": "2026-07-07T23:05:02.594Z",
-      "id": "NiEJr_22DS4"
+      "id": "s11",
+      "classId": "c6",
+      "title": "جلسه اول: مدل OSI",
+      "date": "2025-03-03",
+      "description": "معرفی لایه‌های شبکه",
+      "createdAt": "2025-02-27T10:00:00.000Z"
     },
     {
-      "title": "test",
-      "date": "2026-07-16",
-      "description": "test",
+      "id": "s12",
+      "classId": "c6",
+      "title": "جلسه دوم: TCP/IP",
+      "date": "2025-03-10",
+      "description": "پروتکل‌های اینترنت",
+      "createdAt": "2025-03-03T10:00:00.000Z"
+    },
+    {
+      "id": "s13",
+      "classId": "c7",
+      "title": "جلسه اول: مقدمه سیستم عامل",
+      "date": "2025-03-04",
+      "description": "تعریف و وظایف سیستم عامل",
+      "createdAt": "2025-02-28T10:00:00.000Z"
+    },
+    {
+      "id": "s14",
+      "classId": "c10",
+      "title": "جلسه اول: معرفی Cloud",
+      "date": "2025-07-08",
+      "description": "آشنایی با رایانش ابری",
+      "createdAt": "2025-07-07T23:05:02.594Z"
+    },
+    {
+      "id": "s15",
       "classId": "c3",
-      "createdAt": "2026-07-07T23:08:11.595Z",
-      "id": "Tg3zMd89vUA"
+      "title": "جلسه اول: HTML",
+      "date": "2025-07-16",
+      "description": "مبانی HTML",
+      "createdAt": "2025-07-07T23:08:11.595Z"
+    },
+    {
+      "title": "تست ۱",
+      "date": "2026-07-28",
+      "description": "تست",
+      "classId": "c1",
+      "createdAt": "2026-07-28T11:42:07.105Z",
+      "id": "6S8UArNPAfs"
     }
   ],
   "attendance": [
@@ -553,7 +542,7 @@
       "sessionId": "s1",
       "classId": "c1",
       "studentId": "7",
-      "status": "late"
+      "status": "absent"
     },
     {
       "id": "a2",
@@ -574,7 +563,7 @@
       "sessionId": "s2",
       "classId": "c1",
       "studentId": "7",
-      "status": "present"
+      "status": "late"
     },
     {
       "id": "a5",
@@ -612,361 +601,651 @@
       "status": "present"
     },
     {
+      "id": "a10",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "7",
-      "status": "present",
-      "id": "l1Wwwcn0RgU"
+      "status": "present"
     },
     {
+      "id": "a11",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "8",
-      "status": "absent",
-      "id": "XrjWS1NPPzA"
+      "status": "absent"
     },
     {
+      "id": "a12",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "9",
-      "status": "absent",
-      "id": "YqUfnLTVC3Y"
+      "status": "absent"
     },
     {
+      "id": "a13",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "10",
-      "status": "absent",
-      "id": "pAgE0n1K-SY"
+      "status": "absent"
     },
     {
+      "id": "a14",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "11",
-      "status": "absent",
-      "id": "Tvf-FJqilEI"
+      "status": "absent"
     },
     {
+      "id": "a15",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "12",
-      "status": "absent",
-      "id": "PvMINL-mt6k"
+      "status": "absent"
     },
     {
+      "id": "a16",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "13",
-      "status": "absent",
-      "id": "auLVw_WUCJM"
+      "status": "absent"
     },
     {
+      "id": "a17",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "14",
-      "status": "absent",
-      "id": "ePqXo87gkrU"
+      "status": "absent"
     },
     {
+      "id": "a18",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "15",
-      "status": "absent",
-      "id": "FOdtyxmAaJY"
+      "status": "absent"
     },
     {
+      "id": "a19",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "16",
-      "status": "absent",
-      "id": "uFDVQXFcf0I"
+      "status": "absent"
     },
     {
+      "id": "a20",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "17",
-      "status": "absent",
-      "id": "mxgZS04uEPo"
+      "status": "absent"
     },
     {
+      "id": "a21",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "18",
-      "status": "absent",
-      "id": "RMH4I8tS9J8"
+      "status": "absent"
     },
     {
+      "id": "a22",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "19",
-      "status": "absent",
-      "id": "sBHaiMwWEAk"
+      "status": "absent"
     },
     {
+      "id": "a23",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "20",
-      "status": "absent",
-      "id": "VaugwxMud8A"
+      "status": "absent"
     },
     {
+      "id": "a24",
       "sessionId": "s5",
       "classId": "c1",
       "studentId": "21",
-      "status": "absent",
-      "id": "-FDzeIjhFpU"
+      "status": "absent"
     },
     {
+      "id": "a25",
       "sessionId": "s1",
       "classId": "c1",
       "studentId": "10",
-      "status": "present",
-      "id": "2000kpVg1TQ"
+      "status": "present"
     },
     {
+      "id": "a26",
       "sessionId": "s1",
       "classId": "c1",
       "studentId": "11",
-      "status": "absent",
-      "id": "Fse9Uz3VCUQ"
+      "status": "absent"
     },
     {
+      "id": "a27",
       "sessionId": "s1",
       "classId": "c1",
       "studentId": "12",
-      "status": "absent",
-      "id": "wCLY3d0_Neg"
+      "status": "absent"
     },
     {
+      "id": "a28",
       "sessionId": "s1",
       "classId": "c1",
       "studentId": "13",
-      "status": "absent",
-      "id": "zQNY9UP8apU"
+      "status": "absent"
     },
     {
+      "id": "a29",
       "sessionId": "s1",
       "classId": "c1",
       "studentId": "14",
-      "status": "absent",
-      "id": "O9DX2N2Ta30"
+      "status": "absent"
     },
     {
+      "id": "a30",
       "sessionId": "s1",
       "classId": "c1",
       "studentId": "15",
-      "status": "absent",
-      "id": "To2BoghIFYs"
+      "status": "absent"
     },
     {
+      "id": "a31",
       "sessionId": "s1",
       "classId": "c1",
       "studentId": "16",
-      "status": "absent",
-      "id": "zTz-gMigecE"
+      "status": "absent"
     },
     {
+      "id": "a32",
       "sessionId": "s1",
       "classId": "c1",
       "studentId": "17",
-      "status": "absent",
-      "id": "3u3heDu6NPU"
+      "status": "absent"
     },
     {
+      "id": "a33",
       "sessionId": "s1",
       "classId": "c1",
       "studentId": "18",
-      "status": "absent",
-      "id": "YMRdu1EzWa8"
+      "status": "absent"
     },
     {
+      "id": "a34",
       "sessionId": "s1",
       "classId": "c1",
       "studentId": "19",
-      "status": "absent",
-      "id": "7pLURcWPqJ8"
+      "status": "absent"
     },
     {
+      "id": "a35",
       "sessionId": "s1",
       "classId": "c1",
       "studentId": "20",
-      "status": "absent",
-      "id": "JI5GPmI-azE"
+      "status": "absent"
     },
     {
+      "id": "a36",
       "sessionId": "s1",
       "classId": "c1",
       "studentId": "21",
-      "status": "absent",
-      "id": "3o0jXuG_6gU"
+      "status": "absent"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a37",
+      "sessionId": "s11",
+      "classId": "c6",
+      "studentId": "7",
+      "status": "present"
+    },
+    {
+      "id": "a38",
+      "sessionId": "s11",
+      "classId": "c6",
+      "studentId": "8",
+      "status": "present"
+    },
+    {
+      "id": "a39",
+      "sessionId": "s11",
+      "classId": "c6",
+      "studentId": "9",
+      "status": "late"
+    },
+    {
+      "id": "a40",
+      "sessionId": "s11",
+      "classId": "c6",
+      "studentId": "10",
+      "status": "present"
+    },
+    {
+      "id": "a41",
+      "sessionId": "s11",
+      "classId": "c6",
+      "studentId": "11",
+      "status": "absent"
+    },
+    {
+      "id": "a42",
+      "sessionId": "s13",
+      "classId": "c7",
+      "studentId": "7",
+      "status": "present"
+    },
+    {
+      "id": "a43",
+      "sessionId": "s13",
+      "classId": "c7",
+      "studentId": "8",
+      "status": "late"
+    },
+    {
+      "id": "a44",
+      "sessionId": "s13",
+      "classId": "c7",
+      "studentId": "9",
+      "status": "present"
+    },
+    {
+      "id": "a45",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "7",
-      "status": "absent",
-      "id": "-b328Oi1IdU"
+      "status": "absent"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a46",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "8",
-      "status": "absent",
-      "id": "PfTs-6hSRwU"
+      "status": "absent"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a47",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "9",
-      "status": "absent",
-      "id": "9a0PFVj09Ck"
+      "status": "absent"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a48",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "10",
-      "status": "absent",
-      "id": "D855fGwiJ5M"
+      "status": "absent"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a49",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "11",
-      "status": "absent",
-      "id": "pKzN0m9IcE0"
+      "status": "absent"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a50",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "12",
-      "status": "absent",
-      "id": "9jUEi7iD-r0"
+      "status": "absent"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a51",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "13",
-      "status": "absent",
-      "id": "lgTfiPTQiNQ"
+      "status": "absent"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a52",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "14",
-      "status": "absent",
-      "id": "F6CaKrkxKb8"
+      "status": "absent"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a53",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "15",
-      "status": "absent",
-      "id": "H5PUTp0QfiQ"
+      "status": "absent"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a54",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "16",
-      "status": "present",
-      "id": "tUA7qxmBgZE"
+      "status": "present"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a55",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "17",
-      "status": "absent",
-      "id": "3rHarAcWTaY"
+      "status": "absent"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a56",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "18",
-      "status": "absent",
-      "id": "UA8wErXwmmk"
+      "status": "absent"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a57",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "19",
-      "status": "late",
-      "id": "zFMVCtkrV9g"
+      "status": "late"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a58",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "20",
-      "status": "absent",
-      "id": "6Zg8nLNbo1Y"
+      "status": "absent"
     },
     {
-      "sessionId": "NiEJr_22DS4",
+      "id": "a59",
+      "sessionId": "s14",
       "classId": "c10",
       "studentId": "21",
+      "status": "absent"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "7",
+      "status": "present",
+      "id": "eATV5T9j3SI"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "21",
+      "status": "present",
+      "id": "3PioiUv_L2M"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "22",
+      "status": "present",
+      "id": "ldstJh19fd4"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "8",
+      "status": "present",
+      "id": "yUw_iGTwhHQ"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "9",
+      "status": "present",
+      "id": "AjEs-Hu9A6w"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "10",
+      "status": "present",
+      "id": "7UvH0QqX0P4"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "11",
+      "status": "present",
+      "id": "j1NIt-Tm2H8"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "12",
+      "status": "present",
+      "id": "bDxrydcFr0k"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "13",
+      "status": "present",
+      "id": "NozGRl6JyR8"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "14",
+      "status": "present",
+      "id": "enWJMTvarak"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "15",
+      "status": "present",
+      "id": "SjnFYhwqppU"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "16",
+      "status": "present",
+      "id": "DDt7p7J0dKo"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "17",
+      "status": "present",
+      "id": "QqB94HatBYE"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "18",
+      "status": "present",
+      "id": "Umn6SwZ1iU4"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "19",
+      "status": "present",
+      "id": "KIcQH1qukUc"
+    },
+    {
+      "sessionId": "6S8UArNPAfs",
+      "classId": "c1",
+      "studentId": "20",
+      "status": "present",
+      "id": "GTlzKVIywfg"
+    },
+    {
+      "sessionId": "s1",
+      "classId": "c1",
+      "studentId": "22",
       "status": "absent",
-      "id": "jqhznFlaoB8"
+      "id": "0Tc4ztv0B8w"
+    },
+    {
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "10",
+      "status": "absent",
+      "id": "Db1Xp4HDRGc"
+    },
+    {
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "11",
+      "status": "absent",
+      "id": "JoG8p78AluQ"
+    },
+    {
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "12",
+      "status": "absent",
+      "id": "LChToVMGf9E"
+    },
+    {
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "13",
+      "status": "absent",
+      "id": "RyuL7kExVzU"
+    },
+    {
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "14",
+      "status": "absent",
+      "id": "wmnC85qkIbs"
+    },
+    {
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "15",
+      "status": "absent",
+      "id": "L-1Fzt3uWvg"
+    },
+    {
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "16",
+      "status": "absent",
+      "id": "tSDXCn8fLuA"
+    },
+    {
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "17",
+      "status": "absent",
+      "id": "fVvnkCX-T8w"
+    },
+    {
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "18",
+      "status": "absent",
+      "id": "k5HR4Skzrv4"
+    },
+    {
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "19",
+      "status": "absent",
+      "id": "qY4_CMLxMaw"
+    },
+    {
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "20",
+      "status": "absent",
+      "id": "V020q2gARVU"
+    },
+    {
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "21",
+      "status": "absent",
+      "id": "LtazLGXG2V4"
+    },
+    {
+      "sessionId": "s2",
+      "classId": "c1",
+      "studentId": "22",
+      "status": "absent",
+      "id": "IHvFeNaClxw"
+    },
+    {
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "10",
+      "status": "absent",
+      "id": "dOyJwQQfyU0"
+    },
+    {
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "11",
+      "status": "absent",
+      "id": "v9GFxoKwR60"
+    },
+    {
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "12",
+      "status": "absent",
+      "id": "5HpWj0zyNX4"
+    },
+    {
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "13",
+      "status": "absent",
+      "id": "vBkbCJGgFw8"
+    },
+    {
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "14",
+      "status": "absent",
+      "id": "ZQXjTvb_8oc"
+    },
+    {
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "15",
+      "status": "absent",
+      "id": "O8ZoFTn6Ip8"
+    },
+    {
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "16",
+      "status": "absent",
+      "id": "7LECVHFomyI"
+    },
+    {
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "17",
+      "status": "absent",
+      "id": "P73ReIM5x4Q"
+    },
+    {
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "18",
+      "status": "absent",
+      "id": "hcJqh9_dj50"
+    },
+    {
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "19",
+      "status": "absent",
+      "id": "343gt8rGr9c"
+    },
+    {
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "20",
+      "status": "absent",
+      "id": "oh5TVws0HxY"
+    },
+    {
+      "sessionId": "s6",
+      "classId": "c2",
+      "studentId": "21",
+      "status": "absent",
+      "id": "1RfB9Q6dvsU"
     }
   ],
   "announcements": [
-    {
-      "id": "ann1",
-      "title": "شروع ترم جدید",
-      "content": "ترم جدید آموزشی از هفته آینده آغاز می‌شود.",
-      "classId": "0",
-      "authorId": "1",
-      "createdAt": "2025-02-20T10:00:00.000Z",
-      "seenBy": ["2", "3", "7", "8"],
-      "targetRoles": ["admin", "teacher", "student"]
-    },
-    {
-      "id": "ann2",
-      "title": "قطعی سرور",
-      "content": "سرور دانشگاه روز پنجشنبه از ساعت ۲ تا ۴ قطع خواهد بود.",
-      "classId": "0",
-      "authorId": "1",
-      "createdAt": "2025-03-01T10:00:00.000Z",
-      "seenBy": ["2", "3"],
-      "targetRoles": ["admin", "teacher"]
-    },
-    {
-      "id": "ann3",
-      "title": "تغییر زمان کلاس",
-      "content": "کلاس مبانی برنامه‌نویسی روز شنبه تشکیل نمی‌شود.",
-      "classId": "c1",
-      "authorId": "2",
-      "createdAt": "2025-03-05T10:00:00.000Z",
-      "seenBy": ["7", "8"],
-      "targetAudience": "students"
-    },
-    {
-      "id": "ann4",
-      "title": "منابع تکمیلی",
-      "content": "لطفاً فصل سوم کتاب را مطالعه کنید.",
-      "classId": "c1",
-      "authorId": "2",
-      "createdAt": "2025-03-10T10:00:00.000Z",
-      "seenBy": ["8"],
-      "targetAudience": "students"
-    },
-    {
-      "id": "ann5",
-      "title": "جلسه هماهنگی اساتید",
-      "content": "جلسه هماهنگی اساتید گروه کامپیوتر روز دوشنبه برگزار می‌شود.",
-      "classId": "0",
-      "authorId": "2",
-      "createdAt": "2025-03-12T10:00:00.000Z",
-      "seenBy": ["3", "2"],
-      "targetRoles": ["teacher"]
-    },
-    {
-      "id": "ann6",
-      "title": "برگزاری کارگاه",
-      "content": "کارگاه React پیشرفته برای اساتید محترم برگزار می‌گردد.",
-      "classId": "0",
-      "authorId": "3",
-      "createdAt": "2025-03-15T10:00:00.000Z",
-      "seenBy": ["2", "1"],
-      "targetRoles": ["teacher"]
-    },
     {
       "id": "ann7",
       "title": "تحویل پروژه پایانی",
@@ -974,7 +1253,10 @@
       "classId": "c2",
       "authorId": "2",
       "createdAt": "2025-04-01T10:00:00.000Z",
-      "seenBy": ["7", "1"],
+      "seenBy": [
+        "7",
+        "1"
+      ],
       "targetAudience": "students"
     },
     {
@@ -984,42 +1266,49 @@
       "classId": "c1",
       "authorId": "2",
       "createdAt": "2025-04-05T10:00:00.000Z",
-      "seenBy": ["1", "2", "8"],
+      "seenBy": [
+        "1",
+        "2",
+        "8",
+        "7"
+      ],
+      "targetAudience": "both"
+    },
+    {
+      "id": "ann9",
+      "title": "پروژه شبکه",
+      "content": "پروژه پایانی درس شبکه باید تا پایان هفته تحویل داده شود.",
+      "classId": "c6",
+      "authorId": "3",
+      "createdAt": "2025-04-10T10:00:00.000Z",
+      "seenBy": [
+        "7",
+        "8"
+      ],
+      "targetAudience": "students"
+    },
+    {
+      "id": "ann10",
+      "title": "کلاس جبرانی سیستم عامل",
+      "content": "کلاس جبرانی روز چهارشنبه ساعت ۱۴ برگزار می‌شود.",
+      "classId": "c7",
+      "authorId": "3",
+      "createdAt": "2025-04-12T10:00:00.000Z",
+      "seenBy": [
+        "9",
+        "7"
+      ],
       "targetAudience": "both"
     }
   ],
   "assignments": [
     {
-      "id": "as1",
-      "title": "تمرین متغیرها",
-      "description": "برنامه‌ای بنویسید که دو عدد را از ورودی گرفته و جمع کند.",
-      "classId": "c1",
-      "teacherId": "2",
-      "deadline": "2025-03-10T23:59:59.000Z"
-    },
-    {
-      "id": "as2",
-      "title": "تمرین حلقه‌ها",
-      "description": "جدول ضرب را با استفاده از حلقه چاپ کنید.",
-      "classId": "c1",
-      "teacherId": "2",
-      "deadline": "2025-03-17T23:59:59.000Z"
-    },
-    {
       "id": "as3",
       "title": "تمرین توابع",
       "description": "تابعی بنویسید که فاکتوریل یک عدد را محاسبه کند.",
-      "classId": "c1",
-      "teacherId": "2",
-      "deadline": "2025-03-24T23:59:59.000Z"
-    },
-    {
-      "id": "as4",
-      "title": "تمرین آرایه‌ها",
-      "description": "بزرگترین عنصر آرایه را پیدا کنید.",
-      "classId": "c1",
-      "teacherId": "2",
-      "deadline": "2025-03-31T23:59:59.000Z"
+      "classId": "c6",
+      "teacherId": "3",
+      "deadline": "2026-07-28T20:29:59.000Z"
     },
     {
       "id": "as5",
@@ -1070,69 +1359,297 @@
       "deadline": "2025-04-09T23:59:59.000Z"
     },
     {
-      "title": "test",
-      "description": "test",
+      "id": "as11",
+      "title": "تحلیل پروتکل TCP",
+      "description": "یک گزارش ۲ صفحه‌ای درباره نحوه کارکرد TCP بنویسید.",
+      "classId": "c6",
+      "teacherId": "3",
+      "deadline": "2025-03-20T23:59:59.000Z"
+    },
+    {
+      "id": "as12",
+      "title": "پیکربندی Router",
+      "description": "یک سناریوی شبکه طراحی و پیکربندی کنید.",
+      "classId": "c6",
+      "teacherId": "3",
+      "deadline": "2025-04-05T23:59:59.000Z"
+    },
+    {
+      "id": "as13",
+      "title": "مدیریت پردازش",
+      "description": "الگوریتم زمان‌بندی SJF را شبیه‌سازی کنید.",
+      "classId": "c7",
+      "teacherId": "3",
+      "deadline": "2025-03-25T23:59:59.000Z"
+    },
+    {
+      "id": "as14",
+      "title": "مدیریت حافظه",
+      "description": "الگوریتم صفحه‌بندی LRU را پیاده‌سازی کنید.",
+      "classId": "c7",
+      "teacherId": "3",
+      "deadline": "2025-04-10T23:59:59.000Z"
+    },
+    {
+      "id": "as15",
+      "title": "پروژه پایانی شبکه",
+      "description": "یک شبکه کوچک با ۳ روتر و ۲ سوییچ طراحی کنید.",
+      "classId": "c6",
+      "teacherId": "3",
+      "deadline": "2025-05-01T23:59:59.000Z"
+    },
+    {
+      "id": "Qa5AB1p4Lw4",
+      "title": "طراحی دیتابیس 11111",
+      "description": "یک دیتابیس برای فروشگاه آنلاین طراحی کنید.",
       "classId": "c4",
       "teacherId": "2",
-      "deadline": "2026-07-14T00:00:00.000Z",
-      "id": "Qa5AB1p4Lw4"
+      "deadline": "2026-07-28T20:29:59.000Z"
+    },
+    {
+      "title": "تست",
+      "description": "111111111222222222222",
+      "classId": "c4",
+      "teacherId": "2",
+      "deadline": "2026-07-28T20:29:59.000Z",
+      "id": "EwmOOzaQavs"
+    },
+    {
+      "title": "11233",
+      "description": "41",
+      "classId": "c4",
+      "teacherId": "2",
+      "deadline": "2026-07-28T20:29:59.000Z",
+      "id": "ZKXNLOLxovM"
+    },
+    {
+      "title": "414452445",
+      "description": "444",
+      "classId": "c1",
+      "teacherId": "2",
+      "deadline": "2026-07-28T20:29:59.000Z",
+      "id": "0Dzg5d25CNo"
+    },
+    {
+      "title": "74\\5785785",
+      "description": "\\787\\5\\857",
+      "classId": "c1",
+      "teacherId": "2",
+      "deadline": "2026-07-28T20:29:59.000Z",
+      "id": "tWyil54D6cc"
+    },
+    {
+      "title": "578574527",
+      "description": "\\\\\\\\557885745278",
+      "classId": "c4",
+      "teacherId": "2",
+      "deadline": "2026-07-28T20:29:59.000Z",
+      "id": "BUEiTX-93gc"
+    },
+    {
+      "title": "7867776",
+      "description": "76767676",
+      "classId": "c4",
+      "teacherId": "2",
+      "deadline": "2026-07-28T20:29:59.000Z",
+      "id": "DXA_lGj6PXs"
+    },
+    {
+      "title": "676767667",
+      "description": "76767676",
+      "classId": "c4",
+      "teacherId": "2",
+      "deadline": "2026-07-28T20:29:59.000Z",
+      "id": "yWnKlZgBA0U"
+    },
+    {
+      "title": "868686",
+      "description": "686868",
+      "classId": "c1",
+      "teacherId": "2",
+      "deadline": "2026-07-28T20:29:59.000Z",
+      "id": "gT5PVf0nmeE"
+    },
+    {
+      "title": "75577",
+      "description": "5775757575",
+      "classId": "c4",
+      "teacherId": "2",
+      "deadline": "2026-07-28T20:29:59.000Z",
+      "id": "1QOuPihsc5o"
     }
   ],
   "submissions": [
     {
-      "id": "sub1",
-      "assignmentId": "as1",
+      "id": "sub5",
+      "assignmentId": "as6",
       "studentId": "7",
-      "content": "https://github.com/student7/hw1",
-      "submittedAt": "2025-03-09T10:00:00.000Z",
+      "content": "https://github.com/student7/linked-list",
+      "submittedAt": "2025-03-11T14:00:00.000Z",
       "status": "graded",
-      "grade": 18,
-      "feedback": "عالی بود",
-      "updatedAt": "2025-03-10T10:00:00.000Z"
+      "grade": 19,
+      "feedback": "پیاده‌سازی عالی",
+      "updatedAt": "2025-03-12T10:00:00.000Z"
     },
     {
-      "id": "sub2",
-      "assignmentId": "as1",
+      "id": "sub6",
+      "assignmentId": "as6",
       "studentId": "8",
-      "content": "https://github.com/student8/hw1",
-      "submittedAt": "2025-03-10T20:00:00.000Z",
-      "status": "graded",
-      "grade": 15,
-      "feedback": "خوب بود اما نیاز به تمیزی بیشتر دارد",
-      "updatedAt": "2025-03-11T10:00:00.000Z"
+      "content": "https://github.com/student8/linked-list",
+      "submittedAt": "2025-03-12T18:00:00.000Z",
+      "status": "submitted"
     },
     {
-      "id": "sub3",
-      "assignmentId": "as1",
-      "studentId": "9",
-      "content": "https://github.com/student9/hw1",
-      "submittedAt": "2025-03-11T10:00:00.000Z",
-      "status": "graded",
-      "grade": 12,
-      "feedback": "test 1",
-      "updatedAt": "2026-07-07T23:04:36.164Z"
-    },
-    {
-      "id": "sub4",
-      "assignmentId": "as2",
+      "id": "sub7",
+      "assignmentId": "as11",
       "studentId": "7",
-      "content": "https://github.com/student7/hw2",
-      "submittedAt": "2025-03-16T10:00:00.000Z",
+      "content": "https://docs.google.com/document/d/tcp-analysis",
+      "submittedAt": "2025-03-19T10:00:00.000Z",
       "status": "graded",
-      "grade": 16,
-      "feedback": "test ",
-      "updatedAt": "2026-07-07T23:06:11.675Z"
+      "grade": 17,
+      "feedback": "تحلیل خوبی بود",
+      "updatedAt": "2025-03-20T10:00:00.000Z"
+    },
+    {
+      "id": "sub8",
+      "assignmentId": "as11",
+      "studentId": "8",
+      "content": "https://docs.google.com/document/d/tcp-report",
+      "submittedAt": "2025-03-20T22:00:00.000Z",
+      "status": "submitted"
+    },
+    {
+      "id": "sub9",
+      "assignmentId": "as11",
+      "studentId": "9",
+      "content": "https://docs.google.com/document/d/tcp-hw",
+      "submittedAt": "2025-03-18T15:00:00.000Z",
+      "status": "graded",
+      "grade": 14,
+      "feedback": "نیاز به جزئیات بیشتر",
+      "updatedAt": "2025-03-21T10:00:00.000Z"
+    },
+    {
+      "id": "sub10",
+      "assignmentId": "as13",
+      "studentId": "7",
+      "content": "https://github.com/student7/sjf-scheduler",
+      "submittedAt": "2025-03-24T10:00:00.000Z",
+      "status": "graded",
+      "grade": 20,
+      "feedback": "فوق‌العاده بود!",
+      "updatedAt": "2025-03-25T10:00:00.000Z"
+    },
+    {
+      "id": "sub11",
+      "assignmentId": "as13",
+      "studentId": "10",
+      "content": "https://github.com/student10/sjf",
+      "submittedAt": "2025-03-25T20:00:00.000Z",
+      "status": "submitted"
+    },
+    {
+      "id": "WzQKOVNRmVM",
+      "assignmentId": "Qa5AB1p4Lw4",
+      "studentId": "8",
+      "content": "https://github.com/student8/db-design",
+      "submittedAt": "2025-07-07T23:08:43.154Z",
+      "status": "graded",
+      "grade": 20,
+      "feedback": "طراحی خوبی بود اما نرمال‌سازی نیاز به بهبود دارد",
+      "updatedAt": "2026-07-28T12:45:57.131Z"
+    },
+    {
+      "assignmentId": "as3",
+      "studentId": "7",
+      "content": "تست ۱۲",
+      "status": "graded",
+      "submittedAt": "2026-07-28T12:13:08.103Z",
+      "id": "FrU-yCLWyPo",
+      "updatedAt": "2026-07-28T12:14:06.458Z",
+      "grade": 9,
+      "feedback": "مادرت "
+    },
+    {
+      "assignmentId": "EwmOOzaQavs",
+      "studentId": "7",
+      "content": "4545",
+      "status": "submitted",
+      "submittedAt": "2026-07-28T12:24:29.045Z",
+      "id": "6DZVbJmeDhU"
+    },
+    {
+      "assignmentId": "ZKXNLOLxovM",
+      "studentId": "7",
+      "content": "454",
+      "status": "submitted",
+      "submittedAt": "2026-07-28T12:24:31.879Z",
+      "id": "GKgd5RJEHSY"
+    },
+    {
+      "assignmentId": "0Dzg5d25CNo",
+      "studentId": "7",
+      "content": "4545",
+      "status": "submitted",
+      "submittedAt": "2026-07-28T12:24:34.439Z",
+      "id": "7W3oMEM8F2M"
+    },
+    {
+      "assignmentId": "tWyil54D6cc",
+      "studentId": "7",
+      "content": "4545",
+      "status": "submitted",
+      "submittedAt": "2026-07-28T12:24:37.256Z",
+      "id": "9TX1JV1t4V8"
+    },
+    {
+      "assignmentId": "BUEiTX-93gc",
+      "studentId": "7",
+      "content": "4545745",
+      "status": "submitted",
+      "submittedAt": "2026-07-28T12:24:39.871Z",
+      "id": "5fwF6fSMs9s"
     },
     {
       "assignmentId": "Qa5AB1p4Lw4",
-      "studentId": "8",
-      "content": "test",
-      "status": "graded",
-      "submittedAt": "2026-07-07T23:08:43.154Z",
-      "id": "WzQKOVNRmVM",
-      "grade": 16,
-      "feedback": "test 2",
-      "updatedAt": "2026-07-07T23:09:53.354Z"
+      "studentId": "7",
+      "content": "45757",
+      "status": "submitted",
+      "submittedAt": "2026-07-28T12:24:42.688Z",
+      "id": "Nq0O4NamWeI"
+    },
+    {
+      "assignmentId": "DXA_lGj6PXs",
+      "studentId": "7",
+      "content": "475745",
+      "status": "submitted",
+      "submittedAt": "2026-07-28T12:26:09.856Z",
+      "id": "iILPCMNnfrA"
+    },
+    {
+      "assignmentId": "yWnKlZgBA0U",
+      "studentId": "7",
+      "content": "57577557",
+      "status": "submitted",
+      "submittedAt": "2026-07-28T12:26:12.615Z",
+      "id": "i0AmXQNWTlM"
+    },
+    {
+      "assignmentId": "gT5PVf0nmeE",
+      "studentId": "7",
+      "content": "757575",
+      "status": "submitted",
+      "submittedAt": "2026-07-28T12:26:15.161Z",
+      "id": "iytx6l14avw"
+    },
+    {
+      "assignmentId": "1QOuPihsc5o",
+      "studentId": "7",
+      "content": "7575577",
+      "status": "submitted",
+      "submittedAt": "2026-07-28T12:26:17.606Z",
+      "id": "GBvdQ69lL1o"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

@@ -1,4 +1,5 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 interface ModalProps {
   isOpen: boolean;
@@ -8,27 +9,45 @@ interface ModalProps {
 }
 
 function Modal({ isOpen, title, children, onClose }: ModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousActiveElement = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     if (!isOpen) return;
+
+    previousActiveElement.current = document.activeElement as HTMLElement;
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+
+    requestAnimationFrame(() => {
+      modalRef.current?.focus();
+    });
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
       }
     };
+
     document.addEventListener("keydown", handleEscape);
+
     return () => {
       document.body.style.overflow = originalOverflow;
       document.removeEventListener("keydown", handleEscape);
+      previousActiveElement.current?.focus();
     };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 sm:p-4"
+      ref={modalRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={title ? "modal-title" : undefined}
+      tabIndex={-1}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 outline-none sm:p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -38,7 +57,10 @@ function Modal({ isOpen, title, children, onClose }: ModalProps) {
       <div className="w-full max-w-lg rounded-xl bg-white p-4 shadow-lg sm:p-6">
         <div className="mb-4 flex items-center justify-between">
           {title && (
-            <h2 className="text-base font-semibold text-gray-800 sm:text-lg">
+            <h2
+              id="modal-title"
+              className="text-base font-semibold text-gray-800 sm:text-lg"
+            >
               {title}
             </h2>
           )}
@@ -52,6 +74,7 @@ function Modal({ isOpen, title, children, onClose }: ModalProps) {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -64,7 +87,8 @@ function Modal({ isOpen, title, children, onClose }: ModalProps) {
         </div>
         <div>{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

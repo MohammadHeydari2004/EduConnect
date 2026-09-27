@@ -1,0 +1,32 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "rules": {
+    "no-unused-vars": "error",
+    "no-console": "warn",
+    "no-debugger": "error",
+    "eqeqeq": "error",
+    "no-var": "error",
+    "prefer-const": "warn",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "react/jsx-no-target-blank": "error",
+    "typescript/no-unused-vars": "error",
+    "typescript/no-explicit-any": "warn",
+    "typescript/consistent-type-imports": "warn"
+  },
+  "plugins": ["typescript", "react", "react-hooks", "unicorn", "import"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "pedantic": "warn",
+    "style": "warn"
+  },
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    "dist-ssr",
+    "*.config.js",
+    "*.config.ts",
+    "coverage"
+  ]
+}

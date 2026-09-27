@@ -14,7 +14,7 @@ import { userService } from "#/services/user.ts";
 import type { ClassItem, ClassStatus } from "#/types/class.ts";
 import type { ID } from "#/types/common.ts";
 import type { User } from "#/types/user.ts";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ClassForm from "./ClassForm";
 
@@ -22,13 +22,16 @@ export default function ClassesPage() {
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
   const { addToast } = useToast();
+
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ClassStatus | "">("");
   const [teacherFilter, setTeacherFilter] = useState<string>("");
+
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<ClassItem | null>(null);
   const [statusChangeTarget, setStatusChangeTarget] =
@@ -42,8 +45,7 @@ export default function ClassesPage() {
     if (currentUser?.role === "teacher") return c.teacherId === currentUser.id;
     return false;
   };
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [classesData, usersData] = await Promise.all([
         classService.getAll(),
@@ -51,12 +53,13 @@ export default function ClassesPage() {
       ]);
       setClasses(classesData);
       setUsers(usersData);
+      setError("");
     } catch {
       setError("دریافت اطلاعات با خطا مواجه شد.");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     let ignore = false;
@@ -67,11 +70,24 @@ export default function ClassesPage() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [fetchData]);
 
   const teachers = useMemo(
     () => users.filter((u) => u.role === "teacher"),
     [users],
+  );
+  const userMap = useMemo(() => {
+    const map = new Map<ID, User>();
+    users.forEach((u) => map.set(u.id, u));
+    return map;
+  }, [users]);
+
+  const getTeacherName = useCallback(
+    (teacherId: ID | null | undefined) => {
+      if (teacherId === null || teacherId === undefined) return "—";
+      return userMap.get(teacherId)?.name ?? "—";
+    },
+    [userMap],
   );
 
   const filteredClasses = useMemo(() => {
@@ -89,41 +105,41 @@ export default function ClassesPage() {
       return matchesSearch && matchesStatus && matchesTeacher;
     });
   }, [classes, search, statusFilter, teacherFilter, isAdmin, currentUser]);
-
   const confirmStatusChange = async () => {
     if (!statusChangeTarget) return;
     try {
-      if (statusChangeTarget.status === "active") {
+      const newStatus: ClassStatus =
+        statusChangeTarget.status === "active" ? "inactive" : "active";
+
+      if (newStatus === "inactive") {
         await classService.deactivate(statusChangeTarget.id);
         addToast(`کلاس "${statusChangeTarget.title}" غیرفعال شد.`, "success");
       } else {
         await classService.activate(statusChangeTarget.id);
         addToast(`کلاس "${statusChangeTarget.title}" فعال شد.`, "success");
       }
+      setClasses((prev) =>
+        prev.map((c) =>
+          c.id === statusChangeTarget.id ? { ...c, status: newStatus } : c,
+        ),
+      );
       setStatusChangeTarget(null);
-      await fetchData();
     } catch {
       addToast("تغییر وضعیت کلاس ناموفق بود.", "error");
       setStatusChangeTarget(null);
     }
   };
-
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     try {
       await classService.delete(deleteTarget.id);
       addToast(`کلاس "${deleteTarget.title}" با موفقیت حذف شد.`, "success");
+      setClasses((prev) => prev.filter((c) => c.id !== deleteTarget.id));
       setDeleteTarget(null);
-      await fetchData();
     } catch {
       addToast("حذف کلاس ناموفق بود.", "error");
       setDeleteTarget(null);
     }
-  };
-
-  const getTeacherName = (teacherId: ID | null | undefined) => {
-    if (teacherId === null || teacherId === undefined) return "—";
-    return users.find((u) => u.id === teacherId)?.name ?? "—";
   };
 
   return (
@@ -192,7 +208,9 @@ export default function ClassesPage() {
         {loading ? (
           <Loading />
         ) : error ? (
-          <div className="text-sm text-red-600">{error}</div>
+          <div className="text-sm text-red-600" role="alert">
+            {error}
+          </div>
         ) : classes.length === 0 ? (
           <EmptyState
             title="کلاسی ثبت نشده است"

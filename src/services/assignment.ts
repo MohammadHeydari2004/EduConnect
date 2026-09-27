@@ -8,23 +8,24 @@ const endpoint = "/assignments";
 export const assignmentService = {
   getAll: () => baseApi.getAll<Assignment>(endpoint),
   getById: (id: ID) => baseApi.getById<Assignment>(endpoint, id),
-  getByClass: async (classId: ID): Promise<Assignment[]> => {
-    const all = await baseApi.getAll<Assignment>(endpoint);
-    return all.filter((a) => a.classId === classId);
-  },
+  getByClass: (classId: ID) =>
+    baseApi.getAll<Assignment>(endpoint, { classId }),
+
   create: (data: Omit<Assignment, "id">) =>
     baseApi.create<Assignment>(endpoint, data),
-  update: (id: ID, data: Partial<Assignment>) => {
-    return baseApi.update<Assignment>(endpoint, id, data);
-  },
+
+  update: (id: ID, data: Partial<Assignment>) =>
+    baseApi.update<Assignment>(endpoint, id, data),
+
   delete: async (id: ID) => {
-    const allSubmissions = await baseApi.getAll<Submission>("/submissions");
-    const relatedSubmissions = allSubmissions.filter(
-      (s) => s.assignmentId === id,
+    const relatedSubmissions = await baseApi.getAll<Submission>(
+      "/submissions",
+      { assignmentId: id },
     );
-    for (const sub of relatedSubmissions) {
-      await baseApi.delete("/submissions", sub.id);
-    }
+    await Promise.all(
+      relatedSubmissions.map((sub) => baseApi.delete("/submissions", sub.id)),
+    );
+
     await baseApi.delete(endpoint, id);
   },
 };

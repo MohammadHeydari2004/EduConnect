@@ -1,22 +1,29 @@
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
 
+const __dirname =
+  import.meta.dirname ?? path.dirname(new URL(import.meta.url).pathname);
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       "#": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    port: 5173,
+    open: true,
+  },
   build: {
+    sourcemap: true,
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
-        // ✅ استفاده از تابع برای رفع خطای TypeScript و جداسازی چانک‌ها
         manualChunks(id) {
-          // بررسی تمام ماژول‌های داخل node_modules
           if (id.includes("node_modules")) {
-            // جداسازی کتابخانه‌های اصلی React در یک چانک اختصاصی
             if (
               id.includes("/react/") ||
               id.includes("/react-dom/") ||
@@ -24,7 +31,11 @@ export default defineConfig({
             ) {
               return "react-vendor";
             }
-            // سایر کتابخانه‌های خارجی در یک چانک عمومی قرار می‌گیرند
+
+            if (id.includes("/recharts/") || id.includes("/d3-")) {
+              return "chart-vendor";
+            }
+
             return "vendor";
           }
         },

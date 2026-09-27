@@ -7,16 +7,32 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+.pnp
+.pnp.js
+
+# Build outputs
 dist
 dist-ssr
+build
 *.local
+
+# TypeScript
+*.tsbuildinfo
+
+# Testing
+coverage
+*.lcov
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
 .idea
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
@@ -26,7 +42,30 @@ dist-ssr
 # Environment variables
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
 .env.*.local
 
 # فایل نمونه برای سایر توسعه‌دهندگان (این فایل باید کامیت شود)
 !.env.example
+
+# Cache files
+.eslintcache
+.cache
+.parcel-cache
+.turbo
+
+# Storybook
+storybook-static
+
+# Misc
+*.pem
+*.key
+*.cert
+
+# Vite
+*.timestamp-*
+
+*.xml
+repomix-output.md

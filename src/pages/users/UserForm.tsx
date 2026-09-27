@@ -7,12 +7,23 @@ import type {
   UpdateUserPayload,
   User,
 } from "#/types/user.ts";
-import { useState } from "react";
+import { useEffect, useMemo } from "react";
+import { useForm } from "react-hook-form";
 import {
-  validateCreateUser,
-  validateUpdateUser,
-  type UserFormErrors,
+  validateEmail,
+  validateName,
+  validatePassword,
+  validateRole,
+  validateStatus,
 } from "./validators";
+
+type UserFormValues = {
+  name: string;
+  email: string;
+  password?: string;
+  role: "admin" | "teacher" | "student";
+  status: "active" | "inactive";
+};
 
 interface UserFormProps {
   isOpen: boolean;
@@ -31,65 +42,84 @@ function UserForm({
   onCreate,
   onUpdate,
 }: UserFormProps) {
-  const [createValues, setCreateValues] = useState<CreateUserPayload>({
-    name: "",
-    email: "",
-    password: "",
-    role: "student",
-    status: "active",
-  });
-  const [editValues, setEditValues] = useState<UpdateUserPayload>({
-    name: user?.name ?? "",
-    email: user?.email ?? "",
-    role: user?.role ?? "student",
-    status: user?.status ?? "active",
-  });
-  const [errors, setErrors] = useState<UserFormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const defaultValues = useMemo<UserFormValues>(
+    () =>
+      mode === "create"
+        ? {
+            name: "",
+            email: "",
+            password: "",
+            role: "student",
+            status: "active",
+          }
+        : {
+            name: user?.name ?? "",
+            email: user?.email ?? "",
+            role: user?.role ?? "student",
+            status: user?.status ?? "active",
+          },
+    [mode, user],
+  );
 
-  const mapServerErrorToField = (message: string): UserFormErrors => {
-    if (message.includes("ایمیل")) return { email: message };
-    if (message.includes("نام")) return { name: message };
-    return { form: message };
-  };
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<UserFormValues>({
+    defaultValues,
+    mode: "onChange",
+  });
 
-  const handleCreateSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const validationErrors = validateCreateUser(createValues);
-    setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
-    try {
-      setIsSubmitting(true);
-      setErrors({});
-      await onCreate(createValues);
-    } catch (err) {
-      if (err instanceof Error) {
-        setErrors(mapServerErrorToField(err.message));
-      } else {
-        setErrors({ form: "خطای غیرمنتظره‌ای رخ داد." });
-      }
-    } finally {
-      setIsSubmitting(false);
+  useEffect(() => {
+    if (isOpen) {
+      reset(defaultValues);
     }
+  }, [isOpen, defaultValues, reset]);
+
+  const mapServerErrorToField = (
+    message: string,
+  ): { field: keyof UserFormValues | "root"; message: string } => {
+    if (message.includes("ایمیل")) return { field: "email", message };
+    if (message.includes("نام")) return { field: "name", message };
+    if (message.includes("رمز")) return { field: "password", message };
+    return { field: "root", message };
   };
 
-  const handleEditSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const validationErrors = validateUpdateUser(editValues);
-    setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
+  const onSubmit = async (values: UserFormValues) => {
     try {
-      setIsSubmitting(true);
-      setErrors({});
-      await onUpdate(editValues);
+      if (mode === "create") {
+        await onCreate({
+          name: values.name.trim(),
+          email: values.email.trim(),
+          password: values.password?.trim() ?? "",
+          role: values.role,
+          status: values.status,
+        });
+      } else {
+        await onUpdate({
+          name: values.name.trim(),
+          email: values.email.trim(),
+          role: values.role,
+          status: values.status,
+        });
+      }
+      onClose();
     } catch (err) {
       if (err instanceof Error) {
-        setErrors(mapServerErrorToField(err.message));
+        const { field, message } = mapServerErrorToField(err.message);
+        if (field === "root") {
+          setError("root", { type: "server", message });
+        } else {
+          setError(field, { type: "server", message });
+        }
       } else {
-        setErrors({ form: "خطای غیرمنتظره‌ای رخ داد." });
+        setError("root", {
+          type: "server",
+          message: "خطای غیرمنتظره‌ای رخ داد.",
+        });
       }
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -97,101 +127,68 @@ function UserForm({
 
   return (
     <Modal isOpen={isOpen} title={title} onClose={onClose}>
-      <form
-        onSubmit={mode === "create" ? handleCreateSubmit : handleEditSubmit}
-        className="space-y-4"
-      >
-        {errors.form && (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {errors.form}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {errors.root && (
+          <div
+            className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            role="alert"
+          >
+            {errors.root.message}
           </div>
         )}
+
         <Input
           label="نام"
-          value={mode === "create" ? createValues.name : editValues.name}
-          onChange={(e) => {
-            const value = e.target.value;
-            if (mode === "create")
-              setCreateValues((prev) => ({ ...prev, name: value }));
-            else setEditValues((prev) => ({ ...prev, name: value }));
-            if (errors.name)
-              setErrors((prev) => ({ ...prev, name: undefined }));
-          }}
-          error={errors.name}
+          autoFocus
+          autoComplete="name"
+          required
+          {...register("name", { validate: validateName })}
+          error={errors.name?.message}
         />
+
         <Input
           label="ایمیل"
           type="email"
-          value={mode === "create" ? createValues.email : editValues.email}
-          onChange={(e) => {
-            const value = e.target.value;
-            if (mode === "create")
-              setCreateValues((prev) => ({ ...prev, email: value }));
-            else setEditValues((prev) => ({ ...prev, email: value }));
-            if (errors.email)
-              setErrors((prev) => ({ ...prev, email: undefined }));
-          }}
-          error={errors.email}
+          autoComplete="email"
+          required
+          {...register("email", { validate: validateEmail })}
+          error={errors.email?.message}
         />
+
         {mode === "create" && (
           <Input
             label="رمز عبور"
             type="password"
-            value={createValues.password}
-            onChange={(e) => {
-              const value = e.target.value;
-              setCreateValues((prev) => ({ ...prev, password: value }));
-              if (errors.password)
-                setErrors((prev) => ({ ...prev, password: undefined }));
-            }}
-            error={errors.password}
+            autoComplete="new-password"
+            required
+            {...register("password", { validate: validatePassword })}
+            error={errors.password?.message}
           />
         )}
+
         <Select
           label="نقش"
-          value={mode === "create" ? createValues.role : editValues.role}
-          onChange={(e) => {
-            if (mode === "create") {
-              setCreateValues((prev) => ({
-                ...prev,
-                role: e.target.value as CreateUserPayload["role"],
-              }));
-            } else {
-              setEditValues((prev) => ({
-                ...prev,
-                role: e.target.value as UpdateUserPayload["role"],
-              }));
-            }
-          }}
+          required
+          {...register("role", { validate: validateRole })}
           options={[
-            { label: "Admin", value: "admin" },
-            { label: "Teacher", value: "teacher" },
-            { label: "Student", value: "student" },
+            { label: "مدیر", value: "admin" },
+            { label: "استاد", value: "teacher" },
+            { label: "دانشجو", value: "student" },
           ]}
-          error={errors.role}
+          error={errors.role?.message}
         />
+
         <Select
           label="وضعیت"
-          value={mode === "create" ? createValues.status : editValues.status}
-          onChange={(e) => {
-            if (mode === "create") {
-              setCreateValues((prev) => ({
-                ...prev,
-                status: e.target.value as CreateUserPayload["status"],
-              }));
-            } else {
-              setEditValues((prev) => ({
-                ...prev,
-                status: e.target.value as UpdateUserPayload["status"],
-              }));
-            }
-          }}
+          required
+          {...register("status", { validate: validateStatus })}
           options={[
-            { label: "Active", value: "active" },
-            { label: "Inactive", value: "inactive" },
+            { label: "فعال", value: "active" },
+            { label: "غیرفعال", value: "inactive" },
           ]}
-          error={errors.status}
+          error={errors.status?.message}
         />
+
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="secondary" onClick={onClose}>
             انصراف

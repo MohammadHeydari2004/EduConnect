@@ -44,6 +44,14 @@ function DashboardContainer() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [prevUser, setPrevUser] = useState(user);
+
+  if (user !== prevUser) {
+    setPrevUser(user);
+    setData(null);
+    setLoading(true);
+    setError("");
+  }
 
   useEffect(() => {
     if (!user) return;
@@ -52,6 +60,7 @@ function DashboardContainer() {
     const fetchData = async () => {
       try {
         let result: DashboardData = { ...EMPTY_DATA };
+
         switch (user.role) {
           case "admin": {
             const [users, classes, sessions, assignments] = await Promise.all([
@@ -107,11 +116,13 @@ function DashboardContainer() {
             break;
           }
         }
-
-        if (!ignore) setData(result);
+        if (!ignore) {
+          setData(result);
+          setError("");
+        }
       } catch (err) {
         if (!ignore) {
-          console.log(err);
+          console.error(err);
           setError("خطا در بارگذاری اطلاعات داشبورد.");
         }
       } finally {
@@ -126,7 +137,17 @@ function DashboardContainer() {
   }, [user]);
 
   if (loading) return <Loading />;
-  if (error) return <div className="p-4 text-red-600">{error}</div>;
+
+  if (error)
+    return (
+      <div
+        className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+        role="alert"
+      >
+        {error}
+      </div>
+    );
+
   if (!data || !user) return null;
 
   return (
@@ -134,7 +155,6 @@ function DashboardContainer() {
       <h1 className="text-2xl font-bold text-gray-800">
         خوش آمدید، {user.name}
       </h1>
-
       {user.role === "admin" && (
         <AdminDashboard data={data} currentUser={user} />
       )}

@@ -8,7 +8,7 @@ import { announcementService } from "#/services/announcement.ts";
 import type { Announcement, TargetAudience } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID, UserRole } from "#/types/common.ts";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { validateAnnouncementForm } from "./validators";
 
 interface Props {
@@ -21,6 +21,14 @@ interface Props {
   onSuccess: () => void;
 }
 
+type AnnouncementPayload = Omit<
+  Partial<Announcement>,
+  "targetRoles" | "targetAudience"
+> & {
+  targetRoles?: UserRole[] | null;
+  targetAudience?: TargetAudience | null;
+};
+
 export default function AnnouncementForm({
   isOpen,
   initialData,
@@ -31,6 +39,7 @@ export default function AnnouncementForm({
   onSuccess,
 }: Props) {
   const { addToast } = useToast();
+
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [content, setContent] = useState(initialData?.content ?? "");
   const [classId, setClassId] = useState<string>(
@@ -46,33 +55,50 @@ export default function AnnouncementForm({
   const [error, setError] = useState("");
   const isAdmin = userRole === "admin";
 
+  const classOptions = useMemo(
+    () =>
+      isAdmin
+        ? [
+            { label: "همه (عمومی)", value: "0" },
+            ...classes.map((c) => ({ label: c.title, value: c.id })),
+          ]
+        : classes.map((c) => ({ label: c.title, value: c.id })),
+    [isAdmin, classes],
+  );
+
   const handleSubmit = async () => {
     const validationErrors = validateAnnouncementForm({ title, content });
     if (Object.keys(validationErrors).length > 0) {
       setError(validationErrors.form || "خطا در اعتبارسنجی");
       return;
     }
+
     try {
       setIsSubmitting(true);
       const basePayload = { title, content, classId, authorId };
-      const payload: Partial<Announcement> = isAdmin
+
+      const payload: AnnouncementPayload = isAdmin
         ? classId === "0"
-          ? { ...basePayload, targetRoles, targetAudience: undefined }
-          : { ...basePayload, targetAudience, targetRoles: undefined }
+          ? { ...basePayload, targetRoles, targetAudience: null }
+          : { ...basePayload, targetAudience, targetRoles: null }
         : {
             ...basePayload,
-            targetAudience: "students" as TargetAudience,
-            targetRoles: undefined,
+            targetAudience: "students",
+            targetRoles: null,
           };
 
       if (initialData) {
-        await announcementService.update(initialData.id, payload);
+        await announcementService.update(
+          initialData.id,
+          payload as Partial<Announcement>,
+        );
         await announcementService.resetSeenBy(initialData.id);
       } else {
         await announcementService.create(
           payload as Omit<Announcement, "id" | "createdAt" | "seenBy">,
         );
       }
+
       addToast("اطلاعیه با موفقیت ذخیره شد.", "success");
       onSuccess();
     } catch {
@@ -88,12 +114,15 @@ export default function AnnouncementForm({
     );
   };
 
-  const classOptions = isAdmin
-    ? [
-        { label: "همه (عمومی)", value: "0" },
-        ...classes.map((c) => ({ label: c.title, value: c.id })),
-      ]
-    : classes.map((c) => ({ label: c.title, value: c.id }));
+  const handleTitleChange = (value: string) => {
+    setTitle(value);
+    if (error) setError("");
+  };
+
+  const handleContentChange = (value: string) => {
+    setContent(value);
+    if (error) setError("");
+  };
 
   return (
     <Modal
@@ -105,20 +134,24 @@ export default function AnnouncementForm({
         <Input
           label="عنوان"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => handleTitleChange(e.target.value)}
           placeholder="عنوان اطلاعیه"
+          required
         />
+
         <Select
           label="مخاطب (کلاس)"
           value={classId}
           onChange={(e) => setClassId(e.target.value)}
           options={classOptions}
+          required
         />
+
         {isAdmin && classId === "0" && (
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium text-gray-700">
               قابل مشاهده برای (نقش‌ها):
-            </label>
+            </legend>
             <div className="flex flex-wrap gap-3">
               {(["admin", "teacher", "student"] as UserRole[]).map((role) => (
                 <label
@@ -129,9 +162,9 @@ export default function AnnouncementForm({
                     type="checkbox"
                     checked={targetRoles.includes(role)}
                     onChange={() => toggleRole(role)}
-                    className="h-4 w-4"
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-sm text-gray-700 capitalize">
+                  <span className="text-sm text-gray-700">
                     {role === "admin"
                       ? "مدیر"
                       : role === "teacher"
@@ -141,8 +174,9 @@ export default function AnnouncementForm({
                 </label>
               ))}
             </div>
-          </div>
+          </fieldset>
         )}
+
         {isAdmin && classId !== "0" && (
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
@@ -161,14 +195,22 @@ export default function AnnouncementForm({
             />
           </div>
         )}
+
         <Textarea
           label="محتوا"
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={(e) => handleContentChange(e.target.value)}
           rows={5}
           placeholder="متن اطلاعیه..."
+          required
         />
-        {error && <p className="text-sm text-red-600">{error}</p>}
+
+        {error && (
+          <p className="text-sm text-red-600" role="alert">
+            {error}
+          </p>
+        )}
+
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="secondary" onClick={onClose}>
             انصراف

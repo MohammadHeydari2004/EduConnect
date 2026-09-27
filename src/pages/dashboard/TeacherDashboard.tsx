@@ -1,6 +1,7 @@
 import Card from "#/components/ui/Card.tsx";
 import StatCard from "#/components/ui/StatCard.tsx";
 import Table from "#/components/ui/Table.tsx";
+import type { ClassItem } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
 import { formatDate } from "#/utils/formatDate.ts";
 import { useMemo } from "react";
@@ -89,65 +90,93 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
   const { classes, assignments, submissions, sessions, announcements } = data;
 
   const myClasses = useMemo(
-    () => classes.filter((c) => c.teacherId === currentUser.id), 
-    [classes, currentUser],
+    () => classes.filter((c) => c.teacherId === currentUser.id),
+    [classes, currentUser.id],
   );
-  const myClassIds = myClasses.map((c) => c.id);
+
+  const myClassIdSet = useMemo(
+    () => new Set(myClasses.map((c) => c.id)),
+    [myClasses],
+  );
 
   const myAssignments = useMemo(
-    () => assignments.filter((a) => myClassIds.includes(a.classId)), 
-    [assignments, myClassIds],
+    () => assignments.filter((a) => myClassIdSet.has(a.classId)),
+    [assignments, myClassIdSet],
   );
-  const myAssignmentIds = myAssignments.map((a) => a.id); 
+
+  const myAssignmentIdSet = useMemo(
+    () => new Set(myAssignments.map((a) => a.id)),
+    [myAssignments],
+  );
 
   const mySubmissions = useMemo(
-    () =>
-      submissions.filter(
-        (s) => myAssignmentIds.includes(s.assignmentId), 
-      ),
-    [submissions, myAssignmentIds],
+    () => submissions.filter((s) => myAssignmentIdSet.has(s.assignmentId)),
+    [submissions, myAssignmentIdSet],
   );
 
   const mySessions = useMemo(
-    () => sessions.filter((s) => myClassIds.includes(s.classId)),
-    [sessions, myClassIds],
+    () => sessions.filter((s) => myClassIdSet.has(s.classId)),
+    [sessions, myClassIdSet],
   );
 
   const myAnnouncements = useMemo(
-    () =>
-      announcements.filter(
-        (a) => a.authorId === currentUser.id, 
-      ),
-    [announcements, currentUser],
+    () => announcements.filter((a) => a.authorId === currentUser.id),
+    [announcements, currentUser.id],
   );
 
-  const ungradedCount = mySubmissions.filter(
-    (s) => s.status !== "graded",
-  ).length;
+  const ungradedCount = useMemo(
+    () => mySubmissions.filter((s) => s.status !== "graded").length,
+    [mySubmissions],
+  );
 
-  const chartData = myClasses.map((c) => {
-    const classAssignments = assignments.filter(
-      (a) => a.classId === c.id, 
-    );
-    const classAssignmentIds = classAssignments.map((a) => a.id); 
-    const classSubmissions = submissions.filter(
-      (s) => classAssignmentIds.includes(s.assignmentId), 
-    );
-    const gradedSubmissions = classSubmissions.filter(
-      (s) => s.status === "graded",
-    );
+  const chartData = useMemo(() => {
+    const assignmentClassMap = new Map<string, string>();
+    assignments.forEach((a) => {
+      if (myClassIdSet.has(a.classId)) {
+        assignmentClassMap.set(a.id, a.classId);
+      }
+    });
 
-    return {
-      name: c.title,
-      "نمره داده شده": gradedSubmissions.length,
-      "در انتظار بررسی": classSubmissions.length - gradedSubmissions.length,
-      totalSubmissions: classSubmissions.length,
-    };
-  });
+    const classStats = new Map<string, { graded: number; total: number }>();
+    myClasses.forEach((c) => classStats.set(c.id, { graded: 0, total: 0 }));
 
-  const recentSessions = [...mySessions]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5);
+    submissions.forEach((s) => {
+      const classId = assignmentClassMap.get(s.assignmentId);
+      if (classId && classStats.has(classId)) {
+        const stats = classStats.get(classId)!;
+        stats.total++;
+        if (s.status === "graded") stats.graded++;
+      }
+    });
+
+    return myClasses.map((c) => {
+      const stats = classStats.get(c.id) || { graded: 0, total: 0 };
+      return {
+        name: c.title,
+        "نمره داده شده": stats.graded,
+        "در انتظار بررسی": stats.total - stats.graded,
+        totalSubmissions: stats.total,
+      };
+    });
+  }, [myClasses, assignments, submissions, myClassIdSet]);
+
+  const recentSessions = useMemo(() => {
+    return [...mySessions]
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 5);
+  }, [mySessions]);
+
+  const classMap = useMemo(() => {
+    const map = new Map<string, ClassItem>();
+    classes.forEach((c) => map.set(c.id, c));
+    return map;
+  }, [classes]);
+
+  const chartSummary = useMemo(() => {
+    if (chartData.every((d) => d.totalSubmissions === 0))
+      return "هنوز پاسخی برای تکالیف ثبت نشده است.";
+    return `وضعیت تصحیح تکالیف: ${chartData.map((d) => `${d.name} (${d["نمره داده شده"]} تصحیح شده از ${d.totalSubmissions})`).join("، ")}`;
+  }, [chartData]);
 
   return (
     <div className="space-y-6">
@@ -177,17 +206,17 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
 
       <div className="grid grid-flow-row gap-6">
         <Card title="وضعیت تصحیح تکالیف به تفکیک کلاس">
-          {chartData.length === 0 ||
-          chartData.every((d) => d.totalSubmissions === 0) ? (
+          {chartData.every((d) => d.totalSubmissions === 0) ? (
             <div className="flex h-64 items-center justify-center text-sm text-gray-500">
               هنوز پاسخی برای تکالیف ثبت نشده است.
             </div>
           ) : (
-            <div className="h-80">
+            <div className="h-96" role="img" aria-label={chartSummary}>
+              <span className="sr-only">{chartSummary}</span>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={chartData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
@@ -198,9 +227,12 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
                     dataKey="name"
                     tick={{ fontSize: 12, fill: "#64748b" }}
                     interval={0}
-                    height={60}
+                    height={80}
                     axisLine={false}
                     tickLine={false}
+                    angle={-45}
+                    textAnchor="end"
+                    dy={10}
                   />
                   <YAxis
                     allowDecimals={false}
@@ -251,11 +283,27 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
                 {
                   key: "classId",
                   title: "کلاس",
-                  render: (s) =>
-                    classes.find((c) => c.id === s.classId)?.title || "نامشخص", 
+                  render: (s) => classMap.get(s.classId)?.title || "نامشخص",
                 },
               ]}
               data={recentSessions}
+              renderMobileCard={(s) => (
+                <div className="space-y-2 text-right">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-base font-bold text-gray-800">
+                      {s.title}
+                    </span>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <span className="text-gray-500">کلاس:</span>{" "}
+                    {classMap.get(s.classId)?.title || "نامشخص"}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <span className="text-gray-500">تاریخ:</span>{" "}
+                    {formatDate(s.date)}
+                  </div>
+                </div>
+              )}
             />
           )}
         </Card>

@@ -7,8 +7,11 @@ import { assignmentService } from "#/services/assignment.ts";
 import type { Assignment } from "#/types/assignment.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID } from "#/types/common.ts";
-import { useState } from "react";
-import { validateAssignmentForm } from "./validators";
+import { useMemo, useState } from "react";
+import {
+  validateAssignmentForm,
+  type AssignmentFormErrors,
+} from "./validators";
 
 interface Props {
   isOpen: boolean;
@@ -41,32 +44,46 @@ export default function AssignmentForm({
       ? (new Date(initialData.deadline).toISOString().split("T")[0] ?? "")
       : "",
   );
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<AssignmentFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const classOptions = useMemo(
+    () => [
+      { label: "انتخاب کلاس...", value: "", disabled: true },
+      ...availableClasses.map((c) => ({ label: c.title, value: c.id })),
+    ],
+    [availableClasses],
+  );
   const handleSubmit = async () => {
     const validationErrors = validateAssignmentForm({
       title,
       deadline,
       classId,
     });
+
     if (Object.keys(validationErrors).length > 0) {
-      setError(validationErrors.form || "خطا در اعتبارسنجی");
+      setErrors(validationErrors);
       return;
     }
+
     try {
       setIsSubmitting(true);
       const selectedClass = availableClasses.find((c) => c.id === classId);
       const finalTeacherId = isAdmin
         ? (selectedClass?.teacherId ?? teacherId)
         : teacherId;
+
+      const deadlineDate = new Date(`${deadline}T23:59:59`);
+      const deadlineISO = deadlineDate.toISOString();
+
       const payload = {
         title: title.trim(),
         description: description.trim(),
         classId,
         teacherId: finalTeacherId,
-        deadline: new Date(deadline).toISOString(),
+        deadline: deadlineISO,
       };
+
       if (initialData) {
         await assignmentService.update(initialData.id, payload);
       } else {
@@ -74,9 +91,33 @@ export default function AssignmentForm({
       }
       onSuccess();
     } catch {
-      setError("خطا در ذخیره تکلیف.");
+      setErrors({ form: "خطا در ذخیره تکلیف. لطفاً دوباره تلاش کنید." });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+  const handleTitleChange = (value: string) => {
+    setTitle(value);
+    if (errors.title) {
+      setErrors((prev) => ({ ...prev, title: undefined, form: undefined }));
+    }
+  };
+
+  const handleDescriptionChange = (value: string) => {
+    setDescription(value);
+  };
+
+  const handleClassIdChange = (value: string) => {
+    setClassId(value as ID);
+    if (errors.classId) {
+      setErrors((prev) => ({ ...prev, classId: undefined, form: undefined }));
+    }
+  };
+
+  const handleDeadlineChange = (value: string) => {
+    setDeadline(value);
+    if (errors.deadline) {
+      setErrors((prev) => ({ ...prev, deadline: undefined, form: undefined }));
     }
   };
 
@@ -90,32 +131,43 @@ export default function AssignmentForm({
         <Input
           label="عنوان"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => handleTitleChange(e.target.value)}
+          error={errors.title}
           placeholder="عنوان تکلیف"
+          required
         />
+
         <Select
           label="کلاس"
           value={classId}
-          onChange={(e) => setClassId(e.target.value)}
-          options={availableClasses.map((c) => ({
-            label: c.title,
-            value: c.id,
-          }))}
+          onChange={(e) => handleClassIdChange(e.target.value)}
+          options={classOptions}
+          error={errors.classId}
+          required
         />
+
         <Textarea
           label="توضیحات"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(e) => handleDescriptionChange(e.target.value)}
           rows={4}
           placeholder="شرح تکلیف..."
         />
+
         <Input
           label="ددلاین"
           type="date"
           value={deadline}
-          onChange={(e) => setDeadline(e.target.value)}
+          onChange={(e) => handleDeadlineChange(e.target.value)}
+          error={errors.deadline}
+          required
         />
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {errors.form && (
+          <p className="text-sm text-red-600" role="alert">
+            {errors.form}
+          </p>
+        )}
+
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="secondary" onClick={onClose}>
             انصراف

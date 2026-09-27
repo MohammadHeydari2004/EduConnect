@@ -1,9 +1,10 @@
 import Loading from "#/components/common/Loading.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
+import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 function ProtectedRoute({ children }: ProtectedRouteProps) {

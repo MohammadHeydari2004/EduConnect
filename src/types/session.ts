@@ -1,13 +1,13 @@
 import type { ID } from "./common";
 
 export interface Session {
-  id: ID;
-  classId: ID;
+  readonly id: ID;
+  readonly classId: ID;
   title: string;
   description?: string;
   date: string;
-  createdAt?: string;
-  updatedAt?: string;
+  readonly createdAt?: string;
+  readonly updatedAt?: string;
 }
 
 export interface SessionFormValues {

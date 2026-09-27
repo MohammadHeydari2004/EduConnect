@@ -25,8 +25,9 @@ export default function SessionForm({
   const [description, setDescription] = useState("");
   const [errors, setErrors] = useState<SessionFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const handleSubmit = async () => {
     const validationErrors = validateSessionForm({
       title,
       date,
@@ -56,16 +57,19 @@ export default function SessionForm({
 
   return (
     <Modal isOpen={true} title="ایجاد جلسه جدید" onClose={onClose}>
-      <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           label="عنوان جلسه"
           value={title}
           onChange={(e) => {
             setTitle(e.target.value);
-            if (errors.title) setErrors({ ...errors, title: undefined });
+            if (errors.title)
+              setErrors((prev) => ({ ...prev, title: undefined }));
           }}
           error={errors.title}
           placeholder="مثلاً: جلسه اول - مقدمه"
+          required
+          autoFocus
         />
         <Input
           label="تاریخ"
@@ -73,14 +77,20 @@ export default function SessionForm({
           value={date}
           onChange={(e) => {
             setDate(e.target.value);
-            if (errors.date) setErrors({ ...errors, date: undefined });
+            if (errors.date)
+              setErrors((prev) => ({ ...prev, date: undefined }));
           }}
           error={errors.date}
+          required
         />
         <Textarea
           label="توضیحات"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(e) => {
+            setDescription(e.target.value);
+            if (errors.description)
+              setErrors((prev) => ({ ...prev, description: undefined }));
+          }}
           placeholder="توضیحات مختصر درباره محتوای جلسه..."
           rows={3}
         />
@@ -88,11 +98,11 @@ export default function SessionForm({
           <Button type="button" variant="secondary" onClick={onClose}>
             انصراف
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
           </Button>
         </div>
-      </div>
+      </form>
     </Modal>
   );
 }

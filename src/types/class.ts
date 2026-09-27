@@ -1,22 +1,22 @@
-import type { ID } from "./common";
+import type { ID, Nullable } from "./common";
 
 export type ClassStatus = "active" | "inactive";
 
 export interface ClassItem {
-  id: ID;
+  readonly id: ID;
   title: string;
-  teacherId: ID | null;
+  teacherId: Nullable<ID>;
   studentIds: ID[];
   capacity: number;
   status: ClassStatus;
   description?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  readonly createdAt?: string;
+  readonly updatedAt?: string;
 }
 
 export interface ClassFormValues {
   title: string;
-  teacherId: ID | null;
+  teacherId: Nullable<ID>;
   studentIds: ID[];
   capacity: number;
   status: ClassStatus;

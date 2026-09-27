@@ -1,12 +1,14 @@
 import type { ID, RecordStatus, UserRole } from "./common";
 
 export interface User {
-  id: ID;
+  readonly id: ID;
   name: string;
   email: string;
-  password: string;
+  password?: string;
   role: UserRole;
   status: RecordStatus;
+  readonly createdAt?: string;
+  readonly updatedAt?: string;
 }
 
 export interface CreateUserPayload {

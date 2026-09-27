@@ -28,10 +28,12 @@ const initialFilters: UserFiltersType = {
 function UsersPage() {
   const { user: currentUser } = useAuth();
   const { addToast } = useToast();
+
   const [users, setUsers] = useState<User[]>([]);
   const [filters, setFilters] = useState<UserFiltersType>(initialFilters);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -75,13 +77,11 @@ function UsersPage() {
 
   const handleCreate = async (values: CreateUserPayload) => {
     try {
-      await userService.create(values);
+      const newUser = await userService.create(values);
       addToast("کاربر با موفقیت ایجاد شد.", "success");
+
+      setUsers((prev) => [...prev, newUser]);
       setIsCreateOpen(false);
-      setLoading(true);
-      const data = await userService.getAll();
-      setUsers(data);
-      setLoading(false);
     } catch (err) {
       addToast(
         err instanceof Error ? err.message : "ایجاد کاربر ناموفق بود.",
@@ -102,14 +102,15 @@ function UsersPage() {
       return;
     }
     try {
-      await userService.update(selectedUser.id, values);
+      const updatedUser = await userService.update(selectedUser.id, values);
       addToast("اطلاعات کاربر با موفقیت ویرایش شد.", "success");
+
+      setUsers((prev) =>
+        prev.map((u) => (u.id === updatedUser.id ? updatedUser : u)),
+      );
+
       setIsEditOpen(false);
       setSelectedUser(null);
-      setLoading(true);
-      const data = await userService.getAll();
-      setUsers(data);
-      setLoading(false);
     } catch (err) {
       addToast(
         err instanceof Error ? err.message : "ویرایش کاربر ناموفق بود.",
@@ -128,23 +129,25 @@ function UsersPage() {
     if (selectedUser.id === currentUser.id) {
       addToast("شما نمی‌توانید حساب کاربری خودتان را حذف کنید.", "error");
       setIsDeleteConfirmOpen(false);
+      setSelectedUser(null);
       return;
     }
+
+    const userToDeleteId = selectedUser.id;
+
     try {
-      await userService.delete(selectedUser.id);
+      await userService.delete(userToDeleteId);
       addToast("کاربر با موفقیت حذف شد.", "success");
-      setIsDeleteConfirmOpen(false);
-      setSelectedUser(null);
-      setLoading(true);
-      const data = await userService.getAll();
-      setUsers(data);
-      setLoading(false);
+
+      setUsers((prev) => prev.filter((u) => u.id !== userToDeleteId));
     } catch (err) {
       addToast(
         err instanceof Error ? err.message : "حذف کاربر ناموفق بود.",
         "error",
       );
+    } finally {
       setIsDeleteConfirmOpen(false);
+      setSelectedUser(null);
     }
   };
 
@@ -155,12 +158,12 @@ function UsersPage() {
       return;
     }
     try {
-      await userService.toggleStatus(user.id);
+      const toggledUser = await userService.toggleStatus(user.id);
       addToast("وضعیت کاربر با موفقیت تغییر کرد.", "success");
-      setLoading(true);
-      const data = await userService.getAll();
-      setUsers(data);
-      setLoading(false);
+
+      setUsers((prev) =>
+        prev.map((u) => (u.id === toggledUser.id ? toggledUser : u)),
+      );
     } catch (err) {
       addToast(
         err instanceof Error ? err.message : "تغییر وضعیت کاربر ناموفق بود.",
@@ -181,24 +184,29 @@ function UsersPage() {
           مدیریت کاربران
         </h1>
         <Button
-          onClick={() => {
-            setIsCreateOpen(true);
-          }}
+          onClick={() => setIsCreateOpen(true)}
           className="w-full sm:w-auto"
         >
           ایجاد کاربر
         </Button>
       </div>
+
       <UserFilters
         filters={filters}
         onChange={setFilters}
         onReset={() => setFilters(initialFilters)}
       />
+
       <Card title="لیست کاربران">
         {loading ? (
           <Loading />
         ) : error ? (
-          <div className="text-sm text-red-600">{error}</div>
+          <div
+            className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            role="alert"
+          >
+            {error}
+          </div>
         ) : users.length === 0 ? (
           <EmptyState
             title="کاربری ثبت نشده است"
@@ -222,6 +230,7 @@ function UsersPage() {
           </div>
         )}
       </Card>
+
       <UserForm
         key={`create-${isCreateOpen}`}
         isOpen={isCreateOpen}
@@ -230,6 +239,7 @@ function UsersPage() {
         onCreate={handleCreate}
         onUpdate={async () => {}}
       />
+
       <UserForm
         key={`edit-${selectedUser?.id ?? "none"}-${isEditOpen}`}
         isOpen={isEditOpen}
@@ -242,6 +252,7 @@ function UsersPage() {
         onCreate={async () => {}}
         onUpdate={handleUpdate}
       />
+
       <UserDetails
         isOpen={isDetailsOpen}
         user={selectedUser}
@@ -250,6 +261,7 @@ function UsersPage() {
           setSelectedUser(null);
         }}
       />
+
       <ConfirmDialog
         isOpen={isDeleteConfirmOpen}
         title="حذف کاربر"

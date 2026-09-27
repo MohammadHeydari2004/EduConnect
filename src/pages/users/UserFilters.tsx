@@ -35,9 +35,9 @@ function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
         }
         options={[
           { label: "همه نقش‌ها", value: "" },
-          { label: "Admin", value: "admin" },
-          { label: "Teacher", value: "teacher" },
-          { label: "Student", value: "student" },
+          { label: "مدیر", value: "admin" },
+          { label: "استاد", value: "teacher" },
+          { label: "دانشجو", value: "student" },
         ]}
       />
       <Select
@@ -51,12 +51,26 @@ function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
         }
         options={[
           { label: "همه وضعیت‌ها", value: "" },
-          { label: "Active", value: "active" },
-          { label: "Inactive", value: "inactive" },
+          { label: "فعال", value: "active" },
+          { label: "غیرفعال", value: "inactive" },
         ]}
       />
       <div className="flex items-end">
         <Button variant="secondary" className="w-full" onClick={onReset}>
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
           پاک‌کردن فیلترها
         </Button>
       </div>

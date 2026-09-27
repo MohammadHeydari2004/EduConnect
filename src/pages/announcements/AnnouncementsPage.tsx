@@ -13,34 +13,42 @@ import type { Announcement } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID } from "#/types/common.ts";
 import type { User } from "#/types/user.ts";
-import { formatDate } from "#/utils/formatDate.ts";
-import { useEffect, useMemo, useState } from "react";
+import { formatDate, formatDateTime } from "#/utils/formatDate.ts";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import AnnouncementForm from "./AnnouncementForm";
+import { useFilteredAnnouncements } from "./useFilteredAnnouncements";
 
 export default function AnnouncementsPage() {
   const { user: currentUser } = useAuth();
   const { addToast } = useToast();
+
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Announcement | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Announcement | null>(null);
   const [viewingItem, setViewingItem] = useState<Announcement | null>(null);
+  const [markingSeenId, setMarkingSeenId] = useState<ID | null>(null);
 
   const isAdmin = currentUser?.role === "admin";
   const isTeacher = currentUser?.role === "teacher";
   const canCreate = isAdmin || isTeacher;
 
-  const canManageItem = (item: Announcement) => {
-    if (!currentUser) return false;
-    if (currentUser.role === "admin") return true;
-    if (currentUser.role === "teacher") return item.authorId === currentUser.id;
-    return false;
-  };
+  const canManageItem = useCallback(
+    (item: Announcement) => {
+      if (!currentUser) return false;
+      if (currentUser.role === "admin") return true;
+      if (currentUser.role === "teacher")
+        return item.authorId === currentUser.id;
+      return false;
+    },
+    [currentUser],
+  );
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [a, c, u] = await Promise.all([
         announcementService.getAll(),
@@ -48,7 +56,7 @@ export default function AnnouncementsPage() {
         userService.getAll(),
       ]);
       setAnnouncements(
-        a.sort(
+        [...a].sort(
           (x, y) =>
             new Date(y.createdAt).getTime() - new Date(x.createdAt).getTime(),
         ),
@@ -57,10 +65,11 @@ export default function AnnouncementsPage() {
       setUsers(u);
     } catch (err) {
       console.error(err);
+      addToast("خطا در بارگذاری اطلاعیه‌ها.", "error");
     } finally {
       setLoading(false);
     }
-  };
+  }, [addToast]);
 
   useEffect(() => {
     let ignore = false;
@@ -71,7 +80,7 @@ export default function AnnouncementsPage() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [fetchData]);
 
   const formClasses = useMemo(() => {
     if (isAdmin) return classes;
@@ -80,36 +89,24 @@ export default function AnnouncementsPage() {
     return [];
   }, [classes, isAdmin, isTeacher, currentUser]);
 
-  const filteredAnnouncements = useMemo(() => {
-    if (!currentUser) return [];
-    return announcements.filter((a) => {
-      if (currentUser.role === "admin") return true;
-      if (a.authorId === currentUser.id) return true;
-      if (a.classId === "0") {
-        const roles = a.targetRoles ?? ["admin", "teacher", "student"];
-        return roles.includes(currentUser.role);
-      }
-      const targetClass = classes.find((c) => c.id === a.classId);
-      if (!targetClass) return false;
-      const audience = a.targetAudience ?? "students";
-      const isTeacherOfThisClass = targetClass.teacherId === currentUser.id;
-      const isStudentInThisClass = (targetClass.studentIds || []).includes(
-        currentUser.id,
-      );
-      if (audience === "teacher") return isTeacherOfThisClass;
-      if (audience === "students") return isStudentInThisClass;
-      if (audience === "both")
-        return isTeacherOfThisClass || isStudentInThisClass;
-      return false;
-    });
-  }, [announcements, classes, currentUser]);
+  const filteredAnnouncements = useFilteredAnnouncements({
+    announcements,
+    classes,
+    currentUser,
+  });
+  const getAuthorName = useCallback(
+    (authorId: ID) => users.find((u) => u.id === authorId)?.name ?? "نامشخص",
+    [users],
+  );
 
-  const getAuthorName = (authorId: ID) =>
-    users.find((u) => u.id === authorId)?.name ?? "نامشخص";
-  const getClassName = (classId: ID) =>
-    classId === "0"
-      ? "همه (عمومی)"
-      : (classes.find((c) => c.id === classId)?.title ?? "نامشخص");
+  const getClassName = useCallback(
+    (classId: ID) =>
+      classId === "0"
+        ? "همه (عمومی)"
+        : (classes.find((c) => c.id === classId)?.title ?? "نامشخص"),
+    [classes],
+  );
+
   const getTargetDescription = (item: Announcement) => {
     if (item.classId === "0") {
       const roles = item.targetRoles ?? ["admin", "teacher", "student"];
@@ -127,8 +124,15 @@ export default function AnnouncementsPage() {
 
   const handleView = async (item: Announcement) => {
     setViewingItem(item);
-    if (currentUser && !announcementService.isSeenBy(item, currentUser.id)) {
+
+    if (!currentUser || announcementService.isSeenBy(item, currentUser.id)) {
+      return;
+    }
+
+    setMarkingSeenId(item.id);
+    try {
       await announcementService.markAsSeen(item.id, currentUser.id);
+
       setAnnouncements((prev) =>
         prev.map((a) =>
           a.id === item.id
@@ -136,6 +140,11 @@ export default function AnnouncementsPage() {
             : a,
         ),
       );
+    } catch (err) {
+      console.error("خطا در علامت‌گذاری به عنوان دیده‌شده:", err);
+      addToast("خطا در ثبت وضعیت مشاهده. لطفاً دوباره تلاش کنید.", "warning");
+    } finally {
+      setMarkingSeenId(null);
     }
   };
 
@@ -143,8 +152,8 @@ export default function AnnouncementsPage() {
     if (!deleteTarget) return;
     try {
       await announcementService.delete(deleteTarget.id);
+      setAnnouncements((prev) => prev.filter((a) => a.id !== deleteTarget.id));
       setDeleteTarget(null);
-      await fetchData();
       addToast("اطلاعیه با موفقیت حذف شد.", "success");
     } catch (err) {
       console.error(err);
@@ -171,6 +180,7 @@ export default function AnnouncementsPage() {
           </Button>
         )}
       </div>
+
       {filteredAnnouncements.length === 0 ? (
         <EmptyState
           title="اطلاعیه‌ای وجود ندارد"
@@ -182,27 +192,59 @@ export default function AnnouncementsPage() {
             const isSeen = currentUser
               ? announcementService.isSeenBy(item, currentUser.id)
               : true;
+            const isMarking = markingSeenId === item.id;
+
             return (
               <Card key={item.id}>
                 <div className="flex h-full flex-col">
+                  {!isSeen && (
+                    <div
+                      aria-hidden="true"
+                      className="-mt-5 -mr-5 mb-3 h-1 w-10 rounded-br-full rounded-bl-full bg-blue-500"
+                    ></div>
+                  )}
+
                   <div className="mb-2 flex items-start justify-between gap-2">
                     <h3
                       className={`text-lg font-semibold ${isSeen ? "text-gray-600" : "text-blue-700"}`}
                     >
                       {item.title}
+                    </h3>
+                    <div className="flex items-center gap-1">
                       {isSeen ? (
                         <span
-                          className="mr-2 inline-block h-2 w-2 rounded-full bg-green-500"
+                          className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700"
                           title="خوانده شده"
-                        ></span>
+                        >
+                          <svg
+                            className="h-3 w-3"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          خوانده شده
+                        </span>
                       ) : (
                         <span
-                          className="mr-2 inline-block h-2 w-2 rounded-full bg-red-500"
+                          className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700"
                           title="خوانده نشده"
-                        ></span>
+                        >
+                          <span
+                            className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-600"
+                            aria-hidden="true"
+                          ></span>
+                          جدید
+                        </span>
                       )}
-                    </h3>
+                    </div>
                   </div>
+
                   <p className="mb-1 text-xs text-gray-500">
                     مخاطب: {getClassName(item.classId)}
                   </p>
@@ -211,7 +253,7 @@ export default function AnnouncementsPage() {
                   </p>
                   <p className="mb-3 text-xs text-gray-500">
                     نویسنده: {getAuthorName(item.authorId)} | تاریخ:{" "}
-                    {formatDate(item.createdAt)}
+                    {formatDateTime(item.createdAt)}
                   </p>
                   <p className="mb-4 line-clamp-3 grow text-sm text-gray-700">
                     {item.content}
@@ -220,8 +262,9 @@ export default function AnnouncementsPage() {
                     <Button
                       variant="secondary"
                       onClick={() => handleView(item)}
+                      disabled={isMarking}
                     >
-                      مشاهده
+                      {isMarking ? "در حال ثبت..." : "مشاهده"}
                     </Button>
                     {canManageItem(item) && (
                       <>
@@ -249,6 +292,7 @@ export default function AnnouncementsPage() {
           })}
         </div>
       )}
+
       <AnnouncementForm
         key={`announcement-form-${editingItem?.id ?? "new"}-${isFormOpen}`}
         isOpen={isFormOpen}
@@ -266,6 +310,7 @@ export default function AnnouncementsPage() {
           fetchData();
         }}
       />
+
       <Modal
         isOpen={!!viewingItem}
         title={viewingItem?.title ?? ""}
@@ -296,6 +341,7 @@ export default function AnnouncementsPage() {
           </div>
         )}
       </Modal>
+
       <ConfirmDialog
         isOpen={!!deleteTarget}
         title="حذف اطلاعیه"

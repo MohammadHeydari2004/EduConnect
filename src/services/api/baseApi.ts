@@ -2,8 +2,11 @@ import type { ID } from "#/types/common.ts";
 import axiosInstance from "./axiosInstance";
 
 export const baseApi = {
-  getAll: async <T>(endpoint: string): Promise<T[]> => {
-    const response = await axiosInstance.get<T[]>(endpoint);
+  getAll: async <T>(
+    endpoint: string,
+    params?: Record<string, string | number | boolean>,
+  ): Promise<T[]> => {
+    const response = await axiosInstance.get<T[]>(endpoint, { params });
     return response.data;
   },
   getById: async <T>(endpoint: string, id: ID): Promise<T> => {
@@ -15,7 +18,13 @@ export const baseApi = {
     return response.data;
   },
   update: async <T>(endpoint: string, id: ID, data: Partial<T>): Promise<T> => {
-    const response = await axiosInstance.patch<T>(`${endpoint}/${id}`, data);
+    const sanitizedData = Object.fromEntries(
+      Object.entries(data).filter(([, value]) => value !== undefined),
+    ) as Partial<T>;
+    const response = await axiosInstance.patch<T>(
+      `${endpoint}/${id}`,
+      sanitizedData,
+    );
     return response.data;
   },
   delete: async (endpoint: string, id: ID): Promise<void> => {

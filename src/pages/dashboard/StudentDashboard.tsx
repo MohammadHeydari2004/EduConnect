@@ -14,9 +14,9 @@ import {
 import type { DashboardData } from "./DashboardContainer";
 
 const ATTENDANCE_COLORS: Record<string, string> = {
-  حاضر: "#16a34a", // green-600
-  "با تأخیر": "#ca8a04", // yellow-600
-  غایب: "#dc2626", // red-600
+  حاضر: "#16a34a",
+  "با تأخیر": "#ca8a04",
+  غایب: "#dc2626",
 };
 
 const FALLBACK_COLOR = "#8884d8";
@@ -92,7 +92,6 @@ function CustomAttendanceLegend({ payload }: CustomLegendProps) {
         {payload.map((entry, index) => {
           const entryName = entry.payload?.name ?? entry.value ?? "";
           const entryColor = entry.color ?? "#8884d8";
-
           return (
             <li
               key={`item-${index}`}
@@ -122,27 +121,37 @@ export default function StudentDashboard({ data, currentUser }: Props) {
     data;
 
   const myClasses = useMemo(
-    () => classes.filter((c) => c.studentIds.includes(currentUser.id)),
-    [classes, currentUser],
+    () => classes.filter((c) => (c.studentIds || []).includes(currentUser.id)),
+    [classes, currentUser.id],
   );
-  const myClassIds = myClasses.map((c) => c.id);
+
+  const myClassIdSet = useMemo(
+    () => new Set(myClasses.map((c) => c.id)),
+    [myClasses],
+  );
 
   const myAssignments = useMemo(
-    () => assignments.filter((a) => myClassIds.includes(a.classId)),
-    [assignments, myClassIds],
+    () => assignments.filter((a) => myClassIdSet.has(a.classId)),
+    [assignments, myClassIdSet],
   );
+
   const mySubmissions = useMemo(
     () => submissions.filter((s) => s.studentId === currentUser.id),
-    [submissions, currentUser],
+    [submissions, currentUser.id],
+  );
+
+  const submittedAssignmentIds = useMemo(
+    () => new Set(mySubmissions.map((s) => s.assignmentId)),
+    [mySubmissions],
   );
 
   const pendingAssignments = myAssignments.filter(
-    (a) => !mySubmissions.some((s) => s.assignmentId === a.id),
+    (a) => !submittedAssignmentIds.has(a.id),
   ).length;
 
   const myAttendances = useMemo(
     () => attendances.filter((a) => a.studentId === currentUser.id),
-    [attendances, currentUser],
+    [attendances, currentUser.id],
   );
 
   const attendanceStats = useMemo(() => {
@@ -153,37 +162,27 @@ export default function StudentDashboard({ data, currentUser }: Props) {
     const percentage = total > 0 ? ((present + late) / total) * 100 : 0;
     return { present, late, absent, total, percentage };
   }, [myAttendances]);
-
-  const totalAttendance =
-    attendanceStats.present + attendanceStats.late + attendanceStats.absent;
-
-  const attendanceChartData = [
-    {
-      name: "حاضر",
-      value: attendanceStats.present,
-      percentage:
-        totalAttendance > 0
-          ? (attendanceStats.present / totalAttendance) * 100
-          : 0,
-    },
-    {
-      name: "با تأخیر",
-      value: attendanceStats.late,
-      percentage:
-        totalAttendance > 0
-          ? (attendanceStats.late / totalAttendance) * 100
-          : 0,
-    },
-    {
-      name: "غایب",
-      value: attendanceStats.absent,
-      percentage:
-        totalAttendance > 0
-          ? (attendanceStats.absent / totalAttendance) * 100
-          : 0,
-    },
-  ].filter((item) => item.value > 0);
-
+  const attendanceChartData = useMemo(() => {
+    const total =
+      attendanceStats.present + attendanceStats.late + attendanceStats.absent;
+    return [
+      {
+        name: "حاضر",
+        value: attendanceStats.present,
+        percentage: total > 0 ? (attendanceStats.present / total) * 100 : 0,
+      },
+      {
+        name: "با تأخیر",
+        value: attendanceStats.late,
+        percentage: total > 0 ? (attendanceStats.late / total) * 100 : 0,
+      },
+      {
+        name: "غایب",
+        value: attendanceStats.absent,
+        percentage: total > 0 ? (attendanceStats.absent / total) * 100 : 0,
+      },
+    ].filter((item) => item.value > 0);
+  }, [attendanceStats]);
   const relevantAnnouncements = useMemo(() => {
     return announcements
       .filter((a) => {
@@ -191,22 +190,18 @@ export default function StudentDashboard({ data, currentUser }: Props) {
           const roles = a.targetRoles ?? ["admin", "teacher", "student"];
           return roles.includes(currentUser.role);
         }
-        const targetClass = classes.find((c) => c.id === a.classId);
-        if (!targetClass) return false;
+
         const audience = a.targetAudience ?? "students";
-        const isStudentInClass = targetClass.studentIds.includes(
-          currentUser.id,
-        );
-        return (
-          (audience === "students" || audience === "both") && isStudentInClass
-        );
+        if (audience !== "students" && audience !== "both") return false;
+        return myClassIdSet.has(a.classId);
       })
       .sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       )
       .slice(0, 5);
-  }, [announcements, classes, currentUser]);
+  }, [announcements, currentUser.role, myClassIdSet]);
+  const chartSummary = `وضعیت حضور و غیاب: ${attendanceChartData.map((d) => `${d.name} ${d.value} جلسه`).join("، ")}`;
 
   return (
     <div className="space-y-6">
@@ -242,7 +237,8 @@ export default function StudentDashboard({ data, currentUser }: Props) {
               هنوز رکورد حضور و غیابی ثبت نشده است.
             </div>
           ) : (
-            <div className="h-72">
+            <div className="h-72" role="img" aria-label={chartSummary}>
+              <span className="sr-only">{chartSummary}</span>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                   <Pie
@@ -261,10 +257,7 @@ export default function StudentDashboard({ data, currentUser }: Props) {
                       />
                     ))}
                   </Pie>
-                  <Tooltip
-                    content={<CustomAttendanceTooltip />}
-                    cursor={{ fill: "rgba(0,0,0,0.03)" }}
-                  />
+                  <Tooltip content={<CustomAttendanceTooltip />} />
                   <Legend
                     verticalAlign="bottom"
                     height={36}

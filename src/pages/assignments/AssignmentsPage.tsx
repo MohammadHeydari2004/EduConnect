@@ -16,7 +16,7 @@ import type { ID } from "#/types/common.ts";
 import type { Submission } from "#/types/submission.ts";
 import type { User } from "#/types/user.ts";
 import { formatDate } from "#/utils/formatDate.ts";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AssignmentForm from "./AssignmentForm";
 import SubmissionForm from "./SubmissionForm";
@@ -67,6 +67,44 @@ export default function AssignmentsPage() {
 
   const { loading, error, assignments, submissions, users, classes } = state;
 
+  const userMap = useMemo(() => {
+    const map = new Map<ID, User>();
+    users.forEach((u) => map.set(u.id, u));
+    return map;
+  }, [users]);
+
+  const classMap = useMemo(() => {
+    const map = new Map<ID, ClassItem>();
+    classes.forEach((c) => map.set(c.id, c));
+    return map;
+  }, [classes]);
+
+  const submissionMap = useMemo(() => {
+    const map = new Map<ID, Submission>();
+    if (currentUser) {
+      submissions.forEach((s) => {
+        if (s.studentId === currentUser.id) {
+          map.set(s.assignmentId, s);
+        }
+      });
+    }
+    return map;
+  }, [submissions, currentUser]);
+
+  const gradingStatsMap = useMemo(() => {
+    const map = new Map<ID, { graded: number; total: number }>();
+    for (const assignment of assignments) {
+      const relatedSubs = submissions.filter(
+        (s) => s.assignmentId === assignment.id,
+      );
+      map.set(assignment.id, {
+        graded: relatedSubs.filter((s) => s.status === "graded").length,
+        total: relatedSubs.length,
+      });
+    }
+    return map;
+  }, [assignments, submissions]);
+
   const myClasses = useMemo(() => {
     if (!currentUser) return [];
     if (isAdmin) return classes;
@@ -78,13 +116,16 @@ export default function AssignmentsPage() {
     return [];
   }, [classes, currentUser, isAdmin, isTeacher, isStudent]);
 
-  const canManageAssignment = (a: Assignment) => {
-    if (isAdmin) return true;
-    if (isTeacher) return a.teacherId === currentUser?.id;
-    return false;
-  };
+  const canManageAssignment = useCallback(
+    (a: Assignment) => {
+      if (isAdmin) return true;
+      if (isTeacher) return a.teacherId === currentUser?.id;
+      return false;
+    },
+    [isAdmin, isTeacher, currentUser],
+  );
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const [usersData, submissionsData, classesData, assignmentsData] =
       await Promise.all([
         userService.getAll(),
@@ -93,7 +134,7 @@ export default function AssignmentsPage() {
         assignmentService.getAll(),
       ]);
     return { usersData, submissionsData, classesData, assignmentsData };
-  };
+  }, []);
 
   useEffect(() => {
     let ignore = false;
@@ -123,90 +164,153 @@ export default function AssignmentsPage() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [fetchData]);
 
-  const getSubmissionForUser = (assignmentId: ID) =>
-    submissions.find(
-      (s) => s.assignmentId === assignmentId && s.studentId === currentUser?.id,
-    );
+  useEffect(() => {
+    if (!actionMessage) return;
+    const timer = setTimeout(() => setActionMessage(""), 3000);
+    return () => clearTimeout(timer);
+  }, [actionMessage]);
 
-  const getTeacherName = (teacherId: ID) =>
-    users.find((u) => u.id === teacherId)?.name ?? "—";
+  const getSubmissionForUser = useCallback(
+    (assignmentId: ID) => submissionMap.get(assignmentId),
+    [submissionMap],
+  );
 
-  const getClassName = (cId: ID) =>
-    classes.find((c) => c.id === cId)?.title ?? "—";
+  const getTeacherName = useCallback(
+    (teacherId: ID) => userMap.get(teacherId)?.name ?? "—",
+    [userMap],
+  );
+
+  const getClassName = useCallback(
+    (cId: ID) => classMap.get(cId)?.title ?? "—",
+    [classMap],
+  );
 
   const handleViewSubmissions = (assignmentId: ID) =>
     navigate(`/assignments/${assignmentId}/submissions`);
 
-  const handleSubmit = (assignment: Assignment) => {
+  const handleOpenSubmissionForm = (assignment: Assignment) => {
     setSubmissionToEdit(getSubmissionForUser(assignment.id) || null);
     setSubmittingAssignment(assignment);
     setShowSubmissionForm(true);
   };
 
-  const handleSuccess = (message?: string) => {
+  const handleAssignmentFormClose = () => {
     setShowAssignmentForm(false);
-    setShowSubmissionForm(false);
     setEditingAssignment(null);
+  };
+
+  const handleSubmissionFormClose = () => {
+    setShowSubmissionForm(false);
     setSubmissionToEdit(null);
-    if (message) {
-      setActionMessage(message);
-      setTimeout(() => setActionMessage(""), 3000);
-    }
-    setState((prev) => ({ ...prev, loading: true }));
-    fetchData()
-      .then((data) =>
-        setState({
-          loading: false,
-          error: "",
-          users: data.usersData,
-          submissions: data.submissionsData,
-          classes: data.classesData,
-          assignments: data.assignmentsData,
-        }),
-      )
-      .catch(() =>
-        setState((prev) => ({
-          ...prev,
-          loading: false,
-          error: "خطا در به‌روزرسانی داده‌ها.",
-        })),
-      );
+    setSubmittingAssignment(null);
+  };
+
+  // const handleAssignmentSuccess = (
+  //   message: string,
+  //   updatedAssignment?: Assignment,
+  // ) => {
+  //   if (updatedAssignment) {
+  //     setState((prev) => {
+  //       const exists = prev.assignments.some(
+  //         (a) => a.id === updatedAssignment.id,
+  //       );
+  //       return {
+  //         ...prev,
+  //         assignments: exists
+  //           ? prev.assignments.map((a) =>
+  //               a.id === updatedAssignment.id ? updatedAssignment : a,
+  //             )
+  //           : [...prev.assignments, updatedAssignment],
+  //       };
+  //     });
+  //   }
+  //   handleAssignmentFormClose();
+  //   setActionMessage(message);
+  // };
+
+  const handleAssignmentSuccess = (message: string) => {
+    handleAssignmentFormClose();
+    setActionMessage(message);
+    fetchData().then((data) => {
+      setState({
+        loading: false,
+        error: "",
+        users: data.usersData,
+        submissions: data.submissionsData,
+        classes: data.classesData,
+        assignments: data.assignmentsData,
+      });
+    });
+  };
+
+  const handleSubmissionSuccess = (message: string) => {
+    handleSubmissionFormClose();
+    setActionMessage(message);
+    submissionService.getAll().then((newSubmissions) => {
+      setState((prev) => ({ ...prev, submissions: newSubmissions }));
+    });
   };
 
   const handleDeleteAssignment = async () => {
     if (!deleteAssignmentTarget) return;
     try {
       await assignmentService.delete(deleteAssignmentTarget.id);
+      setState((prev) => ({
+        ...prev,
+        assignments: prev.assignments.filter(
+          (a) => a.id !== deleteAssignmentTarget.id,
+        ),
+      }));
+
       setDeleteAssignmentTarget(null);
-      handleSuccess("تکلیف با موفقیت حذف شد.");
+      setActionMessage("تکلیف با موفقیت حذف شد.");
     } catch {
       setState((prev) => ({ ...prev, error: "حذف تکلیف با خطا مواجه شد." }));
     }
   };
+  const filteredAssignments = useMemo(() => {
+    return assignments.filter((a) => {
+      if (isClassPage && classId && a.classId !== classId) return false;
+      if (isStudent) {
+        const cls = classMap.get(a.classId);
+        if (!cls || !(cls.studentIds || []).includes(currentUser?.id ?? ""))
+          return false;
+      } else if (isTeacher) {
+        const cls = classMap.get(a.classId);
+        if (!cls || cls.teacherId !== currentUser?.id) return false;
+      }
+      return true;
+    });
+  }, [
+    assignments,
+    isClassPage,
+    classId,
+    isStudent,
+    isTeacher,
+    classMap,
+    currentUser,
+  ]);
 
   if (loading) return <Loading />;
-  if (error) return <div className="p-4 text-red-600">{error}</div>;
-
-  const filteredAssignments = assignments.filter((a) => {
-    if (isClassPage && classId && a.classId !== classId) return false;
-    if (isStudent) {
-      const cls = classes.find((c) => c.id === a.classId);
-      if (!cls || !(cls.studentIds || []).includes(currentUser?.id ?? ""))
-        return false;
-    } else if (isTeacher) {
-      const cls = classes.find((c) => c.id === a.classId);
-      if (!cls || cls.teacherId !== currentUser?.id) return false;
-    }
-    return true;
-  });
+  if (error)
+    return (
+      <div
+        className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+        role="alert"
+      >
+        {error}
+      </div>
+    );
 
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
-          {isClassPage ? `تکالیف کلاس: ${getClassName(classId!)}` : "تکالیف"}
+          {isClassPage && classId
+            ? `تکالیف کلاس: ${getClassName(classId)}`
+            : "تکالیف"}
         </h1>
         {(isAdmin || isTeacher) && (
           <Button
@@ -219,9 +323,12 @@ export default function AssignmentsPage() {
           </Button>
         )}
       </div>
-
       {actionMessage && (
-        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+        <div
+          className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700"
+          role="status"
+          aria-live="polite"
+        >
           {actionMessage}
         </div>
       )}
@@ -284,13 +391,13 @@ export default function AssignmentsPage() {
                     );
                   }
                   if ((isAdmin || isTeacher) && canManageAssignment(a)) {
-                    const subs = submissions.filter(
-                      (s) => s.assignmentId === a.id,
-                    );
+                    const stats = gradingStatsMap.get(a.id) || {
+                      graded: 0,
+                      total: 0,
+                    };
                     return (
                       <span className="text-sm text-gray-600">
-                        {subs.filter((s) => s.status === "graded").length}/
-                        {subs.length} نمره داده شده
+                        {stats.graded}/{stats.total} نمره داده شده
                       </span>
                     );
                   }
@@ -309,14 +416,14 @@ export default function AssignmentsPage() {
                         (!sub ? (
                           <Button
                             variant="secondary"
-                            onClick={() => handleSubmit(a)}
+                            onClick={() => handleOpenSubmissionForm(a)}
                           >
                             ارسال پاسخ
                           </Button>
                         ) : !isGraded ? (
                           <Button
                             variant="secondary"
-                            onClick={() => handleSubmit(a)}
+                            onClick={() => handleOpenSubmissionForm(a)}
                           >
                             ویرایش پاسخ
                           </Button>
@@ -360,6 +467,10 @@ export default function AssignmentsPage() {
               const sub = getSubmissionForUser(a.id);
               const isGraded = sub?.status === "graded";
               const isExpired = new Date(a.deadline) < new Date();
+              const stats = gradingStatsMap.get(a.id) || {
+                graded: 0,
+                total: 0,
+              };
               return (
                 <div className="space-y-2 text-right">
                   <div className="flex items-start justify-between gap-2">
@@ -376,18 +487,7 @@ export default function AssignmentsPage() {
                       ))}
                     {!isStudent && canManageAssignment(a) && (
                       <span className="text-xs text-gray-500">
-                        {
-                          submissions.filter(
-                            (s) =>
-                              s.assignmentId === a.id && s.status === "graded",
-                          ).length
-                        }
-                        /
-                        {
-                          submissions.filter((s) => s.assignmentId === a.id)
-                            .length
-                        }{" "}
-                        نمره
+                        {stats.graded}/{stats.total} نمره
                       </span>
                     )}
                   </div>
@@ -430,14 +530,14 @@ export default function AssignmentsPage() {
                     <>
                       {!sub ? (
                         <button
-                          onClick={() => handleSubmit(a)}
+                          onClick={() => handleOpenSubmissionForm(a)}
                           className="w-full rounded-md px-3 py-2 text-right text-sm text-gray-700 hover:bg-gray-50"
                         >
                           ارسال پاسخ
                         </button>
                       ) : !isGraded ? (
                         <button
-                          onClick={() => handleSubmit(a)}
+                          onClick={() => handleOpenSubmissionForm(a)}
                           className="w-full rounded-md px-3 py-2 text-right text-sm text-gray-700 hover:bg-gray-50"
                         >
                           ویرایش پاسخ
@@ -488,22 +588,23 @@ export default function AssignmentsPage() {
           availableClasses={myClasses}
           teacherId={currentUser?.id ?? ""}
           isAdmin={isAdmin}
-          onClose={() => setShowAssignmentForm(false)}
-          onSuccess={() => handleSuccess("تکلیف با موفقیت ذخیره شد.")}
+          onClose={handleAssignmentFormClose}
+          onSuccess={() => handleAssignmentSuccess("تکلیف با موفقیت ذخیره شد.")}
         />
       )}
 
-      {showSubmissionForm && currentUser && (
+      {showSubmissionForm && currentUser && submittingAssignment && (
         <SubmissionForm
           isOpen={true}
+          key={`submission-form-${submittingAssignment.id}-${showSubmissionForm}`}
           assignmentId={
-            submissionToEdit?.assignmentId ?? submittingAssignment?.id ?? ""
+            submissionToEdit?.assignmentId ?? submittingAssignment.id
           }
           studentId={currentUser.id}
           existingSubmission={submissionToEdit}
-          deadline={submittingAssignment?.deadline}
-          onClose={() => setShowSubmissionForm(false)}
-          onSuccess={handleSuccess}
+          deadline={submittingAssignment.deadline}
+          onClose={handleSubmissionFormClose}
+          onSuccess={handleSubmissionSuccess}
         />
       )}
 

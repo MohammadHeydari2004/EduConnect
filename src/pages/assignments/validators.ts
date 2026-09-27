@@ -13,9 +13,33 @@ export function validateAssignmentForm(values: {
   classId: ID;
 }): AssignmentFormErrors {
   const errors: AssignmentFormErrors = {};
-  if (!values.title.trim() || !values.deadline || !values.classId) {
-    errors.form = "عنوان، ددلاین و انتخاب کلاس الزامی هستند.";
+  const title = values.title.trim();
+
+  if (!title) {
+    errors.title = "عنوان تکلیف الزامی است.";
+  } else if (title.length < 3) {
+    errors.title = "عنوان باید حداقل ۳ کاراکتر باشد.";
   }
+
+  if (!values.classId) {
+    errors.classId = "انتخاب کلاس الزامی است.";
+  }
+
+  if (!values.deadline) {
+    errors.deadline = "تعیین ددلاین الزامی است.";
+  } else {
+    const selectedDate = new Date(values.deadline);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      errors.deadline = "ددلاین نمی‌تواند در گذشته باشد.";
+    }
+  }
+
+  if (Object.keys(errors).length > 0) {
+    errors.form = "لطفاً خطاهای فرم را برطرف کنید.";
+  }
+
   return errors;
 }
 
@@ -29,8 +53,19 @@ export function validateSubmissionForm(
   isDeadlinePassed: boolean,
 ): SubmissionFormErrors {
   const errors: SubmissionFormErrors = {};
-  if (!values.content.trim()) errors.content = "پاسخ شما نمی‌تواند خالی باشد.";
-  if (isDeadlinePassed)
+
+  if (isDeadlinePassed) {
     errors.form = "مهلت ارسال این تکلیف به پایان رسیده است.";
+    return errors;
+  }
+
+  if (!values.content.trim()) {
+    errors.content = "پاسخ شما نمی‌تواند خالی باشد.";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    errors.form = "لطفاً خطاهای فرم را برطرف کنید.";
+  }
+
   return errors;
 }
