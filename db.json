@@ -62,7 +62,7 @@
       "email": "student4@edu.com",
       "password": "123456",
       "role": "student",
-      "status": "active"
+      "status": "inactive"
     },
     {
       "id": "11",
@@ -86,7 +86,7 @@
       "email": "student7@edu.com",
       "password": "123456",
       "role": "student",
-      "status": "active"
+      "status": "inactive"
     },
     {
       "id": "14",
@@ -239,10 +239,10 @@
         "21"
       ],
       "capacity": 20,
-      "status": "active",
+      "status": "inactive",
       "description": "HTML, CSS, JavaScript",
       "createdAt": "2025-01-03T10:00:00.000Z",
-      "updatedAt": "2025-01-03T10:00:00.000Z"
+      "updatedAt": "2026-09-30T19:53:13.871Z"
     },
     {
       "id": "c4",
@@ -1268,6 +1268,111 @@
       "studentId": "21",
       "status": "absent",
       "id": "1RfB9Q6dvsU"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "7",
+      "status": "present",
+      "id": "CRo4QBXmq1E"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "9",
+      "status": "present",
+      "id": "phZq61t7NUs"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "10",
+      "status": "present",
+      "id": "YqM8CJBugfc"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "11",
+      "status": "present",
+      "id": "8guU3JJpM-c"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "12",
+      "status": "present",
+      "id": "63S8UYmmHg4"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "13",
+      "status": "present",
+      "id": "-_0b-tfRWbM"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "14",
+      "status": "present",
+      "id": "kOHSGlVzaUQ"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "15",
+      "status": "present",
+      "id": "Qdyx6E-OJOc"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "16",
+      "status": "present",
+      "id": "ZGMNvbDjCHw"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "17",
+      "status": "present",
+      "id": "8L35FuoLw1I"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "18",
+      "status": "present",
+      "id": "ug9obpX7ae4"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "19",
+      "status": "present",
+      "id": "qISjTrTWeyQ"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "20",
+      "status": "present",
+      "id": "N1AKM62ma-A"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "21",
+      "status": "present",
+      "id": "NThlmhPmiLo"
+    },
+    {
+      "sessionId": "s4",
+      "classId": "c1",
+      "studentId": "22",
+      "status": "present",
+      "id": "AE4xQUZpviU"
     }
   ],
   "announcements": [
@@ -1304,13 +1409,11 @@
       "title": "پروژه شبکه",
       "content": "پروژه پایانی درس شبکه باید تا پایان هفته تحویل داده شود.",
       "classId": "c6",
-      "authorId": "3",
+      "authorId": "1",
       "createdAt": "2025-04-10T10:00:00.000Z",
-      "seenBy": [
-        "7",
-        "8"
-      ],
-      "targetAudience": "students"
+      "seenBy": [],
+      "targetAudience": "students",
+      "targetRoles": null
     },
     {
       "id": "ann10",
@@ -1321,27 +1424,20 @@
       "createdAt": "2025-04-12T10:00:00.000Z",
       "seenBy": [
         "9",
-        "7"
+        "7",
+        "1"
       ],
       "targetAudience": "both"
     }
   ],
   "assignments": [
     {
-      "id": "as3",
-      "title": "تمرین توابع",
-      "description": "تابعی بنویسید که فاکتوریل یک عدد را محاسبه کند.",
-      "classId": "c6",
-      "teacherId": "3",
-      "deadline": "2026-07-28T20:29:59.000Z"
-    },
-    {
       "id": "as5",
       "title": "پروژه کوچک",
       "description": "یک ماشین حساب ساده بسازید.",
       "classId": "c1",
       "teacherId": "2",
-      "deadline": "2025-04-10T23:59:59.000Z"
+      "deadline": "2026-09-30T20:29:59.000Z"
     },
     {
       "id": "as6",
@@ -1512,9 +1608,9 @@
       "content": "https://github.com/student7/linked-list",
       "submittedAt": "2025-03-11T14:00:00.000Z",
       "status": "graded",
-      "grade": 19,
+      "grade": 14,
       "feedback": "پیاده‌سازی عالی",
-      "updatedAt": "2025-03-12T10:00:00.000Z"
+      "updatedAt": "2026-09-30T19:52:42.239Z"
     },
     {
       "id": "sub6",
@@ -1522,7 +1618,10 @@
       "studentId": "8",
       "content": "https://github.com/student8/linked-list",
       "submittedAt": "2025-03-12T18:00:00.000Z",
-      "status": "submitted"
+      "status": "graded",
+      "grade": 5,
+      "feedback": null,
+      "updatedAt": "2026-09-30T19:52:48.615Z"
     },
     {
       "id": "sub7",
@@ -1583,17 +1682,6 @@
       "grade": 20,
       "feedback": "طراحی خوبی بود اما نرمال‌سازی نیاز به بهبود دارد",
       "updatedAt": "2026-07-28T12:45:57.131Z"
-    },
-    {
-      "assignmentId": "as3",
-      "studentId": "7",
-      "content": "تست ۱۲",
-      "status": "graded",
-      "submittedAt": "2026-07-28T12:13:08.103Z",
-      "id": "FrU-yCLWyPo",
-      "updatedAt": "2026-07-28T12:14:06.458Z",
-      "grade": 9,
-      "feedback": "مادرت "
     },
     {
       "assignmentId": "EwmOOzaQavs",

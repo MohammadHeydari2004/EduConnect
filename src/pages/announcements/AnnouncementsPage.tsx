@@ -31,7 +31,7 @@ export default function AnnouncementsPage() {
   const [editingItem, setEditingItem] = useState<Announcement | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Announcement | null>(null);
   const [viewingItem, setViewingItem] = useState<Announcement | null>(null);
-  const [markingSeenId, setMarkingSeenId] = useState<ID | null>(null);
+  const [isMarkingSeen, setIsMarkingSeen] = useState(false);
 
   const isAdmin = currentUser?.role === "admin";
   const isTeacher = currentUser?.role === "teacher";
@@ -94,6 +94,7 @@ export default function AnnouncementsPage() {
     classes,
     currentUser,
   });
+
   const getAuthorName = useCallback(
     (authorId: ID) => users.find((u) => u.id === authorId)?.name ?? "نامشخص",
     [users],
@@ -122,29 +123,41 @@ export default function AnnouncementsPage() {
     return "دانشجویان و استاد کلاس";
   };
 
-  const handleView = async (item: Announcement) => {
+  const handleView = (item: Announcement) => {
     setViewingItem(item);
+  };
 
-    if (!currentUser || announcementService.isSeenBy(item, currentUser.id)) {
+  const handleCloseView = useCallback(() => {
+    setViewingItem(null);
+  }, []);
+
+  const handleMarkAsSeen = async () => {
+    if (!viewingItem || !currentUser || isMarkingSeen) return;
+
+    if (announcementService.isSeenBy(viewingItem, currentUser.id)) {
+      setViewingItem(null);
       return;
     }
 
-    setMarkingSeenId(item.id);
+    setIsMarkingSeen(true);
     try {
-      await announcementService.markAsSeen(item.id, currentUser.id);
+      await announcementService.markAsSeen(viewingItem.id, currentUser.id);
 
       setAnnouncements((prev) =>
         prev.map((a) =>
-          a.id === item.id
+          a.id === viewingItem.id
             ? { ...a, seenBy: [...(a.seenBy ?? []), currentUser.id] }
             : a,
         ),
       );
+
+      setViewingItem(null);
+      addToast("اطلاعیه به‌عنوان خوانده‌شده ثبت شد.", "success");
     } catch (err) {
       console.error("خطا در علامت‌گذاری به عنوان دیده‌شده:", err);
       addToast("خطا در ثبت وضعیت مشاهده. لطفاً دوباره تلاش کنید.", "warning");
     } finally {
-      setMarkingSeenId(null);
+      setIsMarkingSeen(false);
     }
   };
 
@@ -192,7 +205,6 @@ export default function AnnouncementsPage() {
             const isSeen = currentUser
               ? announcementService.isSeenBy(item, currentUser.id)
               : true;
-            const isMarking = markingSeenId === item.id;
 
             return (
               <Card key={item.id}>
@@ -262,9 +274,8 @@ export default function AnnouncementsPage() {
                     <Button
                       variant="secondary"
                       onClick={() => handleView(item)}
-                      disabled={isMarking}
                     >
-                      {isMarking ? "در حال ثبت..." : "مشاهده"}
+                      مشاهده
                     </Button>
                     {canManageItem(item) && (
                       <>
@@ -314,10 +325,10 @@ export default function AnnouncementsPage() {
       <Modal
         isOpen={!!viewingItem}
         title={viewingItem?.title ?? ""}
-        onClose={() => setViewingItem(null)}
+        onClose={handleCloseView}
       >
         {viewingItem && (
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="max-h-[70vh] space-y-3 overflow-y-auto text-sm text-gray-700">
             <p>
               <span className="font-semibold">مخاطب:</span>{" "}
               {getClassName(viewingItem.classId)}
@@ -338,6 +349,22 @@ export default function AnnouncementsPage() {
             <p className="leading-relaxed whitespace-pre-wrap">
               {viewingItem.content}
             </p>
+
+            <div className="flex items-center justify-end gap-2 border-t border-gray-100 pt-4">
+              <Button
+                variant="secondary"
+                onClick={handleCloseView}
+                disabled={isMarkingSeen}
+              >
+                بستن
+              </Button>
+              {currentUser &&
+                !announcementService.isSeenBy(viewingItem, currentUser.id) && (
+                  <Button onClick={handleMarkAsSeen} isLoading={isMarkingSeen}>
+                    خوانده شد
+                  </Button>
+                )}
+            </div>
           </div>
         )}
       </Modal>

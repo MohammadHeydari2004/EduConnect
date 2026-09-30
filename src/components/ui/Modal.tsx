@@ -12,6 +12,12 @@ function Modal({ isOpen, title, children, onClose }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
 
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -25,7 +31,7 @@ function Modal({ isOpen, title, children, onClose }: ModalProps) {
 
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose();
+        onCloseRef.current();
       }
     };
 
@@ -36,7 +42,7 @@ function Modal({ isOpen, title, children, onClose }: ModalProps) {
       document.removeEventListener("keydown", handleEscape);
       previousActiveElement.current?.focus();
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
