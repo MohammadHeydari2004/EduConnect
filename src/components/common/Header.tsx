@@ -1,3 +1,4 @@
+import Badge from "#/components/ui/Badge.tsx";
 import Button from "#/components/ui/Button.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { getRoleLabel } from "#/utils/user.ts";
@@ -6,6 +7,17 @@ import { Link, useNavigate } from "react-router-dom";
 interface HeaderProps {
   isSidebarOpen: boolean;
   onToggleSidebar: () => void;
+}
+
+function getRoleVariant(role: string): "blue" | "green" | "gray" {
+  switch (role) {
+    case "admin":
+      return "blue";
+    case "teacher":
+      return "green";
+    default:
+      return "gray";
+  }
 }
 
 function Header({ isSidebarOpen, onToggleSidebar }: HeaderProps) {
@@ -68,8 +80,11 @@ function Header({ isSidebarOpen, onToggleSidebar }: HeaderProps) {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700 sm:hidden">
                 {user.name.charAt(0)}
               </div>
-              <div className="hidden text-sm text-gray-600 sm:block">
-                {user.name} ({getRoleLabel(user.role)})
+              <div className="hidden items-center gap-2 text-sm text-gray-600 sm:flex">
+                {user.name}
+                <Badge variant={getRoleVariant(user.role)}>
+                  {getRoleLabel(user.role)}
+                </Badge>
               </div>
             </Link>
             <Button variant="secondary" onClick={handleLogout}>

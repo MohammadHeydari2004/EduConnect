@@ -1,11 +1,13 @@
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
+import Badge from "#/components/ui/Badge.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
+import { isApiError } from "#/services/api/axiosInstance.ts";
 import { assignmentService } from "#/services/assignment.ts";
 import { classService } from "#/services/class.ts";
 import { submissionService } from "#/services/submission.ts";
@@ -21,26 +23,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import AssignmentForm from "./AssignmentForm";
 import SubmissionForm from "./SubmissionForm";
 
-type PageState = {
-  loading: boolean;
-  error: string;
-  assignments: Assignment[];
-  submissions: Submission[];
-  users: User[];
-  classes: ClassItem[];
-};
-
-const initialState: PageState = {
-  loading: true,
-  error: "",
-  assignments: [],
-  submissions: [],
-  users: [],
-  classes: [],
-};
-
 export default function AssignmentsPage() {
-  const [state, setState] = useState<PageState>(initialState);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [classes, setClasses] = useState<ClassItem[]>([]);
+
   const [actionMessage, setActionMessage] = useState("");
   const [showAssignmentForm, setShowAssignmentForm] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState<Assignment | null>(
@@ -64,8 +54,6 @@ export default function AssignmentsPage() {
   const isStudent = currentUser?.role === "student";
   const classId = classIdParam ?? null;
   const isClassPage = !!classIdParam;
-
-  const { loading, error, assignments, submissions, users, classes } = state;
 
   const userMap = useMemo(() => {
     const map = new Map<ID, User>();
@@ -126,40 +114,35 @@ export default function AssignmentsPage() {
   );
 
   const fetchData = useCallback(async () => {
-    const [usersData, submissionsData, classesData, assignmentsData] =
-      await Promise.all([
-        userService.getAll(),
-        submissionService.getAll(),
-        classService.getAll(),
-        assignmentService.getAll(),
-      ]);
-    return { usersData, submissionsData, classesData, assignmentsData };
+    try {
+      setLoading(true);
+      setError("");
+      const [usersData, submissionsData, classesData, assignmentsData] =
+        await Promise.all([
+          userService.getAll(),
+          submissionService.getAll(),
+          classService.getAll(),
+          assignmentService.getAll(),
+        ]);
+      setUsers(usersData);
+      setSubmissions(submissionsData);
+      setClasses(classesData);
+      setAssignments(assignmentsData);
+    } catch (err) {
+      const message = isApiError(err)
+        ? err.userMessage
+        : "خطا در بارگذاری داده‌ها";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
     let ignore = false;
-    async function load() {
-      try {
-        const data = await fetchData();
-        if (!ignore) {
-          setState({
-            loading: false,
-            error: "",
-            users: data.usersData,
-            submissions: data.submissionsData,
-            classes: data.classesData,
-            assignments: data.assignmentsData,
-          });
-        }
-      } catch (err) {
-        if (!ignore)
-          setState((prev) => ({
-            ...prev,
-            loading: false,
-            error: `خطا در بارگذاری داده‌ها: ${err}`,
-          }));
-      }
-    }
+    const load = async () => {
+      if (!ignore) await fetchData();
+    };
     load();
     return () => {
       ignore = true;
@@ -207,49 +190,36 @@ export default function AssignmentsPage() {
     setSubmittingAssignment(null);
   };
 
-  // const handleAssignmentSuccess = (
-  //   message: string,
-  //   updatedAssignment?: Assignment,
-  // ) => {
-  //   if (updatedAssignment) {
-  //     setState((prev) => {
-  //       const exists = prev.assignments.some(
-  //         (a) => a.id === updatedAssignment.id,
-  //       );
-  //       return {
-  //         ...prev,
-  //         assignments: exists
-  //           ? prev.assignments.map((a) =>
-  //               a.id === updatedAssignment.id ? updatedAssignment : a,
-  //             )
-  //           : [...prev.assignments, updatedAssignment],
-  //       };
-  //     });
-  //   }
-  //   handleAssignmentFormClose();
-  //   setActionMessage(message);
-  // };
-
-  const handleAssignmentSuccess = (message: string) => {
+  const handleAssignmentSuccess = (
+    message: string,
+    updatedAssignment: Assignment,
+  ) => {
     handleAssignmentFormClose();
     setActionMessage(message);
-    fetchData().then((data) => {
-      setState({
-        loading: false,
-        error: "",
-        users: data.usersData,
-        submissions: data.submissionsData,
-        classes: data.classesData,
-        assignments: data.assignmentsData,
-      });
+
+    setAssignments((prev) => {
+      const exists = prev.some((a) => a.id === updatedAssignment.id);
+      return exists
+        ? prev.map((a) =>
+            a.id === updatedAssignment.id ? updatedAssignment : a,
+          )
+        : [...prev, updatedAssignment];
     });
   };
 
-  const handleSubmissionSuccess = (message: string) => {
+  // آپدیت موضعی ارسال‌ها به جای واکشی مجدد از سرور
+  const handleSubmissionSuccess = (
+    message: string,
+    newSubmission: Submission,
+  ) => {
     handleSubmissionFormClose();
     setActionMessage(message);
-    submissionService.getAll().then((newSubmissions) => {
-      setState((prev) => ({ ...prev, submissions: newSubmissions }));
+
+    setSubmissions((prev) => {
+      const exists = prev.some((s) => s.id === newSubmission.id);
+      return exists
+        ? prev.map((s) => (s.id === newSubmission.id ? newSubmission : s))
+        : [...prev, newSubmission];
     });
   };
 
@@ -257,19 +227,19 @@ export default function AssignmentsPage() {
     if (!deleteAssignmentTarget) return;
     try {
       await assignmentService.delete(deleteAssignmentTarget.id);
-      setState((prev) => ({
-        ...prev,
-        assignments: prev.assignments.filter(
-          (a) => a.id !== deleteAssignmentTarget.id,
-        ),
-      }));
-
+      setAssignments((prev) =>
+        prev.filter((a) => a.id !== deleteAssignmentTarget.id),
+      );
       setDeleteAssignmentTarget(null);
       setActionMessage("تکلیف با موفقیت حذف شد.");
-    } catch {
-      setState((prev) => ({ ...prev, error: "حذف تکلیف با خطا مواجه شد." }));
+    } catch (err) {
+      const message = isApiError(err)
+        ? err.userMessage
+        : "حذف تکلیف با خطا مواجه شد.";
+      setError(message);
     }
   };
+
   const filteredAssignments = useMemo(() => {
     return assignments.filter((a) => {
       if (isClassPage && classId && a.classId !== classId) return false;
@@ -360,15 +330,15 @@ export default function AssignmentsPage() {
                 render: (a) => {
                   const isExpired = new Date(a.deadline) < new Date();
                   return (
-                    <span
-                      className={isExpired ? "font-semibold text-red-600" : ""}
-                    >
-                      {formatDate(a.deadline)}
-                      {isExpired && (
-                        <span className="mr-1 text-xs text-red-500">
-                          (منقضی شده)
-                        </span>
-                      )}
+                    <span className="inline-flex items-center gap-2">
+                      <span
+                        className={
+                          isExpired ? "font-semibold text-red-600" : ""
+                        }
+                      >
+                        {formatDate(a.deadline)}
+                      </span>
+                      {isExpired && <Badge variant="red">منقضی شده</Badge>}
                     </span>
                   );
                 },
@@ -481,9 +451,7 @@ export default function AssignmentsPage() {
                       (sub ? (
                         <StatusChip status={sub.status} />
                       ) : (
-                        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
-                          ارسال نشده
-                        </span>
+                        <Badge variant="gray">ارسال نشده</Badge>
                       ))}
                     {!isStudent && canManageAssignment(a) && (
                       <span className="text-xs text-gray-500">
@@ -505,13 +473,11 @@ export default function AssignmentsPage() {
                     </p>
                   )}
                   <div
-                    className={`text-sm ${isExpired ? "font-semibold text-red-600" : "text-gray-700"}`}
+                    className={`inline-flex items-center gap-2 text-sm ${isExpired ? "font-semibold text-red-600" : "text-gray-700"}`}
                   >
                     <span className="text-gray-500">ددلاین:</span>{" "}
                     {formatDate(a.deadline)}
-                    {isExpired && (
-                      <span className="mr-1 text-xs">(منقضی شده)</span>
-                    )}
+                    {isExpired && <Badge variant="red">منقضی شده</Badge>}
                   </div>
                   {isStudent && isGraded && sub?.grade !== undefined && (
                     <div className="rounded-lg bg-green-50 px-3 py-1.5 text-sm font-bold text-green-700">
@@ -589,7 +555,7 @@ export default function AssignmentsPage() {
           teacherId={currentUser?.id ?? ""}
           isAdmin={isAdmin}
           onClose={handleAssignmentFormClose}
-          onSuccess={() => handleAssignmentSuccess("تکلیف با موفقیت ذخیره شد.")}
+          onSuccess={handleAssignmentSuccess}
         />
       )}
 

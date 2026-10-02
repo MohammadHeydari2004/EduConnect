@@ -3,6 +3,7 @@ import Card from "#/components/ui/Card.tsx";
 import Input from "#/components/ui/Input.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
+import { isApiError } from "#/services/api/axiosInstance.ts";
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 
@@ -59,8 +60,13 @@ function LoginPage() {
       await login(formData);
       navigate("/");
     } catch (err) {
-      if (err instanceof Error) addToast(err.message, "error");
-      else addToast("ورود ناموفق بود", "error");
+      if (isApiError(err)) {
+        addToast(err.userMessage, "error");
+      } else if (err instanceof Error) {
+        addToast(err.message, "error");
+      } else {
+        addToast("ورود ناموفق بود", "error");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -74,7 +80,13 @@ function LoginPage() {
       await login({ email, password: "123456" });
       navigate("/");
     } catch (err) {
-      if (err instanceof Error) addToast(err.message, "error");
+      if (isApiError(err)) {
+        addToast(err.userMessage, "error");
+      } else if (err instanceof Error) {
+        addToast(err.message, "error");
+      } else {
+        addToast("ورود ناموفق بود", "error");
+      }
     } finally {
       setIsSubmitting(false);
     }

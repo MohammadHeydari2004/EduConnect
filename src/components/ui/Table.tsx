@@ -23,10 +23,41 @@ function ActionsMenu({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const [coords, setCoords] = useState({ top: 0, right: 0 });
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
     if (!isOpen) return;
+
+    const updatePosition = () => {
+      if (!buttonRef.current) return;
+
+      const btnRect = buttonRef.current.getBoundingClientRect();
+      const viewportWidth = document.documentElement.clientWidth;
+      const viewportHeight = window.innerHeight;
+
+      const menuWidth = menuRef.current?.offsetWidth || 160;
+      const menuHeight = menuRef.current?.offsetHeight || 100;
+
+      let left = btnRect.left;
+
+      if (left + menuWidth > viewportWidth - 8) {
+        left = btnRect.right - menuWidth;
+      }
+
+      if (left < 8) {
+        left = 8;
+      }
+
+      let top = btnRect.bottom + 4;
+
+      if (top + menuHeight > viewportHeight - 8) {
+        top = btnRect.top - menuHeight - 4;
+      }
+
+      setCoords({ top, left });
+    };
+
+    const rafId = requestAnimationFrame(updatePosition);
 
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -43,23 +74,13 @@ function ActionsMenu({ children }: { children: ReactNode }) {
       if (e.key === "Escape") setIsOpen(false);
     };
 
-    const updatePosition = () => {
-      if (buttonRef.current) {
-        const rect = buttonRef.current.getBoundingClientRect();
-        setCoords({
-          top: rect.bottom + 4,
-          right: window.innerWidth - rect.right,
-        });
-      }
-    };
-
-    updatePosition();
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
     window.addEventListener("scroll", updatePosition, true);
     window.addEventListener("resize", updatePosition);
 
     return () => {
+      cancelAnimationFrame(rafId);
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
       window.removeEventListener("scroll", updatePosition, true);
@@ -69,10 +90,10 @@ function ActionsMenu({ children }: { children: ReactNode }) {
 
   const toggleMenu = () => {
     if (!isOpen && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
+      const btnRect = buttonRef.current.getBoundingClientRect();
       setCoords({
-        top: rect.bottom + 4,
-        right: window.innerWidth - rect.right,
+        top: btnRect.bottom + 4,
+        left: btnRect.left,
       });
     }
     setIsOpen((prev) => !prev);
@@ -103,7 +124,7 @@ function ActionsMenu({ children }: { children: ReactNode }) {
             ref={menuRef}
             role="menu"
             className="fixed z-50 flex min-w-40 flex-col gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
-            style={{ top: `${coords.top}px`, right: `${coords.right}px` }}
+            style={{ top: `${coords.top}px`, left: `${coords.left}px` }}
           >
             {children}
           </div>,

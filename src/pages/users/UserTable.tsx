@@ -3,7 +3,7 @@ import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
 import type { ID } from "#/types/common.ts";
 import type { User } from "#/types/user.ts";
-import { getRoleLabel } from "#/utils/user.ts";
+import { getRoleLabel, getStatusLabel } from "#/utils/user.ts";
 
 interface UserTableProps {
   users: User[];
@@ -47,7 +47,12 @@ function UserTable({
         {
           key: "status",
           title: "وضعیت",
-          render: (user) => <StatusChip status={user.status} />,
+          render: (user) => (
+            <>
+              <StatusChip status={user.status} />
+              <span className="sr-only">{getStatusLabel(user.status)}</span>
+            </>
+          ),
         },
         {
           key: "actions",
@@ -85,6 +90,10 @@ function UserTable({
           <div className="text-sm break-all text-gray-600">{user.email}</div>
           <div className="text-xs text-gray-500">
             نقش: <span className="font-medium">{getRoleLabel(user.role)}</span>
+          </div>
+          <div className="text-xs text-gray-500">
+            وضعیت:{" "}
+            <span className="font-medium">{getStatusLabel(user.status)}</span>
           </div>
         </div>
       )}

@@ -1,6 +1,7 @@
 import { STORAGE_KEYS } from "#/configs/constants.ts";
 import { loginUser } from "#/services/auth.ts";
-import type { LoginPayload } from "#/types/auth.ts";
+import type { AuthContextType, LoginPayload } from "#/types/auth.ts";
+import type { DeepReadonly } from "#/types/common.ts";
 import type { User } from "#/types/user.ts";
 import { useCallback, useMemo, useState, type ReactNode } from "react";
 import AuthContext from "./AuthContext";
@@ -39,18 +40,13 @@ function getStoredUser(): User | null {
 
 function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(() => getStoredUser());
-  const [isLoading] = useState(false);
 
   const login = useCallback(async (payload: LoginPayload) => {
     const loggedInUser = await loginUser(payload);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...safeUser } = loggedInUser;
-
-    setUser(safeUser as User);
+    setUser(loggedInUser);
 
     try {
-      localStorage.setItem(STORAGE_KEYS.authUser, JSON.stringify(safeUser));
+      localStorage.setItem(STORAGE_KEYS.authUser, JSON.stringify(loggedInUser));
     } catch (error) {
       console.error("خطا در ذخیره‌سازی اطلاعات کاربر در LocalStorage:", error);
     }
@@ -65,15 +61,15 @@ function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
-  const value = useMemo(
+  // اعمال DeepReadonly برای تضمین تغییرناپذیری (Immutability) در سطح Context
+  const value: DeepReadonly<AuthContextType> = useMemo(
     () => ({
       user,
       isAuthenticated: !!user,
-      isLoading,
       login,
       logout,
     }),
-    [user, isLoading, login, logout],
+    [user, login, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

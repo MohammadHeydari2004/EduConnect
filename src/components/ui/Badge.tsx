@@ -16,7 +16,7 @@ function Badge({ children, variant = "gray" }: BadgeProps) {
 
   return (
     <span
-      className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${variantClasses[variant]}`}
+      className={`inline-flex rounded-full px-3 py-1 text-xs font-medium items-center gap-1 ${variantClasses[variant]}`}
     >
       {children}
     </span>

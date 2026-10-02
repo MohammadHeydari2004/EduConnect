@@ -2,6 +2,7 @@ import Button from "#/components/ui/Button.tsx";
 import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Select from "#/components/ui/Select.tsx";
+import { isApiError } from "#/services/api/axiosInstance.ts";
 import type {
   CreateUserPayload,
   UpdateUserPayload,
@@ -107,7 +108,15 @@ function UserForm({
       }
       onClose();
     } catch (err) {
-      if (err instanceof Error) {
+      // استفاده از isApiError برای مدیریت هوشمند خطاها (هماهنگ با معماری پروژه)
+      if (isApiError(err)) {
+        const { field, message } = mapServerErrorToField(err.userMessage);
+        if (field === "root") {
+          setError("root", { type: "server", message });
+        } else {
+          setError(field, { type: "server", message });
+        }
+      } else if (err instanceof Error) {
         const { field, message } = mapServerErrorToField(err.message);
         if (field === "root") {
           setError("root", { type: "server", message });

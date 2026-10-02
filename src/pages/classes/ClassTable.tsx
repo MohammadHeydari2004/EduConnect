@@ -1,3 +1,4 @@
+import Badge from "#/components/ui/Badge.tsx";
 import Button from "#/components/ui/Button.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
@@ -13,6 +14,17 @@ interface ClassTableProps {
   onEdit: (c: ClassItem) => void;
   onToggleStatus: (c: ClassItem) => void;
   onDelete: (c: ClassItem) => void;
+}
+
+function getCapacityVariant(
+  currentCount: number,
+  capacity: number,
+): "green" | "yellow" | "red" {
+  if (capacity <= 0) return "green";
+  const ratio = currentCount / capacity;
+  if (ratio >= 1) return "red";
+  if (ratio >= 0.8) return "yellow";
+  return "green";
 }
 
 function ClassTable({
@@ -57,11 +69,15 @@ function ClassTable({
         {
           key: "capacity",
           title: "ظرفیت",
-          render: (c) => (
-            <span>
-              {(c.studentIds || []).length}/{c.capacity || 0}
-            </span>
-          ),
+          render: (c) => {
+            const studentCount = (c.studentIds || []).length;
+            const capacity = c.capacity || 0;
+            return (
+              <Badge variant={getCapacityVariant(studentCount, capacity)}>
+                {studentCount}/{capacity}
+              </Badge>
+            );
+          },
         },
         {
           key: "status",
@@ -97,29 +113,35 @@ function ClassTable({
         },
       ]}
       data={classes}
-      renderMobileCard={(c) => (
-        <div className="space-y-2 text-right">
-          <div className="flex items-center justify-between gap-2">
-            <button
-              onClick={() => navigate(`/classes/${c.id}`)}
-              className="text-base font-bold text-blue-600 hover:underline"
-            >
-              {c.title || "(بدون عنوان)"}
-            </button>
-            <StatusChip status={c.status || "inactive"} />
+      renderMobileCard={(c) => {
+        const studentCount = (c.studentIds || []).length;
+        const capacity = c.capacity || 0;
+        return (
+          <div className="space-y-2 text-right">
+            <div className="flex items-center justify-between gap-2">
+              <button
+                onClick={() => navigate(`/classes/${c.id}`)}
+                className="text-base font-bold text-blue-600 hover:underline"
+              >
+                {c.title || "(بدون عنوان)"}
+              </button>
+              <StatusChip status={c.status || "inactive"} />
+            </div>
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+              <span>
+                <span className="text-gray-500">استاد:</span>{" "}
+                {getTeacherName(c.teacherId)}
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <span className="text-gray-500">ظرفیت:</span>{" "}
+                <Badge variant={getCapacityVariant(studentCount, capacity)}>
+                  {studentCount}/{capacity}
+                </Badge>
+              </span>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
-            <span>
-              <span className="text-gray-500">استاد:</span>{" "}
-              {getTeacherName(c.teacherId)}
-            </span>
-            <span>
-              <span className="text-gray-500">ظرفیت:</span>{" "}
-              {(c.studentIds || []).length}/{c.capacity || 0}
-            </span>
-          </div>
-        </div>
-      )}
+        );
+      }}
       renderMobileActions={(c) => (
         <>
           <button

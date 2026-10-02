@@ -2,11 +2,11 @@ import App from "#/App";
 import { RouterErrorBoundary } from "#/components/common/RouterErrorBoundary";
 import ScrollToTop from "#/components/common/ScrollToTop";
 import AuthProvider from "#/contexts/AuthProvider";
+import { ToastProvider } from "#/contexts/ToastProvider.tsx";
 import "#/index.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import { ToastProvider } from "./contexts/ToastProvider";
 
 const rootElement = document.getElementById("root");
 

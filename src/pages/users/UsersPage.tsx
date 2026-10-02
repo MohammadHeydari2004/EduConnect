@@ -5,6 +5,7 @@ import Card from "#/components/ui/Card.tsx";
 import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
+import { isApiError } from "#/services/api/axiosInstance.ts";
 import { userService } from "#/services/user.ts";
 import type {
   CreateUserPayload,
@@ -47,8 +48,13 @@ function UsersPage() {
         setError("");
         const data = await userService.getAll();
         if (!ignore) setUsers(data);
-      } catch {
-        if (!ignore) setError("دریافت لیست کاربران با خطا مواجه شد.");
+      } catch (err) {
+        if (!ignore) {
+          const msg = isApiError(err)
+            ? err.userMessage
+            : "دریافت لیست کاربران با خطا مواجه شد.";
+          setError(msg);
+        }
       } finally {
         if (!ignore) setLoading(false);
       }
@@ -83,10 +89,12 @@ function UsersPage() {
       setUsers((prev) => [...prev, newUser]);
       setIsCreateOpen(false);
     } catch (err) {
-      addToast(
-        err instanceof Error ? err.message : "ایجاد کاربر ناموفق بود.",
-        "error",
-      );
+      const message = isApiError(err)
+        ? err.userMessage
+        : err instanceof Error
+          ? err.message
+          : "ایجاد کاربر ناموفق بود.";
+      addToast(message, "error");
     }
   };
 
@@ -112,10 +120,12 @@ function UsersPage() {
       setIsEditOpen(false);
       setSelectedUser(null);
     } catch (err) {
-      addToast(
-        err instanceof Error ? err.message : "ویرایش کاربر ناموفق بود.",
-        "error",
-      );
+      const message = isApiError(err)
+        ? err.userMessage
+        : err instanceof Error
+          ? err.message
+          : "ویرایش کاربر ناموفق بود.";
+      addToast(message, "error");
     }
   };
 
@@ -141,10 +151,12 @@ function UsersPage() {
 
       setUsers((prev) => prev.filter((u) => u.id !== userToDeleteId));
     } catch (err) {
-      addToast(
-        err instanceof Error ? err.message : "حذف کاربر ناموفق بود.",
-        "error",
-      );
+      const message = isApiError(err)
+        ? err.userMessage
+        : err instanceof Error
+          ? err.message
+          : "حذف کاربر ناموفق بود.";
+      addToast(message, "error");
     } finally {
       setIsDeleteConfirmOpen(false);
       setSelectedUser(null);
@@ -165,10 +177,12 @@ function UsersPage() {
         prev.map((u) => (u.id === toggledUser.id ? toggledUser : u)),
       );
     } catch (err) {
-      addToast(
-        err instanceof Error ? err.message : "تغییر وضعیت کاربر ناموفق بود.",
-        "error",
-      );
+      const message = isApiError(err)
+        ? err.userMessage
+        : err instanceof Error
+          ? err.message
+          : "تغییر وضعیت کاربر ناموفق بود.";
+      addToast(message, "error");
     }
   };
 

@@ -3,7 +3,7 @@ import StatCard from "#/components/ui/StatCard.tsx";
 import Table from "#/components/ui/Table.tsx";
 import type { ClassItem } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
-import { formatDate } from "#/utils/formatDate.ts";
+import { formatDate, formatRelativeTime } from "#/utils/formatDate.ts";
 import { useMemo } from "react";
 import {
   Bar,
@@ -278,7 +278,11 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
                 {
                   key: "date",
                   title: "تاریخ",
-                  render: (s) => formatDate(s.date),
+                  render: (s) => (
+                    <span title={formatDate(s.date)}>
+                      {formatRelativeTime(s.date)}
+                    </span>
+                  ),
                 },
                 {
                   key: "classId",
@@ -298,9 +302,12 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
                     <span className="text-gray-500">کلاس:</span>{" "}
                     {classMap.get(s.classId)?.title || "نامشخص"}
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div
+                    className="text-sm text-gray-600"
+                    title={formatDate(s.date)}
+                  >
                     <span className="text-gray-500">تاریخ:</span>{" "}
-                    {formatDate(s.date)}
+                    {formatRelativeTime(s.date)}
                   </div>
                 </div>
               )}

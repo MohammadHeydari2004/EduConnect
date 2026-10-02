@@ -1,6 +1,7 @@
 import Button from "#/components/ui/Button.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
+import { isApiError } from "#/services/api/axiosInstance.ts";
 import { submissionService } from "#/services/submission.ts";
 import type { ID } from "#/types/common.ts";
 import type { Submission } from "#/types/submission.ts";
@@ -15,7 +16,7 @@ interface Props {
   existingSubmission?: Submission | null;
   deadline?: string;
   onClose: () => void;
-  onSuccess: (message: string) => void;
+  onSuccess: (message: string, submission: Submission) => void;
 }
 
 export default function SubmissionForm({
@@ -55,22 +56,28 @@ export default function SubmissionForm({
     }
     try {
       setIsSubmitting(true);
+      let result: Submission;
+
       if (existingSubmission) {
-        await submissionService.update(existingSubmission.id, {
+        result = await submissionService.update(existingSubmission.id, {
           content: content.trim(),
         });
-        onSuccess("پاسخ شما با موفقیت ویرایش شد.");
+        onSuccess("پاسخ شما با موفقیت ویرایش شد.", result);
       } else {
-        await submissionService.create({
+        result = await submissionService.create({
           assignmentId,
           studentId,
           content: content.trim(),
           status: "submitted",
         });
-        onSuccess("پاسخ شما با موفقیت ارسال شد.");
+        onSuccess("پاسخ شما با موفقیت ارسال شد.", result);
       }
-    } catch {
-      setError("خطا در ثبت پاسخ. لطفاً دوباره تلاش کنید.");
+    } catch (err) {
+      // استفاده از isApiError برای مدیریت هوشمند خطاها
+      const message = isApiError(err)
+        ? err.userMessage
+        : "خطا در ثبت پاسخ. لطفاً دوباره تلاش کنید.";
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }

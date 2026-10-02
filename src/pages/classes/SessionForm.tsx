@@ -4,48 +4,50 @@ import Modal from "#/components/ui/Modal.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
 import { sessionService } from "#/services/session.ts";
 import type { ID } from "#/types/common.ts";
+import type { Session } from "#/types/session.ts";
 import { useState } from "react";
-import { validateSessionForm, type SessionFormErrors } from "./validators";
+import { validateSessionForm } from "./sessionValidation";
 
 interface Props {
   classId: ID;
   onClose: () => void;
-  onSuccess: (message: string) => void;
   onError: (message: string) => void;
+  onSuccess: (message: string, session: Session) => void;
+}
+
+interface SessionFormValues {
+  title: string;
+  date: string;
+  description: string;
 }
 
 export default function SessionForm({
   classId,
   onClose,
-  onSuccess,
   onError,
+  onSuccess,
 }: Props) {
-  const [title, setTitle] = useState("");
-  const [date, setDate] = useState("");
-  const [description, setDescription] = useState("");
-  const [errors, setErrors] = useState<SessionFormErrors>({});
+  const [form, setForm] = useState<SessionFormValues>({
+    title: "",
+    date: "",
+    description: "",
+  });
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof SessionFormValues, string>>
+  >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
 
-    const validationErrors = validateSessionForm({
-      title,
-      date,
-      description,
-      classId,
-    });
-    setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
+  const handleSubmit = async () => {
+    const validationErrors = validateSessionForm({ ...form, classId });
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
 
     try {
       setIsSubmitting(true);
-      await sessionService.create({
-        title: title.trim(),
-        date,
-        description: description.trim(),
-        classId,
-      });
-      onSuccess("جلسه با موفقیت ایجاد شد.");
+      const newSession = await sessionService.create({ ...form, classId });
+      onSuccess("جلسه با موفقیت ایجاد شد.", newSession);
     } catch (err) {
       onError(
         err instanceof Error ? err.message : "ایجاد جلسه با خطا مواجه شد.",
@@ -56,53 +58,51 @@ export default function SessionForm({
   };
 
   return (
-    <Modal isOpen={true} title="ایجاد جلسه جدید" onClose={onClose}>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <Modal isOpen={true} title="افزودن جلسه جدید" onClose={onClose}>
+      <div className="space-y-4">
         <Input
           label="عنوان جلسه"
-          value={title}
+          value={form.title}
           onChange={(e) => {
-            setTitle(e.target.value);
-            if (errors.title)
-              setErrors((prev) => ({ ...prev, title: undefined }));
+            setForm({ ...form, title: e.target.value });
+            if (errors.title) setErrors({ ...errors, title: undefined });
           }}
           error={errors.title}
-          placeholder="مثلاً: جلسه اول - مقدمه"
+          placeholder="مثلاً: جلسه اول"
           required
-          autoFocus
         />
         <Input
           label="تاریخ"
           type="date"
-          value={date}
+          value={form.date}
           onChange={(e) => {
-            setDate(e.target.value);
-            if (errors.date)
-              setErrors((prev) => ({ ...prev, date: undefined }));
+            setForm({ ...form, date: e.target.value });
+            if (errors.date) setErrors({ ...errors, date: undefined });
           }}
           error={errors.date}
           required
         />
         <Textarea
           label="توضیحات"
-          value={description}
+          value={form.description}
           onChange={(e) => {
-            setDescription(e.target.value);
+            setForm({ ...form, description: e.target.value });
             if (errors.description)
-              setErrors((prev) => ({ ...prev, description: undefined }));
+              setErrors({ ...errors, description: undefined });
           }}
-          placeholder="توضیحات مختصر درباره محتوای جلسه..."
+          error={errors.description}
+          placeholder="توضیحات مختصر درباره جلسه..."
           rows={3}
         />
         <div className="flex justify-end gap-2 border-t border-gray-200 pt-4">
           <Button type="button" variant="secondary" onClick={onClose}>
             انصراف
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
           </Button>
         </div>
-      </form>
+      </div>
     </Modal>
   );
 }

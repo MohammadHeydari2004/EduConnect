@@ -5,6 +5,7 @@ import Select from "#/components/ui/Select.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
 import { useToast } from "#/hooks/useToast.ts";
 import { announcementService } from "#/services/announcement.ts";
+import { isApiError } from "#/services/api/axiosInstance.ts";
 import type { Announcement, TargetAudience } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID, UserRole } from "#/types/common.ts";
@@ -18,7 +19,7 @@ interface Props {
   authorId: ID;
   userRole: UserRole;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (message: string, announcement: Announcement) => void;
 }
 
 type AnnouncementPayload = Omit<
@@ -87,22 +88,29 @@ export default function AnnouncementForm({
             targetRoles: null,
           };
 
+      let result: Announcement;
+
       if (initialData) {
         await announcementService.update(
           initialData.id,
           payload as Partial<Announcement>,
         );
-        await announcementService.resetSeenBy(initialData.id);
+        // دریافت نتیجه نهایی پس از ریست وضعیت دیده‌شدن
+        result = await announcementService.resetSeenBy(initialData.id);
       } else {
-        await announcementService.create(
+        result = await announcementService.create(
           payload as Omit<Announcement, "id" | "createdAt" | "seenBy">,
         );
       }
 
       addToast("اطلاعیه با موفقیت ذخیره شد.", "success");
-      onSuccess();
-    } catch {
-      addToast("خطا در ذخیره اطلاعیه.", "error");
+      onSuccess("اطلاعیه با موفقیت ذخیره شد.", result);
+    } catch (err) {
+      // استفاده از isApiError برای مدیریت هوشمند خطاها
+      const message = isApiError(err)
+        ? err.userMessage
+        : "خطا در ذخیره اطلاعیه.";
+      addToast(message, "error");
     } finally {
       setIsSubmitting(false);
     }

@@ -1,5 +1,10 @@
-import type { AuthContextType } from "#/types/auth.ts";
+import type { AuthContextType, AuthState } from "#/types/auth.ts";
 import { createContext, useContext } from "react";
+
+export const initialAuthState: AuthState = {
+  user: null,
+  isAuthenticated: false,
+};
 
 const AuthContext = createContext<AuthContextType | null>(null);
 AuthContext.displayName = "AuthContext";

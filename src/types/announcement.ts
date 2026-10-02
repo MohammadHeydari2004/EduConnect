@@ -1,4 +1,4 @@
-import type { ID, UserRole } from "#/types/common.ts";
+import type { ID, Optional, UserRole } from "#/types/common.ts";
 
 export type TargetAudience = "students" | "teacher" | "both";
 
@@ -10,6 +10,6 @@ export interface Announcement {
   readonly authorId: ID;
   readonly createdAt: string;
   seenBy: ID[];
-  targetRoles?: UserRole[];
-  targetAudience?: TargetAudience;
+  targetRoles: Optional<UserRole[]>;
+  targetAudience: Optional<TargetAudience>;
 }

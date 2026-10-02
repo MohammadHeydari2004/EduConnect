@@ -7,7 +7,7 @@ import { assignmentService } from "#/services/assignment.ts";
 import type { Assignment } from "#/types/assignment.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID } from "#/types/common.ts";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   validateAssignmentForm,
   type AssignmentFormErrors,
@@ -20,7 +20,7 @@ interface Props {
   teacherId: ID;
   isAdmin: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (message: string, assignment: Assignment) => void;
 }
 
 export default function AssignmentForm({
@@ -36,88 +36,58 @@ export default function AssignmentForm({
   const [description, setDescription] = useState(
     initialData?.description ?? "",
   );
-  const [classId, setClassId] = useState<ID>(
-    initialData?.classId ?? availableClasses[0]?.id ?? "",
-  );
-  const [deadline, setDeadline] = useState<string>(
-    initialData?.deadline
+  const [deadline, setDeadline] = useState(
+    initialData
       ? (new Date(initialData.deadline).toISOString().split("T")[0] ?? "")
       : "",
   );
+  const [classId, setClassId] = useState(initialData?.classId ?? "");
+  // اصلاح تایپ: استفاده از AssignmentFormErrors به‌جای Partial<Record<string, string>>
   const [errors, setErrors] = useState<AssignmentFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const classOptions = useMemo(
-    () => [
-      { label: "انتخاب کلاس...", value: "", disabled: true },
-      ...availableClasses.map((c) => ({ label: c.title, value: c.id })),
-    ],
-    [availableClasses],
-  );
+  const classOptions = availableClasses.map((c) => ({
+    label: c.title || "(بدون عنوان)",
+    value: c.id,
+  }));
+
   const handleSubmit = async () => {
     const validationErrors = validateAssignmentForm({
       title,
-      deadline,
       classId,
+      deadline,
     });
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
 
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+    const selectedClass = availableClasses.find((c) => c.id === classId);
+    const finalTeacherId = isAdmin ? selectedClass?.teacherId : teacherId;
+    if (!finalTeacherId) return;
+
+    const deadlineDate = new Date(`${deadline}T23:59:59`);
+
+    const payload = {
+      title,
+      description,
+      deadline: deadlineDate.toISOString(),
+      classId,
+      teacherId: finalTeacherId,
+    };
 
     try {
       setIsSubmitting(true);
-      const selectedClass = availableClasses.find((c) => c.id === classId);
-      const finalTeacherId = isAdmin
-        ? (selectedClass?.teacherId ?? teacherId)
-        : teacherId;
-
-      const deadlineDate = new Date(`${deadline}T23:59:59`);
-      const deadlineISO = deadlineDate.toISOString();
-
-      const payload = {
-        title: title.trim(),
-        description: description.trim(),
-        classId,
-        teacherId: finalTeacherId,
-        deadline: deadlineISO,
-      };
-
+      let result: Assignment;
       if (initialData) {
-        await assignmentService.update(initialData.id, payload);
+        result = await assignmentService.update(initialData.id, payload);
+        onSuccess("تکلیف با موفقیت ویرایش شد.", result);
       } else {
-        await assignmentService.create(payload);
+        result = await assignmentService.create(payload);
+        onSuccess("تکلیف با موفقیت ایجاد شد.", result);
       }
-      onSuccess();
-    } catch {
-      setErrors({ form: "خطا در ذخیره تکلیف. لطفاً دوباره تلاش کنید." });
+    } catch (err) {
+      console.error(err);
     } finally {
       setIsSubmitting(false);
-    }
-  };
-  const handleTitleChange = (value: string) => {
-    setTitle(value);
-    if (errors.title) {
-      setErrors((prev) => ({ ...prev, title: undefined, form: undefined }));
-    }
-  };
-
-  const handleDescriptionChange = (value: string) => {
-    setDescription(value);
-  };
-
-  const handleClassIdChange = (value: string) => {
-    setClassId(value as ID);
-    if (errors.classId) {
-      setErrors((prev) => ({ ...prev, classId: undefined, form: undefined }));
-    }
-  };
-
-  const handleDeadlineChange = (value: string) => {
-    setDeadline(value);
-    if (errors.deadline) {
-      setErrors((prev) => ({ ...prev, deadline: undefined, form: undefined }));
     }
   };
 
@@ -129,47 +99,53 @@ export default function AssignmentForm({
     >
       <div className="space-y-4">
         <Input
-          label="عنوان"
+          label="عنوان تکلیف"
           value={title}
-          onChange={(e) => handleTitleChange(e.target.value)}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            if (errors.title)
+              setErrors((prev) => ({ ...prev, title: undefined }));
+          }}
           error={errors.title}
-          placeholder="عنوان تکلیف"
+          placeholder="مثلاً: تمرین اول"
           required
         />
-
         <Select
           label="کلاس"
           value={classId}
-          onChange={(e) => handleClassIdChange(e.target.value)}
-          options={classOptions}
+          onChange={(e) => {
+            setClassId(e.target.value);
+            if (errors.classId)
+              setErrors((prev) => ({ ...prev, classId: undefined }));
+          }}
+          options={[
+            { label: "انتخاب کلاس...", value: "", disabled: true },
+            ...classOptions,
+          ]}
           error={errors.classId}
           required
         />
-
-        <Textarea
-          label="توضیحات"
-          value={description}
-          onChange={(e) => handleDescriptionChange(e.target.value)}
-          rows={4}
-          placeholder="شرح تکلیف..."
-        />
-
         <Input
           label="ددلاین"
           type="date"
           value={deadline}
-          onChange={(e) => handleDeadlineChange(e.target.value)}
+          onChange={(e) => {
+            setDeadline(e.target.value);
+            if (errors.deadline)
+              setErrors((prev) => ({ ...prev, deadline: undefined }));
+          }}
           error={errors.deadline}
           required
         />
-        {errors.form && (
-          <p className="text-sm text-red-600" role="alert">
-            {errors.form}
-          </p>
-        )}
-
-        <div className="flex justify-end gap-2 pt-2">
-          <Button variant="secondary" onClick={onClose}>
+        <Textarea
+          label="توضیحات"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="توضیحات مختصر درباره تکلیف..."
+          rows={3}
+        />
+        <div className="flex justify-end gap-2 border-t border-gray-200 pt-4">
+          <Button type="button" variant="secondary" onClick={onClose}>
             انصراف
           </Button>
           <Button onClick={handleSubmit} disabled={isSubmitting}>

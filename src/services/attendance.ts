@@ -37,7 +37,7 @@ export const attendanceService = {
           classId,
           studentId: record.studentId,
           status: record.status,
-        } as Omit<Attendance, "id">);
+        });
       }
     });
 

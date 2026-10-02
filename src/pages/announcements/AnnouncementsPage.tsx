@@ -1,5 +1,6 @@
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
+import Badge from "#/components/ui/Badge.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
@@ -7,13 +8,14 @@ import Modal from "#/components/ui/Modal.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import { announcementService } from "#/services/announcement.ts";
+import { isApiError } from "#/services/api/axiosInstance.ts";
 import { classService } from "#/services/class.ts";
 import { userService } from "#/services/user.ts";
 import type { Announcement } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID } from "#/types/common.ts";
 import type { User } from "#/types/user.ts";
-import { formatDate, formatDateTime } from "#/utils/formatDate.ts";
+import { formatDateTime, formatRelativeTime } from "#/utils/formatDate.ts";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import AnnouncementForm from "./AnnouncementForm";
 import { useFilteredAnnouncements } from "./useFilteredAnnouncements";
@@ -65,7 +67,10 @@ export default function AnnouncementsPage() {
       setUsers(u);
     } catch (err) {
       console.error(err);
-      addToast("خطا در بارگذاری اطلاعیه‌ها.", "error");
+      const message = isApiError(err)
+        ? err.userMessage
+        : "خطا در بارگذاری اطلاعیه‌ها.";
+      addToast(message, "error");
     } finally {
       setLoading(false);
     }
@@ -155,7 +160,10 @@ export default function AnnouncementsPage() {
       addToast("اطلاعیه به‌عنوان خوانده‌شده ثبت شد.", "success");
     } catch (err) {
       console.error("خطا در علامت‌گذاری به عنوان دیده‌شده:", err);
-      addToast("خطا در ثبت وضعیت مشاهده. لطفاً دوباره تلاش کنید.", "warning");
+      const message = isApiError(err)
+        ? err.userMessage
+        : "خطا در ثبت وضعیت مشاهده. لطفاً دوباره تلاش کنید.";
+      addToast(message, "warning");
     } finally {
       setIsMarkingSeen(false);
     }
@@ -170,7 +178,10 @@ export default function AnnouncementsPage() {
       addToast("اطلاعیه با موفقیت حذف شد.", "success");
     } catch (err) {
       console.error(err);
-      addToast("حذف اطلاعیه ناموفق بود.", "error");
+      const message = isApiError(err)
+        ? err.userMessage
+        : "حذف اطلاعیه ناموفق بود.";
+      addToast(message, "error");
     }
   };
 
@@ -224,10 +235,7 @@ export default function AnnouncementsPage() {
                     </h3>
                     <div className="flex items-center gap-1">
                       {isSeen ? (
-                        <span
-                          className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700"
-                          title="خوانده شده"
-                        >
+                        <Badge variant="green">
                           <svg
                             className="h-3 w-3"
                             fill="currentColor"
@@ -241,18 +249,15 @@ export default function AnnouncementsPage() {
                             />
                           </svg>
                           خوانده شده
-                        </span>
+                        </Badge>
                       ) : (
-                        <span
-                          className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700"
-                          title="خوانده نشده"
-                        >
+                        <Badge variant="blue">
                           <span
                             className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-600"
                             aria-hidden="true"
                           ></span>
                           جدید
-                        </span>
+                        </Badge>
                       )}
                     </div>
                   </div>
@@ -263,9 +268,12 @@ export default function AnnouncementsPage() {
                   <p className="mb-1 text-xs text-gray-500">
                     دسترسی: {getTargetDescription(item)}
                   </p>
-                  <p className="mb-3 text-xs text-gray-500">
+                  <p
+                    className="mb-3 text-xs text-gray-500"
+                    title={formatDateTime(item.createdAt)}
+                  >
                     نویسنده: {getAuthorName(item.authorId)} | تاریخ:{" "}
-                    {formatDateTime(item.createdAt)}
+                    {formatRelativeTime(item.createdAt)}
                   </p>
                   <p className="mb-4 line-clamp-3 grow text-sm text-gray-700">
                     {item.content}
@@ -315,10 +323,23 @@ export default function AnnouncementsPage() {
           setIsFormOpen(false);
           setEditingItem(null);
         }}
-        onSuccess={() => {
+        onSuccess={(_message, newAnnouncement) => {
           setIsFormOpen(false);
           setEditingItem(null);
-          fetchData();
+          // آپدیت موضعی و مرتب‌سازی مجدد لیست بر اساس تاریخ ایجاد
+          setAnnouncements((prev) => {
+            const exists = prev.some((a) => a.id === newAnnouncement.id);
+            const updated = exists
+              ? prev.map((a) =>
+                  a.id === newAnnouncement.id ? newAnnouncement : a,
+                )
+              : [newAnnouncement, ...prev];
+            return updated.sort(
+              (x, y) =>
+                new Date(y.createdAt).getTime() -
+                new Date(x.createdAt).getTime(),
+            );
+          });
         }}
       />
 
@@ -341,9 +362,9 @@ export default function AnnouncementsPage() {
               <span className="font-semibold">نویسنده:</span>{" "}
               {getAuthorName(viewingItem.authorId)}
             </p>
-            <p>
+            <p title={formatDateTime(viewingItem.createdAt)}>
               <span className="font-semibold">تاریخ:</span>{" "}
-              {formatDate(viewingItem.createdAt)}
+              {formatRelativeTime(viewingItem.createdAt)}
             </p>
             <hr className="my-2" />
             <p className="leading-relaxed whitespace-pre-wrap">

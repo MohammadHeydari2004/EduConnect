@@ -21,21 +21,13 @@
       "name": "سارا احمدی",
       "email": "teacher2@edu.com",
       "password": "123456",
-      "role": "teacher",
-      "status": "active"
+      "role": "student",
+      "status": "inactive"
     },
     {
       "id": "4",
       "name": "رضا کریمی",
       "email": "teacher3@edu.com",
-      "password": "123456",
-      "role": "teacher",
-      "status": "inactive"
-    },
-    {
-      "id": "6",
-      "name": "حسن رضایی",
-      "email": "teacher5@edu.com",
       "password": "123456",
       "role": "teacher",
       "status": "active"
@@ -1377,19 +1369,6 @@
   ],
   "announcements": [
     {
-      "id": "ann7",
-      "title": "تحویل پروژه پایانی",
-      "content": "آخرین مهلت تحویل پروژه‌های پایان ترم تمدید شد.",
-      "classId": "c2",
-      "authorId": "2",
-      "createdAt": "2025-04-01T10:00:00.000Z",
-      "seenBy": [
-        "7",
-        "1"
-      ],
-      "targetAudience": "students"
-    },
-    {
       "id": "ann8",
       "title": "نمرات میان‌ترم",
       "content": "نمرات میان‌ترم در سامانه بارگذاری شد.",
@@ -1428,6 +1407,21 @@
         "1"
       ],
       "targetAudience": "both"
+    },
+    {
+      "title": "test",
+      "content": "tttttttttyyyyyyyyyyyyyyy",
+      "classId": "0",
+      "authorId": "1",
+      "targetRoles": [
+        "admin",
+        "teacher",
+        "student"
+      ],
+      "targetAudience": null,
+      "seenBy": [],
+      "createdAt": "2026-10-02T14:27:39.739Z",
+      "id": "yfHP2N-4_10"
     }
   ],
   "assignments": [

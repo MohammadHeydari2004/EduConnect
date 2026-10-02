@@ -4,6 +4,7 @@ import AdminDashboard from "#/pages/dashboard/AdminDashboard.tsx";
 import StudentDashboard from "#/pages/dashboard/StudentDashboard.tsx";
 import TeacherDashboard from "#/pages/dashboard/TeacherDashboard.tsx";
 import { announcementService } from "#/services/announcement.ts";
+import { isApiError } from "#/services/api/axiosInstance.ts";
 import { assignmentService } from "#/services/assignment.ts";
 import { attendanceService } from "#/services/attendance.ts";
 import { classService } from "#/services/class.ts";
@@ -44,23 +45,25 @@ function DashboardContainer() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [prevUser, setPrevUser] = useState(user);
 
-  if (user !== prevUser) {
-    setPrevUser(user);
+  const userId = user?.id;
+
+  // الگوی صحیح: ریست حالت‌ها و واکشی داده‌ها در useEffect با وابستگی [userId]
+  useEffect(() => {
+    if (!user) return;
+
+    // ریست کامل حالت‌ها برای کاربر جدید (جایگزین الگوی مخرب prevUser)
     setData(null);
     setLoading(true);
     setError("");
-  }
 
-  useEffect(() => {
-    if (!user) return;
     let ignore = false;
 
     const fetchData = async () => {
       try {
         let result: DashboardData = { ...EMPTY_DATA };
 
+        // واکشی شرطی داده‌ها صرفاً بر اساس نقش کاربر (جلوگیری از Over-fetching)
         switch (user.role) {
           case "admin": {
             const [users, classes, sessions, assignments] = await Promise.all([
@@ -116,6 +119,7 @@ function DashboardContainer() {
             break;
           }
         }
+
         if (!ignore) {
           setData(result);
           setError("");
@@ -123,7 +127,10 @@ function DashboardContainer() {
       } catch (err) {
         if (!ignore) {
           console.error(err);
-          setError("خطا در بارگذاری اطلاعات داشبورد.");
+          const message = isApiError(err)
+            ? err.userMessage
+            : "خطا در بارگذاری اطلاعات داشبورد.";
+          setError(message);
         }
       } finally {
         if (!ignore) setLoading(false);
@@ -134,7 +141,7 @@ function DashboardContainer() {
     return () => {
       ignore = true;
     };
-  }, [user]);
+  }, [userId, user]);
 
   if (loading) return <Loading />;
 

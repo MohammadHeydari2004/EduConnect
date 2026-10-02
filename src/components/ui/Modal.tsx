@@ -11,7 +11,6 @@ interface ModalProps {
 function Modal({ isOpen, title, children, onClose }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
-
   const onCloseRef = useRef(onClose);
 
   useEffect(() => {
@@ -29,17 +28,72 @@ function Modal({ isOpen, title, children, onClose }: ModalProps) {
       modalRef.current?.focus();
     });
 
-    const handleEscape = (e: KeyboardEvent) => {
+    const getFocusableElements = (): HTMLElement[] => {
+      if (!modalRef.current) return [];
+      const focusableSelectors = [
+        'a[href]:not([tabindex="-1"])',
+        'button:not([disabled]):not([tabindex="-1"])',
+        'textarea:not([disabled]):not([tabindex="-1"])',
+        'input:not([disabled]):not([tabindex="-1"])',
+        'select:not([disabled]):not([tabindex="-1"])',
+        '[tabindex]:not([tabindex="-1"])',
+      ];
+      return Array.from(
+        modalRef.current.querySelectorAll<HTMLElement>(
+          focusableSelectors.join(","),
+        ),
+      ).filter((el) => el.offsetParent !== null);
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onCloseRef.current();
+        return;
+      }
+
+      if (e.key === "Tab") {
+        const focusableElements = getFocusableElements();
+
+        if (focusableElements.length === 0) {
+          e.preventDefault();
+          return;
+        }
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (!firstElement || !lastElement) {
+          e.preventDefault();
+          return;
+        }
+
+        const activeElement = document.activeElement as HTMLElement;
+
+        if (e.shiftKey) {
+          if (
+            activeElement === firstElement ||
+            activeElement === modalRef.current
+          ) {
+            e.preventDefault();
+            lastElement.focus();
+          }
+        } else {
+          if (
+            activeElement === lastElement ||
+            activeElement === modalRef.current
+          ) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
       }
     };
 
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
       document.body.style.overflow = originalOverflow;
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener("keydown", handleKeyDown);
       previousActiveElement.current?.focus();
     };
   }, [isOpen]);
@@ -52,6 +106,7 @@ function Modal({ isOpen, title, children, onClose }: ModalProps) {
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? "modal-title" : undefined}
+      aria-label={!title ? "پنجره گفتگو" : undefined}
       tabIndex={-1}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 outline-none sm:p-4"
       onClick={(e) => {

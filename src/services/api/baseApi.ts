@@ -1,4 +1,4 @@
-import type { ID } from "#/types/common.ts";
+import type { DeepPartial, ID } from "#/types/common.ts";
 import axiosInstance from "./axiosInstance";
 
 export const baseApi = {
@@ -17,10 +17,14 @@ export const baseApi = {
     const response = await axiosInstance.post<T>(endpoint, data);
     return response.data;
   },
-  update: async <T>(endpoint: string, id: ID, data: Partial<T>): Promise<T> => {
+  update: async <T>(
+    endpoint: string,
+    id: ID,
+    data: DeepPartial<T>,
+  ): Promise<T> => {
     const sanitizedData = Object.fromEntries(
       Object.entries(data).filter(([, value]) => value !== undefined),
-    ) as Partial<T>;
+    ) as DeepPartial<T>;
     const response = await axiosInstance.patch<T>(
       `${endpoint}/${id}`,
       sanitizedData,
