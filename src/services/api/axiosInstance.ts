@@ -1,4 +1,6 @@
 import axios, { type AxiosError } from "axios";
+import { API_REQUEST_TIMEOUT_MS } from "#/configs/constants.ts";
+import { logger } from "#/utils/logger.ts";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:4003";
@@ -39,21 +41,54 @@ export function isApiError(error: unknown): error is ApiError {
   return error instanceof ApiError;
 }
 
+const STATUS_MESSAGES: Record<number, string> = {
+  400: "درخواست ارسال‌شده نامعتبر است.",
+  401: "اعتبار احراز هوایی منقضی شده است. لطفاً دوباره وارد شوید.",
+  403: "دسترسی به این منبع مجاز نیست.",
+  404: "منبع موردنظر در سرور یافت نشد.",
+  409: "تضادی در وضعیت منبع رخ داده است.",
+  500: "خطای داخلی سرور رخ داد. لطفاً بعدا‌ً تلاش کنید.",
+  503: "سرور در حال حاضر در دسترس نیست.",
+};
+
+function resolveUserMessage(
+  error: AxiosError<{ message?: string; error?: string }>,
+): string {
+  if (error.code === "ECONNABORTED") {
+    return "زمان درخواست به پایان رسید. لطفاً اتصال اینترنت خود را بررسی کنید.";
+  }
+
+  if (error.code === "ERR_NETWORK" || !error.response) {
+    return "سرور در دسترس نیست. لطفاً از اجرای json-server مطمئن شوید.";
+  }
+
+  const serverMessage =
+    error.response.data?.message || error.response.data?.error;
+
+  if (serverMessage) return serverMessage;
+
+  return (
+    STATUS_MESSAGES[error.response.status] ??
+    "خطای ناشناخته‌ای در ارتباط با سرور رخ داد."
+  );
+}
+
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 10000,
+  timeout: API_REQUEST_TIMEOUT_MS,
 });
 
 if (import.meta.env.VITE_APP_ENV === "development") {
   axiosInstance.interceptors.request.use(
     (config) => {
-      console.log(
-        `🚀 [API Request] ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`,
-        config.data || config.params,
-      );
+      logger.debug("API Request", {
+        method: config.method?.toUpperCase(),
+        url: `${config.baseURL}${config.url}`,
+        data: config.data || config.params,
+      });
       return config;
     },
     (error) => Promise.reject(error),
@@ -63,44 +98,23 @@ if (import.meta.env.VITE_APP_ENV === "development") {
 axiosInstance.interceptors.response.use(
   (response) => {
     if (import.meta.env.VITE_APP_ENV === "development") {
-      console.log(
-        `✅ [API Response] ${response.status} ${response.config.url}`,
-        response.data,
-      );
+      logger.info("API Response", {
+        status: response.status,
+        url: response.config.url,
+        data: response.data,
+      });
     }
     return response;
   },
   (error: AxiosError<{ message?: string; error?: string }>) => {
-    let userMessage = "خطای ناشناخته‌ای در ارتباط با سرور رخ داد.";
-
-    if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
-      userMessage =
-        "زمان درخواست به پایان رسید. لطفاً اتصال اینترنت خود را بررسی کنید.";
-    } else if (error.code === "ERR_NETWORK" || !error.response) {
-      userMessage =
-        "سرور در دسترس نیست. لطفاً از اجرای json-server مطمئن شوید.";
-    } else if (error.response) {
-      const status = error.response.status;
-      const serverMessage =
-        error.response.data?.message || error.response.data?.error;
-
-      if (serverMessage) {
-        userMessage = serverMessage;
-      } else if (status === 404) {
-        userMessage = "منبع موردنظر در سرور یافت نشد.";
-      } else if (status === 500) {
-        userMessage = "خطای داخلی سرور رخ داد. لطفاً بعداً تلاش کنید.";
-      } else if (status === 400) {
-        userMessage = "درخواست ارسال‌شده نامعتبر است.";
-      } else if (status === 401) {
-        userMessage = "دسترسی غیرمجاز. لطفاً مجدداً وارد حساب کاربری شوید.";
-      } else if (status === 403) {
-        userMessage = "شما مجوز انجام این عملیات را ندارید.";
-      }
-    }
+    const userMessage = resolveUserMessage(error);
 
     if (import.meta.env.VITE_APP_ENV === "development") {
-      console.error(`❌ [API Error] ${error.config?.url}:`, userMessage, error);
+      logger.error("API Error", {
+        url: error.config?.url,
+        message: userMessage,
+        error,
+      });
     }
 
     return Promise.reject(

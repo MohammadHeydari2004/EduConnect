@@ -1,6 +1,6 @@
-import type { ID, Maybe } from "./common";
+import type { ID, Maybe, RecordStatus } from "#/types/common.ts";
 
-export type ClassStatus = "active" | "inactive";
+export type ClassStatus = RecordStatus;
 
 export interface ClassItem {
   readonly id: ID;

@@ -1,19 +1,26 @@
 import MainLayout from "#/layouts/MainLayout.tsx";
+import ProtectedRoute from "#/routes/ProtectedRoute.tsx";
+import RoleGuard from "#/routes/RoleGuard.tsx";
+import { Outlet, Route, Routes } from "react-router-dom";
+import {
+  ALL_ROLES,
+  ADMIN_ROLES,
+  TEACHER_AND_ABOVE_ROLES,
+} from "#/configs/constants.ts";
+import DashboardPage from "#/pages/dashboard/DashboardContainer.tsx";
+import LoginPage from "#/pages/auth/LoginPage.tsx";
+import ProfilePage from "#/pages/profile/ProfilePage.tsx";
+import UsersPage from "#/pages/users/UsersPage.tsx";
+import ClassesPage from "#/pages/classes/ClassesPage.tsx";
+import StudentClassesPage from "#/pages/classes/StudentClassesPage.tsx";
+import ClassDetailsPage from "#/pages/classes/ClassDetailsPage.tsx";
+import JoinClassPlaceholderPage from "#/pages/classes/JoinClassPlaceholderPage.tsx";
+import AttendancePage from "#/pages/attendance/AttendancePage.tsx";
 import AnnouncementsPage from "#/pages/announcements/AnnouncementsPage.tsx";
 import AssignmentsPage from "#/pages/assignments/AssignmentsPage.tsx";
 import SubmissionsPage from "#/pages/assignments/SubmissionsPage.tsx";
-import AttendancePage from "#/pages/attendance/AttendancePage.tsx";
-import ClassDetailsPage from "#/pages/classes/ClassDetailsPage.tsx";
-import ClassesPage from "#/pages/classes/ClassesPage.tsx";
-import DashboardPage from "#/pages/dashboard/DashboardContainer.tsx";
 import NotFoundPage from "#/pages/errors/NotFoundPage.tsx";
 import UnauthorizedPage from "#/pages/errors/UnauthorizedPage.tsx";
-import LoginPage from "#/pages/LoginPage.tsx";
-import ProfilePage from "#/pages/profile/ProfilePage.tsx";
-import UsersPage from "#/pages/users/UsersPage.tsx";
-import ProtectedRoute from "#/routes/ProtectedRoute.tsx";
-import RoleGuard from "#/routes/RoleGuard.tsx";
-import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 
 function AppRoutes() {
   return (
@@ -34,7 +41,7 @@ function AppRoutes() {
         <Route
           path="users"
           element={
-            <RoleGuard allowedRoles={["admin"]}>
+            <RoleGuard allowedRoles={ADMIN_ROLES}>
               <UsersPage />
             </RoleGuard>
           }
@@ -43,8 +50,17 @@ function AppRoutes() {
         <Route
           path="classes"
           element={
-            <RoleGuard allowedRoles={["admin", "teacher"]}>
+            <RoleGuard allowedRoles={TEACHER_AND_ABOVE_ROLES}>
               <ClassesPage />
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="student-classes"
+          element={
+            <RoleGuard allowedRoles={["student"]}>
+              <StudentClassesPage />
             </RoleGuard>
           }
         />
@@ -52,8 +68,17 @@ function AppRoutes() {
         <Route
           path="classes/:id"
           element={
-            <RoleGuard allowedRoles={["admin", "teacher"]}>
+            <RoleGuard allowedRoles={TEACHER_AND_ABOVE_ROLES}>
               <ClassDetailsPage />
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="classes/join/:classId"
+          element={
+            <RoleGuard allowedRoles={["student"]}>
+              <JoinClassPlaceholderPage />
             </RoleGuard>
           }
         />
@@ -61,7 +86,7 @@ function AppRoutes() {
         <Route
           path="attendance"
           element={
-            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
+            <RoleGuard allowedRoles={ALL_ROLES}>
               <AttendancePage />
             </RoleGuard>
           }
@@ -70,7 +95,7 @@ function AppRoutes() {
         <Route
           path="announcements"
           element={
-            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
+            <RoleGuard allowedRoles={ALL_ROLES}>
               <AnnouncementsPage />
             </RoleGuard>
           }
@@ -79,7 +104,7 @@ function AppRoutes() {
         <Route
           path="assignments"
           element={
-            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
+            <RoleGuard allowedRoles={ALL_ROLES}>
               <AssignmentsPage />
             </RoleGuard>
           }
@@ -88,7 +113,7 @@ function AppRoutes() {
         <Route
           path="classes/:classId/assignments"
           element={
-            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
+            <RoleGuard allowedRoles={ALL_ROLES}>
               <AssignmentsPage />
             </RoleGuard>
           }
@@ -97,7 +122,7 @@ function AppRoutes() {
         <Route
           path="assignments/:id/submissions"
           element={
-            <RoleGuard allowedRoles={["admin", "teacher"]}>
+            <RoleGuard allowedRoles={TEACHER_AND_ABOVE_ROLES}>
               <SubmissionsPage />
             </RoleGuard>
           }
@@ -106,13 +131,12 @@ function AppRoutes() {
         <Route
           path="profile"
           element={
-            <RoleGuard allowedRoles={["admin", "teacher", "student"]}>
+            <RoleGuard allowedRoles={ALL_ROLES}>
               <ProfilePage />
             </RoleGuard>
           }
         />
       </Route>
-      <Route path="/home" element={<Navigate to="/" replace />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

@@ -1,10 +1,16 @@
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
+import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
 import type { ClassItem } from "#/types/class.ts";
 import type { Session } from "#/types/session.ts";
 import { formatDate } from "#/utils/formatDate.ts";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useToast } from "#/hooks/useToast.ts";
+import SessionForm from "#/pages/classes/SessionForm.tsx";
+import { sessionService } from "#/services/session.ts";
+import { getErrorMessage } from "#/utils/error.ts";
 
 interface ClassSessionsPanelProps {
   sessions: Session[];
@@ -12,6 +18,7 @@ interface ClassSessionsPanelProps {
   classId: string;
   canManage: boolean;
   onAddSession: () => void;
+  onSessionChange?: (sessions: Session[]) => void;
 }
 
 function ClassSessionsPanel({
@@ -20,8 +27,30 @@ function ClassSessionsPanel({
   classId,
   canManage,
   onAddSession,
+  onSessionChange,
 }: ClassSessionsPanelProps) {
   const navigate = useNavigate();
+  const { addToast } = useToast();
+  const [editingSession, setEditingSession] = useState<Session | null>(null);
+  const [deletingSession, setDeletingSession] = useState<Session | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const confirmDelete = async () => {
+    if (!deletingSession) return;
+    setIsDeleting(true);
+    try {
+      await sessionService.delete(deletingSession.id);
+      addToast("جلسه با موفقیت حذف شد.", "success");
+      setDeletingSession(null);
+      // Update the session list via callback
+      onSessionChange?.(sessions.filter((s) => s.id !== deletingSession.id));
+    } catch (err) {
+      addToast(getErrorMessage(err, "حذف جلسه با خطا مواجه شد."), "error");
+      setDeletingSession(null);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <Card title={`جلسات (${sessions.length})`}>
@@ -63,23 +92,64 @@ function ClassSessionsPanel({
                   <div className="text-sm text-gray-600">
                     {formatDate(s.date)}
                   </div>
-                  {canManage && classItem.status !== "inactive" && (
-                    <Button
-                      variant="secondary"
-                      onClick={() =>
-                        navigate(
-                          `/attendance?classId=${classId}&sessionId=${s.id}`,
-                        )
-                      }
-                    >
-                      حضور و غیاب
-                    </Button>
-                  )}
+{canManage && classItem.status !== "inactive" && (
+                      <>
+                        <Button
+                          variant="secondary"
+                          onClick={() =>
+                            navigate(
+                              `/attendance?classId=${classId}&sessionId=${s.id}`,
+                            )
+                          }
+                        >
+                          حضور و غیاب
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          onClick={() => setEditingSession(s)}
+                        >
+                          ویرایش
+                        </Button>
+                        <Button
+                          variant="danger"
+                          onClick={() => setDeletingSession(s)}
+                        >
+                          حذف
+                        </Button>
+                      </>
+                    )}
                 </div>
               </div>
             ))}
         </div>
       )}
+      {editingSession && (
+        <SessionForm
+          key={`session-form-edit-${editingSession.id}`}
+          classId={classId}
+          initialData={editingSession}
+          onClose={() => setEditingSession(null)}
+          onSuccess={(message, updatedSession) => {
+            addToast(message, "success");
+            setEditingSession(null);
+            // Update the session in the list via callback
+            onSessionChange?.(
+              sessions.map((s) => (s.id === updatedSession.id ? updatedSession : s)),
+            );
+          }}
+          onError={(message) => {
+            addToast(message, "error");
+          }}
+        />
+      )}
+      <ConfirmDialog
+        isOpen={!!deletingSession}
+        title="حذف جلسه"
+        message={`آیا از حذف جلسه "${deletingSession?.title ?? ""}" مطمئن هستید؟ این عمل قابل بازگشت نیست.`}
+        onClose={() => setDeletingSession(null)}
+        onConfirm={confirmDelete}
+        isLoading={isDeleting}
+      />
     </Card>
   );
 }

@@ -5,8 +5,10 @@ import Card from "#/components/ui/Card.tsx";
 import Input from "#/components/ui/Input.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
+import { MAX_ASSIGNMENT_GRADE } from "#/configs/constants.ts";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
+import { useMapById } from "#/hooks/useMapById.ts";
 import { assignmentService } from "#/services/assignment.ts";
 import { classService } from "#/services/class.ts";
 import { submissionService } from "#/services/submission.ts";
@@ -16,7 +18,9 @@ import type { ClassItem } from "#/types/class.ts";
 import type { ID } from "#/types/common.ts";
 import type { Submission } from "#/types/submission.ts";
 import type { User } from "#/types/user.ts";
+import { getErrorMessage } from "#/utils/error.ts";
 import { formatDate } from "#/utils/formatDate.ts";
+import { logger } from "#/utils/logger.ts";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -39,17 +43,9 @@ export default function SubmissionsPage() {
 
   const assignmentId = id as ID;
 
-  const userMap = useMemo(() => {
-    const map = new Map<ID, User>();
-    users.forEach((u) => map.set(u.id, u));
-    return map;
-  }, [users]);
+  const userMap = useMapById(users);
 
-  const classMap = useMemo(() => {
-    const map = new Map<ID, ClassItem>();
-    classes.forEach((c) => map.set(c.id, c));
-    return map;
-  }, [classes]);
+  const classMap = useMapById(classes);
 
   const getUserName = useCallback(
     (userId: ID) => userMap.get(userId)?.name ?? "—",
@@ -116,8 +112,14 @@ export default function SubmissionsPage() {
           setGrading(initialGrading);
         }
       })
-      .catch(() => {
-        if (!ignore) navigate("/assignments", { replace: true });
+      .catch((err) => {
+        if (ignore) return;
+        // Report the failure instead of silently redirecting (e.g. when
+        // json-server is down).
+        const message = getErrorMessage(err, "خطا در بارگذاری پاسخ‌ها.");
+        logger.error("Failed to load submissions", { error: message });
+        addToast(message, "error");
+        navigate("/assignments", { replace: true });
       })
       .finally(() => {
         if (!ignore) setLoading(false);
@@ -145,9 +147,9 @@ export default function SubmissionsPage() {
 
     if (
       gradeNum !== null &&
-      (isNaN(gradeNum) || gradeNum < 0 || gradeNum > 20)
+      (isNaN(gradeNum) || gradeNum < 0 || gradeNum > MAX_ASSIGNMENT_GRADE)
     ) {
-      addToast("نمره باید عددی بین 0 تا 20 باشد.", "error");
+      addToast(`نمره باید عددی بین 0 تا ${MAX_ASSIGNMENT_GRADE} باشد.`, "error");
       return;
     }
 
@@ -185,8 +187,8 @@ export default function SubmissionsPage() {
           feedback: data.feedback || "",
         },
       }));
-    } catch {
-      addToast("خطا در ثبت نمره.", "error");
+    } catch (err) {
+      addToast(getErrorMessage(err, "خطا در ثبت نمره."), "error");
     } finally {
       setSavingId(null);
     }
@@ -199,7 +201,7 @@ export default function SubmissionsPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <Button variant="secondary" onClick={() => navigate("/assignments")}>
-            ← بازگشت
+            → بازگشت
           </Button>
           <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
             پاسخ‌های تکلیف: {assignment?.title}
@@ -307,10 +309,10 @@ export default function SubmissionsPage() {
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div className="sm:col-span-1">
                       <Input
-                        label="نمره (0 تا 20)"
+                        label={`نمره (0 تا ${MAX_ASSIGNMENT_GRADE})`}
                         type="number"
                         min="0"
-                        max="20"
+                        max={MAX_ASSIGNMENT_GRADE}
                         step="0.5"
                         value={currentGrade}
                         onChange={(e) =>
@@ -334,7 +336,7 @@ export default function SubmissionsPage() {
                   <div className="flex items-center justify-between border-t border-gray-100 pt-3">
                     <div className="text-xs text-gray-500" aria-live="polite">
                       {sub.status === "graded" && sub.grade !== undefined
-                        ? `آخرین نمره ثبت‌شده: ${sub.grade}/20`
+                        ? `آخرین نمره ثبت‌شده: ${sub.grade}/${MAX_ASSIGNMENT_GRADE}`
                         : "هنوز نمره‌ای ثبت نشده است"}
                     </div>
                     <Button

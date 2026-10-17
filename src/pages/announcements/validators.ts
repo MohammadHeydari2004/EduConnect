@@ -1,3 +1,5 @@
+import { validateTitle } from "#/utils/validateTitle.ts";
+
 export interface AnnouncementFormErrors {
   title?: string;
   content?: string;
@@ -9,20 +11,19 @@ export function validateAnnouncementForm(values: {
   content: string;
 }): AnnouncementFormErrors {
   const errors: AnnouncementFormErrors = {};
-  const title = values.title.trim();
-  const content = values.content.trim();
-  if (!title) {
-    errors.title = "عنوان اطلاعیه الزامی است.";
-  } else if (title.length < 3) {
-    errors.title = "عنوان باید حداقل ۳ کاراکتر باشد.";
-  } else if (title.length > 100) {
-    errors.title = "عنوان نباید بیشتر از ۱۰۰ کاراکتر باشد.";
-  }
-  if (!content) {
+  const titleError = validateTitle(values.title, {
+    titleLabel: "اطلاعیه",
+    min: 3,
+    max: 100,
+  });
+  if (titleError) errors.title = titleError;
+
+  if (!values.content.trim()) {
     errors.content = "محتوای اطلاعیه الزامی است.";
-  } else if (content.length < 10) {
+  } else if (values.content.trim().length < 10) {
     errors.content = "محتوا باید حداقل ۱۰ کاراکتر باشد.";
   }
+
   if (errors.title || errors.content) {
     errors.form = "لطفاً خطاهای فرم را برطرف کنید.";
   }

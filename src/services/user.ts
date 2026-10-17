@@ -1,9 +1,14 @@
 import { baseApi } from "#/services/api/baseApi.ts";
-import type { ID, RecordStatus, UserRole } from "#/types/common.ts";
+import { announcementService } from "#/services/announcement.ts";
+import { classService } from "#/services/class.ts";
+import { submissionService } from "#/services/submission.ts";
+import { attendanceService } from "#/services/attendance.ts";
+import type { ID, RecordStatus } from "#/types/common.ts";
 import type {
   CreateUserPayload,
   UpdateUserPayload,
   User,
+  UserWithPassword,
 } from "#/types/user.ts";
 
 const endpoint = "/users";
@@ -56,13 +61,66 @@ async function ensureNotLastAdminIfDeactivating(user: User): Promise<void> {
   }
 }
 
+/**
+ * Delete all classes owned by the user. This cascades to sessions,
+ * attendance records, assignments, and submissions via their services.
+ */
+async function deleteRelatedClasses(userId: ID): Promise<void> {
+  const classes = await classService.getAll();
+  const ownedClasses = classes.filter((cls) => cls.teacherId === userId);
+  await Promise.all(ownedClasses.map((cls) => classService.delete(cls.id)));
+}
+
+async function deleteRelatedAttendances(userId: ID): Promise<void> {
+  const attendances = (await attendanceService.getAll()).filter(
+    (attendance) => attendance.studentId === userId,
+  );
+  await Promise.all(
+    attendances.map((attendance) => attendanceService.delete(attendance.id)),
+  );
+}
+
+async function deleteRelatedSubmissions(userId: ID): Promise<void> {
+  const submissions = (await submissionService.getAll()).filter(
+    (submission) => submission.studentId === userId,
+  );
+  await Promise.all(
+    submissions.map((submission) => submissionService.delete(submission.id)),
+  );
+}
+
+async function deleteRelatedAnnouncements(userId: ID): Promise<void> {
+  const announcements = (await announcementService.getAll()).filter(
+    (announcement) => announcement.authorId === userId,
+  );
+  await Promise.all(
+    announcements.map((announcement) =>
+      announcementService.delete(announcement.id),
+    ),
+  );
+}
+
+/** Remove the user from the `studentIds` of every class that lists them. */
+async function removeStudentFromClassRolls(userId: ID): Promise<void> {
+  const classes = await classService.getAll();
+  await Promise.all(
+    classes
+      .filter((cls) => (cls.studentIds ?? []).includes(userId))
+      .map((cls) =>
+        classService.update(cls.id, {
+          studentIds: (cls.studentIds ?? []).filter((id) => id !== userId),
+        }),
+      ),
+  );
+}
+
 export const userService = {
   getAll: getAllUsers,
   getById: getUserById,
 
   async create(data: CreateUserPayload): Promise<User> {
     await ensureEmailIsUnique(data.email);
-    const payload: Omit<User, "id"> = {
+    const payload: Omit<UserWithPassword, "id"> = {
       name: data.name.trim(),
       email: data.email.trim().toLowerCase(),
       password: data.password,
@@ -87,10 +145,9 @@ export const userService = {
       await ensureNotLastAdminIfDeactivating(existingUser);
     }
 
-    const { password: _, ...userWithoutPassword } = existingUser;
-
+    // Send only the changed fields; readonly fields (id/timestamps) must not
+    // be PATCHed back to the server.
     return baseApi.update<User>(endpoint, id, {
-      ...userWithoutPassword,
       name: data.name.trim(),
       email: data.email.trim().toLowerCase(),
       role: data.role,
@@ -100,6 +157,15 @@ export const userService = {
 
   async delete(id: ID): Promise<void> {
     await ensureNotLastAdmin(id);
+
+    await Promise.all([
+      deleteRelatedClasses(id),
+      deleteRelatedAttendances(id),
+      deleteRelatedSubmissions(id),
+      deleteRelatedAnnouncements(id),
+      removeStudentFromClassRolls(id),
+    ]);
+
     await baseApi.delete(endpoint, id);
   },
 
@@ -108,16 +174,8 @@ export const userService = {
     await ensureNotLastAdminIfDeactivating(user);
     const nextStatus: RecordStatus =
       user.status === "active" ? "inactive" : "active";
-    return baseApi.update<User>(endpoint, id, { ...user, status: nextStatus });
+    return baseApi.update<User>(endpoint, id, {
+      status: nextStatus,
+    });
   },
-
-  async changeRole(id: ID, role: UserRole): Promise<User> {
-    const user = await getUserById(id);
-    if (user.role === "admin" && role !== "admin") {
-      await ensureNotLastAdmin(id);
-    }
-    return baseApi.update<User>(endpoint, id, { ...user, role });
-  },
-
-  getAdminUsers,
 };

@@ -1,7 +1,19 @@
 import Card from "#/components/ui/Card.tsx";
+import ChartLegend from "#/components/ui/ChartLegend.tsx";
+import ChartTooltip, {
+  defaultChartLabel,
+  type ChartPayloadEntry,
+} from "#/components/ui/ChartTooltip.tsx";
+import EmptyState from "#/components/common/EmptyState.tsx";
 import StatCard from "#/components/ui/StatCard.tsx";
+import { ATTENDANCE_LABELS } from "#/components/ui/StatusChip.tsx";
+import type { DashboardData } from "#/types/dashboard.ts";
+import { attendanceService } from "#/services/attendance.ts";
 import type { User } from "#/types/user.ts";
-import { formatDate } from "#/utils/formatDate.ts";
+import type { AttendanceStatus } from "#/types/common.ts";
+import { formatDate, formatRelativeTime } from "#/utils/formatDate.ts";
+import { isAnnouncementVisibleTo } from "#/utils/announcementVisibility.ts";
+import { useStudentDashboardData } from "#/utils/dashboardData.ts";
 import { useMemo } from "react";
 import {
   Cell,
@@ -11,105 +23,14 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import type { DashboardData } from "./DashboardContainer";
 
 const ATTENDANCE_COLORS: Record<string, string> = {
-  حاضر: "#16a34a",
-  "با تأخیر": "#ca8a04",
-  غایب: "#dc2626",
+  present: "#16a34a",
+  late: "#ca8a04",
+  absent: "#dc2626",
 };
 
 const FALLBACK_COLOR = "#8884d8";
-
-interface ChartDataItem {
-  name: string;
-  value: number;
-  percentage: number;
-}
-
-interface TooltipPayloadEntry {
-  name?: string;
-  value?: number;
-  color?: string;
-  payload?: ChartDataItem;
-}
-
-interface CustomTooltipProps {
-  active?: boolean;
-  payload?: TooltipPayloadEntry[];
-}
-
-function CustomAttendanceTooltip({ active, payload }: CustomTooltipProps) {
-  if (active && payload && payload.length > 0) {
-    const data = payload[0];
-    if (data) {
-      const itemColor = data.color ?? "#333";
-      const value = data.value ?? 0;
-      const percentage = data.payload?.percentage ?? 0;
-      const name = data.payload?.name ?? data.name ?? "";
-
-      return (
-        <div className="min-w-40 rounded-lg border border-gray-200 bg-white p-3 text-sm shadow-lg">
-          <p
-            style={{ color: itemColor }}
-            className="mb-2 border-b pb-1 font-bold"
-          >
-            {name}
-          </p>
-          <div className="flex items-center justify-between gap-4 py-0.5">
-            <span className="text-gray-600">تعداد جلسات:</span>
-            <span className="font-bold text-gray-800">{value}</span>
-          </div>
-          <div className="flex items-center justify-between gap-4 py-0.5">
-            <span className="text-gray-600">درصد:</span>
-            <span className="font-bold text-gray-800">
-              {percentage.toFixed(1)}%
-            </span>
-          </div>
-        </div>
-      );
-    }
-  }
-  return null;
-}
-
-interface LegendPayloadEntry {
-  value: string;
-  color?: string;
-  payload?: {
-    name?: string;
-  };
-}
-
-interface CustomLegendProps {
-  payload?: LegendPayloadEntry[];
-}
-
-function CustomAttendanceLegend({ payload }: CustomLegendProps) {
-  if (payload) {
-    return (
-      <ul className="mt-2 flex flex-wrap justify-center gap-4">
-        {payload.map((entry, index) => {
-          const entryName = entry.payload?.name ?? entry.value ?? "";
-          const entryColor = entry.color ?? "#8884d8";
-          return (
-            <li
-              key={`item-${index}`}
-              className="flex items-center gap-1.5 text-sm"
-            >
-              <span
-                className="inline-block h-3 w-3 rounded-full"
-                style={{ backgroundColor: entryColor }}
-              ></span>
-              <span className="font-medium text-gray-700">{entryName}</span>
-            </li>
-          );
-        })}
-      </ul>
-    );
-  }
-  return null;
-}
 
 interface Props {
   data: DashboardData;
@@ -117,90 +38,66 @@ interface Props {
 }
 
 export default function StudentDashboard({ data, currentUser }: Props) {
-  const { classes, assignments, submissions, attendances, announcements } =
-    data;
+  const {
+    myClasses,
+    myAttendances,
+    pendingAssignments,
+    myAssignments,
+    mySubmissions,
+    classMap,
+  } = useStudentDashboardData(data, currentUser);
 
-  const myClasses = useMemo(
-    () => classes.filter((c) => (c.studentIds || []).includes(currentUser.id)),
-    [classes, currentUser.id],
+  const attendanceStats = useMemo(
+    () => attendanceService.calculateStudentStats(myAttendances),
+    [myAttendances],
   );
 
-  const myClassIdSet = useMemo(
-    () => new Set(myClasses.map((c) => c.id)),
-    [myClasses],
-  );
-
-  const myAssignments = useMemo(
-    () => assignments.filter((a) => myClassIdSet.has(a.classId)),
-    [assignments, myClassIdSet],
-  );
-
-  const mySubmissions = useMemo(
-    () => submissions.filter((s) => s.studentId === currentUser.id),
-    [submissions, currentUser.id],
-  );
-
-  const submittedAssignmentIds = useMemo(
-    () => new Set(mySubmissions.map((s) => s.assignmentId)),
-    [mySubmissions],
-  );
-
-  const pendingAssignments = myAssignments.filter(
-    (a) => !submittedAssignmentIds.has(a.id),
-  ).length;
-
-  const myAttendances = useMemo(
-    () => attendances.filter((a) => a.studentId === currentUser.id),
-    [attendances, currentUser.id],
-  );
-
-  const attendanceStats = useMemo(() => {
-    const present = myAttendances.filter((a) => a.status === "present").length;
-    const late = myAttendances.filter((a) => a.status === "late").length;
-    const absent = myAttendances.filter((a) => a.status === "absent").length;
-    const total = myAttendances.length;
-    const percentage = total > 0 ? ((present + late) / total) * 100 : 0;
-    return { present, late, absent, total, percentage };
-  }, [myAttendances]);
   const attendanceChartData = useMemo(() => {
     const total =
       attendanceStats.present + attendanceStats.late + attendanceStats.absent;
-    return [
-      {
-        name: "حاضر",
-        value: attendanceStats.present,
-        percentage: total > 0 ? (attendanceStats.present / total) * 100 : 0,
-      },
-      {
-        name: "با تأخیر",
-        value: attendanceStats.late,
-        percentage: total > 0 ? (attendanceStats.late / total) * 100 : 0,
-      },
-      {
-        name: "غایب",
-        value: attendanceStats.absent,
-        percentage: total > 0 ? (attendanceStats.absent / total) * 100 : 0,
-      },
-    ].filter((item) => item.value > 0);
-  }, [attendanceStats]);
-  const relevantAnnouncements = useMemo(() => {
-    return announcements
-      .filter((a) => {
-        if (a.classId === "0") {
-          const roles = a.targetRoles ?? ["admin", "teacher", "student"];
-          return roles.includes(currentUser.role);
-        }
 
-        const audience = a.targetAudience ?? "students";
-        if (audience !== "students" && audience !== "both") return false;
-        return myClassIdSet.has(a.classId);
+    const items: Array<{ key: string; value: number }> = [
+      { key: "present", value: attendanceStats.present },
+      { key: "late", value: attendanceStats.late },
+      { key: "absent", value: attendanceStats.absent },
+    ];
+
+    return items
+      .filter((item) => item.value > 0)
+      .map(({ key, value }) => ({
+        key,
+        name: ATTENDANCE_LABELS[key as AttendanceStatus] ?? key,
+        value,
+        percentage: total > 0 ? (value / total) * 100 : 0,
+      }));
+  }, [attendanceStats]);
+
+  // Upcoming assignments (due within 3 days, not submitted)
+  const upcomingAssignments = useMemo(() => {
+    const submittedIds = new Set(mySubmissions.map((s) => s.assignmentId));
+    const now = new Date();
+    const threeDaysFromNow = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    
+    return myAssignments
+      .filter((a) => {
+        if (submittedIds.has(a.id)) return false;
+        const deadline = new Date(a.deadline);
+        return deadline >= now && deadline <= threeDaysFromNow;
       })
+      .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+      .slice(0, 5);
+  }, [myAssignments, mySubmissions]);
+
+  const relevantAnnouncements = useMemo(() => {
+    return data.announcements
+      .filter((a) => isAnnouncementVisibleTo(currentUser, a, classMap))
       .sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       )
       .slice(0, 5);
-  }, [announcements, currentUser.role, myClassIdSet]);
+  }, [data.announcements, currentUser, classMap]);
+
   const chartSummary = `وضعیت حضور و غیاب: ${attendanceChartData.map((d) => `${d.name} ${d.value} جلسه`).join("، ")}`;
 
   return (
@@ -252,16 +149,60 @@ export default function StudentDashboard({ data, currentUser }: Props) {
                   >
                     {attendanceChartData.map((entry) => (
                       <Cell
-                        key={`cell-${entry.name}`}
-                        fill={ATTENDANCE_COLORS[entry.name] ?? FALLBACK_COLOR}
+                        key={`cell-${entry.key}`}
+                        fill={ATTENDANCE_COLORS[entry.key] ?? FALLBACK_COLOR}
                       />
                     ))}
                   </Pie>
-                  <Tooltip content={<CustomAttendanceTooltip />} />
+                  <Tooltip
+                    content={
+                      <ChartTooltip>
+                        {(first: ChartPayloadEntry) => {
+                          const itemColor = first.color ?? "#333";
+                          const value =
+                            typeof first.value === "number"
+                              ? first.value
+                              : 0;
+                          const percentage =
+                            ((first.payload as { percentage?: number } | undefined)
+                              ?.percentage ?? 0) as number;
+                          const name =
+                            ((first.payload as { name?: string } | undefined)
+                              ?.name ?? first.name) as string;
+                          return (
+                            <div className="min-w-40">
+                              <p
+                                style={{ color: itemColor }}
+                                className="mb-2 border-b pb-1 font-bold"
+                              >
+                                {name}
+                              </p>
+                              <div className="flex items-center justify-between gap-4 py-0.5">
+                                <span className="text-gray-600">
+                                  تعداد جلسات:
+                                </span>
+                                <span className="font-bold text-gray-800">
+                                  {value}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between gap-4 py-0.5">
+                                <span className="text-gray-600">درصد:</span>
+                                <span className="font-bold text-gray-800">
+                                  {percentage.toFixed(1)}%
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        }}
+                      </ChartTooltip>
+                    }
+                  />
                   <Legend
                     verticalAlign="bottom"
                     height={36}
-                    content={<CustomAttendanceLegend />}
+                    content={
+                      <ChartLegend resolveLabel={defaultChartLabel} />
+                    }
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -269,31 +210,79 @@ export default function StudentDashboard({ data, currentUser }: Props) {
           )}
         </Card>
 
-        <Card title="آخرین اطلاعیه‌های مرتبط">
-          {relevantAnnouncements.length === 0 ? (
-            <p className="text-sm text-gray-500">اطلاعیه‌ای وجود ندارد.</p>
+        <Card title="تکالیف نزدیک به ددلاین">
+          {upcomingAssignments.length === 0 ? (
+            <EmptyState
+              title="تکلیفی در آستانه ددلاین نیست"
+              description="شما برای ۳ روز آینده تکلیف ارسال نشده‌ای ندارید."
+            />
           ) : (
             <div className="space-y-3">
-              {relevantAnnouncements.map((ann) => (
-                <div
-                  key={ann.id}
-                  className="rounded-lg border border-gray-100 bg-gray-50 p-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-semibold text-gray-800">{ann.title}</h4>
-                    <span className="text-xs text-gray-400">
-                      {formatDate(ann.createdAt)}
-                    </span>
+              {upcomingAssignments.map((assignment) => {
+                const deadline = new Date(assignment.deadline);
+                const now = new Date();
+                const diffHours = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60));
+                const isUrgent = diffHours <= 24;
+                
+                return (
+                  <div
+                    key={assignment.id}
+                    className={`rounded-lg border p-3 ${isUrgent ? "border-red-200 bg-red-50" : "border-gray-100 bg-gray-50"}`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-gray-800 truncate">
+                          {assignment.title}
+                        </h4>
+                        <p className="mt-1 text-sm text-gray-600">
+                          کلاس: {classMap.get(assignment.classId)?.title ?? "نامشخص"}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <span className={`text-xs font-medium ${isUrgent ? "text-red-600" : "text-amber-600"}`}>
+                          {diffHours <= 0
+                            ? "مهلت تمام شده"
+                            : diffHours < 24
+                            ? `${diffHours} ساعت باقی‌مانده`
+                            : `${Math.ceil(diffHours / 24)} روز باقی‌مانده`}
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          {formatRelativeTime(assignment.deadline)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <p className="mt-1 line-clamp-2 text-sm text-gray-600">
-                    {ann.content}
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </Card>
       </div>
+
+      <Card title="آخرین اطلاعیه‌های مرتبط">
+        {relevantAnnouncements.length === 0 ? (
+          <p className="text-sm text-gray-500">اطلاعیه‌ای وجود ندارد.</p>
+        ) : (
+          <div className="space-y-3">
+            {relevantAnnouncements.map((ann) => (
+              <div
+                key={ann.id}
+                className="rounded-lg border border-gray-100 bg-gray-50 p-3"
+              >
+                <div className="flex items-center justify-between">
+                  <h4 className="font-semibold text-gray-800">{ann.title}</h4>
+                  <span className="text-xs text-gray-400">
+                    {formatDate(ann.createdAt)}
+                  </span>
+                </div>
+                <p className="mt-1 line-clamp-2 text-sm text-gray-600">
+                  {ann.content}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

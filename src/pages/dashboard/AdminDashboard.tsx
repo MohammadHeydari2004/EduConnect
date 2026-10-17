@@ -1,9 +1,16 @@
 import Card from "#/components/ui/Card.tsx";
+import ChartLegend from "#/components/ui/ChartLegend.tsx";
+import ChartTooltip, {
+  defaultChartLabel,
+  type ChartPayloadEntry,
+} from "#/components/ui/ChartTooltip.tsx";
 import StatCard from "#/components/ui/StatCard.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
+import type { DashboardData } from "#/types/dashboard.ts";
 import type { ClassItem } from "#/types/class.ts";
-import type { User } from "#/types/user.ts";
+import { CHART_COLORS } from "#/configs/constants.ts";
+import { getEffectiveStatus } from "#/utils/class.ts";
 import { formatDate } from "#/utils/formatDate.ts";
 import { useMemo } from "react";
 import {
@@ -14,76 +21,14 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import type { DashboardData } from "./DashboardContainer";
-
-const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#6b7280"];
 
 interface RoleDataItem {
   name: string;
   value: number;
 }
 
-interface TooltipPayloadEntry {
-  name?: string;
-  value?: number;
-  color?: string;
-}
-
-interface LegendPayloadEntry {
-  value?: string;
-  color?: string;
-}
-
-interface CustomTooltipProps {
-  active?: boolean;
-  payload?: TooltipPayloadEntry[];
-  totalUsers: number;
-}
-
-function CustomTooltip({ active, payload, totalUsers }: CustomTooltipProps) {
-  if (active && payload && payload.length > 0) {
-    const data = payload[0];
-    if (data) {
-      const itemColor = data.color ?? "#333";
-      const value = data.value ?? 0;
-      const percentage = totalUsers > 0 ? (value / totalUsers) * 100 : 0;
-      return (
-        <div className="rounded-lg border border-gray-200 bg-white p-2 text-sm shadow-xs">
-          <p style={{ color: itemColor }} className="font-bold">
-            {`${data.name ?? ""}: ${percentage.toFixed(1)}% (${value} نفر)`}
-          </p>
-        </div>
-      );
-    }
-  }
-  return null;
-}
-
-interface CustomLegendProps {
-  payload?: LegendPayloadEntry[];
-}
-
-function CustomLegend({ payload }: CustomLegendProps) {
-  if (!payload) return null;
-  return (
-    <ul className="mt-2 flex flex-wrap justify-center gap-4">
-      {payload.map((entry, index) => {
-        const entryValue = String(entry.value ?? "");
-        const entryColor = entry.color ?? "#8884d8";
-        return (
-          <li key={`item-${index}`} className="flex items-center gap-1 text-sm">
-            <span style={{ color: entryColor }}>●</span>
-            <span>{entryValue}</span>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
 interface Props {
   data: DashboardData;
-  currentUser: User;
 }
 
 export default function AdminDashboard({ data }: Props) {
@@ -108,10 +53,10 @@ export default function AdminDashboard({ data }: Props) {
   );
   const recentClasses = useMemo(() => {
     return [...classes]
-      .filter((c) => c.createdAt)
+      .filter((c): c is ClassItem & { createdAt: string } => !!c.createdAt)
       .sort(
         (a, b) =>
-          new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime(),
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       )
       .slice(0, 5);
   }, [classes]);
@@ -165,18 +110,40 @@ export default function AdminDashboard({ data }: Props) {
                     {roleData.map((_, index) => (
                       <Cell
                         key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
+                        fill={CHART_COLORS[index % CHART_COLORS.length]}
                       />
                     ))}
                   </Pie>
                   <Tooltip
-                    content={<CustomTooltip totalUsers={totalUsers} />}
+                    content={
+                      <ChartTooltip>
+                        {(first: ChartPayloadEntry) => {
+                          const itemColor = first.color ?? "#333";
+                          const value =
+                            typeof first.value === "number" ? first.value : 0;
+                          const percentage =
+                            totalUsers > 0 ? (value / totalUsers) * 100 : 0;
+                          return (
+                            <p
+                              style={{ color: itemColor }}
+                              className="font-bold"
+                            >
+                              {`${first.name ?? ""}: ${percentage.toFixed(1)}% (${value} نفر)`}
+                            </p>
+                          );
+                        }}
+                      </ChartTooltip>
+                    }
                     contentStyle={{ direction: "rtl", textAlign: "right" }}
                   />
                   <Legend
                     verticalAlign="bottom"
                     height={36}
-                    content={<CustomLegend />}
+                    content={
+                      <ChartLegend
+                        resolveLabel={defaultChartLabel}
+                      />
+                    }
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -188,24 +155,34 @@ export default function AdminDashboard({ data }: Props) {
           {recentClasses.length === 0 ? (
             <p className="text-sm text-gray-500">کلاسی ثبت نشده است.</p>
           ) : (
-            <Table<ClassItem>
+            <Table<ClassItem & { createdAt: string }>
               getRowKey={(c) => c.id}
               columns={[
-                { key: "title", title: "عنوان کلاس", render: (c) => c.title },
+                {
+                  key: "title",
+                  title: "عنوان کلاس",
+                  width: "40%",
+                  render: (c) => c.title,
+                },
                 {
                   key: "capacity",
                   title: "ظرفیت",
-                  render: (c) => `${(c.studentIds || []).length}/${c.capacity}`,
+                  width: "15%",
+                  render: (c) => `${c.studentIds.length}/${c.capacity}`,
                 },
                 {
                   key: "status",
                   title: "وضعیت",
-                  render: (c) => <StatusChip status={c.status || "inactive"} />,
+                  width: "25%",
+                  render: (c) => (
+                    <StatusChip status={getEffectiveStatus(c)} />
+                  ),
                 },
                 {
                   key: "createdAt",
                   title: "تاریخ ثبت",
-                  render: (c) => formatDate(c.createdAt || ""),
+                  width: "20%",
+                  render: (c) => formatDate(c.createdAt),
                 },
               ]}
               data={recentClasses}
@@ -215,16 +192,16 @@ export default function AdminDashboard({ data }: Props) {
                     <span className="text-base font-bold text-gray-800">
                       {c.title || "(بدون عنوان)"}
                     </span>
-                    <StatusChip status={c.status || "inactive"} />
+                    <StatusChip status={getEffectiveStatus(c)} />
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
                     <span>
                       <span className="text-gray-500">ظرفیت:</span>{" "}
-                      {(c.studentIds || []).length}/{c.capacity}
+                      {c.studentIds.length}/{c.capacity}
                     </span>
                     <span>
                       <span className="text-gray-500">تاریخ:</span>{" "}
-                      {formatDate(c.createdAt || "")}
+                      {formatDate(c.createdAt)}
                     </span>
                   </div>
                 </div>

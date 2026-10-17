@@ -7,7 +7,7 @@ export interface Submission {
   content: string;
   readonly submittedAt: string;
   status: SubmissionStatus;
-  grade?: Nullable<number>;
+  grade?: number;
   feedback?: Nullable<string>;
   readonly updatedAt?: string;
 }

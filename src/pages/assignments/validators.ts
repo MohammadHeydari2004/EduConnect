@@ -1,4 +1,6 @@
 import type { ID } from "#/types/common.ts";
+import { isDateBeforeToday } from "#/utils/formatDate.ts";
+import { validateTitle } from "#/utils/validateTitle.ts";
 
 export interface AssignmentFormErrors {
   title?: string;
@@ -11,15 +13,14 @@ export function validateAssignmentForm(values: {
   title: string;
   deadline: string;
   classId: ID;
+  originalDeadline?: string;
 }): AssignmentFormErrors {
   const errors: AssignmentFormErrors = {};
-  const title = values.title.trim();
-
-  if (!title) {
-    errors.title = "عنوان تکلیف الزامی است.";
-  } else if (title.length < 3) {
-    errors.title = "عنوان باید حداقل ۳ کاراکتر باشد.";
-  }
+  const titleError = validateTitle(values.title, {
+    titleLabel: "تکلیف",
+    min: 3,
+  });
+  if (titleError) errors.title = titleError;
 
   if (!values.classId) {
     errors.classId = "انتخاب کلاس الزامی است.";
@@ -27,13 +28,11 @@ export function validateAssignmentForm(values: {
 
   if (!values.deadline) {
     errors.deadline = "تعیین ددلاین الزامی است.";
-  } else {
-    const selectedDate = new Date(values.deadline);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (selectedDate < today) {
-      errors.deadline = "ددلاین نمی‌تواند در گذشته باشد.";
-    }
+  } else if (
+    isDateBeforeToday(values.deadline) &&
+    values.originalDeadline !== values.deadline
+  ) {
+    errors.deadline = "ددلاین نمی‌تواند در گذشته باشد.";
   }
 
   if (Object.keys(errors).length > 0) {

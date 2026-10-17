@@ -16,7 +16,10 @@ export const announcementService = {
     }),
 
   update: (id: ID, data: Partial<Announcement>) =>
-    baseApi.update<Announcement>(endpoint, id, data),
+    baseApi.update<Announcement>(endpoint, id, {
+      ...data,
+      updatedAt: new Date().toISOString(),
+    }),
 
   delete: (id: ID) => baseApi.delete(endpoint, id),
 

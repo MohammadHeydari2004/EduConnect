@@ -2,23 +2,19 @@ import Button from "#/components/ui/Button.tsx";
 import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
+import { validateSessionForm } from "#/pages/classes/sessionValidation.ts";
 import { sessionService } from "#/services/session.ts";
 import type { ID } from "#/types/common.ts";
-import type { Session } from "#/types/session.ts";
+import type { Session, SessionFormValues } from "#/types/session.ts";
+import { getErrorMessage } from "#/utils/error.ts";
 import { useState } from "react";
-import { validateSessionForm } from "./sessionValidation";
 
 interface Props {
   classId: ID;
   onClose: () => void;
   onError: (message: string) => void;
   onSuccess: (message: string, session: Session) => void;
-}
-
-interface SessionFormValues {
-  title: string;
-  date: string;
-  description: string;
+  initialData?: Session | null;
 }
 
 export default function SessionForm({
@@ -26,12 +22,15 @@ export default function SessionForm({
   onClose,
   onError,
   onSuccess,
+  initialData,
 }: Props) {
-  const [form, setForm] = useState<SessionFormValues>({
-    title: "",
-    date: "",
-    description: "",
-  });
+  const isEdit = !!initialData;
+  const [form, setForm] = useState<SessionFormValues>(() => ({
+    title: initialData?.title ?? "",
+    date: initialData?.date ?? "",
+    description: initialData?.description ?? "",
+    classId,
+  }));
   const [errors, setErrors] = useState<
     Partial<Record<keyof SessionFormValues, string>>
   >({});
@@ -46,19 +45,22 @@ export default function SessionForm({
 
     try {
       setIsSubmitting(true);
-      const newSession = await sessionService.create({ ...form, classId });
-      onSuccess("جلسه با موفقیت ایجاد شد.", newSession);
+      let newSession: Session;
+      if (isEdit && initialData) {
+        newSession = await sessionService.update(initialData.id, form);
+      } else {
+        newSession = await sessionService.create({ ...form, classId });
+      }
+      onSuccess(isEdit ? "جلسه با موفقیت ویرایش شد." : "جلسه با موفقیت ایجاد شد.", newSession);
     } catch (err) {
-      onError(
-        err instanceof Error ? err.message : "ایجاد جلسه با خطا مواجه شد.",
-      );
+      onError(getErrorMessage(err, isEdit ? "ویرایش جلسه با خطا مواجه شد." : "ایجاد جلسه با خطا مواجه شد."));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Modal isOpen={true} title="افزودن جلسه جدید" onClose={onClose}>
+    <Modal title={isEdit ? "ویرایش جلسه" : "افزودن جلسه جدید"} onClose={onClose}>
       <div className="space-y-4">
         <Input
           label="عنوان جلسه"

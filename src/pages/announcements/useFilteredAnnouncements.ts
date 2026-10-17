@@ -1,52 +1,61 @@
+import { useMapById } from "#/hooks/useMapById.ts";
 import type { Announcement } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
+import type { UserRole } from "#/types/common.ts";
+import { isAnnouncementVisibleTo } from "#/utils/announcementVisibility.ts";
 import { useMemo } from "react";
+
+interface AnnouncementFilters {
+  authorId?: string;
+  classId?: string;
+  targetRole?: "" | UserRole;
+  readStatus?: "read" | "unread" | "all";
+}
 
 interface UseFilteredAnnouncementsProps {
   announcements: Announcement[];
   classes: ClassItem[];
   currentUser: User | null;
+  filters: AnnouncementFilters;
 }
 
 export function useFilteredAnnouncements({
   announcements,
   classes,
   currentUser,
+  filters,
 }: UseFilteredAnnouncementsProps) {
-  const classMap = useMemo(() => {
-    const map = new Map<string, ClassItem>();
-    classes.forEach((c) => map.set(c.id, c));
-    return map;
-  }, [classes]);
+  const classMap = useMapById(classes);
 
   const filteredAnnouncements = useMemo(() => {
     if (!currentUser) return [];
-
-    return announcements.filter((a) => {
-      if (currentUser.role === "admin") return true;
-      if (a.authorId === currentUser.id) return true;
-      if (a.classId === "0") {
-        const roles = a.targetRoles ?? ["admin", "teacher", "student"];
-        return roles.includes(currentUser.role);
-      }
-      const targetClass = classMap.get(a.classId);
-      if (!targetClass) return false;
-
-      const audience = a.targetAudience ?? "students";
-      const isTeacherOfThisClass = targetClass.teacherId === currentUser.id;
-      const isStudentInThisClass = (targetClass.studentIds || []).includes(
-        currentUser.id,
-      );
-
-      if (audience === "teacher") return isTeacherOfThisClass;
-      if (audience === "students") return isStudentInThisClass;
-      if (audience === "both")
-        return isTeacherOfThisClass || isStudentInThisClass;
-
-      return false;
-    });
-  }, [announcements, classMap, currentUser]);
+    return announcements
+      .filter((a) => isAnnouncementVisibleTo(currentUser, a, classMap))
+      .filter((a) => {
+        if (filters.authorId && a.authorId !== filters.authorId) return false;
+        if (filters.classId) {
+          if (filters.classId === "global" && a.classId !== "0") return false;
+          if (filters.classId !== "global" && a.classId !== filters.classId) return false;
+        }
+        if (filters.targetRole) {
+          if (a.classId === "0") {
+            const roles = a.targetRoles ?? [];
+            if (!roles.includes(filters.targetRole)) return false;
+          } else {
+            const audience = a.targetAudience ?? "students";
+            if (filters.targetRole === "teacher" && audience === "students") return false;
+            if (filters.targetRole === "student" && audience === "teacher") return false;
+          }
+        }
+        if (filters.readStatus && currentUser) {
+          const isSeen = a.seenBy.includes(currentUser.id);
+          if (filters.readStatus === "read" && !isSeen) return false;
+          if (filters.readStatus === "unread" && isSeen) return false;
+        }
+        return true;
+      });
+  }, [announcements, classMap, currentUser, filters]);
 
   return filteredAnnouncements;
 }

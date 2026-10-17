@@ -1,4 +1,4 @@
-import ErrorBoundaryWrapper from "#/components/common/ErrorBoundaryWrapper";
+import ErrorBoundaryWrapper from "#/components/common/ErrorBoundaryWrapper.tsx";
 import type { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 

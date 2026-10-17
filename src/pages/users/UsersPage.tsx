@@ -3,9 +3,14 @@ import Loading from "#/components/common/Loading.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
+import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
-import { isApiError } from "#/services/api/axiosInstance.ts";
+import { useModalState } from "#/hooks/useModalState.ts";
+import UserDetails from "#/pages/users/UserDetails.tsx";
+import UserFilters from "#/pages/users/UserFilters.tsx";
+import UserForm from "#/pages/users/UserForm.tsx";
+import UserTable from "#/pages/users/UserTable.tsx";
 import { userService } from "#/services/user.ts";
 import type {
   CreateUserPayload,
@@ -13,11 +18,9 @@ import type {
   User,
   UserFilters as UserFiltersType,
 } from "#/types/user.ts";
-import { useEffect, useMemo, useState } from "react";
-import UserDetails from "./UserDetails";
-import UserFilters from "./UserFilters";
-import UserForm from "./UserForm";
-import UserTable from "./UserTable";
+import { getErrorMessage } from "#/utils/error.ts";
+import { useAsyncData } from "#/hooks/useAsyncData.ts";
+import { useMemo, useState } from "react";
 
 const initialFilters: UserFiltersType = {
   searchName: "",
@@ -30,42 +33,22 @@ function UsersPage() {
   const { user: currentUser } = useAuth();
   const { addToast } = useToast();
 
-  const [users, setUsers] = useState<User[]>([]);
   const [filters, setFilters] = useState<UserFiltersType>(initialFilters);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const userModal = useModalState<User>();
 
-  useEffect(() => {
-    let ignore = false;
-    const loadUsers = async () => {
-      try {
-        setError("");
-        const data = await userService.getAll();
-        if (!ignore) setUsers(data);
-      } catch (err) {
-        if (!ignore) {
-          const msg = isApiError(err)
-            ? err.userMessage
-            : "دریافت لیست کاربران با خطا مواجه شد.";
-          setError(msg);
-        }
-      } finally {
-        if (!ignore) setLoading(false);
-      }
-    };
-    loadUsers();
-    return () => {
-      ignore = true;
-    };
-  }, []);
+  const { data: users, loading, error, refresh: refreshUsers } =
+    useAsyncData<User[]>({
+      fetcher: () => userService.getAll(),
+      deps: [],
+      fallbackError: "دریافت لیست کاربران با خطا مواجه شد.",
+    });
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isTogglingStatus, setIsTogglingStatus] = useState(false);
 
   const filteredUsers = useMemo(() => {
+    if (!users) return [];
     return users.filter((user) => {
       const matchesName = user.name
         .toLowerCase()
@@ -74,121 +57,88 @@ function UsersPage() {
         .toLowerCase()
         .includes(filters.searchEmail.toLowerCase());
       const matchesRole = filters.role ? user.role === filters.role : true;
-      const matchesStatus = filters.status
-        ? user.status === filters.status
-        : true;
+      const matchesStatus = filters.status ? user.status === filters.status : true;
       return matchesName && matchesEmail && matchesRole && matchesStatus;
     });
   }, [users, filters]);
 
   const handleCreate = async (values: CreateUserPayload) => {
     try {
-      const newUser = await userService.create(values);
+      await userService.create(values);
       addToast("کاربر با موفقیت ایجاد شد.", "success");
-
-      setUsers((prev) => [...prev, newUser]);
-      setIsCreateOpen(false);
+      refreshUsers();
+      userModal.close();
     } catch (err) {
-      const message = isApiError(err)
-        ? err.userMessage
-        : err instanceof Error
-          ? err.message
-          : "ایجاد کاربر ناموفق بود.";
-      addToast(message, "error");
+      addToast(getErrorMessage(err, "ایجاد کاربر ناموفق بود."), "error");
     }
   };
 
   const handleOpenEdit = (user: User) => {
-    setSelectedUser(user);
-    setIsEditOpen(true);
+    userModal.openWithTarget("edit", user);
   };
 
   const handleUpdate = async (values: UpdateUserPayload) => {
-    if (!selectedUser) return;
-    if (currentUser?.id === selectedUser.id && values.status === "inactive") {
+    const target = userModal.target;
+    if (!target) return;
+    if (currentUser?.id === target.id && values.status === "inactive") {
       addToast("شما نمی‌توانید حساب کاربری خودتان را غیرفعال کنید.", "error");
       return;
     }
     try {
-      const updatedUser = await userService.update(selectedUser.id, values);
+      await userService.update(target.id, values);
       addToast("اطلاعات کاربر با موفقیت ویرایش شد.", "success");
-
-      setUsers((prev) =>
-        prev.map((u) => (u.id === updatedUser.id ? updatedUser : u)),
-      );
-
-      setIsEditOpen(false);
-      setSelectedUser(null);
+      refreshUsers();
+      userModal.close();
     } catch (err) {
-      const message = isApiError(err)
-        ? err.userMessage
-        : err instanceof Error
-          ? err.message
-          : "ویرایش کاربر ناموفق بود.";
-      addToast(message, "error");
+      addToast(getErrorMessage(err, "ویرایش کاربر ناموفق بود."), "error");
     }
   };
 
   const handleOpenDelete = (user: User) => {
-    setSelectedUser(user);
-    setIsDeleteConfirmOpen(true);
+    userModal.openWithTarget("delete", user);
   };
 
   const handleDelete = async () => {
-    if (!selectedUser || !currentUser) return;
-    if (selectedUser.id === currentUser.id) {
+    const target = userModal.target;
+    if (!target || !currentUser) return;
+    if (target.id === currentUser.id) {
       addToast("شما نمی‌توانید حساب کاربری خودتان را حذف کنید.", "error");
-      setIsDeleteConfirmOpen(false);
-      setSelectedUser(null);
+      userModal.close();
       return;
     }
-
-    const userToDeleteId = selectedUser.id;
-
+    setIsDeleting(true);
     try {
-      await userService.delete(userToDeleteId);
+      await userService.delete(target.id);
       addToast("کاربر با موفقیت حذف شد.", "success");
-
-      setUsers((prev) => prev.filter((u) => u.id !== userToDeleteId));
+      refreshUsers();
     } catch (err) {
-      const message = isApiError(err)
-        ? err.userMessage
-        : err instanceof Error
-          ? err.message
-          : "حذف کاربر ناموفق بود.";
-      addToast(message, "error");
+      addToast(getErrorMessage(err, "حذف کاربر ناموفق بود."), "error");
     } finally {
-      setIsDeleteConfirmOpen(false);
-      setSelectedUser(null);
+      setIsDeleting(false);
+      userModal.close();
     }
   };
 
   const handleToggleStatus = async (user: User) => {
-    if (!currentUser) return;
+    if (!currentUser || isTogglingStatus) return;
     if (user.id === currentUser.id) {
       addToast("شما نمی‌توانید وضعیت حساب خودتان را تغییر دهید.", "error");
       return;
     }
+    setIsTogglingStatus(true);
     try {
-      const toggledUser = await userService.toggleStatus(user.id);
+      await userService.toggleStatus(user.id);
       addToast("وضعیت کاربر با موفقیت تغییر کرد.", "success");
-
-      setUsers((prev) =>
-        prev.map((u) => (u.id === toggledUser.id ? toggledUser : u)),
-      );
+      refreshUsers();
     } catch (err) {
-      const message = isApiError(err)
-        ? err.userMessage
-        : err instanceof Error
-          ? err.message
-          : "تغییر وضعیت کاربر ناموفق بود.";
-      addToast(message, "error");
+      addToast(getErrorMessage(err, "تغییر وضعیت کاربر ناموفق بود."), "error");
+    } finally {
+      setIsTogglingStatus(false);
     }
   };
 
   const handleView = (user: User) => {
-    setSelectedUser(user);
-    setIsDetailsOpen(true);
+    userModal.openWithTarget("details", user);
   };
 
   return (
@@ -198,7 +148,7 @@ function UsersPage() {
           مدیریت کاربران
         </h1>
         <Button
-          onClick={() => setIsCreateOpen(true)}
+          onClick={() => userModal.open("create")}
           className="w-full sm:w-auto"
         >
           ایجاد کاربر
@@ -215,13 +165,8 @@ function UsersPage() {
         {loading ? (
           <Loading />
         ) : error ? (
-          <div
-            className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            role="alert"
-          >
-            {error}
-          </div>
-        ) : users.length === 0 ? (
+          <ErrorAlert message={error} />
+        ) : !users || users.length === 0 ? (
           <EmptyState
             title="کاربری ثبت نشده است"
             description="هنوز هیچ کاربری در سیستم وجود ندارد."
@@ -232,59 +177,42 @@ function UsersPage() {
             description="هیچ کاربری با فیلترهای انتخاب‌شده پیدا نشد."
           />
         ) : (
-          <div className="-mx-5 overflow-x-auto sm:mx-0">
-            <UserTable
-              users={filteredUsers}
-              currentUserId={currentUser?.id}
-              onView={handleView}
-              onEdit={handleOpenEdit}
-              onDelete={handleOpenDelete}
-              onToggleStatus={handleToggleStatus}
-            />
-          </div>
+          <UserTable
+            users={filteredUsers}
+            currentUserId={currentUser?.id}
+            onView={handleView}
+            onEdit={handleOpenEdit}
+            onDelete={handleOpenDelete}
+            onToggleStatus={handleToggleStatus}
+          />
         )}
       </Card>
 
-      <UserForm
-        key={`create-${isCreateOpen}`}
-        isOpen={isCreateOpen}
-        mode="create"
-        onClose={() => setIsCreateOpen(false)}
-        onCreate={handleCreate}
-        onUpdate={async () => {}}
-      />
-
-      <UserForm
-        key={`edit-${selectedUser?.id ?? "none"}-${isEditOpen}`}
-        isOpen={isEditOpen}
-        mode="edit"
-        user={selectedUser}
-        onClose={() => {
-          setIsEditOpen(false);
-          setSelectedUser(null);
-        }}
-        onCreate={async () => {}}
-        onUpdate={handleUpdate}
-      />
+      {(userModal.isOpen("create") || userModal.isOpen("edit")) && (
+        <UserForm
+          key={userModal.kind ?? "none"}
+          isOpen
+          mode={userModal.kind === "edit" ? "edit" : "create"}
+          user={userModal.kind === "edit" ? userModal.target : null}
+          onClose={userModal.close}
+          onCreate={handleCreate}
+          onUpdate={handleUpdate}
+        />
+      )}
 
       <UserDetails
-        isOpen={isDetailsOpen}
-        user={selectedUser}
-        onClose={() => {
-          setIsDetailsOpen(false);
-          setSelectedUser(null);
-        }}
+        isOpen={userModal.isOpen("details")}
+        user={userModal.target}
+        onClose={userModal.close}
       />
 
       <ConfirmDialog
-        isOpen={isDeleteConfirmOpen}
+        isOpen={userModal.isOpen("delete")}
         title="حذف کاربر"
-        message={`آیا از حذف کاربر "${selectedUser?.name ?? ""}" مطمئن هستید؟`}
-        onClose={() => {
-          setIsDeleteConfirmOpen(false);
-          setSelectedUser(null);
-        }}
+        message={`آیا از حذف کاربر "${userModal.target?.name ?? ""}" مطمئن هستید؟`}
+        onClose={userModal.close}
         onConfirm={handleDelete}
+        isLoading={isDeleting}
       />
     </div>
   );

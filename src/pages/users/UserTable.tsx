@@ -1,4 +1,12 @@
+import {
+  BanIcon,
+  CheckCircleIcon,
+  EditIcon,
+  EyeIcon,
+  TrashIcon,
+} from "#/components/common/icons.tsx";
 import Button from "#/components/ui/Button.tsx";
+import MenuItem from "#/components/ui/MenuItem.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
 import type { ID } from "#/types/common.ts";
@@ -25,12 +33,14 @@ function UserTable({
   return (
     <Table
       getRowKey={(user) => user.id}
+      getRowLabel={(user) => user.name}
       columns={[
         {
           key: "name",
           title: "نام",
+          width: "15%",
           render: (user) => (
-            <div className="font-medium text-gray-800">
+            <div className="font-medium text-gray-800 truncate px-1" title={user.name}>
               {user.name}
               {user.id === currentUserId && (
                 <span className="mr-2 text-xs text-blue-600">(شما)</span>
@@ -38,18 +48,31 @@ function UserTable({
             </div>
           ),
         },
-        { key: "email", title: "ایمیل" },
+        {
+          key: "email",
+          title: "ایمیل",
+          width: "15%",
+          render: (user) => (
+            <div className="truncate px-1" title={user.email}>
+              {user.email}
+            </div>
+          ),
+        },
         {
           key: "role",
           title: "نقش",
+          width: "12%",
           render: (user) => <span>{getRoleLabel(user.role)}</span>,
         },
         {
           key: "status",
           title: "وضعیت",
+          width: "12%",
           render: (user) => (
             <>
-              <StatusChip status={user.status} />
+              <span title={getStatusLabel(user.status)}>
+                <StatusChip status={user.status} />
+              </span>
               <span className="sr-only">{getStatusLabel(user.status)}</span>
             </>
           ),
@@ -57,8 +80,9 @@ function UserTable({
         {
           key: "actions",
           title: "عملیات",
+          width: "46%",
           render: (user) => (
-            <div className="flex flex-wrap justify-center gap-2">
+            <div className="w-full flex flex-wrap justify-center gap-2">
               <Button variant="secondary" onClick={() => onView(user)}>
                 جزئیات
               </Button>
@@ -99,101 +123,28 @@ function UserTable({
       )}
       renderMobileActions={(user) => (
         <>
-          <button
-            type="button"
-            onClick={() => onView(user)}
-            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-right text-sm text-gray-700 hover:bg-gray-50"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              />
-            </svg>
-            جزئیات
-          </button>
-          <button
-            type="button"
-            onClick={() => onEdit(user)}
-            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-right text-sm text-gray-700 hover:bg-gray-50"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-              />
-            </svg>
-            ویرایش
-          </button>
-          <button
-            type="button"
-            onClick={() => onToggleStatus(user)}
-            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-right text-sm text-gray-700 hover:bg-gray-50"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d={
-                  user.status === "active"
-                    ? "M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
-                    : "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                }
-              />
-            </svg>
-            {user.status === "active" ? "غیرفعال‌سازی" : "فعال‌سازی"}
-          </button>
-          <button
-            type="button"
-            onClick={() => onDelete(user)}
-            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-right text-sm text-red-600 hover:bg-red-50"
-            aria-label={`حذف کاربر ${user.name}`}
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              />
-            </svg>
-            حذف
-          </button>
+          <MenuItem
+            label="جزئیات"
+            icon={<EyeIcon />}
+            onAction={() => onView(user)}
+          />
+          <MenuItem
+            label="ویرایش"
+            icon={<EditIcon />}
+            onAction={() => onEdit(user)}
+          />
+          <MenuItem
+            label={user.status === "active" ? "غیرفعال‌سازی" : "فعال‌سازی"}
+            icon={user.status === "active" ? <BanIcon /> : <CheckCircleIcon />}
+            onAction={() => onToggleStatus(user)}
+          />
+          <MenuItem
+            label="حذف"
+            icon={<TrashIcon />}
+            danger
+            ariaLabel={`حذف کاربر ${user.name}`}
+            onAction={() => onDelete(user)}
+          />
         </>
       )}
     />

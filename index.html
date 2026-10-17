@@ -20,15 +20,29 @@
 
     <title>EduConnect - سامانه مدیریت آموزشی</title>
 
-    <!-- فونت فارسی استاندارد از CDN jsDelivr -->
+    <!-- فونت فارسی استاندارد از CDN jsDelivr (غیرمسدودکننده: صفحه با فونت
+         جایگزین رندر می‌شود و فونت نهایی به‌صورت پس‌زمینه بارگذاری می‌شود) -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link
       href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"
       rel="stylesheet"
       type="text/css"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"
+        rel="stylesheet"
+      />
+    </noscript>
   </head>
   <body>
+    <noscript>
+      <div style="text-align: center; padding: 2rem; font-family: sans-serif; direction: rtl;">
+        <p>برای استفاده از EduConnect، لطفاً جاوااسکریپت را در مرورگر خود فعال کنید.</p>
+      </div>
+    </noscript>
     <div id="root"></div>
 
     <script type="module" src="/src/main.tsx"></script>

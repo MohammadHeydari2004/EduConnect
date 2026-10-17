@@ -10,9 +10,6 @@ export const submissionService = {
   getByAssignment: (assignmentId: ID) =>
     baseApi.getAll<Submission>(endpoint, { assignmentId }),
 
-  getByStudent: (studentId: ID) =>
-    baseApi.getAll<Submission>(endpoint, { studentId }),
-
   create: (data: Omit<Submission, "id" | "submittedAt">) =>
     baseApi.create<Submission>(endpoint, {
       ...data,

@@ -1,68 +1,89 @@
 import { STORAGE_KEYS } from "#/configs/constants.ts";
+import AuthContext from "#/contexts/AuthContext.ts";
+import { useToast } from "#/hooks/useToast.ts";
 import { loginUser } from "#/services/auth.ts";
 import type { AuthContextType, LoginPayload } from "#/types/auth.ts";
-import type { DeepReadonly } from "#/types/common.ts";
 import type { User } from "#/types/user.ts";
 import { useCallback, useMemo, useState, type ReactNode } from "react";
-import AuthContext from "./AuthContext";
+import { isValidUser } from "#/utils/guards.ts";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-function isValidUser(obj: unknown): obj is User {
-  if (typeof obj !== "object" || obj === null) return false;
-  const u = obj as Record<string, unknown>;
-  return (
-    typeof u.id === "string" &&
-    typeof u.name === "string" &&
-    typeof u.email === "string" &&
-    typeof u.role === "string" &&
-    typeof u.status === "string"
-  );
-}
-
 function getStoredUser(): User | null {
+  let storedUser: string | null = null;
   try {
-    const storedUser = localStorage.getItem(STORAGE_KEYS.authUser);
-    if (!storedUser) return null;
+    storedUser = localStorage.getItem(STORAGE_KEYS.authUser);
+  } catch {
+    return null;
+  }
 
+  if (!storedUser) return null;
+
+  try {
     const parsed = JSON.parse(storedUser);
     if (isValidUser(parsed)) {
       return parsed;
     }
-    localStorage.removeItem(STORAGE_KEYS.authUser);
-    return null;
   } catch {
-    return null;
+    // ignore corrupted data
   }
+
+  try {
+    localStorage.removeItem(STORAGE_KEYS.authUser);
+  } catch {
+    // ignore storage errors
+  }
+
+  return null;
+}
+
+function getStorageErrorMessage(error: unknown): string {
+  if (error instanceof DOMException) {
+    switch (error.name) {
+      case "QuotaExceededError":
+        return "حافظه مرورگر پر است. لطفاً فضای ذخیره‌سازی را خالی کنید.";
+      case "SecurityError":
+        return "دسترسی به ذخیره‌سازی محلی مسدود شده است. لطفاً تنظیمات حریم خصوصی را بررسی کنید.";
+      default:
+        return "خطا در دسترسی به حافظه مرورگر.";
+    }
+  }
+  return "خطای ناشناخته در ذخیره‌سازی داده‌ها.";
 }
 
 function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(() => getStoredUser());
+  const { addToast } = useToast();
 
-  const login = useCallback(async (payload: LoginPayload) => {
-    const loggedInUser = await loginUser(payload);
-    setUser(loggedInUser);
+  const login = useCallback(
+    async (payload: LoginPayload) => {
+      const loggedInUser = await loginUser(payload);
+      setUser(loggedInUser);
 
-    try {
-      localStorage.setItem(STORAGE_KEYS.authUser, JSON.stringify(loggedInUser));
-    } catch (error) {
-      console.error("خطا در ذخیره‌سازی اطلاعات کاربر در LocalStorage:", error);
-    }
-  }, []);
+      try {
+        localStorage.setItem(
+          STORAGE_KEYS.authUser,
+          JSON.stringify(loggedInUser),
+        );
+      } catch (error) {
+        addToast(getStorageErrorMessage(error), "error");
+      }
+    },
+    [addToast],
+  );
 
   const logout = useCallback(() => {
     setUser(null);
     try {
       localStorage.removeItem(STORAGE_KEYS.authUser);
     } catch (error) {
-      console.error("خطا در پاک‌سازی LocalStorage:", error);
+      addToast(getStorageErrorMessage(error), "error");
     }
-  }, []);
+  }, [addToast]);
 
-  // اعمال DeepReadonly برای تضمین تغییرناپذیری (Immutability) در سطح Context
-  const value: DeepReadonly<AuthContextType> = useMemo(
+  const value: Readonly<AuthContextType> = useMemo(
     () => ({
       user,
       isAuthenticated: !!user,

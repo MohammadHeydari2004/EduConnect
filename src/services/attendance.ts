@@ -10,12 +10,6 @@ export const attendanceService = {
   getBySession: (sessionId: ID) =>
     baseApi.getAll<Attendance>(endpoint, { sessionId }),
 
-  getByStudent: (studentId: ID) =>
-    baseApi.getAll<Attendance>(endpoint, { studentId }),
-
-  getByClass: (classId: ID) =>
-    baseApi.getAll<Attendance>(endpoint, { classId }),
-
   saveAttendanceForSession: async (
     sessionId: ID,
     classId: ID,
@@ -43,9 +37,6 @@ export const attendanceService = {
 
     return Promise.all(operations);
   },
-
-  updateStatus: (id: ID, status: AttendanceStatus) =>
-    baseApi.update<Attendance>(endpoint, id, { status }),
 
   delete: (id: ID) => baseApi.delete(endpoint, id),
 

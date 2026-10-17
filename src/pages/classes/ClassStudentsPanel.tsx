@@ -23,6 +23,7 @@ function ClassStudentsPanel({ students }: ClassStudentsPanelProps) {
             {
               key: "name",
               title: "نام",
+              width: "35%",
               render: (s) => (
                 <span className="font-medium text-gray-800">{s.name}</span>
               ),
@@ -30,6 +31,7 @@ function ClassStudentsPanel({ students }: ClassStudentsPanelProps) {
             {
               key: "email",
               title: "ایمیل",
+              width: "45%",
               render: (s) => (
                 <span className="text-sm text-gray-600 break-all">
                   {s.email}
@@ -39,6 +41,7 @@ function ClassStudentsPanel({ students }: ClassStudentsPanelProps) {
             {
               key: "status",
               title: "وضعیت",
+              width: "20%",
               render: (s) => <StatusChip status={s.status} />,
             },
           ]}

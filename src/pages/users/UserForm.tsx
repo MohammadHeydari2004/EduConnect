@@ -1,29 +1,30 @@
 import Button from "#/components/ui/Button.tsx";
+import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Select from "#/components/ui/Select.tsx";
+import {
+  validateEmail,
+  validateName,
+  validatePassword,
+} from "#/pages/users/validators.ts";
 import { isApiError } from "#/services/api/axiosInstance.ts";
 import type {
   CreateUserPayload,
   UpdateUserPayload,
   User,
 } from "#/types/user.ts";
-import { useEffect, useMemo } from "react";
+import type { RecordStatus, UserRole } from "#/types/common.ts";
 import { useForm } from "react-hook-form";
-import {
-  validateEmail,
-  validateName,
-  validatePassword,
-  validateRole,
-  validateStatus,
-} from "./validators";
+import type { SubmitHandler } from "react-hook-form";
+import { useEffect } from "react";
 
 type UserFormValues = {
   name: string;
   email: string;
   password?: string;
-  role: "admin" | "teacher" | "student";
-  status: "active" | "inactive";
+  role: UserRole;
+  status: RecordStatus;
 };
 
 interface UserFormProps {
@@ -35,6 +36,29 @@ interface UserFormProps {
   onUpdate: (values: UpdateUserPayload) => Promise<void>;
 }
 
+/**
+ * Maps a rejection to a field-level error (e.g. a duplicate-email message on
+ * the email field) or a form-level ("root") error.
+ */
+function resolveError(err: unknown): {
+  field: keyof UserFormValues | "root";
+  message: string;
+} {
+  let message: string;
+  if (isApiError(err)) {
+    message = err.userMessage;
+  } else if (err instanceof Error) {
+    message = err.message;
+  } else {
+    return { field: "root", message: "خطای غیرمنتظره‌ای رخ داد." };
+  }
+
+  if (message.includes("قبلاً ثبت شده")) {
+    return { field: "email", message };
+  }
+  return { field: "root", message };
+}
+
 function UserForm({
   isOpen,
   mode,
@@ -43,92 +67,62 @@ function UserForm({
   onCreate,
   onUpdate,
 }: UserFormProps) {
-  const defaultValues = useMemo<UserFormValues>(
-    () =>
-      mode === "create"
-        ? {
-            name: "",
-            email: "",
-            password: "",
-            role: "student",
-            status: "active",
-          }
-        : {
-            name: user?.name ?? "",
-            email: user?.email ?? "",
-            role: user?.role ?? "student",
-            status: user?.status ?? "active",
-          },
-    [mode, user],
-  );
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setError,
-    formState: { errors, isSubmitting },
-  } = useForm<UserFormValues>({
-    defaultValues,
-    mode: "onChange",
+   const {
+     register,
+     handleSubmit,
+     formState: { errors, isSubmitting },
+     reset,
+     setError,
+     clearErrors,
+   } = useForm<UserFormValues>({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      role: "student",
+      status: "active",
+    },
+    mode: mode === "edit" ? "onChange" : "onBlur",
   });
 
+  // Initialize form with user data when in edit mode
   useEffect(() => {
-    if (isOpen) {
-      reset(defaultValues);
+    if (mode === "edit" && user) {
+      reset({
+        name: user.name ?? "",
+        email: user.email ?? "",
+        role: user.role ?? "student",
+        status: user.status ?? "active",
+      });
+      clearErrors();
+      // Don't reset password for security reasons in edit mode
     }
-  }, [isOpen, defaultValues, reset]);
+   }, [mode, user, reset, clearErrors]);
 
-  const mapServerErrorToField = (
-    message: string,
-  ): { field: keyof UserFormValues | "root"; message: string } => {
-    if (message.includes("ایمیل")) return { field: "email", message };
-    if (message.includes("نام")) return { field: "name", message };
-    if (message.includes("رمز")) return { field: "password", message };
-    return { field: "root", message };
-  };
-
-  const onSubmit = async (values: UserFormValues) => {
+  const onSubmit: SubmitHandler<UserFormValues> = async (data) => {
     try {
       if (mode === "create") {
         await onCreate({
-          name: values.name.trim(),
-          email: values.email.trim(),
-          password: values.password?.trim() ?? "",
-          role: values.role,
-          status: values.status,
+          name: data.name.trim(),
+          email: data.email.trim(),
+          password: data.password?.trim() ?? "",
+          role: data.role,
+          status: data.status,
         });
       } else {
         await onUpdate({
-          name: values.name.trim(),
-          email: values.email.trim(),
-          role: values.role,
-          status: values.status,
+          name: data.name.trim(),
+          email: data.email.trim(),
+          role: data.role,
+          status: data.status,
         });
       }
       onClose();
     } catch (err) {
-      // استفاده از isApiError برای مدیریت هوشمند خطاها (هماهنگ با معماری پروژه)
-      if (isApiError(err)) {
-        const { field, message } = mapServerErrorToField(err.userMessage);
-        if (field === "root") {
-          setError("root", { type: "server", message });
-        } else {
-          setError(field, { type: "server", message });
-        }
-      } else if (err instanceof Error) {
-        const { field, message } = mapServerErrorToField(err.message);
-        if (field === "root") {
-          setError("root", { type: "server", message });
-        } else {
-          setError(field, { type: "server", message });
-        }
-      } else {
-        setError("root", {
-          type: "server",
-          message: "خطای غیرمنتظره‌ای رخ داد.",
-        });
-      }
+      const { field, message } = resolveError(err);
+      // Field errors land on their field; root errors (e.g. "آخرین مدیر
+      // قابل حذف نیست") are shown in the form-level region below.
+      setError(field, { type: "server", message });
     }
   };
 
@@ -137,74 +131,84 @@ function UserForm({
   return (
     <Modal isOpen={isOpen} title={title} onClose={onClose}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {errors.root && (
-          <div
-            className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            role="alert"
-          >
-            {errors.root.message}
-          </div>
-        )}
+        <div className="space-y-4">
+          {errors.root && (
+            <ErrorAlert message={errors.root.message ?? "خطایی رخ داد."} />
+          )}
 
-        <Input
-          label="نام"
-          autoFocus
-          autoComplete="name"
-          required
-          {...register("name", { validate: validateName })}
-          error={errors.name?.message}
-        />
-
-        <Input
-          label="ایمیل"
-          type="email"
-          autoComplete="email"
-          required
-          {...register("email", { validate: validateEmail })}
-          error={errors.email?.message}
-        />
-
-        {mode === "create" && (
           <Input
-            label="رمز عبور"
-            type="password"
-            autoComplete="new-password"
+            label="نام"
+            {...register("name", {
+              required: "لطفاً نام خود را وارد کنید.",
+              validate: (value) => validateName(value),
+            })}
+            autoFocus
+            autoComplete="name"
             required
-            {...register("password", { validate: validatePassword })}
-            error={errors.password?.message}
+            error={errors.name?.message}
           />
-        )}
 
-        <Select
-          label="نقش"
-          required
-          {...register("role", { validate: validateRole })}
-          options={[
-            { label: "مدیر", value: "admin" },
-            { label: "استاد", value: "teacher" },
-            { label: "دانشجو", value: "student" },
-          ]}
-          error={errors.role?.message}
-        />
+          <Input
+            label="ایمیل"
+            {...register("email", {
+              required: "لطفاً ایمیل خود را وارد کنید.",
+              validate: (value) => validateEmail(value),
+            })}
+            type="email"
+            autoComplete="email"
+            required
+            error={errors.email?.message}
+          />
 
-        <Select
-          label="وضعیت"
-          required
-          {...register("status", { validate: validateStatus })}
-          options={[
-            { label: "فعال", value: "active" },
-            { label: "غیرفعال", value: "inactive" },
-          ]}
-          error={errors.status?.message}
-        />
+          {mode === "create" && (
+            <Input
+              label="رمز عبور"
+              {...register("password", {
+                required: "لطفاً رمز عبور خود را وارد کنید.",
+                validate: (value) => validatePassword(value),
+              })}
+              type="password"
+              autoComplete="new-password"
+              required
+              error={errors.password?.message}
+            />
+          )}
 
-        <div className="flex justify-end gap-2 pt-2">
-          <Button type="button" variant="secondary" onClick={onClose}>
-            انصراف
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
-          </Button>
+          <Select
+            label="نقش"
+            {...register("role", {
+              required: "لطفاً نقش خود را انتخاب کنید.",
+            })}
+            required
+            options={[
+              { label: "مدیر", value: "admin" },
+              { label: "استاد", value: "teacher" },
+              { label: "دانشجو", value: "student" },
+            ]}
+            error={errors.role?.message}
+          />
+
+          <Select
+            label="وضعیت"
+            {...register("status", {
+              required: "لطفاً وضعیت خود را انتخاب کنید.",
+            })}
+            required
+            options={[
+              { label: "فعال", value: "active" },
+              { label: "غیرفعال", value: "inactive" },
+            ]}
+            error={errors.status?.message}
+          />
+
+          <div className="flex justify-end gap-2 pt-2">
+            <Button type="button" variant="secondary" onClick={onClose}>
+              انصراف
+            </Button>
+            <Button type="submit" isLoading={isSubmitting} disabled={isSubmitting}>
+              {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
+            </Button>
+          </div>
         </div>
       </form>
     </Modal>

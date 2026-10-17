@@ -1,15 +1,4 @@
-import type { CreateUserPayload, UpdateUserPayload } from "#/types/user.ts";
-
-export interface UserFormErrors {
-  name?: string;
-  email?: string;
-  password?: string;
-  role?: string;
-  status?: string;
-  form?: string;
-}
-
-export const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+import { emailRegex } from "#/utils/validation.ts";
 
 export const validateName = (value: string | undefined): string | true => {
   if (!value || !value.trim()) return "نام الزامی است.";
@@ -33,51 +22,3 @@ export const validatePassword = (value: string | undefined): string | true => {
   if (value.length > 128) return "رمز عبور نباید بیشتر از ۱۲۸ کاراکتر باشد.";
   return true;
 };
-
-export const validateRole = (value: string | undefined): string | true => {
-  if (!value) return "نقش الزامی است.";
-  if (!["admin", "teacher", "student"].includes(value)) {
-    return "نقش انتخاب‌شده معتبر نیست.";
-  }
-  return true;
-};
-
-export const validateStatus = (value: string | undefined): string | true => {
-  if (!value) return "وضعیت الزامی است.";
-  if (!["active", "inactive"].includes(value)) {
-    return "وضعیت انتخاب‌شده معتبر نیست.";
-  }
-  return true;
-};
-
-export function validateCreateUser(values: CreateUserPayload): UserFormErrors {
-  const errors: UserFormErrors = {};
-  const nameResult = validateName(values.name);
-  const emailResult = validateEmail(values.email);
-  const passwordResult = validatePassword(values.password);
-  const roleResult = validateRole(values.role);
-  const statusResult = validateStatus(values.status);
-
-  if (typeof nameResult === "string") errors.name = nameResult;
-  if (typeof emailResult === "string") errors.email = emailResult;
-  if (typeof passwordResult === "string") errors.password = passwordResult;
-  if (typeof roleResult === "string") errors.role = roleResult;
-  if (typeof statusResult === "string") errors.status = statusResult;
-
-  return errors;
-}
-
-export function validateUpdateUser(values: UpdateUserPayload): UserFormErrors {
-  const errors: UserFormErrors = {};
-  const nameResult = validateName(values.name);
-  const emailResult = validateEmail(values.email);
-  const roleResult = validateRole(values.role);
-  const statusResult = validateStatus(values.status);
-
-  if (typeof nameResult === "string") errors.name = nameResult;
-  if (typeof emailResult === "string") errors.email = emailResult;
-  if (typeof roleResult === "string") errors.role = roleResult;
-  if (typeof statusResult === "string") errors.status = statusResult;
-
-  return errors;
-}

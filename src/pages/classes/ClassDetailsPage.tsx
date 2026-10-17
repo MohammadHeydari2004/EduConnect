@@ -2,27 +2,24 @@ import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
+import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
-import { isApiError } from "#/services/api/axiosInstance.ts";
+import ClassSessionsPanel from "#/pages/classes/ClassSessionsPanel.tsx";
+import ClassStudentsPanel from "#/pages/classes/ClassStudentsPanel.tsx";
+import SessionForm from "#/pages/classes/SessionForm.tsx";
 import { classService } from "#/services/class.ts";
 import { sessionService } from "#/services/session.ts";
 import { userService } from "#/services/user.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { Session } from "#/types/session.ts";
 import type { User } from "#/types/user.ts";
+import { getEffectiveStatus } from "#/utils/class.ts";
+import { getErrorMessage } from "#/utils/error.ts";
 import { getStatusLabel } from "#/utils/user.ts";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ClassSessionsPanel from "./ClassSessionsPanel";
-import ClassStudentsPanel from "./ClassStudentsPanel";
-import SessionForm from "./SessionForm";
-
-function getErrorMessage(err: unknown): string {
-  if (isApiError(err)) return err.userMessage;
-  return "دریافت اطلاعات کلاس با خطا مواجه شد.";
-}
 
 export default function ClassDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -47,13 +44,12 @@ export default function ClassDetailsPage() {
     currentUser?.role === "teacher" &&
     classItem !== null &&
     classItem.teacherId === currentUser.id;
-  const canManage = isAdmin || isTeacherOfThisClass;
+  // Teachers of this class and admins can manage sessions
+  const canManageSessions = isAdmin || isTeacherOfThisClass;
 
-  // الگوی صحیح: ریست حالت‌ها و واکشی داده‌ها در useEffect با وابستگی [classId]
   useEffect(() => {
     if (isInvalidId) return;
 
-    // ریست کامل حالت‌ها برای کلاس جدید (جایگزین الگوی مخرب prevClassId)
     setLoading(true);
     setError("");
     setClassItem(null);
@@ -68,18 +64,18 @@ export default function ClassDetailsPage() {
         const [c, u, s] = await Promise.all([
           classService.getById(classId!),
           userService.getAll(),
-          sessionService.getAll(),
+          sessionService.getByClass(classId!),
         ]);
         if (!cancelled) {
           setError("");
           setClassItem(c);
           setUsers(u);
-          setSessions(s.filter((x) => x.classId === classId));
+          setSessions(s);
           setLoading(false);
         }
       } catch (err) {
         if (!cancelled) {
-          setError(getErrorMessage(err));
+          setError(getErrorMessage(err, "دریافت اطلاعات کلاس با خطا مواجه شد."));
           setLoading(false);
         }
       }
@@ -119,12 +115,7 @@ export default function ClassDetailsPage() {
         <Button variant="secondary" onClick={() => navigate("/classes")}>
           → بازگشت به لیست کلاس‌ها
         </Button>
-        <div
-          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-          role="alert"
-        >
-          شناسه کلاس نامعتبر است.
-        </div>
+        <ErrorAlert message="شناسه کلاس نامعتبر است." />
       </div>
     );
 
@@ -136,12 +127,7 @@ export default function ClassDetailsPage() {
         <Button variant="secondary" onClick={() => navigate("/classes")}>
           → بازگشت به لیست کلاس‌ها
         </Button>
-        <div
-          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-          role="alert"
-        >
-          {error}
-        </div>
+        <ErrorAlert message={error} />
       </div>
     );
 
@@ -158,7 +144,7 @@ export default function ClassDetailsPage() {
       </div>
     );
 
-  const classStatus = classItem.status || "inactive";
+  const classStatus = getEffectiveStatus(classItem);
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -179,13 +165,15 @@ export default function ClassDetailsPage() {
             وضعیت کلاس: {getStatusLabel(classStatus)}
           </span>
         </div>
-        <Button
-          variant="secondary"
-          onClick={() => navigate(`/classes/${classId}/assignments`)}
-          className="w-full sm:w-auto"
-        >
-          مشاهده تکالیف کلاس
-        </Button>
+        {isTeacherOfThisClass && (
+          <Button
+            variant="secondary"
+            onClick={() => navigate(`/classes/${classId}/assignments`)}
+            className="w-full sm:w-auto"
+          >
+            مشاهده تکالیف کلاس
+          </Button>
+        )}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -226,8 +214,9 @@ export default function ClassDetailsPage() {
         sessions={sessions}
         classItem={classItem}
         classId={classId!}
-        canManage={canManage}
+        canManage={canManageSessions}
         onAddSession={() => setShowSessionForm(true)}
+        onSessionChange={setSessions}
       />
 
       {showSessionForm && (
@@ -238,7 +227,7 @@ export default function ClassDetailsPage() {
           onSuccess={(message, newSession) => {
             addToast(message, "success");
             setShowSessionForm(false);
-            // الحاق مستقیم داده جدید به حالت فعلی (جایگزین الگوی مخرب refreshTrigger)
+
             setSessions((prev) => [...prev, newSession]);
           }}
           onError={(message) => {

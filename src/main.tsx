@@ -1,8 +1,8 @@
-import App from "#/App";
 import { RouterErrorBoundary } from "#/components/common/RouterErrorBoundary";
 import ScrollToTop from "#/components/common/ScrollToTop";
 import AuthProvider from "#/contexts/AuthProvider";
 import { ToastProvider } from "#/contexts/ToastProvider.tsx";
+import AppRoutes from "#/routes/AppRoutes.tsx";
 import "#/index.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -23,7 +23,7 @@ ReactDOM.createRoot(rootElement).render(
       <RouterErrorBoundary>
         <ToastProvider>
           <AuthProvider>
-            <App />
+            <AppRoutes />
           </AuthProvider>
         </ToastProvider>
       </RouterErrorBoundary>

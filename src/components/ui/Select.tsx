@@ -1,4 +1,6 @@
+import { buildAriaDescribedBy } from "#/utils/accessibility.ts";
 import { forwardRef, useId, type SelectHTMLAttributes } from "react";
+import { ChevronDownIcon } from "#/components/common/icons.tsx";
 
 interface Option {
   label: string;
@@ -10,8 +12,8 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   options: Option[];
   error?: string;
-  description?: string;
-  placeholder?: string;
+  /** Smaller padding for dense layouts (e.g. table cells). */
+  compact?: boolean;
 }
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
@@ -20,8 +22,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
       label,
       options,
       error,
-      description,
-      placeholder,
+      compact = false,
       className = "",
       id: propId,
       required,
@@ -33,7 +34,14 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const id = propId || generatedId;
 
     const errorId = error ? `${id}-error` : undefined;
-    const descId = description ? `${id}-desc` : undefined;
+
+    const stateClasses = props.disabled
+      ? "cursor-not-allowed bg-gray-100 text-gray-500"
+      : "bg-white text-gray-900";
+    const borderClasses = error
+      ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+      : "border-gray-300 focus:border-blue-500 focus:ring-blue-100";
+    const paddingClasses = compact ? "px-3 py-1.5" : "px-3 py-2";
 
     return (
       <div className="flex flex-col gap-1.5">
@@ -53,18 +61,11 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             ref={ref}
             id={id}
             aria-invalid={!!error}
-            aria-describedby={
-              [errorId, descId].filter(Boolean).join(" ") || undefined
-            }
+            aria-describedby={buildAriaDescribedBy(errorId)}
             required={required}
-            className={`w-full appearance-none rounded-lg border px-3 py-2 pl-8 text-sm transition-colors outline-none focus:ring-2 ${error ? "border-red-500 focus:border-red-500 focus:ring-red-100" : "border-gray-300 focus:border-blue-500 focus:ring-blue-100"} ${props.disabled ? "cursor-not-allowed bg-gray-100 text-gray-500" : "bg-white text-gray-900"} ${className}`}
+            className={`w-full appearance-none rounded-lg border ${paddingClasses} pl-8 text-sm transition-colors outline-none focus:ring-2 ${borderClasses} ${stateClasses} ${className}`}
             {...props}
           >
-            {placeholder && (
-              <option value="" disabled>
-                {placeholder}
-              </option>
-            )}
             {options.map((option) => (
               <option
                 key={option.value}
@@ -76,32 +77,13 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             ))}
           </select>
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <svg
-              className="h-4 w-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+            <ChevronDownIcon className="h-4 w-4 text-gray-400" />
           </div>
         </div>
 
         {error && (
           <span id={errorId} className="text-xs text-red-600" role="alert">
             {error}
-          </span>
-        )}
-
-        {!error && description && (
-          <span id={descId} className="text-xs text-gray-500">
-            {description}
           </span>
         )}
       </div>

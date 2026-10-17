@@ -11,6 +11,8 @@
 
 هدف غایی این پروژه، ارائه یک راهکار نرم‌افزاری چابک برای پوشش نیازهای آموزشی، مدیریت کلاس‌ها، رصد حضور و غیاب، چرخه حیات تکالیف و ارائه داشبوردهای تحلیلی اختصاصی است.
 
+> در نسخه **3.7.0** تمرکز اصلی، ارتقای کیفیت معماری و قابل‌استفاده‌مجددشدن اجزا بوده است: استخراج هوک‌های مشترک، متمرکزسازی آیکون‌ها/تنظیمات/نمودارها، تفکیک ماژول حضور و غیاب به نمای‌های نقش‌محور و افزودن امکاناتی مانند **کلاس‌های منِ دانشجو**، **گزارش حضورِ مدیر** و **تقویم جلالی**.
+
 </div>
 
 ---
@@ -22,65 +24,70 @@
 ### 🛡 مدیریت هویت و دسترسی‌ها (IAM & RBAC)
 
 - **احراز هویت امن:** شبیه‌سازی ورود و خروج با استفاده از Context API و LocalStorage (بدون ذخیره رمز عبور در کلاینت).
-- **کنترل دسترسی مبتنی بر نقش:** محافظت از مسیرها (Protected Routes) و کامپوننت‌ها (Role Guards) برای سه نقش کلیدی: `Admin` (مدیر گروه)، `Teacher` (استاد) و `Student` (دانشجو).
+- **کنترل دسترسی مبتنی بر نقش:** محافظت از مسیرها (Protected Routes) و کامپوننت‌ها (Role Guards) برای سه نقش کلیدی: `Admin` (مدیر گروه)، `Teacher` (استاد) و `Student` (دانشجو) — با آرایه‌های متمرکز نقش (`ALL_ROLES`, `ADMIN_ROLES`, `TEACHER_AND_ABOVE_ROLES`, `TEACHER_AND_STUDENT_ROLES`) در `configs/constants.ts`.
 - **مدیریت چرخه حیات کاربران:** ایجاد، ویرایش، تعلیق (Suspend) و تغییر نقش کاربران توسط مدیر سیستم.
-- **محافظت از آخرین مدیر:** جلوگیری از حذف یا غیرفعال‌سازی آخرین کاربر با نقش `admin`.
+- **محافظت از آخرین مدیر:** جلوگیری از حذف یا غیرفعال‌سازی آخرین کاربر با نقش `admin` (و آخرین مدیر فعال).
 - **اعتبارسنجی ایمیل یکتا:** جلوگیری از ثبت ایمیل تکراری در سطح سرویس.
-- **حالت فقط‌خواندنی عمیق:** استفاده از `DeepReadonly<AuthContextType>` برای جلوگیری از تغییر ناخواسته حالت احراز هویت.
+- **حذف آبشاری وابسته به کاربر:** حذف خودکار کلاس‌ها، حضور و غیاب، پاسخ‌ها و اطلاعیه‌های متعلق به کاربر + پاک‌سازی دانشجو از فهرست دانشجویان کلاس‌ها هنگام حذف حساب.
+- **حالت فقط‌خواندنی عمیق:** استفاده از `Readonly<AuthContextType>` برای جلوگیری از تغییر ناخواسته حالت احراز هویت.
+- **اعتبارسنجی ساختار کاربر:** تابع `isValidUser` (در `utils/guards.ts`) برای صحت داده‌های بازیابی‌شده از `localStorage`.
+- **جداسازی رمز عبور:** تایپ `User` (تمیز، بدون رمز) از `UserWithPassword` جدا شده و تابع `removePassword` قبل از ذخیره، رمز را حذف می‌کند.
 
 ### 🏛 مدیریت آموزشی (Academic Management)
 
 - **مدیریت کلاس‌ها و جلسات:** تعریف دوره‌ها، تخصیص ظرفیت، انتصاب استاد و زمان‌بندی جلسات آموزشی.
-- **انتخاب دانشجویان پیشرفته:** کامپوننت مستقل `SearchableMultiSelect` با قابلیت جستجو، انتخاب گروهی، انتخاب نتایج فیلترشده و نمایش چیپ (Chip) برای دانشجویان انتخاب‌شده.
-- **سیستم حضور و غیاب هوشمند:** ثبت وضعیت حضور (حاضر، غایب، تأخیر) در هر جلسه و محاسبه خودکار درصد حضور دانشجویان.
-- **عملیات گروهی حضور و غیاب:** دکمه‌های «حاضر کردن همه» و «غایب کردن همه».
-- **چرخه حیات تکالیف (Assignments):** تعریف تکلیف، تعیین مهلت (Deadline)، ارسال پاسخ توسط دانشجو و فرآیند نمره‌دهی و بازخورد توسط استاد.
-- **مدیریت جلسات کلاس:** ایجاد جلسات با عنوان، تاریخ و توضیحات + لینک مستقیم به حضور و غیاب هر جلسه.
+- **صفحه «کلاس‌های من» برای دانشجو:** `StudentClassesPage` نمایش کلاس‌های ثبت‌نام‌شده با نشانگر رنگی ظرفیت و وضعیت؛ همراه با صفحه جای‌نگشت `JoinClassPlaceholderPage` (ثبت‌نام در کلاس، در حال توسعه).
+- **انتخاب دانشجویان پیشرفته:** کامپوننت مستقل `SearchableMultiSelect` با قابلیت جستجو، انتخاب گروهی، انتخاب نتایج فیلترشده، چیپ (Chip)، **ناوبری کامل با کیبورد** (فلش‌ها، Home/End، Enter/Space، Escape) و **تفکیک به ۶ زیرکامپوننت** (`MultiSelectTrigger`, `MultiSelectDropdown`, `MultiSelectOption`, `MultiSelectActions`, `MultiSelectEmpty`, `MultiSelectTypes`).
+- **سیستم حضور و غیاب نقش‌محور:** ماژول حضور و غیاب به **ارکستراتور** `AttendancePage` و سه نمای مستقل تفکیک شده است: `TeacherAttendanceForm` (ثبت استاد + عملیات گروهی «حاضر/غایب کردن همه»)، `StudentAttendanceView` (آمار و درصد حضور دانشجو) و **`AdminAttendanceReport` (گزارش فقط‌مطالعه برای مدیر با انتخاب آزاد کلاس/جلسه)**.
+- **تقویم جلالی (تاریخ شمسی):** کامپوننت `DatePicker` با تقویم کامل شمسی و تبدیل دوطرفه میلادی↔شمسی؛ استفاده‌شده برای تعیین ددلاین تکالیف.
+- **چرخه حیات تکالیف (Assignments):** تعریف تکلیف، تعیین مهلت با `DatePicker`، ارسال پاسخ توسط دانشجو و فرآیند نمره‌دهی (۰ تا ۲۰) و بازخورد توسط استاد — با جدول استخراج‌شده `AssignmentsTable` و هوک داده `useAssignmentsPageData`.
+- **مدیریت جلسات کلاس:** ایجاد/ویرایش/حذف جلسات با عنوان، تاریخ و توضیحات + لینک مستقیم به حضور و غیاب هر جلسه.
 - **حالت نمایش پاسخ پس از ددلاین:** مشاهده و کپی پاسخ ارسالی بدون امکان ویرایش.
 - **آپدیت موضعی (Optimistic Update):** تغییرات در لیست کلاس‌ها، تکالیف، اطلاعیه‌ها و ارسال‌ها به‌صورت موضعی اعمال می‌شوند و نیازی به واکشی مجدد از سرور نیست.
 
 ### 📢 سیستم اطلاعیه‌ها (Announcements)
 
-- انتشار اطلاعیه‌های عمومی یا هدفمند (Targeted).
-- تعیین مخاطب بر اساس کلاس، نقش یا ترکیب هر دو.
-- قابلیت رهگیری وضعیت مشاهده (Seen/Unseen) برای هر کاربر.
-- بازنشانی وضعیت مشاهده پس از ویرایش اطلاعیه.
+- انتشار اطلاعیه‌های عمومی (Global) یا هدفمند (Targeted).
+- تعیین مخاطب بر اساس کلاس، نقش یا ترکیب هر دو (با ثابت‌های `GLOBAL_ANNOUNCEMENT_CLASS_ID` و `DEFAULT_TARGET_ROLES`).
+- منطق نمایش متمرکز: تابع `isAnnouncementVisibleTo` (در `utils/announcementVisibility.ts`) در `useFilteredAnnouncements` با فیلترهای نویسنده/کلاس/نقش/وضعیت‌خوانده.
+- قابلیت رهگیری وضعیت مشاهده (Seen/Unseen) برای هر کاربر + بازنشانی وضعیت مشاهده پس از ویرایش.
 - نشانگر بصری اطلاعیه‌های خوانده‌نشده (نقطه آبی + برچسب «جدید»).
-- آپدیت موضعی لیست اطلاعیه‌ها پس از ایجاد/ویرایش.
 
 ### 📊 داشبوردهای تحلیلی و آماری (Analytics Dashboards)
 
 - **داشبورد مدیر:** نظارت بر آمار کلان سامانه، توزیع نقش‌ها (نمودار دایره‌ای) و آخرین کلاس‌های ثبت‌شده.
-- **داشبورد استاد:** رصد تکالیف نیازمند تصحیح (نمودار میله‌ای)، وضعیت حضور کلاس‌ها و جلسات اخیر.
-- **داشبورد دانشجو:** نمایش درصد حضور (نمودار دایره‌ای)، تکالیف در انتظار ارسال و اطلاعیه‌های مرتبط.
-- **مصورسازی داده‌ها:** استفاده از کتابخانه `Recharts` برای نمایش نمودارهای دایره‌ای و میله‌ای.
-- **Tooltip و Legend سفارشی:** نمایش جزئیات دقیق شامل تعداد و درصد در Tooltip نمودارها.
-- **واکشی نقش‌محور:** هر نقش فقط داده‌های مورد نیاز خود را واکشی می‌کند (جلوگیری از Over-fetching).
+- **داشبورد استاد:** رصد تکالیف نیازمند تصحیح (نمودار میله‌ای افقی با حالت موبایلِ کارت‌محور)، وضعیت حضور کلاس‌ها و جلسات اخیر.
+- **داشبورد دانشجو:** نمایش درصد حضور (نمودار دایره‌ای)، تکالیف نزدیک ددلاین و اطلاعیه‌های مرتبط.
+- **تفکیک داده داشبورد:** محاسبه داده از کامپوننت‌ها خارج و به `utils/dashboardData.ts` (هوک‌های `useTeacherDashboardData`, `useStudentDashboardData`, `useGradingStats`, `useRecentSessions`, `useChartSummary`) و تایپ `DashboardData`/`EMPTY_DASHBOARD_DATA` در `types/dashboard.ts` منتقل شده است.
+- **کامپوننت‌های نمودار قابل اشتراک:** `ChartTooltip` و `ChartLegend` با تایپ مشترک `ChartPayloadEntry` جایگزین تولتیپ/لیجندِ درون‌صفحه‌ای هر داشبورد شده‌اند + پالت رنگی متمرکز `CHART_COLORS`.
+- **واکشی نقش‌محور:** `DashboardContainer` با هوک `useAsyncData` فقط داده‌های مورد نیاز هر نقش را واکشی می‌کند (جلوگیری از Over-fetching).
 
 ### 🎨 تجربه کاربری و رابط کاربری (UX/UI)
 
-- **طراحی کاملاً ریسپانسیو:** پشتیبانی از موبایل، تبلت و دسکتاپ.
-- **کارت‌های موبایل:** نمایش داده‌ها به‌صورت کارت در صفحات کوچک به‌جای جدول.
-- **سیستم نوتیفیکیشن (Toast):** بازخورد لحظه‌ای به کاربر پس از هر عملیات با `ToastContext` و `ToastProvider`.
-- **مدال‌های بهینه:** بستن با کلید Escape، کلیک خارج از مدال، مدیریت اسکرول صفحه، رندر با `createPortal` و **Focus Trap کامل** (مدیریت `Tab` و `Shift+Tab`).
-- **مدیریت خطای پیشرفته:** استفاده از `react-error-boundary` با کامپوننت `RouterErrorBoundary` و پشتیبانی از `resetKeys`.
-- **سیستم خطای ساختاریافته:** کلاس `ApiError` با `userMessage`، `status`، `code`، `url` و `serverData` + Type Guard `isApiError`.
-- **اسکرول به بالا:** کامپوننت `ScrollToTop` برای اسکرول نرم در تغییر مسیر.
-- **لینک پرش به محتوا:** دسترسی‌پذیری بهتر با لینک «پرش به محتوای اصلی».
-- **آیکون‌های معنادار:** آیکون‌های اختصاصی برای منوی سایدبار و اکشن‌ها.
-- **فونت فارسی وزیرمتن:** پشتیبانی کامل از زبان فارسی و جهت‌گیری RTL.
-- **فرم‌های هوشمند:** مدیریت فرم‌ها با `react-hook-form` + اعتبارسنجی لحظه‌ای.
-- **نشانگر ظرفیت رنگی:** نمایش وضعیت ظرفیت کلاس‌ها با رنگ‌های سبز (کمتر از ۸۰٪)، زرد (۸۰٪ تا ۱۰۰٪) و قرمز (پر).
-- **منوی اکشن هوشمند:** موقعیت‌یابی خودکار منوی عملیات در موبایل با جلوگیری از بیرون رفتن از صفحه.
+- **طراحی کاملاً ریسپانسیو:** پشتیبانی از موبایل، تبلت و دسکتاپ با هوک `useMediaQuery`/`useIsMobile`.
+- **کارت‌های موبایل:** نمایش داده‌ها به‌صورت کارت در صفحات کوچک به‌جای جدول (با `renderMobileCard`/`renderMobileActions` در `Table`).
+- **منوی اکشن هوشمند:** `ActionsMenu` و `MenuItem` با رندر `createPortal` و موقعیت‌یابی خودکار (جلوگیری از بیرون رفتن از صفحه).
+- **سیستم نوتیفیکیشن (Toast):** بازخورد لحظه‌ای با `ToastContext`/`ToastProvider` و **سقف `MAX_TOASTS = 5`**.
+- **مدال‌های بهینه:** بستن با Escape، کلیک خارج، مدیریت اسکرول، رندر با `createPortal` و **Focus Trap کامل** (`Tab`/`Shift+Tab`).
+- **مدیریت خطای پیشرفته:** `react-error-boundary` با `ErrorBoundaryWrapper`/`RouterErrorBoundary` و پشتیبانی `resetKeys` + **صفحه خطای پایه** `ErrorPage` (که `NotFound` و `Unauthorized` از آن بهره می‌برند) و `ErrorAlert` برای خطاهای داده.
+- **اسکرول به بالا:** `ScrollToTop` اسکرول نرمِ محدوده‌ی محتوای اصلی (نه کل صفحه) در تغییر مسیر.
+- **لینک پرش به محتوا:** دسترسی‌پذیری بهتر با لینک «پرش به محتوای اصلی» + `buildAriaDescribedBy` در `utils/accessibility.ts`.
+- **آیکون‌های متمرکز:** ۳۰+ آیکون SVG در یک فایل مشترک `components/common/icons.tsx` (قابل اشتراک‌گذاری و بدون تکرار).
+- **فونت فارسی وزیرمتن:** پشتیبانی کامل از زبان فارسی و جهت‌گیری RTL (پیکربندی با `@theme` در `index.css` برای Tailwind v4).
+- **فرم‌های هوشمند:** مدیریت فرم‌ها با کنترل‌های state + اعتبارسنجی مشترک از طریق `validateTitle`، `validation.ts` و الگوی یکپارچه در همه فرم‌ها.
+- **نشانگر ظرفیت رنگی:** نمایش وضعیت ظرفیت کلاس‌ها با رنگ‌های سبز/زرد/قرمز بر اساس آستانه‌های `CAPACITY_THRESHOLDS`.
+- **کامپوننت `UserDetailsList`:** نمایش یکپارچه جزئیات کاربر در مدال جزئیات (`UserDetails`) و صفحه پروفایل.
 
 ### 🔐 امنیت و پایداری
 
-- **عدم ذخیره رمز عبور:** حذف `password` از شیء کاربر قبل از ذخیره در `localStorage`.
-- **اعتبارسنجی ساختار کاربر:** تابع `isValidUser` برای بررسی صحت داده‌های ذخیره‌شده در `localStorage`.
-- **مدیریت خطاهای شبکه:** پیام‌های اختصاصی برای انواع خطاها (تایم‌اوت، عدم دسترسی به سرور، خطای سرور، ۴۰۱، ۴۰۳).
-- **اینترسپتورهای Axios:** لاگ درخواست‌ها و پاسخ‌ها در حالت توسعه + مدیریت یکپارچه خطاها با کلاس `ApiError`.
+- **عدم ذخیره رمز عبور:** حذف `password` از شیء کاربر (با `removePassword`) قبل از ذخیره در `localStorage`.
+- **اعتبارسنجی ساختار کاربر:** تابع `isValidUser` برای بررسی صحت داده‌های ذخیره‌شده.
+- **مدیریت خطای شبکه:** کلاس ساختاریافته `ApiError` با `userMessage`، `status`، `code`، `url` و `serverData` + Type Guard `isApiError` + استخراج یکپارچه پیام با `getErrorMessage` (`utils/error.ts`).
+- **پیام‌های اختصاصی خطا:** برای تایم‌اوت، عدم دسترسی به سرور، خطای سرور، ۴۰۱ و ۴۰۳ (با جدول `STATUS_MESSAGES`).
+- **لاگر توسعه‌محور:** کلاس `Logger` (`utils/logger.ts`) برای لاگ درخواست/پاسخ/خطا فقط در محیط توسعه.
+- **اینترسپتورهای Axios:** لاگ و مدیریت یکپارچه خطاها؛ تایم‌اوت از ثابت `API_REQUEST_TIMEOUT_MS`.
 - **حذف آبشاری:** حذف خودکار جلسات، حضور و غیاب و تکالیف مرتبط هنگام حذف کلاس.
-- **دسترس‌پذیری (A11y):** استفاده از `sr-only` برای متون جایگزین، `aria-label`، `role` و `aria-live`.
+- **دسترس‌پذیری (A11y):** استفاده از `sr-only`، `aria-label`، `role` و `aria-live` در سراسر کامپوننت‌ها.
 
 </div>
 
@@ -93,12 +100,13 @@
 | دسته‌بندی            | تکنولوژی‌ها و ابزارها                     | نسخه           |
 | :------------------- | :---------------------------------------- | :------------- |
 | **هسته فرانت‌اند**   | React, TypeScript (Strict Mode), Vite     | 19.3, 7.0, 8.3 |
-| **طراحی و استایل**   | Tailwind CSS, Vazirmatn Font, RTL Support | 4.3            |
+| **طراحی و استایل**   | Tailwind CSS (v4، پیکربندی با `@theme`), Vazirmatn Font, RTL Support | 4.3 |
 | **مسیریابی و State** | React Router DOM, React Context API       | 7.18           |
 | **مدیریت فرم‌ها**    | React Hook Form, Custom Validators        | 7.88           |
 | **لایه شبکه**        | Axios, Custom API Wrapper (baseApi)       | 1.20           |
-| **مصورسازی داده**    | Recharts                                  | 3.10           |
+| **مصورسازی داده**    | Recharts (با تولتیپ/لیجند قابل اشتراک)     | 3.10           |
 | **مدیریت خطا**       | react-error-boundary                      | 6.1            |
+| **تقویم جلالی**      | کامپوننت `DatePicker` اختصاصی (تاریخ شمسی) | —              |
 | **سرور شبیه‌ساز**    | JSON Server (Mock REST API)               | 1.0            |
 | **کیفیت کد**         | oxlint, Prettier, TypeScript Strict Mode  | —              |
 | **متغیرهای محیطی**   | `.env` با پشتیبانی از `import.meta.env`   | —              |
@@ -120,115 +128,157 @@ src/
 ├── components/
 │   ├── common/          # کامپوننت‌های مشترک
 │   │   ├── EmptyState.tsx              # حالت خالی با آیکون و اکشن
-│   │   ├── ErrorBoundaryWrapper.tsx    # مدیریت خطا با react-error-boundary
+│   │   ├── ErrorBoundaryWrapper.tsx    # مدیریت خطا با react-error-boundary + Logger
 │   │   ├── Header.tsx                  # هدر با دکمه منو، نشان نقش و خروج
-│   │   ├── Loading.tsx                 # اسپینر با سایزهای مختلف
+│   │   ├── icons.tsx                   # ★ ۳۰+ آیکون SVG متمرکز و قابل اشتراک
+│   │   ├── Loading.tsx                 # اسپینر (با استفاده از Spinner)
 │   │   ├── RouterErrorBoundary.tsx     # مرز خطا بر اساس مسیر
-│   │   ├── ScrollToTop.tsx             # اسکرول به بالا در تغییر مسیر
-│   │   └── Sidebar.tsx                 # منوی کناری با آیکون
-│   └── ui/              # کامپوننت‌های پایه رابط کاربری
+│   │   ├── ScrollToTop.tsx             # اسکرول محدوده محتوا در تغییر مسیر
+│   │   └── Sidebar.tsx                 # منو با آیکون + فیلتر نقش‌محور از navigation
+│   └── ui/               # کامپوننت‌های پایه رابط کاربری
+│       ├── ActionsMenu.tsx             # ★ منوی اکشن با پورتال و موقعیت‌یابی هوشمند
 │       ├── Badge.tsx                   # نشان با رنگ‌بندی
-│       ├── Button.tsx                  # دکمه با حالت لودینگ
-│       ├── Card.tsx                    # کارت با هدر، اکشن و فوتر
+│       ├── Button.tsx                  # ★ دکمه با variantهای success/danger-light
+│       ├── Card.tsx                    # کارت با هدر و بدنه
+│       ├── ChartLegend.tsx             # ★ لیجند قابل اشتراک نمودارها (Recharts)
+│       ├── ChartTooltip.tsx            # ★ تولتیپ قابل اشتراک + تایپ ChartPayloadEntry
 │       ├── ConfirmDialog.tsx           # دیالوگ تأیید با آیکون
-│       ├── Input.tsx                   # ورودی با لیبل، خطا و توضیح
-│       ├── Modal.tsx                   # مدال با پورتال، فوکوس ترپ و مدیریت اسکرول
-│       ├── SearchableMultiSelect.tsx   # انتخاب چندگانه با جستجو و چیپ
+│       ├── DatePicker.tsx            # ★ تقویم جلالی (تاریخ شمسی) با تبدیل دوطرفه
+│       ├── ErrorAlert.tsx              # ★ هشدار ساده خطای داده
+│       ├── Input.tsx                   # ورودی با لیبل، خطا و suffix
+│       ├── MenuItem.tsx                # ★ آیتم منوی اکشن
+│       ├── Modal.tsx                   # ★ مدال با پورتال، فوکوس‌ترپ و مدیریت اسکرول
+│       ├── MultiSelectActions.tsx      # ★ اکشن‌های انتخاب همه/فیلتر/حذف همه
+│       ├── MultiSelectDropdown.tsx     # ★ بدنه دراپ‌داون با پورتال و کیبورد
+│       ├── MultiSelectEmpty.tsx        # ★ حالت خالی ریزالتهای جستجو
+│       ├── MultiSelectOption.tsx       # ★ گزینه‌ی قابل انتخاب
+│       ├── MultiSelectTrigger.tsx      # ★ ترگر با چیپ‌های انتخاب‌شده
+│       ├── MultiSelectTypes.ts         # ★ تایپ‌های مشترک MultiSelect
+│       ├── SearchableMultiSelect.tsx   # ★ انتخاب چندگانه با ناوبری کامل کیبورد
 │       ├── SearchInput.tsx             # ورودی جستجو با آیکون
-│       ├── Select.tsx                  # سلکت با فلش سفارشی
-│       ├── StatCard.tsx                # کارت آمار با ترند
-│       ├── StatusChip.tsx              # نشان وضعیت با آیکون
-│       ├── Table.tsx                   # جدول با کارت موبایل و منوی اکشن هوشمند
-│       └── Textarea.tsx                # متن چندخطی
+│       ├── Select.tsx                  # سلکت با فلش سفارشی + حالت compact
+│       ├── Spinner.tsx                 # ★ اسپینر با سایزهای sm/md
+│       ├── StatCard.tsx                # کارت آمار با قالب‌بندی فارسی
+│       ├── StatusChip.tsx              # نشان وضعیت + برچسب‌های ATTENDANCE
+│       ├── Table.tsx                   # ★ جدول با کارت/اکشن موبایل و موقعیت‌یابی هوشمند
+│       ├── Textarea.tsx                # متن چندخطی
+│       └── UserDetailsList.tsx         # ★ جزئیات کاربر قابل اشتراک (dl)
 ├── configs/             # تنظیمات سراسری و ثابت‌های محیطی
-│   └── constants.ts     # کلیدهای ذخیره‌سازی با پیشوند محیطی
+│   ├── constants.ts     # ★ کلیدهای ذخیره‌سازی + آرایه‌های نقش، آستانه‌ها، رنگ‌ها، حد نمره/ظرفیت
+│   └── navigation.tsx   # ★ آیتم‌های منو (navItems) با فیلتر نقش‌محور
 ├── contexts/            # مدیریت Stateهای سراسری
-│   ├── AuthContext.ts   # کانتکست احراز هویت با حالت اولیه
-│   ├── AuthProvider.tsx # فراهم‌کننده احراز هویت (DeepReadonly)
+│   ├── AuthContext.ts   # کانتکست احراز هویت + هوک useAuth
+│   ├── AuthProvider.tsx # ★ فراهم‌کننده احراز هویت (Readonly + بازیابی با isValidUser)
 │   ├── ToastContext.tsx # کانتکست نوتیفیکیشن
-│   └── ToastProvider.tsx# فراهم‌کننده نوتیفیکیشن با مدیریت تایمر
-├── hooks/               # هوک‌های اختصاصی
+│   └── ToastProvider.tsx# ★ فراهم‌کننده نوتیفیکیشن با سقف MAX_TOASTS
+├── hooks/               # ★ هوک‌های اختصاصی و قابل استفاده مجدد
+│   ├── useAsyncData.ts  # ★ واکشی داده با loading/isRefreshing/error/refresh/setData
+│   ├── useClickOutside.ts # ★ تشخیص کلیک خارج (برای دراپ‌داون‌ها)
+│   ├── useMapById.ts    # ★ ساخت Map از آرایه بر اساس id (memoized)
+│   ├── useMediaQuery.ts # ★ تشخیص رسانه + useIsMobile
+│   ├── useModalState.ts # ★ مدیریت حالت مدال‌ها (kind + target)
 │   └── useToast.ts      # هوک استفاده از نوتیفیکیشن
 ├── layouts/             # ساختارهای کلان صفحات
-│   └── MainLayout.tsx   # لایوت اصلی با هدر، سایدبار و محتوا
+│   └── MainLayout.tsx   # ★ لایوت اصلی با مدیریت فوکوس/اسکرول و لینک پرش
 ├── pages/
 │   ├── announcements/   # ماژول اطلاعیه‌ها
 │   │   ├── AnnouncementForm.tsx
 │   │   ├── AnnouncementsPage.tsx
-│   │   ├── useFilteredAnnouncements.ts  # هوک فیلتر اطلاعیه‌ها
+│   │   ├── useFilteredAnnouncements.ts  # ★ با فیلتر + isAnnouncementVisibleTo
 │   │   └── validators.ts
 │   ├── assignments/     # ماژول تکالیف
-│   │   ├── AssignmentForm.tsx
+│   │   ├── AssignmentForm.tsx          # ★ با DatePicker جلالی
 │   │   ├── AssignmentsPage.tsx
-│   │   ├── SubmissionForm.tsx    # با حالت نمایش پس از ددلاین
+│   │   ├── AssignmentsTable.tsx        # ★ جدول جداشده با ددلاینِ رنگی
+│   │   ├── SubmissionForm.tsx          # با حالت نمایش پس از ددلاین
 │   │   ├── SubmissionsPage.tsx
+│   │   ├── useAssignmentsPageData.ts   # ★ هوک متمرکز داده صفحه
 │   │   └── validators.ts
-│   ├── attendance/      # ماژول حضور و غیاب
-│   │   └── AttendancePage.tsx    # نمای استاد + نمای دانشجو
+│   ├── attendance/      # ماژول حضور و غیاب (نقش‌محور)
+│   │   ├── AttendancePage.tsx          # ★ ارکستراتور که بر اساس نقش رندر می‌کند
+│   │   ├── TeacherAttendanceForm.tsx   # ★ فرم ثبت استاد + عملیات گروهی
+│   │   ├── StudentAttendanceView.tsx   # ★ آمار/درصد/جزئیات جلسات دانشجو
+│   │   └── AdminAttendanceReport.tsx   # ★ گزارش فقط‌مطالعه برای مدیر
+│   ├── auth/            # ماژول احراز هویت
+│   │   └── LoginPage.tsx               # ★ جابه‌جا شده از pages/LoginPage
 │   ├── classes/         # ماژول کلاس‌ها
 │   │   ├── ClassDetailsPage.tsx
 │   │   ├── ClassesPage.tsx
 │   │   ├── ClassFilters.tsx
-│   │   ├── ClassForm.tsx         # با SearchableMultiSelect مستقل
-│   │   ├── ClassSessionsPanel.tsx
+│   │   ├── ClassForm.tsx               # ★ با SearchableMultiSelect (openDirection)
+│   │   ├── ClassSessionsPanel.tsx      # ★ با ویرایش/حذف جلسه و ConfirmDialog
 │   │   ├── ClassStudentsPanel.tsx
-│   │   ├── ClassTable.tsx        # با نشانگر ظرفیت رنگی
+│   │   ├── ClassTable.tsx               # ★ با نشانگر ظرفیت بر اساس CAPACITY_THRESHOLDS
 │   │   ├── classValidation.ts
+│   │   ├── JoinClassPlaceholderPage.tsx # ★ صفحه جای‌نگشت ثبت‌نام (در حال توسعه)
 │   │   ├── SessionForm.tsx
 │   │   ├── sessionValidation.ts
-│   │   └── validators.ts
+│   │   └── StudentClassesPage.tsx       # ★ کلاس‌های منِ دانشجو
 │   ├── dashboard/       # داشبورد نقش‌محور
 │   │   ├── AdminDashboard.tsx
-│   │   ├── DashboardContainer.tsx # با الگوی صحیح useEffect
+│   │   ├── DashboardContainer.tsx       # ★ با useAsyncData نقش‌محور
 │   │   ├── StudentDashboard.tsx
-│   │   └── TeacherDashboard.tsx
+│   │   └── TeacherDashboard.tsx        # ★ با نمودار موبایل/دسکتاپ و هوک‌های dashboardData
 │   ├── errors/          # صفحات خطا
+│   │   ├── ErrorPage.tsx               # ★ پایه قابل اشتراک صفحات خطا
 │   │   ├── NotFoundPage.tsx
 │   │   └── UnauthorizedPage.tsx
 │   ├── profile/         # پروفایل کاربری
 │   │   └── ProfilePage.tsx
-│   ├── users/           # ماژول مدیریت کاربران
-│   │   ├── UserDetails.tsx
-│   │   ├── UserFilters.tsx
-│   │   ├── UserForm.tsx          # با react-hook-form
-│   │   ├── UsersPage.tsx
-│   │   ├── UserTable.tsx
-│   │   └── validators.ts
-│   └── LoginPage.tsx    # صفحه ورود با ورود سریع (فقط توسعه)
+│   └── users/           # ماژول مدیریت کاربران
+│       ├── UserDetails.tsx             # ★ با استفاده از UserDetailsList
+│       ├── UserFilters.tsx
+│       ├── UserForm.tsx                # فرم کنترل‌شده + ResolveError
+│       ├── UsersPage.tsx               # ★ با useAsyncData + useModalState
+│       ├── UserTable.tsx               # ★ با Action/MenuItems و نشان «(شما)»
+│       └── validators.ts
 ├── routes/              # پیکربندی Router و محافظ‌های دسترسی
-│   ├── AppRoutes.tsx
+│   ├── AppRoutes.tsx    # ★ با مسیرهای student-classes و classes/join/:classId
 │   ├── ProtectedRoute.tsx
 │   └── RoleGuard.tsx
 ├── services/            # لایه ارتباط با API
 │   ├── api/
-│   │   ├── axiosInstance.ts      # اکسیوس با ApiError و اینترسپتور
-│   │   └── baseApi.ts            # API پایه با DeepPartial
+│   │   ├── axiosInstance.ts            # ★ با ApiError + Logger + STATUS_MESSAGES
+│   │   └── baseApi.ts                  # API پایه با DeepPartial
+│   ├── announcement.ts
+│   ├── assignment.ts
+│   ├── attendance.ts                   # ★ با calculateStudentStats
+│   ├── auth.ts                         # ★ با removePassword
+│   ├── class.ts                        # ★ با حذف آبشاری و setStatus
+│   ├── session.ts
+│   ├── submission.ts
+│   └── user.ts                         # ★ با حذف وابسته + last-admin guard
+├── types/               # تعریف تایپ‌های TypeScript
 │   ├── announcement.ts
 │   ├── assignment.ts
 │   ├── attendance.ts
-│   ├── auth.ts                   # بدون ذخیره پسورد در خروجی
-│   ├── class.ts                  # با حذف آبشاری
+│   ├── auth.ts
+│   ├── class.ts
+│   ├── common.ts         # DeepPartial, Maybe, Nullable, DeepReadonly
+│   ├── dashboard.ts      # ★ DashboardData + EMPTY_DASHBOARD_DATA
 │   ├── session.ts
 │   ├── submission.ts
-│   └── user.ts                   # با پارامترهای کوئری سمت سرور
-├── types/               # تعریف تایپ‌های TypeScript
-│   ├── announcement.ts   # با Optional برای فیلدهای اختیاری
-│   ├── assignment.ts
-│   ├── attendance.ts
-│   ├── auth.ts           # بدون isLoading
-│   ├── class.ts          # با Maybe
-│   ├── common.ts         # با DeepPartial, Maybe, DeepReadonly (اصلاح‌شده)
-│   ├── session.ts
-│   ├── submission.ts
-│   └── user.ts           # با password اختیاری
-├── utils/               # توابع کمکی
-│   ├── formatDate.ts     # formatDate, formatDateTime, formatRelativeTime
-│   └── user.ts           # getRoleLabel, getStatusLabel
-├── App.tsx              # پیکربندی مسیرها
-├── index.css            # استایل‌های سراسری + فونت وزیرمتن
-├── main.tsx             # نقطه ورود با مدیریت خطا و پروایدرها
-└── vite-env.d.ts        # تایپ‌های متغیرهای محیطی
+│   └── user.ts           # ★ User / UserWithPassword + Payloadها
+├── utils/               # توابع کمکی و قابل استفاده مجدد
+│   ├── accessibility.ts  # ★ buildAriaDescribedBy
+│   ├── announcementVisibility.ts # ★ isAnnouncementVisibleTo
+│   ├── class.ts          # ★ getEffectiveStatus
+│   ├── dashboardData.ts  # ★ هوک‌های داده داشبورد و آمار تصحیح
+│   ├── error.ts          # ★ getErrorMessage
+│   ├── formatDate.ts     # ★ formatDate, formatDateTime, formatRelativeTime, toDateInputValue, isDateBeforeToday
+│   ├── guards.ts         # ★ isValidUser
+│   ├── logger.ts         # ★ کلاس Logger توسعه‌محور
+│   ├── ownership.ts      # ★ filterCollectionsByOwnership
+│   ├── user.ts           # ★ getRoleLabel, getRoleVariant, getStatusLabel
+│   ├── userSanitization.ts # ★ removePassword
+│   ├── validateTitle.ts  # ★ اعتبارسنجی یکپارچه عنوان
+│   └── validation.ts     # ★ emailRegex مشترک
+├── index.css           # ★ استایل سراسری + فونت وزیرمتن با @theme (Tailwind v4)
+├── main.tsx            # ★ نقطه ورود با مدیریت خطا و پروایدرها (رندر مستقیم AppRoutes)
+└── vite-env.d.ts       # تایپ‌های متغیرهای محیطی
 ```
+
+</div>
 
 ---
 
@@ -345,7 +395,6 @@ npm run build
 <div dir="rtl">
 
 > سایر حساب‌های تستی در فایل `db.json` قابل مشاهده هستند.
-> در حالت توسعه، دکمه‌های «ورود سریع» در صفحه لاگین نیز موجود است.
 
 </div>
 
@@ -353,56 +402,48 @@ npm run build
 
 <div dir="rtl">
 
-## 📈 پیشرفت‌ها و بهبودهای اعمال‌شده نسبت به نسخه 3.0.0
+## 📈 پیشرفت‌ها و بهبودهای اعمال‌شده نسبت به نسخه 3.6.4
 
-نسخه 3.6.4 یک بازنگری جامع و ارتقای معماری پروژه است. در ادامه، مهم‌ترین تغییرات و بهبودها فهرست شده‌اند:
+نسخه **3.7.0** یک بازنگری جامع در **کیفیت معماری، قابل‌استفاده‌مجددشدن اجزا و غنای امکانات** است. در ادامه، مهم‌ترین تغییرات اعمال‌شده نسبت به نسخه 3.6.4 فهرست شده‌اند:
 
 ### 🏗️ معماری و ساختار کد
 
-| مورد                        | نسخه 3.0.0                    | نسخه 3.6.4                                   |
+| مورد                        | نسخه 3.6.4                    | نسخه 3.7.0                                   |
 | :-------------------------- | :---------------------------- | :------------------------------------------- |
-| مدیریت خطای شبکه            | `new Error` ساده              | ✅ کلاس `ApiError` + Type Guard `isApiError` |
-| مدیریت خطای ۴۰۱ و ۴۰۳       | ❌                            | ✅ پیام‌های اختصاصی                          |
-| `DashboardContainer`        | الگوی مخرب `prevUser`         | ✅ الگوی صحیح `useEffect` با ریست در ابتدا   |
-| آپدیت داده‌ها               | واکشی مجدد از سرور            | ✅ آپدیت موضعی (Optimistic Update)           |
-| `SearchableMultiSelect`     | داخلی در `ClassForm`          | ✅ کامپوننت مستقل و قابل استفاده مجدد        |
-| `ErrorBoundary`             | دستی + `react-error-boundary` | ✅ فقط `react-error-boundary`                |
-| تایپ `DeepReadonly`         | ساده                          | ✅ اصلاح‌شده برای توابع                      |
-| تایپ‌های `Optional`/`Maybe` | محدود                         | ✅ استفاده گسترده در تایپ‌های دامنه          |
-| فایل‌های تکراری             | ❌ (چندین نسخه تکراری)        | ✅ حذف کامل                                  |
+| هوک‌های قابل استفاده مجدد  | ❌ (لج‌های state درون صفحات) | ✅ `useAsyncData`, `useMapById`, `useClickOutside`, `useMediaQuery`, `useModalState` |
+| تمرکز آیکون‌ها             | ❌ (SVG پراکنده در کامپوننت‌ها) | ✅ ۳۰+ آیکون متمرکز در `common/icons.tsx`  |
+| ماژول حضور و غیاب         | تک‌کامپوننت `AttendancePage`  | ✅ تفکیک به ۴ کامپوننت نقش‌محور + گزارش جدیدِ مدیر |
+| داده داشبورد               | محاسبه‌ی inline در هر داشبورد | ✅ استخراج به `utils/dashboardData` + `types/dashboard` |
+| نمودارها                   | تولتیپ/لیجند inline در هر داشبورد | ✅ کامپوننت‌های قابل اشتراک `ChartTooltip`/`ChartLegend` |
+| تنظیمات و ناوبری          | hardcoded در Sidebar/صفحات   | ✅ متمرکز در `configs/constants` + `configs/navigation` |
+| ساختار `SearchableMultiSelect` | یک کامپوننت حجیم          | ✅ تفکیک به ۶ زیرکامپوننت + ناوبری کامل کیبورد |
+| اعتبارسنجی و منطق تکراری  | پراکنده در فرم‌ها            | ✅ توابع مشترک `validateTitle`, `validation`, `class`, `error`, ... |
+| فرم کاربران/پروفایل       | جزئیات کاربر تکراری        | ✅ کامپوننت مشترک `UserDetailsList`          |
 
 ### 🎨 رابط کاربری و تجربه کاربری (UX)
 
-| مورد                       | نسخه 3.0.0 | نسخه 3.6.4                       |
+| مورد                       | نسخه 3.6.4 | نسخه 3.7.0                       |
 | :------------------------- | :--------- | :------------------------------- |
-| نشانگر ظرفیت کلاس          | ❌         | ✅ `Badge` رنگی (سبز/زرد/قرمز)   |
-| نشان نقش در هدر            | متن ساده   | ✅ `Badge` با رنگ‌بندی نقش       |
-| نشانگر وضعیت اطلاعیه       | سفارشی     | ✅ `Badge` یکپارچه               |
-| نشانگر ددلاین منقضی        | متن        | ✅ `Badge` قرمز                  |
-| تاریخ نسبی                 | ❌         | ✅ `formatRelativeTime` در جلسات |
-| منوی اکشن موبایل           | ساده       | ✅ موقعیت‌یابی هوشمند            |
-| Focus Trap در مدال         | ❌         | ✅ مدیریت کامل `Tab`/`Shift+Tab` |
-| `sr-only` برای دسترس‌پذیری | محدود      | ✅ استفاده گسترده                |
-| انتخاب نتایج جستجو         | ❌         | ✅ دکمه «انتخاب نتایج جستجو»     |
+| تقویم تاریخ               | input HTML بومی (میلادی) | ✅ `DatePicker` جلالی با تبدیل دوطرفه |
+| کلاس‌های منِ دانشجو      | ❌         | ✅ `StudentClassesPage` + نشان ظرفیت |
+| ثبت‌نام در کلاس           | ❌         | ✅ `JoinClassPlaceholderPage` (جای‌نگشت) |
+| گزارش حضورِ مدیر          | ❌ (سپری از نمای استاد) | ✅ `AdminAttendanceReport` فقط‌مطالعه |
+| ددلاین تکالیف            | ورودی ساده | ✅ انتخاب با تقویم جلالی + اعتبارسنجی `isDateBeforeToday` |
+| دکمه‌ها                    | ۴ variant  | ✅ افزودن `success` و `danger-light` |
+| صفحات خطا                | کامل و تکراری | ✅ پایه قابل اشتراک `ErrorPage` + `ErrorAlert` |
+| دراپ‌داون‌ها               | موقعیت‌یابی ساده | ✅ `createPortal` + موقعیت‌یابی خودکار (`ActionsMenu`, `MultiSelectDropdown`) |
 
-### 🔐 امنیت و پایداری
+### 🔐 امنیت، پایداری و بهینه‌سازی عملکرد
 
-| مورد                        | نسخه 3.0.0 | نسخه 3.6.4                    |
+| مورد                        | نسخه 3.6.4 | نسخه 3.7.0                    |
 | :-------------------------- | :--------- | :---------------------------- |
-| کلاس خطای ساختاریافته       | ❌         | ✅ `ApiError` با متادیتا کامل |
-| مدیریت خطای ۴۰۱ (غیرمجاز)   | ❌         | ✅ پیام اختصاصی               |
-| مدیریت خطای ۴۰۳ (ممنوع)     | ❌         | ✅ پیام اختصاصی               |
-| `DeepReadonly` برای حالت‌ها | ❌         | ✅ جلوگیری از تغییر ناخواسته  |
-| حذف `isLoading` غیرضروری    | ❌         | ✅ ساده‌سازی `AuthState`      |
-
-### 📊 بهینه‌سازی عملکرد
-
-| مورد                   | نسخه 3.0.0          | نسخه 3.6.4                       |
-| :--------------------- | :------------------ | :------------------------------- |
-| آپدیت داده‌ها          | واکشی مجدد کامل     | ✅ آپدیت موضعی                   |
-| الگوی `prevUser`       | مخرب (ریست در رندر) | ✅ حذف و جایگزینی با `useEffect` |
-| الگوی `prevClassId`    | مخرب                | ✅ حذف و جایگزینی با `useEffect` |
-| الگوی `refreshTrigger` | دستی                | ✅ حذف و جایگزینی با آپدیت موضعی |
+| جدا شدن رمز عبور از `User` | `password` اختیاری در `User` | ✅ `User` / `UserWithPassword` + `removePassword` |
+| لاگ‌گذاری                  | `console` خام | ✅ کلاس `Logger` توسعه‌محور + `getErrorMessage` یکپارچه |
+| اعتبارسنجی ساختار داده    | —          | ✅ `isValidUser` در `utils/guards` |
+| واکشی داده اسی‌نک          | تکرار Promise در هر صفحه | ✅ متمرکز با `useAsyncData` (جلوگیری از Over-fetching و دوباره‌وارسی) |
+| حذف وابسته از کاربر        | کلاس/حضور/تکلیف | ✅ + اطلاعیه و پاک‌سازی فهرست دانشجویان کلاس‌ها |
+| سقف نوتیفیکیشن‌ها          | نامحدود    | ✅ `MAX_TOASTS = 5`            |
+| ثابت‌سازی اعداد جادویی    | hardcoded  | ✅ متمرکز (`API_REQUEST_TIMEOUT_MS`, `CAPACITY_THRESHOLDS`, `MAX_ASSIGNMENT_GRADE`, `CHART_COLORS`, ...) |
 
 </div>
 
@@ -421,33 +462,36 @@ npm run build
 این ده فاز، ستون فقرات پروژه را تشکیل می‌دهند و به‌صورت کامل در کد فعلی پیاده‌سازی و قابل مشاهده هستند:
 
 | فاز | عنوان                             |  وضعیت   | خلاصه پیاده‌سازی                                                                                                                                                                                                                                                                                                                                                                           |
-| :-: | :-------------------------------- | :------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| :-: | :-------------------------------- | :------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 |  ۱  | پایه فنی و اسکلت پروژه            | ✅ تکمیل | راه‌اندازی React 19 + TypeScript + Vite 8 + Tailwind CSS v4، ساختار پوشه‌ها، لایه سرویس (`baseApi`)، کامپوننت‌های پایه (`Button`, `Input`, `Modal`, `Table`, `Card`, `ConfirmDialog`, `SearchInput`, `StatusChip`, `EmptyState`, `Loading`, `StatCard`)، `db.json` با داده‌های اولیه، تایپ‌های کامل (`User`, `Class`, `Session`, `Attendance`, `Announcement`, `Assignment`, `Submission`) |
-|  ۲  | احراز هویت، نقش‌ها و کنترل دسترسی | ✅ تکمیل | `AuthContext` + `AuthProvider`، `LoginPage` با فرم و اعتبارسنجی، `ProtectedRoute` و `RoleGuard`، منوی نقش‌محور در `Sidebar`، ذخیره نشست در `localStorage` **بدون ذخیره رمز عبور**، بازیابی نشست پس از رفرش با `isValidUser`، صفحه `Unauthorized`، ورود سریع در محیط توسعه                                                                                                                  |
-|  ۳  | مدیریت کاربران                    | ✅ تکمیل | `UsersPage` با جدول دسکتاپ و کارت موبایل، `UserForm` با `react-hook-form` + اعتبارسنجی لحظه‌ای، جستجو بر اساس نام و ایمیل، فیلتر نقش و وضعیت، حذف/فعال‌سازی/غیرفعال‌سازی با `ConfirmDialog`، `UserDetails` در مدال، محافظت از آخرین مدیر، `Toast` برای بازخورد                                                                                                                             |
-|  ۴  | کلاس‌ها و جلسات                   | ✅ تکمیل | `ClassesPage` با فیلتر استاد/وضعیت/جستجو، `ClassForm` با `SearchableMultiSelect` (جستجو + چیپ + انتخاب گروهی)، `ClassDetailsPage`، `SessionForm`، حذف آبشاری (جلسات ← حضور و غیاب ← تکالیف)، غیرفعال/فعال‌سازی کلاس، اعتبارسنجی ظرفیت و عنوان، ریسپانسیو کامل                                                                                                                              |
-|  ۵  | حضور و غیاب                       | ✅ تکمیل | `AttendancePage` با نمای استاد (ثبت حضور) و نمای دانشجو (مشاهده آمار)، وضعیت‌های حاضر/غایب/با تأخیر، عملیات گروهی (حاضر/غایب کردن همه)، محاسبه خودکار درصد حضور، نوار پیشرفت، پارامترهای `classId` و `sessionId` در آدرس                                                                                                                                                                   |
-|  ۶  | اطلاعیه‌ها                        | ✅ تکمیل | `AnnouncementsPage` با کارت‌های ریسپانسیو، `AnnouncementForm`، مخاطب‌گذاری بر اساس کلاس/نقش/مخاطب داخل کلاس، وضعیت مشاهده (`Seen`/`Unseen`) با نشانگر بصری، بازنشانی وضعیت مشاهده پس از ویرایش، هوک اختصاصی `useFilteredAnnouncements`                                                                                                                                                     |
-|  ۷  | تکالیف و ارزیابی                  | ✅ تکمیل | `AssignmentsPage` با جدول و کارت موبایل، `AssignmentForm` با اعتبارسنجی ددلاین، `SubmissionForm` با ارسال/ویرایش/مشاهده پس از ددلاین + کپی پاسخ، `SubmissionsPage` با نمره‌دهی ۰ تا ۲۰ و بازخورد، نمایش وضعیت تصحیح، حذف آبشاری پاسخ‌ها هنگام حذف تکلیف                                                                                                                                    |
-|  ۸  | داشبوردهای اختصاصی                | ✅ تکمیل | `DashboardContainer` با واکشی نقش‌محور، `AdminDashboard` (آمار کلان + نمودار دایره‌ای نقش‌ها + کلاس‌های اخیر)، `TeacherDashboard` (نمودار میله‌ای تصحیح + جلسات اخیر)، `StudentDashboard` (نمودار دایره‌ای حضور + تکالیف در انتظار + اطلاعیه‌ها)، `StatCard` و `Recharts`                                                                                                                  |
-|  ۹  | یکپارچه‌سازی و UX ضروری           | ✅ تکمیل | مدیریت جامع خطاها در `axiosInstance` (تایم‌اوت، عدم دسترسی، خطای سرور)، `react-error-boundary` + `RouterErrorBoundary`، `ScrollToTop`، لینک پرش به محتوا، `Toast` با ۴ نوع، `EmptyState` با آیکون و اکشن، `Loading` با سایزهای مختلف، ریسپانسیو نهایی در تمام صفحات، فونت وزیرمتن، حذف فایل‌های تکراری                                                                                     |
-| ۱۰  | تست، رفع باگ و آماده‌سازی ارائه   | ✅ تکمیل | `db.json` نهایی با کاربران، کلاس‌ها، جلسات، حضور و غیاب، اطلاعیه‌ها، تکالیف و پاسخ‌ها، سه حساب نمونه (مدیر/استاد/دانشجو)، ورود سریع در محیط توسعه، سناریوهای دمو آماده                                                                                                                                                                                                                     |
+|  ۲  | احراز هویت، نقش‌ها و کنترل دسترسی | ✅ تکمیل | `AuthContext` + `AuthProvider`، `LoginPage` (در `pages/auth`)، `ProtectedRoute` و `RoleGuard` با آرایه‌های نقش متمرکز، منوی نقش‌محور در `Sidebar` (از `configs/navigation`)، ذخیره نشست در `localStorage` **بدون ذخیره رمز عبور** (`removePassword`)، بازیابی نشست با `isValidUser`، صفحه `Unauthorized` (از `ErrorPage`) |
+|  ۳  | مدیریت کاربران                    | ✅ تکمیل | `UsersPage` با جدول دسکتاپ/کارت موبایل و `useModalState`/`useAsyncData`، `UserForm`، جستجو/فیلتر نقش و وضعیت، حذف/فعال‌سازی/غیرفعال‌سازی با `ConfirmDialog`، `UserDetails` (با `UserDetailsList`)، محافظت از آخرین مدیر، `Toast` برای بازخورد |
+|  ۴  | کلاس‌ها و جلسات                   | ✅ تکمیل | `ClassesPage` با فیلتر استاد/وضعیت/جستجو، `ClassForm` با `SearchableMultiSelect` (جستجو + چیپ + کیبورد)، `ClassDetailsPage`، `SessionForm` (ویرایش/حذف)، حذف آبشاری (جلسات ← حضور و غیاب ← تکالیف)، غیرفعال/فعال‌سازی کلاس، اعتبارسنجی ظرفیت و عنوان، ریسپانسیو کامل |
+|  ۵  | حضور و غیاب (نقش‌محور)             | ✅ تکمیل | ارکستراتور `AttendancePage` + `TeacherAttendanceForm` (ثبت + حاضر/غایب کردن همه)، `StudentAttendanceView` (آمار/درصد/جزئیات) و **`AdminAttendanceReport` (گزارش فقط‌مطالعه)**، محاسبه خودکار درصد حضور (`calculateStudentStats`)، پارامترهای `classId`/`sessionId` در آدرس |
+|  ۶  | اطلاعیه‌ها                        | ✅ تکمیل | `AnnouncementsPage` با کارت‌های ریسپانسیو، `AnnouncementForm`، مخاطب‌گذاری بر اساس کلاس/نقش/مخاطب داخل کلاس، وضعیت مشاهده (`Seen`/`Unseen`) با نشانگر بصری، بازنشانی وضعیت مشاهده پس از ویرایش، هوک اختصاصی `useFilteredAnnouncements` با `isAnnouncementVisibleTo` |
+|  ۷  | تکالیف و ارزیابی                  | ✅ تکمیل | `AssignmentsPage` + `AssignmentsTable` با ددلاینِ رنگی و `useAssignmentsPageData`، `AssignmentForm` با **تقویم جلالی** و اعتبارسنجی ددلاین، `SubmissionForm` (ارسال/ویرایش/مشاهده پس از ددلاین + کپی)، `SubmissionsPage` با نمره‌دهی ۰ تا ۲۰ و بازخورد، حذف آبشاری پاسخ‌ها |
+|  ۸  | داشبوردهای اختصاصی                | ✅ تکمیل | `DashboardContainer` با واکشی نقش‌محورِ `useAsyncData`، استخراج داده به `utils/dashboardData`، `AdminDashboard`/`TeacherDashboard`/`StudentDashboard` با نمودارهای `Recharts` + `ChartTooltip`/`ChartLegend` مشترک و `StatCard` |
+|  ۹  | یکپارچه‌سازی و UX ضروری           | ✅ تکمیل | مدیریت جامع خطاها در `axiosInstance` (کلاس `ApiError` + `Logger`)، `react-error-boundary` + `RouterErrorBoundary` + `ErrorPage`، `ScrollToTop` (محتوا)، لینک پرش به محتوا، `Toast` با سقف ۵، `EmptyState`/`Loading`/`Spinner`، ریسپانسیو نهایی، فونت وزیرمتن با `@theme`، حذف فایل‌های تکراری |
+| ۱۰  | تست، رفع باگ و آماده‌سازی ارائه   | ✅ تکمیل | `db.json` نهایی با کاربران، کلاس‌ها، جلسات، حضور و غیاب، اطلاعیه‌ها، تکالیف و پاسخ‌ها، سه نقش نمونه (مدیر/استاد/دانشجو)، سناریوهای دمو آماده |
+| ۱۱  | ★ کلاس‌های منِ دانشجو            | ✅ تکمیل | `StudentClassesPage` با نمایش کلاس‌های ثبت‌نام‌شده + نشان ظرفیت رنگی + مسیر `classes/join/:classId` با `JoinClassPlaceholderPage` (ثبت‌نام، در حال توسعه) |
+| ۱۲  | ★ ارتقای کیفیت معماری (این نسخه)   | ✅ تکمیل | استخراج ۵ هوک قابل استفاده مجدد، متمرکزسازی آیکون/تنظیمات/نمودار/اعتبارسنجی/توابع، جداسازی `User` از `UserWithPassword`، `Logger` و `getErrorMessage` یکپارچه، تفکیک ماژول حضور و غیاب به ۴ نمای نقش‌محور |
 
 ---
 
-### 🔸 فازهای توسعه‌ای — در انتظار اجرا (فاز ۱۱ به بعد)
+### 🔸 فازهای توسعه‌ای — در انتظار اجرا (فاز ۱۳ به بعد)
 
 این فازها پس از تکمیل هسته اصلی آغاز می‌شوند و به ترتیب اولویت‌بندی زیر اجرا خواهند شد:
 
 | فاز | عنوان                               |          وضعیت          | اولویت | توضیحات                                                                                                                           |
 | :-: | :---------------------------------- | :---------------------: | :----: | :-------------------------------------------------------------------------------------------------------------------------------- |
-| ۱۱  | مرکز اعلان‌ها (Notification Center) |      ⏳ در انتظار       |  بالا  | اعلان‌های خوانده‌نشده، `mark as read`، لینک به صفحه مرتبط، هشدار ددلاین نزدیک                                                     |
-| ۱۲  | وضعیت‌ها و آرشیو (Lifecycle)        |     ⚠️ بخشی در هسته     |  بالا  | وضعیت `active`/`inactive` کلاس و کاربر اجرا شده؛ سیستم کامل `Draft`/`Published`/`Archived` و آرشیو اطلاعیه و تکلیف باقی مانده است |
-| ۱۳  | پروفایل پیشرفته و Activity Log      | ⚠️ پروفایل پایه در هسته | متوسط  | پروفایل با `dl` اجرا شده؛ آواتار، تاریخچه فعالیت‌ها و اطلاعات تکمیلی باقی مانده است                                               |
-| ۱۴  | اتاق گفتگوی آموزشی (Discussion)     |      ⏳ در انتظار       | متوسط  | چت کلاسی، ارسال پیام، پاسخ‌دهی، `seen`/`unseen` پیام‌ها                                                                           |
-| ۱۵  | تقویم آموزشی و یادآورها             |      ⏳ در انتظار       | متوسط  | نمایش بصری جلسات و ددلاین‌ها روی تقویم، یادآور ساده                                                                               |
-| ۱۶  | سیستم آزمون‌ساز آنلاین              |      ⏳ در انتظار       | پایین  | ساخت آزمون، سوالات تستی و تشریحی، تصحیح و نمره‌دهی (پرهزینه‌ترین فاز)                                                             |
-| ۱۷  | بهبودهای رزومه‌ای نهایی             |      ⏳ در انتظار       | پایین  | حالت تاریک، جستجوی سراسری، شخصی‌سازی ویجت‌ها، نمودارهای پیشرفته                                                                   |
+| ۱۳  | مرکز اعلان‌ها (Notification Center) |      ⏳ در انتظار       |  بالا  | اعلان‌های خوانده‌نشده، `mark as read`، لینک به صفحه مرتبط، هشدار ددلاین نزدیک                                                     |
+| ۱۴  | وضعیت‌ها و آرشیو (Lifecycle)        |     ⚠️ بخشی در هسته     |  بالا  | وضعیت `active`/`inactive` کلاس و کاربر اجرا شده؛ سیستم کامل `Draft`/`Published`/`Archived` و آرشیو اطلاعیه و تکلیف باقی مانده است |
+| ۱۵  | تقویم آموزشی و یادآورها             |     ⚠️ پایه‌ریزی شده     |  متوسط  | `DatePicker` جلالی آماده است؛ نمایش بصری جلسات و ددلاین‌ها روی تقویم + یادآور ساده باقی مانده است |
+| ۱۶  | اتاق گفتگوی آموزشی (Discussion)     |      ⏳ در انتظار       |  متوسط  | چت کلاسی، ارسال پیام، پاسخ‌دهی، `seen`/`unseen` پیام‌ها                                                                           |
+| ۱۷  | تکمیل ثبت‌نام در کلاس              |     ⚠️ جای‌نگشت آماده   |  متوسط  | `JoinClassPlaceholderPage` آماده است؛ منطق واقعی ثبت‌نام/ورود دانشجو به کلاس باقی مانده است                                       |
+| ۱۸  | پروفایل پیشرفته و Activity Log      | ⚠️ پروفایل پایه در هسته | متوسط  | پروفایل با `UserDetailsList` اجرا شده؛ آواتار، تاریخچه فعالیت‌ها و اطلاعات تکمیلی باقی مانده است |
+| ۱۹  | سیستم آزمون‌ساز آنلاین              |      ⏳ در انتظار       |  پایین  | ساخت آزمون، سوالات تستی و تشریحی، تصحیح و نمره‌دهی (پرهزینه‌ترین فاز)                                                             |
+| ۲۰  | بهبودهای رزومه‌ای نهایی             |      ⏳ در انتظار       |  پایین  | حالت تاریک، جستجوی سراسری، شخصی‌سازی ویجت‌ها، نمودارهای پیشرفته                                                                   |
 
 ---
 
@@ -463,6 +507,6 @@ npm run build
 
 _طراحی، معماری و پیاده‌سازی شده با ❤️ | مبتنی بر اکوسیستم React و TypeScript_
 
-**نسخه: 3.6.4** | **آخرین به‌روزرسانی : مهر ماه 1405**
+**نسخه: 3.7.0** | **آخرین به‌روزرسانی: آبان ۱۴۰۵**
 
 </div>

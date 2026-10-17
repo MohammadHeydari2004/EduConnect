@@ -1,21 +1,48 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { CloseIcon } from "#/components/common/icons.tsx";
 
 interface ModalProps {
-  isOpen: boolean;
+  /**
+   * Whether the modal is open. Defaults to `true` when the parent
+   * conditionally renders the modal (i.e. only mounts it when open).
+   */
+  isOpen?: boolean;
   title?: string;
   children: ReactNode;
   onClose: () => void;
+  ariaLabel?: string;
 }
 
-function Modal({ isOpen, title, children, onClose }: ModalProps) {
+function Modal({ isOpen = true, title, children, onClose, ariaLabel }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
   const onCloseRef = useRef(onClose);
+  const titleId = useId();
 
   useEffect(() => {
     onCloseRef.current = onClose;
   }, [onClose]);
+
+  // Queried on demand (on every Tab keypress) instead of being cached once
+  // on open, so focusable elements that appear inside the modal later
+  // (conditional renders after the first paint) stay inside the trap.
+  const getFocusableElements = (): HTMLElement[] => {
+    if (!modalRef.current) return [];
+    const focusableSelectors = [
+      'a[href]:not([tabindex="-1"])',
+      'button:not([disabled]):not([tabindex="-1"])',
+      'textarea:not([disabled]):not([tabindex="-1"])',
+      'input:not([disabled]):not([tabindex="-1"])',
+      'select:not([disabled]):not([tabindex="-1"])',
+      '[tabindex]:not([tabindex="-1"])',
+    ];
+    return Array.from(
+      modalRef.current.querySelectorAll<HTMLElement>(
+        focusableSelectors.join(", "),
+      ),
+    ).filter((el) => el.offsetParent !== null);
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -27,23 +54,6 @@ function Modal({ isOpen, title, children, onClose }: ModalProps) {
     requestAnimationFrame(() => {
       modalRef.current?.focus();
     });
-
-    const getFocusableElements = (): HTMLElement[] => {
-      if (!modalRef.current) return [];
-      const focusableSelectors = [
-        'a[href]:not([tabindex="-1"])',
-        'button:not([disabled]):not([tabindex="-1"])',
-        'textarea:not([disabled]):not([tabindex="-1"])',
-        'input:not([disabled]):not([tabindex="-1"])',
-        'select:not([disabled]):not([tabindex="-1"])',
-        '[tabindex]:not([tabindex="-1"])',
-      ];
-      return Array.from(
-        modalRef.current.querySelectorAll<HTMLElement>(
-          focusableSelectors.join(","),
-        ),
-      ).filter((el) => el.offsetParent !== null);
-    };
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -62,10 +72,7 @@ function Modal({ isOpen, title, children, onClose }: ModalProps) {
         const firstElement = focusableElements[0];
         const lastElement = focusableElements[focusableElements.length - 1];
 
-        if (!firstElement || !lastElement) {
-          e.preventDefault();
-          return;
-        }
+        if (!firstElement || !lastElement) return;
 
         const activeElement = document.activeElement as HTMLElement;
 
@@ -105,8 +112,8 @@ function Modal({ isOpen, title, children, onClose }: ModalProps) {
       ref={modalRef}
       role="dialog"
       aria-modal="true"
-      aria-labelledby={title ? "modal-title" : undefined}
-      aria-label={!title ? "پنجره گفتگو" : undefined}
+      aria-labelledby={title ? titleId : undefined}
+      aria-label={!title ? (ariaLabel ?? "پنجره گفتگو") : undefined}
       tabIndex={-1}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 outline-none sm:p-4"
       onClick={(e) => {
@@ -119,7 +126,7 @@ function Modal({ isOpen, title, children, onClose }: ModalProps) {
         <div className="mb-4 flex items-center justify-between">
           {title && (
             <h2
-              id="modal-title"
+              id={titleId}
               className="text-base font-semibold text-gray-800 sm:text-lg"
             >
               {title}
@@ -130,20 +137,7 @@ function Modal({ isOpen, title, children, onClose }: ModalProps) {
             className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
             aria-label="بستن"
           >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <CloseIcon className="h-5 w-5" />
           </button>
         </div>
         <div>{children}</div>

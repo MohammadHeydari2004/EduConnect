@@ -1,167 +1,94 @@
 import EmptyState from "#/components/common/EmptyState.tsx";
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { createPortal } from "react-dom";
+import ActionsMenu from "#/components/ui/ActionsMenu.tsx";
+import type { ReactNode } from "react";
 
 interface TableColumn<T> {
   key: keyof T | string;
   title: string;
   render?: (item: T) => ReactNode;
-  align?: "right" | "center" | "left";
+  /**
+   * Column width as a CSS width (e.g. "30%" or "140px"). Defining a width on
+   * any column switches the table to fixed layout, so widths are explicit
+   * instead of content-driven. Unset columns share the remaining space.
+   */
+  width?: string;
 }
 
-interface TableProps<T> {
+  interface TableProps<T> {
   columns: TableColumn<T>[];
   data: T[];
   getRowKey?: (item: T, index: number) => string | number;
+  /** Short human label of a row, used to make the mobile actions menu accessible. */
+  getRowLabel?: (item: T, index: number) => string;
   renderMobileCard?: (item: T) => ReactNode;
   renderMobileActions?: (item: T) => ReactNode;
-  emptyTitle?: string;
-  emptyDescription?: string;
-}
-
-function ActionsMenu({ children }: { children: ReactNode }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const [coords, setCoords] = useState({ top: 0, left: 0 });
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const updatePosition = () => {
-      if (!buttonRef.current) return;
-
-      const btnRect = buttonRef.current.getBoundingClientRect();
-      const viewportWidth = document.documentElement.clientWidth;
-      const viewportHeight = window.innerHeight;
-
-      const menuWidth = menuRef.current?.offsetWidth || 160;
-      const menuHeight = menuRef.current?.offsetHeight || 100;
-
-      let left = btnRect.left;
-
-      if (left + menuWidth > viewportWidth - 8) {
-        left = btnRect.right - menuWidth;
-      }
-
-      if (left < 8) {
-        left = 8;
-      }
-
-      let top = btnRect.bottom + 4;
-
-      if (top + menuHeight > viewportHeight - 8) {
-        top = btnRect.top - menuHeight - 4;
-      }
-
-      setCoords({ top, left });
-    };
-
-    const rafId = requestAnimationFrame(updatePosition);
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(e.target as Node) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(e.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleEscape);
-    window.addEventListener("scroll", updatePosition, true);
-    window.addEventListener("resize", updatePosition);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
-      window.removeEventListener("scroll", updatePosition, true);
-      window.removeEventListener("resize", updatePosition);
-    };
-  }, [isOpen]);
-
-  const toggleMenu = () => {
-    if (!isOpen && buttonRef.current) {
-      const btnRect = buttonRef.current.getBoundingClientRect();
-      setCoords({
-        top: btnRect.bottom + 4,
-        left: btnRect.left,
-      });
-    }
-    setIsOpen((prev) => !prev);
-  };
-
-  return (
-    <>
-      <button
-        ref={buttonRef}
-        onClick={toggleMenu}
-        className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100"
-        aria-label="عملیات"
-        aria-expanded={isOpen}
-        aria-haspopup="true"
-      >
-        <svg
-          className="h-5 w-5"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-          aria-hidden="true"
-        >
-          <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-        </svg>
-      </button>
-      {isOpen &&
-        createPortal(
-          <div
-            ref={menuRef}
-            role="menu"
-            className="fixed z-50 flex min-w-40 flex-col gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
-            style={{ top: `${coords.top}px`, left: `${coords.left}px` }}
-          >
-            {children}
-          </div>,
-          document.body,
-        )}
-    </>
-  );
 }
 
 function Table<T>({
   columns,
   data,
   getRowKey,
+  getRowLabel,
   renderMobileCard,
   renderMobileActions,
-  emptyTitle = "داده‌ای برای نمایش وجود ندارد",
-  emptyDescription = "هیچ رکوردی در این جدول یافت نشد.",
 }: TableProps<T>) {
   if (data.length === 0) {
-    return <EmptyState title={emptyTitle} description={emptyDescription} />;
+    return (
+      <EmptyState
+        title="داده‌ای برای نمایش وجود ندارد"
+        description="هیچ رکوردی در این جدول یافت نشد."
+      />
+    );
   }
 
-  const getAlignClass = (align?: "right" | "center" | "left") => {
-    if (align === "center") return "text-center";
-    if (align === "left") return "text-left";
-    return "text-right";
-  };
+  const cellValue = (column: TableColumn<T>, item: T): ReactNode =>
+    column.render
+      ? column.render(item)
+      : String((item as Record<string, unknown>)[String(column.key)] ?? "");
+
+  // Fallback mobile layout used when a caller does not supply a dedicated
+  // `renderMobileCard`: a stacked card with one labeled row per column, which
+  // keeps narrow screens free of horizontal scrolling. The `actions` column
+  // is skipped: mobile actions are always supplied via `renderMobileActions`,
+  // and including it here would duplicate them.
+  const mobileCard =
+    renderMobileCard ??
+    ((item: T) => (
+      <div className="space-y-2 text-right">
+        {columns
+          .filter((column) => column.key !== "actions")
+          .map((column) => (
+            <div key={String(column.key)} className="text-sm">
+              <div className="text-xs text-gray-500">{column.title}</div>
+              <div className="text-gray-800">{cellValue(column, item)}</div>
+            </div>
+          ))}
+      </div>
+    ));
+
+  const fixedLayout = columns.some((column) => column.width);
 
   const tableContent = (
-    <table className="min-w-full text-sm">
+    <table
+      className={`${fixedLayout ? "table-fixed w-full" : "min-w-full"} text-sm`}
+    >
+      <colgroup>
+        {columns.map((column) => (
+          <col
+            key={String(column.key)}
+            style={column.width ? { width: column.width } : undefined}
+          />
+        ))}
+      </colgroup>
       <thead className="bg-gray-50">
         <tr>
           {columns.map((column) => (
             <th
               key={String(column.key)}
               scope="col"
-              className={`px-3 py-3 text-xs font-semibold whitespace-nowrap text-gray-700 sm:px-4 sm:text-sm ${getAlignClass(column.align)}`}
+              className={`px-2 py-2 text-xs font-semibold text-center text-gray-700 sm:px-4 sm:text-sm ${
+                fixedLayout ? "overflow-hidden" : "whitespace-nowrap"
+              }`}
             >
               {column.title}
             </th>
@@ -177,14 +104,9 @@ function Table<T>({
             {columns.map((column) => (
               <td
                 key={String(column.key)}
-                className={`px-3 py-3 text-gray-600 sm:px-4 ${getAlignClass(column.align)}`}
+                className={`px-3 py-3 text-center text-gray-600 ${fixedLayout ? "overflow-hidden" : ""}`}
               >
-                {column.render
-                  ? column.render(item)
-                  : String(
-                      (item as Record<string, unknown>)[String(column.key)] ??
-                        "",
-                    )}
+                {cellValue(column, item)}
               </td>
             ))}
           </tr>
@@ -198,28 +120,26 @@ function Table<T>({
       <div className="hidden overflow-x-auto rounded-xl border border-gray-200 bg-white md:block">
         {tableContent}
       </div>
-      {renderMobileCard && (
-        <div className="space-y-3 md:hidden">
-          {data.map((item, index) => (
-            <div
-              key={getRowKey ? getRowKey(item, index) : index}
-              className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
-            >
-              {renderMobileCard(item)}
-              {renderMobileActions && (
-                <div className="mt-3 flex justify-end border-t border-gray-100 pt-3">
-                  <ActionsMenu>{renderMobileActions(item)}</ActionsMenu>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-      {!renderMobileCard && (
-        <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white md:hidden">
-          {tableContent}
-        </div>
-      )}
+
+      <div className="space-y-3 md:hidden">
+        {data.map((item, index) => (
+          <div
+            key={getRowKey ? getRowKey(item, index) : index}
+            className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+          >
+            {mobileCard(item)}
+            {renderMobileActions && (
+              <div className="mt-3 flex justify-end border-t border-gray-100 pt-3">
+                <ActionsMenu
+                  label={getRowLabel ? getRowLabel(item, index) : undefined}
+                >
+                  {renderMobileActions(item)}
+                </ActionsMenu>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </>
   );
 }

@@ -1,5 +1,5 @@
+import axiosInstance from "#/services/api/axiosInstance.ts";
 import type { DeepPartial, ID } from "#/types/common.ts";
-import axiosInstance from "./axiosInstance";
 
 export const baseApi = {
   getAll: async <T>(

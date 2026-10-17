@@ -4,11 +4,16 @@ import Modal from "#/components/ui/Modal.tsx";
 import SearchableMultiSelect from "#/components/ui/SearchableMultiSelect.tsx";
 import Select from "#/components/ui/Select.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
+import {
+  validateClassForm,
+  type ClassFormErrors,
+} from "#/pages/classes/classValidation.ts";
+import { DEFAULT_CLASS_CAPACITY } from "#/configs/constants.ts";
 import { classService } from "#/services/class.ts";
 import type { ClassFormValues, ClassItem, ClassStatus } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
+import { getErrorMessage } from "#/utils/error.ts";
 import { useMemo, useState } from "react";
-import { validateClassForm, type ClassFormErrors } from "./validators";
 
 interface Props {
   users: User[];
@@ -38,7 +43,7 @@ export default function ClassForm({
     title: initialData?.title || "",
     teacherId: initialData?.teacherId ?? null,
     studentIds: initialData?.studentIds || [],
-    capacity: initialData?.capacity || 10,
+    capacity: initialData?.capacity || DEFAULT_CLASS_CAPACITY,
     status: initialData?.status || "active",
     description: initialData?.description || "",
   }));
@@ -66,7 +71,7 @@ export default function ClassForm({
         onSuccess("کلاس با موفقیت ایجاد شد.");
       }
     } catch (err) {
-      onError(err instanceof Error ? err.message : "عملیات با خطا مواجه شد.");
+      onError(getErrorMessage(err, "عملیات با خطا مواجه شد."));
     } finally {
       setIsSubmitting(false);
     }
@@ -75,7 +80,7 @@ export default function ClassForm({
   const title = initialData ? "ویرایش کلاس" : "ایجاد کلاس جدید";
 
   return (
-    <Modal isOpen={true} title={title} onClose={onClose}>
+    <Modal title={title} onClose={onClose}>
       <div className="space-y-4">
         <Input
           label="عنوان کلاس"
@@ -111,7 +116,8 @@ export default function ClassForm({
             min={1}
             value={form.capacity}
             onChange={(e) => {
-              setForm({ ...form, capacity: Number(e.target.value) });
+              const value = e.target.value;
+              setForm({ ...form, capacity: value === "" ? 0 : Number(value) });
               if (errors.capacity)
                 setErrors({ ...errors, capacity: undefined });
             }}
@@ -161,6 +167,7 @@ export default function ClassForm({
             placeholder="دانشجویان را جستجو و انتخاب کنید..."
             searchPlaceholder="جستجوی دانشجو (نام یا ایمیل)..."
             error={errors.students}
+            openDirection="up"
           />
         )}
 

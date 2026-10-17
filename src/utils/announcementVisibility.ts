@@ -1,0 +1,35 @@
+import { DEFAULT_TARGET_ROLES, GLOBAL_ANNOUNCEMENT_CLASS_ID } from "#/configs/constants.ts";
+import type { Announcement } from "#/types/announcement.ts";
+import type { ClassItem } from "#/types/class.ts";
+import type { User } from "#/types/user.ts";
+
+/**
+ * Single source of truth for "can this user see this announcement?".
+ * Used by both the announcements list page and the student dashboard so the
+ * visibility rules stay in sync.
+ */
+export function isAnnouncementVisibleTo(
+  user: User,
+  announcement: Announcement,
+  classMap: Map<string, ClassItem>,
+): boolean {
+  if (user.role === "admin") return true;
+  if (announcement.authorId === user.id) return true;
+
+  if (announcement.classId === GLOBAL_ANNOUNCEMENT_CLASS_ID) {
+    const roles = announcement.targetRoles ?? DEFAULT_TARGET_ROLES;
+    return roles.includes(user.role);
+  }
+
+  const targetClass = classMap.get(announcement.classId);
+  if (!targetClass) return false;
+
+  const audience = announcement.targetAudience ?? "students";
+  const isTeacherOfThisClass = targetClass.teacherId === user.id;
+  const isStudentInThisClass = (targetClass.studentIds || []).includes(user.id);
+
+  if (audience === "teacher") return isTeacherOfThisClass;
+  if (audience === "students") return isStudentInThisClass;
+  if (audience === "both") return isTeacherOfThisClass || isStudentInThisClass;
+  return false;
+}

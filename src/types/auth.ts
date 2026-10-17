@@ -1,4 +1,4 @@
-import type { User } from "./user";
+import type { User } from "#/types/user.ts";
 
 export interface LoginPayload {
   email: string;

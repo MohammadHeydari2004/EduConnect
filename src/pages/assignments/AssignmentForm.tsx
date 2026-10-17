@@ -3,28 +3,29 @@ import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Select from "#/components/ui/Select.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
+import DatePicker from "#/components/ui/DatePicker.tsx";
+import { useToast } from "#/hooks/useToast.ts";
+import {
+  validateAssignmentForm,
+  type AssignmentFormErrors,
+} from "#/pages/assignments/validators.ts";
 import { assignmentService } from "#/services/assignment.ts";
 import type { Assignment } from "#/types/assignment.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID } from "#/types/common.ts";
+import { getErrorMessage } from "#/utils/error.ts";
 import { useState } from "react";
-import {
-  validateAssignmentForm,
-  type AssignmentFormErrors,
-} from "./validators";
 
 interface Props {
-  isOpen: boolean;
   initialData?: Assignment | null;
   availableClasses: ClassItem[];
   teacherId: ID;
   isAdmin: boolean;
   onClose: () => void;
-  onSuccess: (message: string, assignment: Assignment) => void;
+  onSuccess: (assignment: Assignment) => void;
 }
 
 export default function AssignmentForm({
-  isOpen,
   initialData,
   availableClasses,
   teacherId,
@@ -32,17 +33,14 @@ export default function AssignmentForm({
   onClose,
   onSuccess,
 }: Props) {
+  const { addToast } = useToast();
+
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [description, setDescription] = useState(
     initialData?.description ?? "",
   );
-  const [deadline, setDeadline] = useState(
-    initialData
-      ? (new Date(initialData.deadline).toISOString().split("T")[0] ?? "")
-      : "",
-  );
+  const [deadline, setDeadline] = useState(initialData?.deadline?.split("T")[0] ?? "");
   const [classId, setClassId] = useState(initialData?.classId ?? "");
-  // اصلاح تایپ: استفاده از AssignmentFormErrors به‌جای Partial<Record<string, string>>
   const [errors, setErrors] = useState<AssignmentFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -56,20 +54,25 @@ export default function AssignmentForm({
       title,
       classId,
       deadline,
+      originalDeadline: initialData?.deadline?.split("T")[0],
     });
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
 
     const selectedClass = availableClasses.find((c) => c.id === classId);
     const finalTeacherId = isAdmin ? selectedClass?.teacherId : teacherId;
-    if (!finalTeacherId) return;
 
-    const deadlineDate = new Date(`${deadline}T23:59:59`);
+    if (!finalTeacherId) {
+      setErrors({
+        form: "این کلاس فاقد استاد است. ابتدا استاد کلاس را تعیین کنید.",
+      });
+      return;
+    }
 
     const payload = {
       title,
       description,
-      deadline: deadlineDate.toISOString(),
+      deadline: deadline ? `${deadline}T23:59:59.999Z` : "",
       classId,
       teacherId: finalTeacherId,
     };
@@ -79,13 +82,17 @@ export default function AssignmentForm({
       let result: Assignment;
       if (initialData) {
         result = await assignmentService.update(initialData.id, payload);
-        onSuccess("تکلیف با موفقیت ویرایش شد.", result);
+        addToast("تکلیف با موفقیت ویرایش شد.", "success");
       } else {
         result = await assignmentService.create(payload);
-        onSuccess("تکلیف با موفقیت ایجاد شد.", result);
+        addToast("تکلیف با موفقیت ایجاد شد.", "success");
       }
+      onSuccess(result);
     } catch (err) {
-      console.error(err);
+      addToast(
+        getErrorMessage(err, "خطا در ذخیره تکلیف. لطفاً دوباره تلاش کنید."),
+        "error",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -93,18 +100,30 @@ export default function AssignmentForm({
 
   return (
     <Modal
-      isOpen={isOpen}
       title={initialData ? "ویرایش تکلیف" : "ایجاد تکلیف جدید"}
       onClose={onClose}
     >
       <div className="space-y-4">
+        {errors.form && (
+          <p
+            className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            role="alert"
+          >
+            {errors.form}
+          </p>
+        )}
+
         <Input
           label="عنوان تکلیف"
           value={title}
           onChange={(e) => {
             setTitle(e.target.value);
-            if (errors.title)
-              setErrors((prev) => ({ ...prev, title: undefined }));
+            if (errors.title || errors.form)
+              setErrors((prev) => ({
+                ...prev,
+                title: undefined,
+                form: undefined,
+              }));
           }}
           error={errors.title}
           placeholder="مثلاً: تمرین اول"
@@ -115,8 +134,12 @@ export default function AssignmentForm({
           value={classId}
           onChange={(e) => {
             setClassId(e.target.value);
-            if (errors.classId)
-              setErrors((prev) => ({ ...prev, classId: undefined }));
+            if (errors.classId || errors.form)
+              setErrors((prev) => ({
+                ...prev,
+                classId: undefined,
+                form: undefined,
+              }));
           }}
           options={[
             { label: "انتخاب کلاس...", value: "", disabled: true },
@@ -125,17 +148,13 @@ export default function AssignmentForm({
           error={errors.classId}
           required
         />
-        <Input
+        <DatePicker
           label="ددلاین"
-          type="date"
           value={deadline}
-          onChange={(e) => {
-            setDeadline(e.target.value);
-            if (errors.deadline)
-              setErrors((prev) => ({ ...prev, deadline: undefined }));
-          }}
+          onChange={setDeadline}
           error={errors.deadline}
           required
+          dropup
         />
         <Textarea
           label="توضیحات"

@@ -1,18 +1,18 @@
-import type { ID, Optional } from "./common";
+import type { ID } from "#/types/common.ts";
 
 export interface Session {
   readonly id: ID;
   readonly classId: ID;
   title: string;
-  description: Optional<string>;
+  description?: string;
   date: string;
-  readonly createdAt: Optional<string>;
-  readonly updatedAt?: Optional<string>;
+  readonly createdAt?: string;
+  readonly updatedAt?: string;
 }
 
 export interface SessionFormValues {
   title: string;
   classId: ID;
   date: string;
-  description: Optional<string>;
+  description: string;
 }

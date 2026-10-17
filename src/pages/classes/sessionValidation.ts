@@ -1,4 +1,5 @@
 import type { SessionFormValues } from "#/types/session.ts";
+import { validateTitle } from "#/utils/validateTitle.ts";
 
 export interface SessionFormErrors {
   title?: string;
@@ -12,14 +13,12 @@ export function validateSessionForm(
 ): SessionFormErrors {
   const newErrors: SessionFormErrors = {};
 
-  const title = values.title.trim();
-  if (!title) {
-    newErrors.title = "عنوان جلسه الزامی است.";
-  } else if (title.length < 3) {
-    newErrors.title = "عنوان باید حداقل ۳ کاراکتر باشد.";
-  } else if (title.length > 100) {
-    newErrors.title = "عنوان نباید بیشتر از ۱۰۰ کاراکتر باشد.";
-  }
+  const titleError = validateTitle(values.title, {
+    titleLabel: "جلسه",
+    min: 3,
+    max: 100,
+  });
+  if (titleError) newErrors.title = titleError;
 
   if (!values.date) {
     newErrors.date = "تاریخ جلسه الزامی است.";

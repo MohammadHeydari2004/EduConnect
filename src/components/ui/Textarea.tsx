@@ -1,9 +1,9 @@
+import { buildAriaDescribedBy } from "#/utils/accessibility.ts";
 import { forwardRef, useId, type TextareaHTMLAttributes } from "react";
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
-  description?: string;
 }
 
 const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
@@ -11,10 +11,11 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     {
       label,
       error,
-      description,
       className = "",
       id: propId,
       required,
+      disabled,
+      readOnly,
       ...props
     },
     ref,
@@ -22,7 +23,15 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     const generatedId = useId();
     const id = propId || generatedId;
     const errorId = error ? `${id}-error` : undefined;
-    const descId = description ? `${id}-desc` : undefined;
+
+    const stateClasses = disabled
+      ? "cursor-not-allowed bg-gray-100 text-gray-500"
+      : readOnly
+        ? "cursor-text bg-gray-50 text-gray-700"
+        : "bg-white text-gray-900";
+    const borderClasses = error
+      ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+      : "border-gray-300 focus:border-blue-500 focus:ring-blue-100";
 
     return (
       <div className="flex flex-col gap-1.5">
@@ -40,21 +49,16 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           id={id}
           aria-invalid={!!error}
-          aria-describedby={
-            [errorId, descId].filter(Boolean).join(" ") || undefined
-          }
+          aria-describedby={buildAriaDescribedBy(errorId)}
           required={required}
-          className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors outline-none focus:ring-2 ${error ? "border-red-500 focus:border-red-500 focus:ring-red-100" : "border-gray-300 focus:border-blue-500 focus:ring-blue-100"} ${props.disabled ? "cursor-not-allowed bg-gray-100 text-gray-500" : props.readOnly ? "cursor-text bg-gray-50 text-gray-700" : "bg-white text-gray-900"} ${className}`}
+          disabled={disabled}
+          readOnly={readOnly}
+          className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors outline-none focus:ring-2 ${borderClasses} ${stateClasses} ${className}`}
           {...props}
         />
         {error && (
           <span id={errorId} className="text-xs text-red-600" role="alert">
             {error}
-          </span>
-        )}
-        {!error && description && (
-          <span id={descId} className="text-xs text-gray-500">
-            {description}
           </span>
         )}
       </div>
