@@ -1,7 +1,7 @@
 import { useClickOutside } from "#/hooks/useClickOutside.ts";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { MoreIcon } from "#/components/common/icons.tsx";
+import { MoreIcon } from "#/components/common/icons";
 
 const MENU_DEFAULT_WIDTH = 160;
 const MENU_DEFAULT_HEIGHT = 100;

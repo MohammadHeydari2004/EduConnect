@@ -39,4 +39,5 @@ export interface UserFilters {
   searchEmail: string;
   role: "" | UserRole;
   status: "" | RecordStatus;
+  [key: string]: string | UserRole | RecordStatus | "";
 }

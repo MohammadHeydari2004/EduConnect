@@ -9,6 +9,7 @@ import Select from "#/components/ui/Select.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useMapById } from "#/hooks/useMapById.ts";
 import { useModalState } from "#/hooks/useModalState.ts";
+import { useFilter, type FilterConfig } from "#/hooks/useFilter.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import AssignmentForm from "#/pages/assignments/AssignmentForm.tsx";
 import AssignmentsTable from "#/pages/assignments/AssignmentsTable.tsx";
@@ -21,6 +22,13 @@ import type { Submission } from "#/types/submission.ts";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getErrorMessage } from "#/utils/error.ts";
+
+interface AssignmentFilters {
+  search: string;
+  classId: string;
+  status: "" | "active" | "expired";
+  [key: string]: string;
+}
 
 export default function AssignmentsPage() {
   const assignmentModal = useModalState<Assignment>();
@@ -52,10 +60,10 @@ export default function AssignmentsPage() {
   const isClassPage = !!classIdParam;
 
   // Filters
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<AssignmentFilters>({
     search: "",
     classId: "",
-    status: "" as "" | "active" | "expired",
+    status: "",
   });
 
   const assignmentMap = useMapById(assignments);
@@ -70,7 +78,7 @@ export default function AssignmentsPage() {
       });
     }
     return map;
-  }, [submissions, currentUser?.id]); // Only depend on currentUser.id, not the whole object
+  }, [submissions, currentUser?.id]);
 
   const canManageAssignment = useCallback(
     (a: Assignment) => {
@@ -137,8 +145,6 @@ export default function AssignmentsPage() {
       assignmentModal.close();
       addToast("تکلیف با موفقیت حذف شد.", "success");
     } catch (err) {
-      // Action failures must not clobber the loaded list: report via toast and
-      // keep the page intact (the `error` state is reserved for the initial fetch).
       addToast(getErrorMessage(err, "حذف تکلیف با خطا مواجه شد."), "error");
       assignmentModal.close();
     } finally {
@@ -146,39 +152,52 @@ export default function AssignmentsPage() {
     }
   };
 
-  const filteredAssignments = useMemo(() => {
-    return assignments.filter((a: Assignment) => {
-      if (isClassPage && classId && a.classId !== classId) return false;
-      if (filters.classId && a.classId !== filters.classId) return false;
-      if (filters.search) {
-        const searchLower = filters.search.toLowerCase();
-        if (!a.title.toLowerCase().includes(searchLower)) return false;
-      }
-      if (filters.status) {
-        const isExpired = new Date() > new Date(a.deadline);
-        if (filters.status === "active" && isExpired) return false;
-        if (filters.status === "expired" && !isExpired) return false;
-      }
+  const filterConfigs = useMemo<FilterConfig<Assignment>[]>(
+    () => [
+      {
+        filterKey: "search",
+        matches: (assignment: Assignment, value) =>
+          assignment.title.toLowerCase().includes(String(value).toLowerCase()),
+      },
+      {
+        filterKey: "classId",
+        matches: (assignment: Assignment, value) => (value ? assignment.classId === value : true),
+      },
+      {
+        filterKey: "status",
+        matches: (assignment: Assignment, value) => {
+          if (!value || value === "") return true;
+          const isExpired = new Date() > new Date(assignment.deadline);
+          if (value === "active") return !isExpired;
+          if (value === "expired") return isExpired;
+          return true;
+        },
+      },
+    ],
+    []
+  );
+
+  const extraPredicate = useCallback(
+    (assignment: Assignment) => {
+      if (isClassPage && classId && assignment.classId !== classId) return false;
       if (isStudent) {
-        const cls = classMap.get(a.classId);
-        if (!cls || !(cls.studentIds || []).includes(currentUser?.id ?? ""))
-          return false;
+        const cls = classMap.get(assignment.classId);
+        if (!cls || !(cls.studentIds || []).includes(currentUser?.id ?? "")) return false;
       } else if (isTeacher) {
-        const cls = classMap.get(a.classId);
+        const cls = classMap.get(assignment.classId);
         if (!cls || cls.teacherId !== currentUser?.id) return false;
       }
       return true;
-    });
-  }, [
-    assignments,
-    isClassPage,
-    classId,
-    isStudent,
-    isTeacher,
-    classMap,
-    currentUser,
+    },
+    [isClassPage, classId, isStudent, isTeacher, classMap, currentUser]
+  );
+
+  const filteredAssignments = useFilter({
+    data: assignments,
     filters,
-  ]);
+    filterConfigs,
+    extraPredicate,
+  });
 
   const myClasses = useMemo(() => {
     if (!currentUser) return [];

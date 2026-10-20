@@ -1,4 +1,4 @@
-import { SearchOffIcon } from "#/components/common/icons.tsx";
+import { SearchOffIcon } from "#/components/common/icons";
 
 export function MultiSelectEmpty() {
   return (

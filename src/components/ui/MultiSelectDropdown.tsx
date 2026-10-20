@@ -1,4 +1,4 @@
-import { SearchIcon } from "#/components/common/icons.tsx";
+import { SearchIcon } from "#/components/common/icons";
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import type { MultiSelectOption } from "./MultiSelectTypes.ts";

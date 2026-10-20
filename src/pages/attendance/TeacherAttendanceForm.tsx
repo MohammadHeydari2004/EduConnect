@@ -1,5 +1,5 @@
 import EmptyState from "#/components/common/EmptyState.tsx";
-import { CheckCircleIcon, BanIcon } from "#/components/common/icons.tsx";
+import { CheckCircleIcon, BanIcon } from "#/components/common/icons";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import Select from "#/components/ui/Select.tsx";

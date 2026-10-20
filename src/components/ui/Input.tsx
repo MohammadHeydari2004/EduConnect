@@ -1,5 +1,10 @@
 import { buildAriaDescribedBy } from "#/utils/accessibility.ts";
-import { forwardRef, useId, type InputHTMLAttributes, type ReactNode } from "react";
+import {
+  forwardRef,
+  useId,
+  type InputHTMLAttributes,
+  type ReactNode,
+} from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -55,7 +60,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {suffix && (
-            <div className="absolute top-1/2 left-2 -translate-y-1/2">
+            <div className="absolute top-1/2 left-2 -translate-y-1/2 flex items-center justify-center">
               {suffix}
             </div>
           )}

@@ -4,7 +4,7 @@ import {
   CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-} from "#/components/common/icons.tsx";
+} from "#/components/common/icons";
 
 interface DatePickerProps {
   label?: string;

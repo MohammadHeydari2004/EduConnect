@@ -1,4 +1,4 @@
-import { CheckIcon } from "#/components/common/icons.tsx";
+import { CheckIcon } from "#/components/common/icons";
 import type { MultiSelectOption } from "./MultiSelectTypes.ts";
 
 interface MultiSelectOptionProps {

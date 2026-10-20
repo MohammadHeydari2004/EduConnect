@@ -1,6 +1,6 @@
 import { buildAriaDescribedBy } from "#/utils/accessibility.ts";
 import { forwardRef, useId, type SelectHTMLAttributes } from "react";
-import { ChevronDownIcon } from "#/components/common/icons.tsx";
+import { ChevronDownIcon } from "#/components/common/icons";
 
 interface Option {
   label: string;

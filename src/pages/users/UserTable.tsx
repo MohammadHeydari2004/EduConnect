@@ -4,7 +4,7 @@ import {
   EditIcon,
   EyeIcon,
   TrashIcon,
-} from "#/components/common/icons.tsx";
+} from "#/components/common/icons";
 import Button from "#/components/ui/Button.tsx";
 import MenuItem from "#/components/ui/MenuItem.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";

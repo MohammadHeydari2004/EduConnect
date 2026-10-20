@@ -1,5 +1,5 @@
 import { forwardRef, useId, type InputHTMLAttributes } from "react";
-import { SearchIcon } from "#/components/common/icons.tsx";
+import { SearchIcon } from "#/components/common/icons";
 
 interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;

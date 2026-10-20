@@ -1,7 +1,7 @@
 import Button from "#/components/ui/Button.tsx";
 import SearchInput from "#/components/ui/SearchInput.tsx";
 import Select from "#/components/ui/Select.tsx";
-import { ResetIcon } from "#/components/common/icons.tsx";
+import { ResetIcon } from "#/components/common/icons";
 import type { UserFilters as UserFiltersType } from "#/types/user.ts";
 
 interface UserFiltersProps {

@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { CloseIcon } from "#/components/common/icons.tsx";
+import { CloseIcon } from "#/components/common/icons";
 
 interface ModalProps {
   /**

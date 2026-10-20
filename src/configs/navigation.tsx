@@ -7,7 +7,7 @@ import {
   ProfileIcon,
   UsersIcon,
   StudentClassesIcon,
-} from "#/components/common/icons.tsx";
+} from "#/components/common/icons";
 import {
   ALL_ROLES,
   ADMIN_ROLES,

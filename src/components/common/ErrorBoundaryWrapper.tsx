@@ -1,4 +1,4 @@
-import { WarningIcon } from "#/components/common/icons.tsx";
+import { WarningIcon } from "#/components/common/icons";
 import type { ReactNode } from "react";
 import {
   type FallbackProps,

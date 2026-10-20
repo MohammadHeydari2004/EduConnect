@@ -1,4 +1,4 @@
-import { ChevronDownIcon, CloseIcon } from "#/components/common/icons.tsx";
+import { ChevronDownIcon, CloseIcon } from "#/components/common/icons";
 import type { ID } from "#/types/common.ts";
 import type { MultiSelectOption } from "./MultiSelectTypes.ts";
 import type { HTMLAttributes, Ref } from "react";

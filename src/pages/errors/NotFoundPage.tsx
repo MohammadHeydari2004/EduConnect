@@ -1,5 +1,5 @@
 import ErrorPage from "#/pages/errors/ErrorPage.tsx";
-import { SearchOffIcon } from "#/components/common/icons.tsx";
+import { SearchOffIcon } from "#/components/common/icons";
 
 function NotFoundPage() {
   return (

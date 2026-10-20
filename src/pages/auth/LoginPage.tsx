@@ -1,7 +1,7 @@
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import Input from "#/components/ui/Input.tsx";
-import { EyeIcon, EyeSlashIcon } from "#/components/common/icons.tsx";
+import { EyeIcon, EyeSlashIcon } from "#/components/common/icons";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import { useState, type FormEvent } from "react";

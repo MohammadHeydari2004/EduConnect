@@ -3,7 +3,7 @@ import Button from "#/components/ui/Button.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { getRoleLabel, getRoleVariant } from "#/utils/user.ts";
 import { Link, useNavigate } from "react-router-dom";
-import { CloseIcon, MenuIcon } from "#/components/common/icons.tsx";
+import { CloseIcon, MenuIcon } from "#/components/common/icons";
 
 interface HeaderProps {
   isSidebarOpen: boolean;

@@ -1,5 +1,5 @@
 import ErrorPage from "#/pages/errors/ErrorPage.tsx";
-import { LockIcon } from "#/components/common/icons.tsx";
+import { LockIcon } from "#/components/common/icons";
 
 function UnauthorizedPage() {
   return (

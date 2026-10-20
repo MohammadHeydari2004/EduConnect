@@ -7,6 +7,7 @@ import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import { useModalState } from "#/hooks/useModalState.ts";
+import { useFilter, type FilterConfig } from "#/hooks/useFilter.ts";
 import UserDetails from "#/pages/users/UserDetails.tsx";
 import UserFilters from "#/pages/users/UserFilters.tsx";
 import UserForm from "#/pages/users/UserForm.tsx";
@@ -47,20 +48,35 @@ function UsersPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isTogglingStatus, setIsTogglingStatus] = useState(false);
 
-  const filteredUsers = useMemo(() => {
-    if (!users) return [];
-    return users.filter((user) => {
-      const matchesName = user.name
-        .toLowerCase()
-        .includes(filters.searchName.toLowerCase());
-      const matchesEmail = user.email
-        .toLowerCase()
-        .includes(filters.searchEmail.toLowerCase());
-      const matchesRole = filters.role ? user.role === filters.role : true;
-      const matchesStatus = filters.status ? user.status === filters.status : true;
-      return matchesName && matchesEmail && matchesRole && matchesStatus;
-    });
-  }, [users, filters]);
+  const filterConfigs = useMemo<FilterConfig<User>[]>(
+    () => [
+      {
+        filterKey: "searchName",
+        matches: (user: User, value) =>
+          user.name.toLowerCase().includes(String(value).toLowerCase()),
+      },
+      {
+        filterKey: "searchEmail",
+        matches: (user: User, value) =>
+          user.email.toLowerCase().includes(String(value).toLowerCase()),
+      },
+      {
+        filterKey: "role",
+        matches: (user: User, value) => (value ? user.role === value : true),
+      },
+      {
+        filterKey: "status",
+        matches: (user: User, value) => (value ? user.status === value : true),
+      },
+    ],
+    []
+  );
+
+  const filteredUsers = useFilter({
+    data: users,
+    filters,
+    filterConfigs,
+  });
 
   const handleCreate = async (values: CreateUserPayload) => {
     try {

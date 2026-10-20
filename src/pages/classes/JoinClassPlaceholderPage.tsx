@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import { useNavigate } from "react-router-dom";
-import { ConstructionIcon } from "#/components/common/icons.tsx";
+import { ConstructionIcon } from "#/components/common/icons";
 
 export default function JoinClassPlaceholderPage() {
   const { classId } = useParams<{ classId: string }>();

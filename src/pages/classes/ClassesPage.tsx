@@ -7,6 +7,7 @@ import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import { useModalState } from "#/hooks/useModalState.ts";
+import { useFilter, type FilterConfig } from "#/hooks/useFilter.ts";
 import ClassFilters, {
   type ClassFiltersValues,
 } from "#/pages/classes/ClassFilters";
@@ -64,24 +65,41 @@ export default function ClassesPage() {
   const loading = classesLoading || usersLoading;
   const error = classesError || usersError;
 
-  const filteredClasses = useMemo(() => {
-    if (!classes) return [];
-    return classes.filter((c) => {
+  const filterConfigs = useMemo<FilterConfig<ClassItem>[]>(
+    () => [
+      {
+        filterKey: "search",
+        matches: (cls: ClassItem, value) =>
+          (cls.title || "").toLowerCase().includes(String(value).toLowerCase()),
+      },
+      {
+        filterKey: "statusFilter",
+        matches: (cls: ClassItem, value) => (value ? cls.status === value : true),
+      },
+      {
+        filterKey: "teacherFilter",
+        matches: (cls: ClassItem, value) => (value ? cls.teacherId === value : true),
+      },
+    ],
+    []
+  );
+
+  const extraPredicate = useCallback(
+    (cls: ClassItem) => {
       if (!isAdmin && currentUser?.role === "teacher") {
-        if (c.teacherId !== currentUser.id) return false;
+        return cls.teacherId === currentUser.id;
       }
-      const matchesSearch = (c.title || "")
-        .toLowerCase()
-        .includes(filters.search.toLowerCase());
-      const matchesStatus = filters.statusFilter
-        ? c.status === filters.statusFilter
-        : true;
-      const matchesTeacher = filters.teacherFilter
-        ? c.teacherId === filters.teacherFilter
-        : true;
-      return matchesSearch && matchesStatus && matchesTeacher;
-    });
-  }, [classes, filters, isAdmin, currentUser]);
+      return true;
+    },
+    [isAdmin, currentUser]
+  );
+
+  const filteredClasses = useFilter({
+    data: classes,
+    filters,
+    filterConfigs,
+    extraPredicate,
+  });
 
   const [isStatusChanging, setIsStatusChanging] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);

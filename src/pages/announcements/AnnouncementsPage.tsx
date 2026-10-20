@@ -15,9 +15,9 @@ import { useAuth } from "#/contexts/AuthContext.ts";
 import { useAsyncData } from "#/hooks/useAsyncData.ts";
 import { useMapById } from "#/hooks/useMapById.ts";
 import { useModalState } from "#/hooks/useModalState.ts";
+import { useFilter, type FilterConfig } from "#/hooks/useFilter.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import AnnouncementForm from "#/pages/announcements/AnnouncementForm.tsx";
-import { useFilteredAnnouncements } from "#/pages/announcements/useFilteredAnnouncements.ts";
 import { announcementService } from "#/services/announcement.ts";
 import { classService } from "#/services/class.ts";
 import { userService } from "#/services/user.ts";
@@ -29,8 +29,9 @@ import { getErrorMessage } from "#/utils/error.ts";
 import { formatDateTime, formatRelativeTime } from "#/utils/formatDate.ts";
 import { logger } from "#/utils/logger.ts";
 import { getRoleLabel } from "#/utils/user.ts";
+import { isAnnouncementVisibleTo } from "#/utils/announcementVisibility.ts";
 import { useCallback, useMemo, useState } from "react";
-import { SeenIcon } from "#/components/common/icons.tsx";
+import { SeenIcon } from "#/components/common/icons";
 
 interface AnnouncementsPageData {
   announcements: Announcement[];
@@ -90,11 +91,18 @@ export default function AnnouncementsPage() {
     [currentUser],
   );
 
-  const [filters, setFilters] = useState({
+  interface AnnouncementFilters {
+  authorId: string;
+  classId: string;
+  targetRole: "" | UserRole;
+  readStatus: "read" | "unread" | "all";
+}
+
+  const [filters, setFilters] = useState<AnnouncementFilters>({
     authorId: "",
     classId: "",
-    targetRole: "" as "" | UserRole,
-    readStatus: "all" as "read" | "unread" | "all",
+    targetRole: "",
+    readStatus: "all",
   });
 
   const formClasses = useMemo(() => {
@@ -104,15 +112,63 @@ export default function AnnouncementsPage() {
     return [];
   }, [classes, isAdmin, isTeacher, currentUser]);
 
-  const filteredAnnouncements = useFilteredAnnouncements({
-    announcements,
-    classes,
-    currentUser,
-    filters,
-  });
-
   const userMap = useMapById(users);
   const classMap = useMapById(classes);
+
+  const filterConfigs = useMemo<FilterConfig<Announcement>[]>(
+    () => [
+      {
+        filterKey: "authorId",
+        matches: (announcement: Announcement, value) => (value ? announcement.authorId === value : true),
+      },
+      {
+        filterKey: "classId",
+        matches: (announcement: Announcement, value) => {
+          if (!value || value === "") return true;
+          if (value === "global") return announcement.classId === "0";
+          return announcement.classId === value;
+        },
+      },
+      {
+        filterKey: "targetRole",
+        matches: (announcement: Announcement, value) => {
+          if (!value || value === "") return true;
+          if (announcement.classId === "0") {
+            const roles = announcement.targetRoles ?? [];
+            return roles.includes(value as UserRole);
+          } else {
+            const audience = announcement.targetAudience ?? "students";
+            if (value === "teacher" && audience === "students") return false;
+            if (value === "student" && audience === "teacher") return false;
+            return true;
+          }
+        },
+      },
+      {
+        filterKey: "readStatus",
+        matches: (announcement: Announcement, value) => {
+          if (!value || value === "all" || !currentUser) return true;
+          const isSeen = announcement.seenBy.includes(currentUser.id);
+          if (value === "read") return isSeen;
+          if (value === "unread") return !isSeen;
+          return true;
+        },
+      },
+    ],
+    [currentUser]
+  );
+
+  const extraPredicate = useCallback(
+    (announcement: Announcement) => isAnnouncementVisibleTo(currentUser!, announcement, classMap),
+    [currentUser, classMap]
+  );
+
+  const filteredAnnouncements = useFilter({
+    data: announcements,
+    filters,
+    filterConfigs,
+    extraPredicate: currentUser ? extraPredicate : () => false,
+  });
 
   const getAuthorName = useCallback(
     (authorId: ID) => userMap.get(authorId)?.name ?? "نامشخص",

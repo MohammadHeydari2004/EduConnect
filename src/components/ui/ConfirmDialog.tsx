@@ -1,4 +1,4 @@
-import { WarningIcon } from "#/components/common/icons.tsx";
+import { WarningIcon } from "#/components/common/icons";
 import Button from "#/components/ui/Button.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import type { ReactNode } from "react";

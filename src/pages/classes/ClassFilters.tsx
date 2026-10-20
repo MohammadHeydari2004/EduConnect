@@ -8,6 +8,7 @@ export interface ClassFiltersValues {
   search: string;
   statusFilter: ClassStatus | "";
   teacherFilter: string;
+  [key: string]: string | ClassStatus | "";
 }
 
 interface ClassFiltersProps {
