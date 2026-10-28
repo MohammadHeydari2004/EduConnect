@@ -11,7 +11,7 @@
 
 هدف غایی این پروژه، ارائه یک راهکار نرم‌افزاری چابک برای پوشش نیازهای آموزشی، مدیریت کلاس‌ها، رصد حضور و غیاب، چرخه حیات تکالیف و ارائه داشبوردهای تحلیلی اختصاصی است.
 
-> در نسخه **3.7.0** تمرکز اصلی، ارتقای کیفیت معماری و قابل‌استفاده‌مجددشدن اجزا بوده است: استخراج هوک‌های مشترک، متمرکزسازی آیکون‌ها/تنظیمات/نمودارها، تفکیک ماژول حضور و غیاب به نمای‌های نقش‌محور و افزودن امکاناتی مانند **کلاس‌های منِ دانشجو**، **گزارش حضورِ مدیر** و **تقویم جلالی**.
+> در نسخه **3.8.0** تمرکز اصلی، **معماریِ ماژولارِ هوک‌ها**، **زیرساخت تست**، **ارتقای ماژول اطلاعیه‌ها** و **تفکیک نقش‌محور تکالیف** بوده است: ماژولارسازی `constants`، الگوی `use*Page` برای ۸ هوک صفحه، کامپوننت‌های `AnnouncementCard`/`AnnouncementViewModal`، جداسازی `StudentAssignmentsPage`/`TeacherAssignmentsPage`، فونت وزیرمتن کامل و Vitest + RTL.
 
 </div>
 
@@ -109,6 +109,7 @@
 | **تقویم جلالی**      | کامپوننت `DatePicker` اختصاصی (تاریخ شمسی) | —              |
 | **سرور شبیه‌ساز**    | JSON Server (Mock REST API)               | 1.0            |
 | **کیفیت کد**         | oxlint, Prettier, TypeScript Strict Mode  | —              |
+| **تست واحد/یکپارچگی** | Vitest, React Testing Library, jsdom      | 5.0, 16.3, 30.1 |
 | **متغیرهای محیطی**   | `.env` با پشتیبانی از `import.meta.env`   | —              |
 
 </div>
@@ -136,35 +137,35 @@ src/
 │   │   ├── ScrollToTop.tsx             # اسکرول محدوده محتوا در تغییر مسیر
 │   │   └── Sidebar.tsx                 # منو با آیکون + فیلتر نقش‌محور از navigation
 │   └── ui/               # کامپوننت‌های پایه رابط کاربری
-│       ├── ActionsMenu.tsx             # ★ منوی اکشن با پورتال و موقعیت‌یابی هوشمند
-│       ├── Badge.tsx                   # نشان با رنگ‌بندی
-│       ├── Button.tsx                  # ★ دکمه با variantهای success/danger-light
-│       ├── Card.tsx                    # کارت با هدر و بدنه
-│       ├── ChartLegend.tsx             # ★ لیجند قابل اشتراک نمودارها (Recharts)
-│       ├── ChartTooltip.tsx            # ★ تولتیپ قابل اشتراک + تایپ ChartPayloadEntry
-│       ├── ConfirmDialog.tsx           # دیالوگ تأیید با آیکون
-│       ├── DatePicker.tsx            # ★ تقویم جلالی (تاریخ شمسی) با تبدیل دوطرفه
-│       ├── ErrorAlert.tsx              # ★ هشدار ساده خطای داده
-│       ├── Input.tsx                   # ورودی با لیبل، خطا و suffix
-│       ├── MenuItem.tsx                # ★ آیتم منوی اکشن
-│       ├── Modal.tsx                   # ★ مدال با پورتال، فوکوس‌ترپ و مدیریت اسکرول
-│       ├── MultiSelectActions.tsx      # ★ اکشن‌های انتخاب همه/فیلتر/حذف همه
-│       ├── MultiSelectDropdown.tsx     # ★ بدنه دراپ‌داون با پورتال و کیبورد
-│       ├── MultiSelectEmpty.tsx        # ★ حالت خالی ریزالتهای جستجو
-│       ├── MultiSelectOption.tsx       # ★ گزینه‌ی قابل انتخاب
-│       ├── MultiSelectTrigger.tsx      # ★ ترگر با چیپ‌های انتخاب‌شده
-│       ├── MultiSelectTypes.ts         # ★ تایپ‌های مشترک MultiSelect
-│       ├── SearchableMultiSelect.tsx   # ★ انتخاب چندگانه با ناوبری کامل کیبورد
-│       ├── SearchInput.tsx             # ورودی جستجو با آیکون
-│       ├── Select.tsx                  # سلکت با فلش سفارشی + حالت compact
-│       ├── Spinner.tsx                 # ★ اسپینر با سایزهای sm/md
-│       ├── StatCard.tsx                # کارت آمار با قالب‌بندی فارسی
-│       ├── StatusChip.tsx              # نشان وضعیت + برچسب‌های ATTENDANCE
-│       ├── Table.tsx                   # ★ جدول با کارت/اکشن موبایل و موقعیت‌یابی هوشمند
-│       ├── Textarea.tsx                # متن چندخطی
-│       └── UserDetailsList.tsx         # ★ جزئیات کاربر قابل اشتراک (dl)
+    │       ├── ActionsMenu.tsx             # ★ منوی اکشن با پورتال و موقعیت‌یابی هوشمند
+    │       ├── AnnouncementCard.tsx        # ★ کارت اطلاعیه (ریسپانسیو، وضعیت خوانده/نخوانده)
+    │       ├── AnnouncementViewModal.tsx   # ★ مدال مشاهده جزئیات اطلاعیه
+    │       ├── Badge.tsx                   # نشان با رنگ‌بندی
+    │       ├── Button.tsx                  # ★ دکمه با variantهای success/danger-light
+    │       ├── Card.tsx                    # کارت با هدر و بدنه
+    │       ├── ChartLegend.tsx             # ★ لیجند قابل اشتراک نمودارها (Recharts)
+    │       ├── ChartTooltip.tsx            # ★ تولتیپ قابل اشتراک + تایپ ChartPayloadEntry
+    │       ├── ConfirmDialog.tsx           # دیالوگ تأیید با آیکون
+    │       ├── ErrorAlert.tsx              # ★ هشدار ساده خطای داده
+    │       ├── Input.tsx                   # ورودی با لیبل، خطا و suffix
+    │       ├── MenuItem.tsx                # ★ آیتم منوی اکشن
+    │       ├── Modal.tsx                   # ★ مدال با پورتال، فوکوس‌ترپ و مدیریت اسکرول
+    │       ├── MultiSelectActions.tsx      # ★ اکشن‌های انتخاب همه/فیلتر/حذف همه
+    │       ├── MultiSelectDropdown.tsx     # ★ بدنه دراپ‌داون با پورتال و کیبورد
+    │       ├── MultiSelectEmpty.tsx        # ★ حالت خالی ریزالتهای جستجو
+    │       ├── MultiSelectOption.tsx       # ★ گزینه‌ی قابل انتخاب
+    │       ├── MultiSelectTrigger.tsx      # ★ ترگر با چیپ‌های انتخاب‌شده
+    │       ├── SearchableMultiSelect.tsx   # ★ انتخاب چندگانه با ناوبری کامل کیبورد
+    │       ├── SearchInput.tsx             # ورودی جستجو با آیکون
+    │       ├── Select.tsx                  # سلکت با فلش سفارشی + حالت compact
+    │       ├── Spinner.tsx                 # ★ اسپینر با سایزهای sm/md
+    │       ├── StatCard.tsx                # کارت آمار با قالب‌بندی فارسی
+    │       ├── StatusChip.tsx              # نشان وضعیت + برچسب‌های ATTENDANCE
+    │       ├── Table.tsx                   # ★ جدول با کارت/اکشن موبایل و موقعیت‌یابی هوشمند
+    │       ├── Textarea.tsx                # متن چندخطی
+    │       └── UserDetailsList.tsx         # ★ جزئیات کاربر قابل اشتراک (dl)
 ├── configs/             # تنظیمات سراسری و ثابت‌های محیطی
-│   ├── constants.ts     # ★ کلیدهای ذخیره‌سازی + آرایه‌های نقش، آستانه‌ها، رنگ‌ها، حد نمره/ظرفیت
+│   ├── constants/       # ★ ثابت‌های ماژولار: storageKeys، roles، classConstants، apiConstants، chartConstants
 │   └── navigation.tsx   # ★ آیتم‌های منو (navItems) با فیلتر نقش‌محور
 ├── contexts/            # مدیریت Stateهای سراسری
 │   ├── AuthContext.ts   # کانتکست احراز هویت + هوک useAuth
@@ -174,31 +175,49 @@ src/
 ├── hooks/               # ★ هوک‌های اختصاصی و قابل استفاده مجدد
 │   ├── useAsyncData.ts  # ★ واکشی داده با loading/isRefreshing/error/refresh/setData
 │   ├── useClickOutside.ts # ★ تشخیص کلیک خارج (برای دراپ‌داون‌ها)
+│   ├── useCrudPage.ts   # ★ CRUD/pageState/asyncData متمرکز برای صفحات لیست/فرم
 │   ├── useMapById.ts    # ★ ساخت Map از آرایه بر اساس id (memoized)
 │   ├── useMediaQuery.ts # ★ تشخیص رسانه + useIsMobile
 │   ├── useModalState.ts # ★ مدیریت حالت مدال‌ها (kind + target)
-│   └── useToast.ts      # هوک استفاده از نوتیفیکیشن
+│   ├── useToast.ts      # هوک استفاده از نوتیفیکیشن
+│   └── pages/           # ★ هوک‌های سطح صفحه (use*Page)
+│       ├── useAnnouncementsPage.ts
+│       ├── useAttendancePage.ts
+│       ├── useClassesPage.ts
+│       ├── useFilteredAnnouncements.ts
+│       ├── useSubmissionsPage.ts
+│       ├── useTeacherAssignmentsPage.ts
+│       └── useUsersPage.ts
 ├── layouts/             # ساختارهای کلان صفحات
 │   └── MainLayout.tsx   # ★ لایوت اصلی با مدیریت فوکوس/اسکرول و لینک پرش
 ├── pages/
 │   ├── announcements/   # ماژول اطلاعیه‌ها
+│   │   ├── AnnouncementCard.tsx         # ★ کارت اطلاعیه (ریسپانسیو، وضعیت خوانده/نخوانده)
 │   │   ├── AnnouncementForm.tsx
+│   │   ├── AnnouncementViewModal.tsx    # ★ مدال مشاهده جزئیات اطلاعیه
 │   │   ├── AnnouncementsPage.tsx
+│   │   ├── announcementPayload.ts       # ★ تایپ‌های Payload برای Create/Update
+│   │   ├── useAnnouncementsPage.ts      # ★ هوک متمرکز منطق صفحه
 │   │   ├── useFilteredAnnouncements.ts  # ★ با فیلتر + isAnnouncementVisibleTo
 │   │   └── validators.ts
-│   ├── assignments/     # ماژول تکالیف
-│   │   ├── AssignmentForm.tsx          # ★ با DatePicker جلالی
-│   │   ├── AssignmentsPage.tsx
-│   │   ├── AssignmentsTable.tsx        # ★ جدول جداشده با ددلاینِ رنگی
-│   │   ├── SubmissionForm.tsx          # با حالت نمایش پس از ددلاین
+│   ├── assignments/     # ماژول تکالیف (تفکیک نقش‌محور)
+│   │   ├── AssignmentForm.tsx           # ★ با DatePicker جلالی
+│   │   ├── StudentAssignmentsPage.tsx   # ★ نما/جدول/منطق اختصاصی دانشجو
+│   │   ├── StudentAssignmentsTable.tsx  # ★ جدول دانشجو با ددلاین رنگی
+│   │   ├── TeacherAssignmentsPage.tsx   # ★ نما/جدول/منطق اختصاصی استاد
+│   │   ├── TeacherAssignmentsTable.tsx  # ★ جدول استاد با اکشن نمره‌دهی
+│   │   ├── SubmissionForm.tsx           # با حالت نمایش پس از ددلاین
 │   │   ├── SubmissionsPage.tsx
-│   │   ├── useAssignmentsPageData.ts   # ★ هوک متمرکز داده صفحه
+│   │   ├── useAssignmentsPageData.ts    # هوک داده پایه
+│   │   ├── useSubmissionsPage.ts        # ★ هوک متمرکز صفحه Submissions
+│   │   ├── useTeacherAssignmentsPage.ts # ★ هوک متمرکز صفحه استاد
 │   │   └── validators.ts
 │   ├── attendance/      # ماژول حضور و غیاب (نقش‌محور)
 │   │   ├── AttendancePage.tsx          # ★ ارکستراتور که بر اساس نقش رندر می‌کند
 │   │   ├── TeacherAttendanceForm.tsx   # ★ فرم ثبت استاد + عملیات گروهی
 │   │   ├── StudentAttendanceView.tsx   # ★ آمار/درصد/جزئیات جلسات دانشجو
-│   │   └── AdminAttendanceReport.tsx   # ★ گزارش فقط‌مطالعه برای مدیر
+│   │   ├── AdminAttendanceReport.tsx   # ★ گزارش فقط‌مطالعه برای مدیر
+│   │   └── useAttendancePage.ts        # ★ هوک متمرکز منطق صفحه
 │   ├── auth/            # ماژول احراز هویت
 │   │   └── LoginPage.tsx               # ★ جابه‌جا شده از pages/LoginPage
 │   ├── classes/         # ماژول کلاس‌ها
@@ -213,7 +232,8 @@ src/
 │   │   ├── JoinClassPlaceholderPage.tsx # ★ صفحه جای‌نگشت ثبت‌نام (در حال توسعه)
 │   │   ├── SessionForm.tsx
 │   │   ├── sessionValidation.ts
-│   │   └── StudentClassesPage.tsx       # ★ کلاس‌های منِ دانشجو
+│   │   ├── StudentClassesPage.tsx       # ★ کلاس‌های منِ دانشجو
+│   │   └── useClassesPage.ts            # ★ هوک متمرکز منطق صفحه
 │   ├── dashboard/       # داشبورد نقش‌محور
 │   │   ├── AdminDashboard.tsx
 │   │   ├── DashboardContainer.tsx       # ★ با useAsyncData نقش‌محور
@@ -231,6 +251,7 @@ src/
 │       ├── UserForm.tsx                # فرم کنترل‌شده + ResolveError
 │       ├── UsersPage.tsx               # ★ با useAsyncData + useModalState
 │       ├── UserTable.tsx               # ★ با Action/MenuItems و نشان «(شما)»
+│       ├── useUsersPage.ts             # ★ هوک متمرکز منطق صفحه
 │       └── validators.ts
 ├── routes/              # پیکربندی Router و محافظ‌های دسترسی
 │   ├── AppRoutes.tsx    # ★ با مسیرهای student-classes و classes/join/:classId
@@ -244,6 +265,7 @@ src/
 │   ├── assignment.ts
 │   ├── attendance.ts                   # ★ با calculateStudentStats
 │   ├── auth.ts                         # ★ با removePassword
+│   ├── cascadeDelete.ts                # ★ حذف آبشاری یکپارچه (کلاس، کاربر، اطلاعیه، ...)
 │   ├── class.ts                        # ★ با حذف آبشاری و setStatus
 │   ├── session.ts
 │   ├── submission.ts
@@ -262,13 +284,14 @@ src/
 ├── utils/               # توابع کمکی و قابل استفاده مجدد
 │   ├── accessibility.ts  # ★ buildAriaDescribedBy
 │   ├── announcementVisibility.ts # ★ isAnnouncementVisibleTo
+│   ├── authStorage.ts    # ★ توابع ذخیره/بازیابی توکن و کاربر (localStorage abstraction)
 │   ├── class.ts          # ★ getEffectiveStatus
 │   ├── dashboardData.ts  # ★ هوک‌های داده داشبورد و آمار تصحیح
 │   ├── error.ts          # ★ getErrorMessage
 │   ├── formatDate.ts     # ★ formatDate, formatDateTime, formatRelativeTime, toDateInputValue, isDateBeforeToday
 │   ├── guards.ts         # ★ isValidUser
 │   ├── logger.ts         # ★ کلاس Logger توسعه‌محور
-│   ├── ownership.ts      # ★ filterCollectionsByOwnership
+│   ├── tableHelpers.ts   # ★ توابع کمکی جدول (sort، filter، pagination)
 │   ├── user.ts           # ★ getRoleLabel, getRoleVariant, getStatusLabel
 │   ├── userSanitization.ts # ★ removePassword
 │   ├── validateTitle.ts  # ★ اعتبارسنجی یکپارچه عنوان
@@ -402,6 +425,46 @@ npm run build
 
 <div dir="rtl">
 
+## 📈 پیشرفت‌ها و بهبودهای اعمال‌شده نسبت به نسخه 3.7.0
+
+نسخه **3.8.0** تمرکز بر **معماری ماژولار هوک‌ها**، **زیرساخت تست**، **ارتقای ماژول اطلاعیه‌ها** و **تفکیک نقش‌محور تکالیف** است:
+
+### 🏗️ معماری و ساختار کد
+
+| مورد                        | نسخه 3.7.0                                    | نسخه 3.8.0                                                                   |
+| :-------------------------- | :-------------------------------------------- | :--------------------------------------------------------------------------- |
+| ثابت‌ها (Constants)         | فایل واحد `configs/constants.ts`              | ✅ ماژولار: `storageKeys`، `roles`، `classConstants`، `apiConstants`، `chartConstants` |
+| هوک‌های سطح صفحه           | ❌ (منطق در کامپوننت‌های صفحه)                 | ✅ ۸ هوک `use*Page`: `useCrudPage`، `useAnnouncementsPage`، `useAttendancePage`، `useClassesPage`، `useUsersPage`، `useSubmissionsPage`، `useTeacherAssignmentsPage`، `useFilteredAnnouncements` |
+| ماژول اطلاعیه‌ها           | `AnnouncementsPage` + `useFilteredAnnouncements` | ✅ کامپوننت‌های `AnnouncementCard`، `AnnouncementViewModal`، `announcementPayload.ts`، `useAnnouncementsPage` |
+| ماژول تکالیف                | `AssignmentsPage` یکپارچه برای هر دو نقش      | ✅ تفکیک کامل: `StudentAssignmentsPage`/`Table` + `TeacherAssignmentsPage`/`Table` + هوک‌های مخصوص |
+| تست واحد/یکپارچگی         | ❌                                            | ✅ **Vitest** + **React Testing Library** + **jsdom** + اسکریپت‌های `test`/`test:watch` |
+| فونت فارسی                  | پیکربندی پایه                                 | ✅ فونت **وزیرمتن** کامل (۱۱ وزن: Thin تا Black + Variable) |
+
+### 🎨 رابط کاربری و تجربه کاربری (UX)
+
+| مورد                       | نسخه 3.7.0 | نسخه 3.8.0                       |
+| :------------------------- | :--------- | :------------------------------- |
+| نمایش اطلاعیه‌ها          | لیست ساده  | ✅ کارت‌های ریسپانسیو + مدال جزئیات + نشانگر خوانده/نخوانده |
+| مدیریت تکالیف (دانشجو)    | جدول مشترک | ✅ `StudentAssignmentsPage`/`Table` مخصوص با UX ساده‌شده |
+| مدیریت تکالیف (استاد)     | جدول مشترک | ✅ `TeacherAssignmentsPage`/`Table` مخصوص با اکشن‌های نمره‌دهی |
+| حذف فایل‌های منسوخ        | —          | ✅ حذف `DatePicker`، `MultiSelectTypes`، `CalendarIcon`، `ownership`، `constants.ts` |
+
+### 🔐 امنیت، پایداری و ابزارها
+
+| مورد                        | نسخه 3.7.0 | نسخه 3.8.0                    |
+| :-------------------------- | :--------- | :---------------------------- |
+| زیرساخت تست                | ❌         | ✅ Vitest + RTL + jsdom پیکربندی‌شده |
+| حذف آبشاری یکپارچه        | پراکنده در سرویس‌ها | ✅ `services/cascadeDelete.ts` متمرکز |
+| انتزاع localStorage         | استفاده مستقیم در کد | ✅ `utils/authStorage.ts` برای توکن/کاربر |
+| کمک‌های جدول               | تکراری در صفحات | ✅ `utils/tableHelpers.ts` (sort/filter/pagination) |
+| تایپ‌های Payload اطلاعیه    | در صفحات   | ✅ `announcementPayload.ts` متمرکز |
+
+</div>
+
+---
+
+<div dir="rtl">
+
 ## 📈 پیشرفت‌ها و بهبودهای اعمال‌شده نسبت به نسخه 3.6.4
 
 نسخه **3.7.0** یک بازنگری جامع در **کیفیت معماری، قابل‌استفاده‌مجددشدن اجزا و غنای امکانات** است. در ادامه، مهم‌ترین تغییرات اعمال‌شده نسبت به نسخه 3.6.4 فهرست شده‌اند:
@@ -474,24 +537,25 @@ npm run build
 |  ۹  | یکپارچه‌سازی و UX ضروری           | ✅ تکمیل | مدیریت جامع خطاها در `axiosInstance` (کلاس `ApiError` + `Logger`)، `react-error-boundary` + `RouterErrorBoundary` + `ErrorPage`، `ScrollToTop` (محتوا)، لینک پرش به محتوا، `Toast` با سقف ۵، `EmptyState`/`Loading`/`Spinner`، ریسپانسیو نهایی، فونت وزیرمتن با `@theme`، حذف فایل‌های تکراری |
 | ۱۰  | تست، رفع باگ و آماده‌سازی ارائه   | ✅ تکمیل | `db.json` نهایی با کاربران، کلاس‌ها، جلسات، حضور و غیاب، اطلاعیه‌ها، تکالیف و پاسخ‌ها، سه نقش نمونه (مدیر/استاد/دانشجو)، سناریوهای دمو آماده |
 | ۱۱  | ★ کلاس‌های منِ دانشجو            | ✅ تکمیل | `StudentClassesPage` با نمایش کلاس‌های ثبت‌نام‌شده + نشان ظرفیت رنگی + مسیر `classes/join/:classId` با `JoinClassPlaceholderPage` (ثبت‌نام، در حال توسعه) |
-| ۱۲  | ★ ارتقای کیفیت معماری (این نسخه)   | ✅ تکمیل | استخراج ۵ هوک قابل استفاده مجدد، متمرکزسازی آیکون/تنظیمات/نمودار/اعتبارسنجی/توابع، جداسازی `User` از `UserWithPassword`، `Logger` و `getErrorMessage` یکپارچه، تفکیک ماژول حضور و غیاب به ۴ نمای نقش‌محور |
+| ۱۲  | ★ ارتقای کیفیت معماری (نسخه 3.7.0)   | ✅ تکمیل | استخراج ۵ هوک قابل استفاده مجدد، متمرکزسازی آیکون/تنظیمات/نمودار/اعتبارسنجی/توابع، جداسازی `User` از `UserWithPassword`، `Logger` و `getErrorMessage` یکپارچه، تفکیک ماژول حضور و غیاب به ۴ نمای نقش‌محور |
+| ۱۳  | ★ معماری ماژولار هوک‌ها + تست (نسخه 3.8.0) | ✅ تکمیل | ماژولارسازی `constants`، ۸ هوک `use*Page`، تفکیک تکالیف نقش‌محور، ارتقای اطلاعیه‌ها، Vitest/RTL، فونت وزیرمتن کامل، `cascadeDelete`، `authStorage` |
 
 ---
 
-### 🔸 فازهای توسعه‌ای — در انتظار اجرا (فاز ۱۳ به بعد)
+### 🔸 فازهای توسعه‌ای — در انتظار اجرا (فاز ۱۴ به بعد)
 
 این فازها پس از تکمیل هسته اصلی آغاز می‌شوند و به ترتیب اولویت‌بندی زیر اجرا خواهند شد:
 
 | فاز | عنوان                               |          وضعیت          | اولویت | توضیحات                                                                                                                           |
 | :-: | :---------------------------------- | :---------------------: | :----: | :-------------------------------------------------------------------------------------------------------------------------------- |
-| ۱۳  | مرکز اعلان‌ها (Notification Center) |      ⏳ در انتظار       |  بالا  | اعلان‌های خوانده‌نشده، `mark as read`، لینک به صفحه مرتبط، هشدار ددلاین نزدیک                                                     |
-| ۱۴  | وضعیت‌ها و آرشیو (Lifecycle)        |     ⚠️ بخشی در هسته     |  بالا  | وضعیت `active`/`inactive` کلاس و کاربر اجرا شده؛ سیستم کامل `Draft`/`Published`/`Archived` و آرشیو اطلاعیه و تکلیف باقی مانده است |
-| ۱۵  | تقویم آموزشی و یادآورها             |     ⚠️ پایه‌ریزی شده     |  متوسط  | `DatePicker` جلالی آماده است؛ نمایش بصری جلسات و ددلاین‌ها روی تقویم + یادآور ساده باقی مانده است |
-| ۱۶  | اتاق گفتگوی آموزشی (Discussion)     |      ⏳ در انتظار       |  متوسط  | چت کلاسی، ارسال پیام، پاسخ‌دهی، `seen`/`unseen` پیام‌ها                                                                           |
-| ۱۷  | تکمیل ثبت‌نام در کلاس              |     ⚠️ جای‌نگشت آماده   |  متوسط  | `JoinClassPlaceholderPage` آماده است؛ منطق واقعی ثبت‌نام/ورود دانشجو به کلاس باقی مانده است                                       |
-| ۱۸  | پروفایل پیشرفته و Activity Log      | ⚠️ پروفایل پایه در هسته | متوسط  | پروفایل با `UserDetailsList` اجرا شده؛ آواتار، تاریخچه فعالیت‌ها و اطلاعات تکمیلی باقی مانده است |
-| ۱۹  | سیستم آزمون‌ساز آنلاین              |      ⏳ در انتظار       |  پایین  | ساخت آزمون، سوالات تستی و تشریحی، تصحیح و نمره‌دهی (پرهزینه‌ترین فاز)                                                             |
-| ۲۰  | بهبودهای رزومه‌ای نهایی             |      ⏳ در انتظار       |  پایین  | حالت تاریک، جستجوی سراسری، شخصی‌سازی ویجت‌ها، نمودارهای پیشرفته                                                                   |
+| ۱۴  | مرکز اعلان‌ها (Notification Center) |      ⏳ در انتظار       |  بالا  | اعلان‌های خوانده‌نشده، `mark as read`، لینک به صفحه مرتبط، هشدار ددلاین نزدیک                                                     |
+| ۱۵  | وضعیت‌ها و آرشیو (Lifecycle)        |     ⚠️ بخشی در هسته     |  بالا  | وضعیت `active`/`inactive` کلاس و کاربر اجرا شده؛ سیستم کامل `Draft`/`Published`/`Archived` و آرشیو اطلاعیه و تکلیف باقی مانده است |
+| ۱۶  | تقویم آموزشی و یادآورها             |     ⚠️ پایه‌ریزی شده     |  متوسط  | `DatePicker` جلالی آماده است؛ نمایش بصری جلسات و ددلاین‌ها روی تقویم + یادآور ساده باقی مانده است |
+| ۱۷  | اتاق گفتگوی آموزشی (Discussion)     |      ⏳ در انتظار       |  متوسط  | چت کلاسی، ارسال پیام، پاسخ‌دهی، `seen`/`unseen` پیام‌ها                                                                           |
+| ۱۸  | تکمیل ثبت‌نام در کلاس              |     ⚠️ جای‌نگشت آماده   |  متوسط  | `JoinClassPlaceholderPage` آماده است؛ منطق واقعی ثبت‌نام/ورود دانشجو به کلاس باقی مانده است                                       |
+| ۱۹  | پروفایل پیشرفته و Activity Log      | ⚠️ پروفایل پایه در هسته | متوسط  | پروفایل با `UserDetailsList` اجرا شده؛ آواتار، تاریخچه فعالیت‌ها و اطلاعات تکمیلی باقی مانده است |
+| ۲۰  | سیستم آزمون‌ساز آنلاین              |      ⏳ در انتظار       |  پایین  | ساخت آزمون، سوالات تستی و تشریحی، تصحیح و نمره‌دهی (پرهزینه‌ترین فاز)                                                             |
+| ۲۱  | بهبودهای رزومه‌ای نهایی             |      ⏳ در انتظار       |  پایین  | حالت تاریک، جستجوی سراسری، شخصی‌سازی ویجت‌ها، نمودارهای پیشرفته                                                                   |
 
 ---
 
@@ -507,6 +571,6 @@ npm run build
 
 _طراحی، معماری و پیاده‌سازی شده با ❤️ | مبتنی بر اکوسیستم React و TypeScript_
 
-**نسخه: 3.7.0** | **آخرین به‌روزرسانی: آبان ۱۴۰۵**
+**نسخه: 3.8.0** | **آخرین به‌روزرسانی: آذر ۱۴۰۵**
 
 </div>
