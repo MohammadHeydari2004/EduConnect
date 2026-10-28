@@ -43,6 +43,8 @@ export default function SubmissionForm({
   const isReadOnly =
     isDeadlinePassed || existingSubmission?.status === "graded";
 
+  const isReturned = existingSubmission?.status === "returned";
+
   const handleSubmit = async () => {
     const validationErrors = validateSubmissionForm(
       { content },
@@ -84,7 +86,13 @@ export default function SubmissionForm({
 
   return (
     <Modal
-      title={existingSubmission ? "ویرایش پاسخ" : "ارسال پاسخ"}
+      title={
+        isReturned
+          ? "پاسخ مجدد"
+          : existingSubmission
+            ? "ویرایش پاسخ"
+            : "ارسال پاسخ"
+      }
       onClose={onClose}
     >
       <div className="space-y-4">
@@ -103,6 +111,16 @@ export default function SubmissionForm({
             role="alert"
           >
             این پاسخ نمره داده شده است و امکان ویرایش آن وجود ندارد.
+          </div>
+        )}
+
+        {isReturned && (
+          <div
+            className="rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-800"
+            role="alert"
+          >
+            این پاسخ توسط استاد برگشت داده شده است. لطفاً پاسخ خود را اصلاح و
+            مجدداً ارسال کنید.
           </div>
         )}
 

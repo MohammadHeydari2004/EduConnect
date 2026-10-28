@@ -1,10 +1,16 @@
 import { SearchIcon } from "#/components/common/icons";
-import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
-import type { MultiSelectOption } from "./MultiSelectTypes.ts";
-import { MultiSelectOption as MultiSelectOptionComponent } from "./MultiSelectOption.tsx";
-import { MultiSelectActions } from "./MultiSelectActions.tsx";
-import { MultiSelectEmpty } from "./MultiSelectEmpty.tsx";
+import { useEffect, useId, useState } from "react";
+import { MultiSelectActions } from "#/components/ui/MultiSelectActions.tsx";
+import { MultiSelectEmpty } from "#/components/ui/MultiSelectEmpty.tsx";
+import { MultiSelectOptionComponent } from "#/components/ui/MultiSelectOption.tsx";
+import type { ID } from "#/types/common.ts";
+
+interface MultiSelectOption {
+  id: string;
+  label: string;
+  subLabel?: string;
+}
 
 interface MultiSelectDropdownProps {
   isOpen: boolean;
@@ -22,13 +28,13 @@ interface MultiSelectDropdownProps {
   dropdownRef: React.RefObject<HTMLDivElement | null>;
   onSearchChange: (value: string) => void;
   onSearchKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
-  onOptionClick: (id: string) => void;
+  onOptionClick: (id: ID) => void;
   onSelectAll: () => void;
   onSelectFiltered: () => void;
   onDeselectAll: () => void;
-  _labelId?: string;
-  _errorId?: string;
 }
+
+const MENU_DEFAULT_HEIGHT = 384;
 
 export function MultiSelectDropdown({
   isOpen,
@@ -78,7 +84,6 @@ export function MultiSelectDropdown({
     setActiveIndex(-1);
   }, [searchTerm, setActiveIndex]);
 
-  // Calculate fixed position relative to viewport (for portal to body)
   useEffect(() => {
     if (!isOpen || !triggerRef.current) return;
 
@@ -90,7 +95,7 @@ export function MultiSelectDropdown({
       const viewportHeight = window.innerHeight;
 
       const dropdownWidth = Math.max(btnRect.width, 280);
-      const dropdownHeight = 384; // max-h-96
+      const dropdownHeight = MENU_DEFAULT_HEIGHT;
 
       let left = btnRect.left;
       if (left + dropdownWidth > viewportWidth - 8) {
@@ -100,16 +105,12 @@ export function MultiSelectDropdown({
 
       let top: number;
       if (openDirection === "up") {
-        // Position above the trigger
         top = btnRect.top - dropdownHeight - 4;
-        // If not enough space above, fall back to below
         if (top < 4) {
           top = btnRect.bottom + 4;
         }
       } else {
-        // Position below the trigger
         top = btnRect.bottom + 4;
-        // If not enough space below, fall back to above
         if (top + dropdownHeight > viewportHeight - 4) {
           top = btnRect.top - dropdownHeight - 4;
         }

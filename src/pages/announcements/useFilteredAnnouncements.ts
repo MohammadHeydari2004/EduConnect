@@ -4,6 +4,7 @@ import type { ClassItem } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
 import type { UserRole } from "#/types/common.ts";
 import { isAnnouncementVisibleTo } from "#/utils/announcementVisibility.ts";
+import { GLOBAL_ANNOUNCEMENT_CLASS_ID } from "#/configs/constants";
 import { useMemo } from "react";
 
 interface AnnouncementFilters {
@@ -35,11 +36,11 @@ export function useFilteredAnnouncements({
       .filter((a) => {
         if (filters.authorId && a.authorId !== filters.authorId) return false;
         if (filters.classId) {
-          if (filters.classId === "global" && a.classId !== "0") return false;
+          if (filters.classId === "global" && a.classId !== GLOBAL_ANNOUNCEMENT_CLASS_ID) return false;
           if (filters.classId !== "global" && a.classId !== filters.classId) return false;
         }
         if (filters.targetRole) {
-          if (a.classId === "0") {
+          if (a.classId === GLOBAL_ANNOUNCEMENT_CLASS_ID) {
             const roles = a.targetRoles ?? [];
             if (!roles.includes(filters.targetRole)) return false;
           } else {

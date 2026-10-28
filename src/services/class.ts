@@ -22,9 +22,6 @@ export const classService = {
       updatedAt: new Date().toISOString(),
     }),
 
-  // Cascade delete: sessions (which in turn delete their attendance records)
-  // and assignments (which delete their submissions) are removed through their
-  // own services so the cascade logic lives in one place per entity.
   delete: async (id: ID) => {
     const [relatedSessions, relatedAssignments] = await Promise.all([
       sessionService.getByClass(id),

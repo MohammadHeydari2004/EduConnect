@@ -1,4 +1,4 @@
-import { MAX_CLASS_CAPACITY, MAX_CLASS_DESCRIPTION_LENGTH } from "#/configs/constants.ts";
+import { MAX_CLASS_CAPACITY, MAX_CLASS_DESCRIPTION_LENGTH } from "#/configs/constants";
 import type { ClassFormValues } from "#/types/class.ts";
 import { validateTitle } from "#/utils/validateTitle.ts";
 

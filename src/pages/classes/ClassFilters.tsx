@@ -62,11 +62,13 @@ function ClassFilters({
           ]}
         />
       )}
-      <div className="flex items-end">
-        <Button variant="secondary" className="w-full" onClick={onReset}>
-          پاک‌کردن فیلترها
-        </Button>
-      </div>
+      {(filters.search || filters.classId || filters.statusFilter) && (
+        <div className="flex items-end">
+          <Button variant="secondary" className="w-full" onClick={onReset}>
+            پاک‌کردن فیلترها
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

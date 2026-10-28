@@ -1,4 +1,4 @@
-type LogLevel = "debug" | "info" | "error";
+type LogLevel = "debug" | "info" | "warn" | "error";
 
 interface LogContext {
   [key: string]: unknown;
@@ -32,8 +32,13 @@ class Logger {
     }
   }
 
+  warn(message: string, context?: LogContext): void {
+    if (this.isDevelopment) {
+      console.warn(this.formatMessage("warn", message, context));
+    }
+  }
+
   error(message: string, context?: LogContext): void {
-    // Errors stay visible in production too; silencing them hides API failures.
     console.error(this.formatMessage("error", message, context));
   }
 }

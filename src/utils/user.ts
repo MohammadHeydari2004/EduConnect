@@ -11,7 +11,6 @@ export const getRoleLabel = (role: UserRole): string => {
   }
 };
 
-/** Maps a user role to a badge variant color. */
 export const getRoleVariant = (role: UserRole): "blue" | "green" | "gray" => {
   switch (role) {
     case "admin":

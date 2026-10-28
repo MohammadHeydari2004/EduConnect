@@ -12,8 +12,9 @@ import {
   ALL_ROLES,
   ADMIN_ROLES,
   TEACHER_AND_ABOVE_ROLES,
-  TEACHER_AND_STUDENT_ROLES,
-} from "#/configs/constants.ts";
+  TEACHER_ROLES,
+  STUDENT_ROLES,
+} from "#/configs/constants";
 import type { UserRole } from "#/types/common.ts";
 import type { ReactNode } from "react";
 
@@ -24,10 +25,6 @@ export interface NavItem {
   icon: ReactNode;
 }
 
-/**
- * Navigation items for the sidebar.
- * Centralized here to separate data from UI component.
- */
 export const navItems: NavItem[] = [
   {
     label: "داشبورد",
@@ -43,7 +40,7 @@ export const navItems: NavItem[] = [
   },
   {
     label: "کلاس‌های من",
-    path: "/student-classes",
+    path: "/my-classes",
     roles: ["student"],
     icon: <StudentClassesIcon />,
   },
@@ -68,7 +65,13 @@ export const navItems: NavItem[] = [
   {
     label: "تکالیف",
     path: "/assignments",
-    roles: TEACHER_AND_STUDENT_ROLES,
+    roles: TEACHER_ROLES,
+    icon: <AssignmentsIcon />,
+  },
+  {
+    label: "تکالیف من",
+    path: "/my-assignments",
+    roles: STUDENT_ROLES,
     icon: <AssignmentsIcon />,
   },
   {

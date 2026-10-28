@@ -18,9 +18,6 @@ interface FilteredData {
   classMap: Map<string, ClassItem>;
 }
 
-/**
- * Compute filtered data for teacher dashboard
- */
 export function useTeacherDashboardData(
   data: {
     classes: ClassItem[];
@@ -81,9 +78,6 @@ export function useTeacherDashboardData(
   };
 }
 
-/**
- * Compute filtered data for student dashboard
- */
 export function useStudentDashboardData(
   data: {
     classes: ClassItem[];
@@ -150,9 +144,6 @@ export function useStudentDashboardData(
   };
 }
 
-/**
- * Compute grading stats per class for teacher dashboard chart
- */
 export function useGradingStats(
   myClasses: ClassItem[],
   assignments: Assignment[],
@@ -191,10 +182,7 @@ export function useGradingStats(
   }, [myClasses, assignments, submissions, myClassIdSet]);
 }
 
-/**
- * Get recent sessions (last 5) sorted by date descending
- */
-export function useRecentSessions(sessions: Session[]) {
+export function useRecentSessions(sessions: Session[]): Session[] {
   return useMemo(
     () =>
       [...sessions]
@@ -204,9 +192,6 @@ export function useRecentSessions(sessions: Session[]) {
   );
 }
 
-/**
- * Compute chart summary for accessibility
- */
 export function useChartSummary(chartData: { name: string; totalSubmissions: number; graded: number }[]) {
   return useMemo(() => {
     if (chartData.every((d) => d.totalSubmissions === 0))

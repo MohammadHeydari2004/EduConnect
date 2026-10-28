@@ -1,17 +1,5 @@
 import { useCallback, useState } from "react";
 
-/**
- * Consolidates the "one open dialog at a time" state that pages spread across
- * several booleans (`isCreateOpen`, `isEditOpen`, `isDeleteConfirmOpen`, ...)
- * plus a shared `selected*` target.
- *
- * A single `{ kind, target }` state replaces all of those. Pages that keep two
- * independent modals open at once can call this hook more than once.
- *
- * `open(kind)` keeps the current target (after `close` it is null, so a new
- * dialog has no stale target). Use `openWithTarget(kind, target)` to open a
- * dialog together with its target in one step, and `close` to reset both.
- */
 export function useModalState<Target = unknown>() {
   const [state, setState] = useState<{
     kind: string | null;

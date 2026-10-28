@@ -2,26 +2,22 @@ import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
-import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
 import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import Input from "#/components/ui/Input.tsx";
 import Select from "#/components/ui/Select.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useMapById } from "#/hooks/useMapById.ts";
 import { useModalState } from "#/hooks/useModalState.ts";
-import { useFilter, type FilterConfig } from "#/hooks/useFilter.ts";
+import { useFilter, type FilterConfig, createStringContainsFilter, createExactMatchFilter, createDateStatusFilter } from "#/hooks/useFilter.ts";
 import { useToast } from "#/hooks/useToast.ts";
-import AssignmentForm from "#/pages/assignments/AssignmentForm.tsx";
-import AssignmentsTable from "#/pages/assignments/AssignmentsTable.tsx";
+import StudentAssignmentsTable from "#/pages/assignments/StudentAssignmentsTable.tsx";
 import SubmissionForm from "#/pages/assignments/SubmissionForm";
 import { useAssignmentsPageData } from "#/pages/assignments/useAssignmentsPageData.ts";
-import { assignmentService } from "#/services/assignment.ts";
 import type { Assignment } from "#/types/assignment.ts";
 import type { ID } from "#/types/common.ts";
 import type { Submission } from "#/types/submission.ts";
 import { useCallback, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { getErrorMessage } from "#/utils/error.ts";
+import { useParams } from "react-router-dom";
 
 interface AssignmentFilters {
   search: string;
@@ -30,13 +26,10 @@ interface AssignmentFilters {
   [key: string]: string;
 }
 
-export default function AssignmentsPage() {
-  const assignmentModal = useModalState<Assignment>();
+export default function StudentAssignmentsPage() {
   const submissionModal = useModalState<Submission>();
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const { classId: classIdParam } = useParams<{ classId?: string }>();
-  const navigate = useNavigate();
   const { user: currentUser } = useAuth();
   const { addToast } = useToast();
 
@@ -50,16 +43,13 @@ export default function AssignmentsPage() {
     loading,
     error,
     refreshSubmissions,
-    refreshAssignments,
+    setSubmissionsOptimistic,
   } = useAssignmentsPageData();
 
-  const isAdmin = currentUser?.role === "admin";
-  const isTeacher = currentUser?.role === "teacher";
   const isStudent = currentUser?.role === "student";
   const classId = classIdParam ?? null;
   const isClassPage = !!classIdParam;
 
-  // Filters
   const [filters, setFilters] = useState<AssignmentFilters>({
     search: "",
     classId: "",
@@ -80,15 +70,6 @@ export default function AssignmentsPage() {
     return map;
   }, [submissions, currentUser?.id]);
 
-  const canManageAssignment = useCallback(
-    (a: Assignment) => {
-      if (isAdmin) return true;
-      if (isTeacher) return a.teacherId === currentUser?.id;
-      return false;
-    },
-    [isAdmin, isTeacher, currentUser?.id],
-  );
-
   const getSubmissionForUser = useCallback(
     (assignmentId: ID) => submissionMap.get(assignmentId),
     [submissionMap],
@@ -104,9 +85,6 @@ export default function AssignmentsPage() {
     [classMap],
   );
 
-  const handleViewSubmissions = (assignmentId: ID) =>
-    navigate(`/assignments/${assignmentId}/submissions`);
-
   const handleOpenSubmissionForm = (assignment: Assignment) => {
     const isExpired = new Date() > new Date(assignment.deadline);
     if (isExpired) {
@@ -117,64 +95,37 @@ export default function AssignmentsPage() {
     submissionModal.open("form");
   };
 
-  const handleAssignmentFormClose = () => {
-    assignmentModal.close();
-  };
-
   const handleSubmissionFormClose = () => {
     submissionModal.close();
   };
 
-  const handleAssignmentSuccess = () => {
-    handleAssignmentFormClose();
-    refreshAssignments();
-  };
-
-  const handleSubmissionSuccess = () => {
-    handleSubmissionFormClose();
-    refreshSubmissions();
-  };
-
-  const handleDeleteAssignment = async () => {
-    const target = assignmentModal.target;
-    if (!target) return;
-    setIsDeleting(true);
-    try {
-      await assignmentService.delete(target.id);
-      refreshAssignments();
-      assignmentModal.close();
-      addToast("تکلیف با موفقیت حذف شد.", "success");
-    } catch (err) {
-      addToast(getErrorMessage(err, "حذف تکلیف با خطا مواجه شد."), "error");
-      assignmentModal.close();
-    } finally {
-      setIsDeleting(false);
-    }
-  };
+  const handleSubmissionSuccess = useCallback(
+    (submission: Submission) => {
+      handleSubmissionFormClose();
+      // Optimistically update the submissions list
+      setSubmissionsOptimistic((prev) => {
+        const existingIndex = prev.findIndex(
+          (s) => s.assignmentId === submission.assignmentId && s.studentId === submission.studentId,
+        );
+        if (existingIndex >= 0) {
+          const updated = [...prev];
+          updated[existingIndex] = submission;
+          return updated;
+        }
+        return [...prev, submission];
+      });
+      refreshSubmissions();
+    },
+    [handleSubmissionFormClose, refreshSubmissions, setSubmissionsOptimistic],
+  );
 
   const filterConfigs = useMemo<FilterConfig<Assignment>[]>(
     () => [
-      {
-        filterKey: "search",
-        matches: (assignment: Assignment, value) =>
-          assignment.title.toLowerCase().includes(String(value).toLowerCase()),
-      },
-      {
-        filterKey: "classId",
-        matches: (assignment: Assignment, value) => (value ? assignment.classId === value : true),
-      },
-      {
-        filterKey: "status",
-        matches: (assignment: Assignment, value) => {
-          if (!value || value === "") return true;
-          const isExpired = new Date() > new Date(assignment.deadline);
-          if (value === "active") return !isExpired;
-          if (value === "expired") return isExpired;
-          return true;
-        },
-      },
+      createStringContainsFilter<Assignment>("search", (assignment) => assignment.title),
+      createExactMatchFilter<Assignment>("classId", (assignment) => assignment.classId),
+      createDateStatusFilter<Assignment>("status", (assignment) => assignment.deadline),
     ],
-    []
+    [],
   );
 
   const extraPredicate = useCallback(
@@ -183,13 +134,10 @@ export default function AssignmentsPage() {
       if (isStudent) {
         const cls = classMap.get(assignment.classId);
         if (!cls || !(cls.studentIds || []).includes(currentUser?.id ?? "")) return false;
-      } else if (isTeacher) {
-        const cls = classMap.get(assignment.classId);
-        if (!cls || cls.teacherId !== currentUser?.id) return false;
       }
       return true;
     },
-    [isClassPage, classId, isStudent, isTeacher, classMap, currentUser]
+    [isClassPage, classId, isStudent, classMap, currentUser],
   );
 
   const filteredAssignments = useFilter({
@@ -201,14 +149,12 @@ export default function AssignmentsPage() {
 
   const myClasses = useMemo(() => {
     if (!currentUser) return [];
-    if (isAdmin) return classes;
-    if (isTeacher) return classes.filter((c) => c.teacherId === currentUser.id);
     if (isStudent)
       return classes.filter((c) =>
         (c.studentIds || []).includes(currentUser.id),
       );
     return [];
-  }, [classes, currentUser, isAdmin, isTeacher, isStudent]);
+  }, [classes, currentUser, isStudent]);
 
   const submissionFormProps = useMemo(() => {
     if (!submissionModal.isOpen("form") || !currentUser) return null;
@@ -228,8 +174,7 @@ export default function AssignmentsPage() {
   }, [submissionModal, currentUser, assignmentMap, handleSubmissionFormClose, handleSubmissionSuccess]);
 
   if (loading) return <Loading />;
-  if (error)
-    return <ErrorAlert message={error} />;
+  if (error) return <ErrorAlert message={error} />;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -237,13 +182,8 @@ export default function AssignmentsPage() {
         <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
           {isClassPage && classId
             ? `تکالیف کلاس: ${getClassName(classId)}`
-            : "تکالیف"}
+            : "تکالیف من"}
         </h1>
-        {(isAdmin || isTeacher) && (
-          <Button onClick={() => assignmentModal.open("create")}>
-            ایجاد تکلیف جدید
-          </Button>
-        )}
       </div>
 
       {!isClassPage && (
@@ -296,45 +236,20 @@ export default function AssignmentsPage() {
         />
       ) : (
         <Card noPadding={true}>
-          <AssignmentsTable
+          <StudentAssignmentsTable
             data={filteredAssignments}
-            isStudent={isStudent}
-            canManage={canManageAssignment}
             getSubmission={getSubmissionForUser}
             gradingStats={gradingStatsMap}
             getClassName={getClassName}
             getTeacherName={getTeacherName}
             onOpenSubmissionForm={handleOpenSubmissionForm}
-            onEdit={(a) => assignmentModal.openWithTarget("edit", a)}
-            onDelete={(a) => assignmentModal.openWithTarget("delete", a)}
-            onViewSubmissions={handleViewSubmissions}
           />
         </Card>
-      )}
-
-      {(assignmentModal.isOpen("create") || assignmentModal.isOpen("edit")) && (
-        <AssignmentForm
-          initialData={assignmentModal.target}
-          availableClasses={myClasses}
-          teacherId={currentUser?.id ?? ""}
-          isAdmin={isAdmin}
-          onClose={handleAssignmentFormClose}
-          onSuccess={handleAssignmentSuccess}
-        />
       )}
 
       {submissionFormProps && (
         <SubmissionForm {...submissionFormProps} />
       )}
-
-      <ConfirmDialog
-        isOpen={assignmentModal.isOpen("delete")}
-        title="حذف تکلیف"
-        message={`آیا از حذف تکلیف "${assignmentModal.target?.title}" مطمئن هستید؟`}
-        onClose={handleAssignmentFormClose}
-        onConfirm={handleDeleteAssignment}
-        isLoading={isDeleting}
-      />
     </div>
   );
 }

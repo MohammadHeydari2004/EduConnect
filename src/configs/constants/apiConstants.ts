@@ -1,0 +1,3 @@
+export const MAX_ASSIGNMENT_GRADE = 20;
+
+export const API_REQUEST_TIMEOUT_MS = 10000;

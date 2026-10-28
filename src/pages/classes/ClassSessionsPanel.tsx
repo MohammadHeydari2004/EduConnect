@@ -42,7 +42,6 @@ function ClassSessionsPanel({
       await sessionService.delete(deletingSession.id);
       addToast("جلسه با موفقیت حذف شد.", "success");
       setDeletingSession(null);
-      // Update the session list via callback
       onSessionChange?.(sessions.filter((s) => s.id !== deletingSession.id));
     } catch (err) {
       addToast(getErrorMessage(err, "حذف جلسه با خطا مواجه شد."), "error");
@@ -132,7 +131,6 @@ function ClassSessionsPanel({
           onSuccess={(message, updatedSession) => {
             addToast(message, "success");
             setEditingSession(null);
-            // Update the session in the list via callback
             onSessionChange?.(
               sessions.map((s) => (s.id === updatedSession.id ? updatedSession : s)),
             );

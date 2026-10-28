@@ -24,7 +24,7 @@ function Header({ isSidebarOpen, onToggleSidebar }: HeaderProps) {
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleSidebar}
-          className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 lg:hidden"
           aria-expanded={isSidebarOpen}
           aria-label={isSidebarOpen ? "بستن منو" : "باز کردن منو"}
         >

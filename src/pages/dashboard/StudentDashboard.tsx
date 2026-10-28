@@ -72,7 +72,6 @@ export default function StudentDashboard({ data, currentUser }: Props) {
       }));
   }, [attendanceStats]);
 
-  // Upcoming assignments (due within 3 days, not submitted)
   const upcomingAssignments = useMemo(() => {
     const submittedIds = new Set(mySubmissions.map((s) => s.assignmentId));
     const now = new Date();

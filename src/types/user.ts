@@ -10,11 +10,6 @@ export interface User {
   readonly updatedAt?: string;
 }
 
-/**
- * Raw user record as returned by the API, which includes the plaintext
- * password field. Always pass it through `removePassword` before storing or
- * displaying a `User`.
- */
 export interface UserWithPassword extends User {
   password?: string;
 }

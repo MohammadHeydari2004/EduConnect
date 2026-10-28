@@ -44,7 +44,10 @@ export default function ClassDetailsPage() {
     currentUser?.role === "teacher" &&
     classItem !== null &&
     classItem.teacherId === currentUser.id;
-  // Teachers of this class and admins can manage sessions
+  const isStudentInThisClass =
+    currentUser?.role === "student" &&
+    classItem !== null &&
+    (classItem.studentIds || []).includes(currentUser.id);
   const canManageSessions = isAdmin || isTeacherOfThisClass;
 
   useEffect(() => {
@@ -75,7 +78,9 @@ export default function ClassDetailsPage() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(getErrorMessage(err, "دریافت اطلاعات کلاس با خطا مواجه شد."));
+          setError(
+            getErrorMessage(err, "دریافت اطلاعات کلاس با خطا مواجه شد."),
+          );
           setLoading(false);
         }
       }
@@ -168,7 +173,16 @@ export default function ClassDetailsPage() {
         {isTeacherOfThisClass && (
           <Button
             variant="secondary"
-            onClick={() => navigate(`/classes/${classId}/assignments`)}
+            onClick={() => navigate(`/assignments/${classId}`)}
+            className="w-full sm:w-auto"
+          >
+            مشاهده تکالیف کلاس
+          </Button>
+        )}
+        {isStudentInThisClass && (
+          <Button
+            variant="secondary"
+            onClick={() => navigate(`/my-assignments/${classId}`)}
             className="w-full sm:w-auto"
           >
             مشاهده تکالیف کلاس

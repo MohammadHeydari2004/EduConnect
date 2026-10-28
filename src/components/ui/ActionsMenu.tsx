@@ -8,7 +8,6 @@ const MENU_DEFAULT_HEIGHT = 100;
 
 interface ActionsMenuProps {
   children: ReactNode;
-  /** Short label of the row/item the actions belong to, for the trigger's accessible name. */
   label?: string;
 }
 

@@ -3,7 +3,6 @@ import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Select from "#/components/ui/Select.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
-import DatePicker from "#/components/ui/DatePicker.tsx";
 import { useToast } from "#/hooks/useToast.ts";
 import {
   validateAssignmentForm,
@@ -148,13 +147,21 @@ export default function AssignmentForm({
           error={errors.classId}
           required
         />
-        <DatePicker
+        <Input
           label="ددلاین"
+          type="date"
           value={deadline}
-          onChange={setDeadline}
+          onChange={(e) => {
+            setDeadline(e.target.value);
+            if (errors.deadline || errors.form)
+              setErrors((prev) => ({
+                ...prev,
+                deadline: undefined,
+                form: undefined,
+              }));
+          }}
           error={errors.deadline}
           required
-          dropup
         />
         <Textarea
           label="توضیحات"

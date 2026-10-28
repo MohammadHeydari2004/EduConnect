@@ -22,7 +22,6 @@ const MAX_TOASTS = 5;
 
 interface ToastProviderProps {
   children: ReactNode;
-  /** ARIA label for the toast container (for screen readers). */
   ariaLabel?: string;
 }
 

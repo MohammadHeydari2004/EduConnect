@@ -66,8 +66,6 @@ async function fetchStudentData(): Promise<DashboardData> {
 function DashboardContainer() {
   const { user } = useAuth();
 
-  // One fetcher per role; `deps` re-runs the fetch when the user (or their
-  // role) changes, so the data is never stale after logout/login.
   const { data, loading, error } = useAsyncData<DashboardData>({
     fetcher: () => {
       if (user?.role === "admin") return fetchAdminData();

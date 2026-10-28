@@ -1,13 +1,8 @@
-import { DEFAULT_TARGET_ROLES, GLOBAL_ANNOUNCEMENT_CLASS_ID } from "#/configs/constants.ts";
+import { DEFAULT_TARGET_ROLES, GLOBAL_ANNOUNCEMENT_CLASS_ID } from "#/configs/constants";
 import type { Announcement } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
 
-/**
- * Single source of truth for "can this user see this announcement?".
- * Used by both the announcements list page and the student dashboard so the
- * visibility rules stay in sync.
- */
 export function isAnnouncementVisibleTo(
   user: User,
   announcement: Announcement,

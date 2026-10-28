@@ -6,10 +6,11 @@ import Textarea from "#/components/ui/Textarea.tsx";
 import {
   DEFAULT_TARGET_ROLES,
   GLOBAL_ANNOUNCEMENT_CLASS_ID,
-} from "#/configs/constants.ts";
+} from "#/configs/constants";
 import { useToast } from "#/hooks/useToast.ts";
 import { validateAnnouncementForm } from "#/pages/announcements/validators.ts";
 import { announcementService } from "#/services/announcement.ts";
+import { buildAnnouncementPayload, validateGlobalAnnouncementRoles, getAnnouncementClassOptions } from "#/pages/announcements/announcementPayload.ts";
 import type { Announcement, TargetAudience } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID, UserRole } from "#/types/common.ts";
@@ -26,16 +27,6 @@ interface Props {
   onClose: () => void;
   onSuccess: (announcement: Announcement) => void;
 }
-
-/**
- * Payload shape of the announcement services: exactly the writable fields,
- * with `null` used to disable the unused targeting mode.
- */
-type AnnouncementPayload = Omit<
-  Announcement,
-  "id" | "createdAt" | "seenBy"
->;
-
 export default function AnnouncementForm({
   isOpen,
   initialData,
@@ -63,21 +54,13 @@ export default function AnnouncementForm({
   const isAdmin = userRole === "admin";
 
   const classOptions = useMemo(
-    () =>
-      isAdmin
-        ? [
-            { label: "همه (عمومی)", value: GLOBAL_ANNOUNCEMENT_CLASS_ID },
-            ...classes.map((c) => ({ label: c.title, value: c.id })),
-          ]
-        : classes.map((c) => ({ label: c.title, value: c.id })),
+    () => getAnnouncementClassOptions(isAdmin, classes),
     [isAdmin, classes],
   );
 
-  // Ensure classId is valid against current classOptions
   useEffect(() => {
     const validValues = new Set(classOptions.map((o) => o.value));
     if (!validValues.has(classId)) {
-      // Fallback to first available option
       setClassId(classOptions[0]?.value ?? GLOBAL_ANNOUNCEMENT_CLASS_ID);
     }
   }, [classOptions, classId]);
@@ -89,32 +72,24 @@ export default function AnnouncementForm({
       return;
     }
 
-    // Ensure classId is valid
-    const validClassIds = classOptions.map((o) => o.value);
-    const finalClassId = validClassIds.includes(classId) ? classId : classOptions[0]?.value ?? GLOBAL_ANNOUNCEMENT_CLASS_ID;
-
-    if (
-      isAdmin &&
-      finalClassId === GLOBAL_ANNOUNCEMENT_CLASS_ID &&
-      targetRoles.length === 0
-    ) {
-      setError("حداقل یک نقش را برای اطلاعیه گلوبال انتخاب کنید.");
+    const roleError = validateGlobalAnnouncementRoles(isAdmin, classId, targetRoles);
+    if (roleError) {
+      setError(roleError);
       return;
     }
 
     try {
       setIsSubmitting(true);
-      const basePayload = { title, content, classId: finalClassId, authorId };
-
-      const payload: AnnouncementPayload = isAdmin
-        ? classId === GLOBAL_ANNOUNCEMENT_CLASS_ID
-          ? { ...basePayload, targetRoles, targetAudience: null }
-          : { ...basePayload, targetAudience, targetRoles: null }
-        : {
-            ...basePayload,
-            targetAudience: "students",
-            targetRoles: null,
-          };
+      const payload = buildAnnouncementPayload({
+        title,
+        content,
+        classId,
+        authorId,
+        isAdmin,
+        targetRoles,
+        targetAudience,
+        classOptions,
+      });
 
       let result: Announcement;
 

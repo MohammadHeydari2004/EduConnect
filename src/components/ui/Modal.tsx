@@ -3,10 +3,6 @@ import { createPortal } from "react-dom";
 import { CloseIcon } from "#/components/common/icons";
 
 interface ModalProps {
-  /**
-   * Whether the modal is open. Defaults to `true` when the parent
-   * conditionally renders the modal (i.e. only mounts it when open).
-   */
   isOpen?: boolean;
   title?: string;
   children: ReactNode;
@@ -24,9 +20,6 @@ function Modal({ isOpen = true, title, children, onClose, ariaLabel }: ModalProp
     onCloseRef.current = onClose;
   }, [onClose]);
 
-  // Queried on demand (on every Tab keypress) instead of being cached once
-  // on open, so focusable elements that appear inside the modal later
-  // (conditional renders after the first paint) stay inside the trap.
   const getFocusableElements = (): HTMLElement[] => {
     if (!modalRef.current) return [];
     const focusableSelectors = [
@@ -56,11 +49,6 @@ function Modal({ isOpen = true, title, children, onClose, ariaLabel }: ModalProp
     });
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onCloseRef.current();
-        return;
-      }
-
       if (e.key === "Tab") {
         const focusableElements = getFocusableElements();
 
@@ -116,11 +104,6 @@ function Modal({ isOpen = true, title, children, onClose, ariaLabel }: ModalProp
       aria-label={!title ? (ariaLabel ?? "پنجره گفتگو") : undefined}
       tabIndex={-1}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 outline-none sm:p-4"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) {
-          onClose();
-        }
-      }}
     >
       <div className="w-full max-w-lg rounded-xl bg-white p-4 shadow-lg sm:p-6">
         <div className="mb-4 flex items-center justify-between">

@@ -97,7 +97,6 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
             </div>
           ) : (
             <>
-              {/* Mobile/Tablet: Simple data cards */}
               {isMobile && (
                 <div className="space-y-3" role="list" aria-label={chartSummary}>
                   {chartData.map((row) => (
@@ -133,7 +132,6 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
                   ))}
                 </div>
               )}
-              {/* Desktop: Chart with horizontal scroll */}
               {!isMobile && (
                 <div
                   className="overflow-x-auto"

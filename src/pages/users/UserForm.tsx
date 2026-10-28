@@ -36,10 +36,6 @@ interface UserFormProps {
   onUpdate: (values: UpdateUserPayload) => Promise<void>;
 }
 
-/**
- * Maps a rejection to a field-level error (e.g. a duplicate-email message on
- * the email field) or a form-level ("root") error.
- */
 function resolveError(err: unknown): {
   field: keyof UserFormValues | "root";
   message: string;
@@ -85,7 +81,6 @@ function UserForm({
     mode: mode === "edit" ? "onChange" : "onBlur",
   });
 
-  // Initialize form with user data when in edit mode
   useEffect(() => {
     if (mode === "edit" && user) {
       reset({
@@ -95,7 +90,6 @@ function UserForm({
         status: user.status ?? "active",
       });
       clearErrors();
-      // Don't reset password for security reasons in edit mode
     }
    }, [mode, user, reset, clearErrors]);
 
@@ -120,8 +114,6 @@ function UserForm({
       onClose();
     } catch (err) {
       const { field, message } = resolveError(err);
-      // Field errors land on their field; root errors (e.g. "آخرین مدیر
-      // قابل حذف نیست") are shown in the form-level region below.
       setError(field, { type: "server", message });
     }
   };

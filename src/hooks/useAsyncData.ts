@@ -9,46 +9,49 @@ import {
   type SetStateAction,
 } from "react";
 
+function isPrimitive(value: unknown): boolean {
+  return (
+    value === null ||
+    (typeof value !== "object" && typeof value !== "function")
+  );
+}
+
+function validateDeps(deps: DependencyList): void {
+  if (import.meta.env.DEV) {
+    for (const dep of deps) {
+      if (!isPrimitive(dep)) {
+        console.warn(
+          "[useAsyncData] Dependency array contains non-primitive value. This may cause infinite refetches. Use primitive values (string, number, boolean) or stable references only.",
+          dep,
+        );
+      }
+    }
+  }
+}
+
 interface UseAsyncDataOptions<T> {
-  /** Performs the fetch. The latest reference is always used on re-runs. */
   fetcher: () => Promise<T>;
-  /**
-   * Values the fetch depends on. Changing any of them (by value) re-runs the
-   * fetch, e.g. the id of the currently logged-in user.
-   */
   deps: DependencyList;
-  /** Fallback message when the fetch rejects with a non-ApiError. */
   fallbackError: string;
 }
 
 interface UseAsyncDataResult<T> {
   data: T | null;
-  /** True only while the first load has no data yet. */
   loading: boolean;
-  /** True on background refetches that keep the existing data visible. */
   isRefreshing: boolean;
   error: string;
-  /** Refetches while keeping existing data/error until the call settles. */
   refresh: () => void;
-  /** Optimistically replace/patch the loaded data without a refetch. */
   setData: Dispatch<SetStateAction<T | null>>;
 }
 
-/**
- * Replaces the repeated `loading/error/data + useEffect + ignore-flag` pattern.
- * The fetcher is kept in a ref so its identity changing every render does not
- * re-trigger the effect; only `deps` and `refreshKey` do.
- *
- * Note: `isRefreshing` is exposed for callers that want to show a subtle
- * indicator during background refetches. Pages that replace the entire list
- * on error should check `isRefreshing` before showing the error state.
- */
 export function useAsyncData<T>({
   fetcher,
   deps,
   fallbackError,
 }: UseAsyncDataOptions<T>): UseAsyncDataResult<T> {
-  const [data, setDataState] = useState<T | null>(null);
+  validateDeps(deps);
+
+  const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState("");
@@ -61,9 +64,9 @@ export function useAsyncData<T>({
 
   const dataRef = useRef<T | null>(null);
 
-  const setData = useCallback<Dispatch<SetStateAction<T | null>>>(
+  const setDataOptimistic = useCallback<Dispatch<SetStateAction<T | null>>>(
     (action) => {
-      setDataState((prev) => {
+      setData((prev) => {
         const next =
           typeof action === "function"
             ? (action as (value: T | null) => T | null)(prev)
@@ -93,7 +96,7 @@ export function useAsyncData<T>({
       .then((result) => {
         if (ignore) return;
         dataRef.current = result;
-        setDataState(result);
+        setData(result);
         setError("");
       })
       .catch((err: unknown) => {
@@ -110,13 +113,7 @@ export function useAsyncData<T>({
     return () => {
       ignore = true;
     };
-    // `deps` is spread into the effect so value changes re-trigger the
-    // fetch; the fetcher stays in a ref on purpose.
-    // NOTE: `deps` should only contain primitive values (string, number, boolean)
-    // or stable references to avoid unnecessary re-fetches. Object/array deps
-    // would cause re-fetches on every render due to referential inequality.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshKey, ...deps]);
 
-  return { data, loading, isRefreshing, error, refresh, setData };
+  return { data, loading, isRefreshing, error, refresh, setData: setDataOptimistic };
 }

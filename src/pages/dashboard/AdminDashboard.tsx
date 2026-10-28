@@ -9,7 +9,7 @@ import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
 import type { DashboardData } from "#/types/dashboard.ts";
 import type { ClassItem } from "#/types/class.ts";
-import { CHART_COLORS } from "#/configs/constants.ts";
+import { CHART_COLORS } from "#/configs/constants";
 import { getEffectiveStatus } from "#/utils/class.ts";
 import { formatDate } from "#/utils/formatDate.ts";
 import { useMemo } from "react";

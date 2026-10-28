@@ -16,12 +16,10 @@ function MainLayout({ children }: MainLayoutProps) {
   const sidebarRef = useRef<HTMLElement>(null);
   const isMobile = useIsMobile();
 
-  // Close the drawer and move focus to the main content when the route
-  // changes (this also covers the "close on mobile navigation" case).
   useEffect(() => {
     setIsSidebarOpen(false);
-    mainContentRef.current?.focus();
     mainContentRef.current?.scrollTo({ top: 0 });
+    mainContentRef.current?.focus();
   }, [location.pathname]);
 
   useEffect(() => {
@@ -35,7 +33,6 @@ function MainLayout({ children }: MainLayoutProps) {
     };
   }, [isSidebarOpen]);
 
-  // Focus management for sidebar open/close on mobile
   useEffect(() => {
     if (isMobile && isSidebarOpen && sidebarRef.current) {
       const firstFocusable = sidebarRef.current.querySelector<HTMLElement>(

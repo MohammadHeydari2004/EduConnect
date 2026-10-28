@@ -8,7 +8,6 @@ const SIZE_CLASSES = {
   md: "h-8 w-8",
 } as const;
 
-/** Shared spinner (previously duplicated in Button and Loading). */
 export default function Spinner({ size = "md", className = "" }: SpinnerProps) {
   return (
     <svg

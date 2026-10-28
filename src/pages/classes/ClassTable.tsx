@@ -3,13 +3,13 @@ import Button from "#/components/ui/Button.tsx";
 import MenuItem from "#/components/ui/MenuItem.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
-import { CAPACITY_THRESHOLDS } from "#/configs/constants.ts";
 import { useMapById } from "#/hooks/useMapById.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID } from "#/types/common.ts";
 import type { User } from "#/types/user.ts";
 import { getEffectiveStatus } from "#/utils/class.ts";
 import { getStatusLabel } from "#/utils/user.ts";
+import { getCapacityVariant } from "#/utils/tableHelpers.ts";
 import { useNavigate } from "react-router-dom";
 
 interface ClassTableProps {
@@ -19,17 +19,6 @@ interface ClassTableProps {
   onEdit: (c: ClassItem) => void;
   onToggleStatus: (c: ClassItem) => void;
   onDelete: (c: ClassItem) => void;
-}
-
-function getCapacityVariant(
-  currentCount: number,
-  capacity: number,
-): "green" | "yellow" | "red" {
-  if (capacity <= 0) return "green";
-  const ratio = currentCount / capacity;
-  if (ratio >= CAPACITY_THRESHOLDS.OVER_CAPACITY) return "red";
-  if (ratio >= CAPACITY_THRESHOLDS.NEAR_CAPACITY) return "yellow";
-  return "green";
 }
 
 function ClassTable({
@@ -49,7 +38,6 @@ function ClassTable({
     return userMap.get(teacherId)?.name ?? "—";
   };
 
-  // Check if any class can be managed to show/hide actions column
   const hasManageableClass = classes.some(canManageClass);
 
   const columns = [
@@ -69,13 +57,13 @@ function ClassTable({
     {
       key: "teacherId",
       title: "استاد",
-      width: "15%",
+      width: "10%",
       render: (c: ClassItem) => getTeacherName(c.teacherId),
     },
     {
       key: "capacity",
       title: "ظرفیت",
-      width: "12%",
+      width: "5%",
       render: (c: ClassItem) => {
         const studentCount = (c.studentIds || []).length;
         const capacity = c.capacity || 0;
@@ -89,7 +77,7 @@ function ClassTable({
     {
       key: "status",
       title: "وضعیت",
-      width: "12%",
+      width: "7%",
       render: (c: ClassItem) => (
         <span title={getStatusLabel(getEffectiveStatus(c))}>
           <StatusChip status={getEffectiveStatus(c)} />
@@ -101,7 +89,7 @@ function ClassTable({
           {
             key: "actions",
             title: "عملیات",
-            width: "46%",
+            width: "25%",
             render: (c: ClassItem) => (
               <div className="w-full flex flex-wrap justify-center gap-2">
                 {canManageClass(c) && (

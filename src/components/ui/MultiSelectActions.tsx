@@ -1,4 +1,8 @@
-import type { MultiSelectOption } from "./MultiSelectTypes.ts";
+interface MultiSelectOption {
+  id: string;
+  label: string;
+  subLabel?: string;
+}
 
 interface MultiSelectActionsProps {
   options: MultiSelectOption[];

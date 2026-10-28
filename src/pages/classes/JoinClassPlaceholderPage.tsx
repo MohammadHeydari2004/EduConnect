@@ -26,7 +26,7 @@ export default function JoinClassPlaceholderPage() {
             این بخش در حال توسعه است و به زودی در دسترس خواهد بود. کلاس مورد نظر:
             <span className="font-medium text-gray-700"> {classId}</span>
           </p>
-          <Button variant="secondary" onClick={() => navigate("/student-classes")}>
+          <Button variant="secondary" onClick={() => navigate("/my-classes")}>
             بازگشت به کلاس‌های من
           </Button>
         </div>

@@ -2,23 +2,16 @@ import axiosInstance from "#/services/api/axiosInstance.ts";
 import type { LoginPayload } from "#/types/auth.ts";
 import type { User, UserWithPassword } from "#/types/user.ts";
 import { removePassword } from "#/utils/userSanitization.ts";
+import { logger } from "#/utils/logger.ts";
 
-/**
- * Login using json-server (development only).
- *
- * ⚠️ SECURITY WARNING: This implementation compares passwords client-side
- * and is INSECURE for production use. It sends the plaintext password to
- * the client for comparison against the stored password.
- *
- * In production, authentication MUST be handled server-side with:
- * - Proper password hashing (bcrypt, argon2, scrypt)
- * - A dedicated /auth/login endpoint that returns a JWT/session token
- * - Server-side password verification
- * - Secure password reset flows
- *
- * TODO: Replace with a real authentication backend before production deployment.
- */
 export async function loginUser(payload: LoginPayload): Promise<User> {
+  if (import.meta.env.DEV) {
+    logger.warn("SECURITY: Using development-only client-side authentication. DO NOT USE IN PRODUCTION.", {
+      function: "loginUser",
+      environment: import.meta.env.MODE,
+    });
+  }
+
   const email = payload.email.trim().toLowerCase();
   const password = payload.password;
 

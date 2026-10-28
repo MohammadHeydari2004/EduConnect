@@ -14,13 +14,8 @@ const Sidebar = forwardRef<HTMLElement, SidebarProps>(
     const { user } = useAuth();
     const isMobile = useIsMobile();
 
-    // Off-canvas only on mobile: when the drawer is closed there, the aside must
-    // be hidden from keyboard focus and screen readers.
-    // On desktop the aside is always visible, so it stays interactive.
     const isDrawerClosed = !isOpen && isMobile;
 
-    // Keyboard users need a way to dismiss the mobile drawer (the overlay
-    // only responds to clicks).
     useEffect(() => {
       if (!isOpen || !isMobile) return;
       const handleKey = (event: KeyboardEvent) => {
@@ -39,14 +34,14 @@ const Sidebar = forwardRef<HTMLElement, SidebarProps>(
         {isOpen && (
           <div
             aria-hidden="true"
-            className="fixed inset-0 z-20 bg-black/50 transition-opacity md:hidden"
+            className="fixed inset-0 z-20 bg-black/50 transition-opacity lg:hidden"
             onClick={onClose}
           />
         )}
         <aside
           ref={ref}
           aria-hidden={isDrawerClosed}
-          className={`fixed top-16 right-0 z-30 h-full w-64 transform border-l border-gray-200 bg-white p-4 transition-transform duration-300 ease-in-out md:static md:z-auto md:h-auto md:translate-x-0 ${isOpen ? "translate-x-0" : "translate-x-full md:translate-x-0"}`}
+          className={`fixed top-16 right-0 z-30 h-full w-64 transform border-l border-gray-200 bg-white p-4 transition-transform duration-300 ease-in-out lg:static lg:z-auto lg:h-auto lg:translate-x-0 ${isOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}`}
         >
           <nav aria-label="منوی اصلی" className="flex flex-col gap-1">
             {filteredNavItems.map((item) => (
@@ -58,7 +53,6 @@ const Sidebar = forwardRef<HTMLElement, SidebarProps>(
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${isActive ? "border-s-4 border-blue-600 bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`
                 }
-                tabIndex={isDrawerClosed ? -1 : undefined}
               >
                 <span className="shrink-0">{item.icon}</span>
                 <span>{item.label}</span>

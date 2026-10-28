@@ -1,5 +1,10 @@
 import { CheckIcon } from "#/components/common/icons";
-import type { MultiSelectOption } from "./MultiSelectTypes.ts";
+
+interface MultiSelectOption {
+  id: string;
+  label: string;
+  subLabel?: string;
+}
 
 interface MultiSelectOptionProps {
   option: MultiSelectOption;
@@ -13,7 +18,7 @@ interface MultiSelectOptionProps {
   "data-active": string;
 }
 
-export function MultiSelectOption({
+export function MultiSelectOptionComponent({
   option,
   isSelected,
   isActive,

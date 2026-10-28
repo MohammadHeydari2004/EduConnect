@@ -11,15 +11,8 @@ interface StatusChipProps {
   className?: string;
 }
 
-type StatusIcon =
-  | "check"
-  | "cross"
-  | "clock"
-  | "hourglass"
-  | "send"
-  | "star";
+type StatusIcon = "check" | "cross" | "clock" | "hourglass" | "send" | "star";
 
-/** Small stroke icons, consistent with the rest of the UI (no emoji). */
 const STATUS_ICON_PATHS: Record<StatusIcon, string> = {
   check: "M5 13l4 4L19 7",
   cross: "M6 18L18 6M6 6l12 12",
@@ -83,12 +76,7 @@ const statusConfig: Record<StatusType, StatusConfig> = {
     icon: "send",
   },
 };
-
-/** Human-readable labels for attendance statuses (shared with charts). */
-export const ATTENDANCE_LABELS: Record<
-  AttendanceStatus,
-  string
-> = {
+export const ATTENDANCE_LABELS: Record<AttendanceStatus, string> = {
   present: statusConfig.present.label,
   late: statusConfig.late.label,
   absent: statusConfig.absent.label,

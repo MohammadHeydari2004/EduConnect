@@ -45,11 +45,6 @@ export const formatRelativeTime = (
   return formatDate(dateObj);
 };
 
-/**
- * Parses a date in local time and returns null when it is missing or invalid.
- * Centralizes the `new Date(...) + isNaN` guard that was repeated in every
- * formatter.
- */
 function parseDate(date: string | Date | null | undefined): Date | null {
   if (!date) return null;
   try {
@@ -61,12 +56,6 @@ function parseDate(date: string | Date | null | undefined): Date | null {
   }
 }
 
-/**
- * تبدیل تاریخ به فرمت مناسب برای input[type="date"] (YYYY-MM-DD).
- * مقادیر بر اساس منطقه زمانی محلی گرفته می‌شوند تا یک روز اختلاف با
- * toISOString (که UTC است) پیش نیاید. در صورت نامعتبر بودن تاریخ،
- * رشته خالی برمی‌گرداند.
- */
 export const toDateInputValue = (
   date: string | Date | null | undefined,
 ): string => {
@@ -78,10 +67,6 @@ export const toDateInputValue = (
   return `${year}-${month}-${day}`;
 };
 
-/**
- * Converts a `YYYY-MM-DD` value from a date input to an ISO timestamp at the
- * end of that day (local time), for deadline storage.
- */
 export const toIsoWithEndOfDay = (dateValue: string): string => {
   const [year, month, day] = dateValue.split("-");
   if (!year || !month || !day) return "";

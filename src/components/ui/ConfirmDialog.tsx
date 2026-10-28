@@ -11,7 +11,6 @@ interface ConfirmDialogProps {
   onClose: () => void;
   confirmText?: string;
   cancelText?: string;
-  /** Disables both buttons and shows a spinner while the action is running. */
   isLoading?: boolean;
 }
 

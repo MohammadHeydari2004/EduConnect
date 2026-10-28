@@ -1,11 +1,27 @@
-import type { ID } from "#/types/common.ts";
 import { useClickOutside } from "#/hooks/useClickOutside.ts";
 import { useId, useMemo, useRef, useState } from "react";
-import { MultiSelectTrigger } from "./MultiSelectTrigger.tsx";
-import { MultiSelectDropdown } from "./MultiSelectDropdown.tsx";
-import type { SearchableMultiSelectProps as SearchableMultiSelectPropsType } from "./MultiSelectTypes.ts";
+import type { ID } from "#/types/common.ts";
+import { MultiSelectTrigger } from "#/components/ui/MultiSelectTrigger.tsx";
+import { MultiSelectDropdown } from "#/components/ui/MultiSelectDropdown.tsx";
 
-function SearchableMultiSelect({
+interface MultiSelectOption {
+  id: string;
+  label: string;
+  subLabel?: string;
+}
+
+export interface SearchableMultiSelectProps {
+  options: MultiSelectOption[];
+  selectedIds: ID[];
+  onChange: (ids: ID[]) => void;
+  placeholder?: string;
+  label?: string;
+  error?: string;
+  searchPlaceholder?: string;
+  openDirection?: "down" | "up";
+}
+
+export default function SearchableMultiSelect({
   options,
   selectedIds,
   onChange,
@@ -14,7 +30,7 @@ function SearchableMultiSelect({
   error,
   searchPlaceholder = "جستجو...",
   openDirection = "down",
-}: SearchableMultiSelectPropsType) {
+}: SearchableMultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -184,8 +200,6 @@ function SearchableMultiSelect({
         onSelectAll={handleSelectAll}
         onSelectFiltered={handleSelectFiltered}
         onDeselectAll={handleDeselectAll}
-        _labelId={labelId}
-        _errorId={errorId}
       />
 
       {error && (
@@ -200,5 +214,3 @@ function SearchableMultiSelect({
     </div>
   );
 }
-
-export default SearchableMultiSelect;

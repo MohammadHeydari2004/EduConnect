@@ -12,7 +12,6 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   options: Option[];
   error?: string;
-  /** Smaller padding for dense layouts (e.g. table cells). */
   compact?: boolean;
 }
 

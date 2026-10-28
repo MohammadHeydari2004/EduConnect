@@ -6,10 +6,6 @@ import type { Submission } from "#/types/submission.ts";
 import type { Attendance } from "#/types/attendance.ts";
 import type { Announcement } from "#/types/announcement.ts";
 
-/**
- * Shared dashboard data shape used by all role-specific dashboards.
- * Kept in a separate file to avoid circular imports and provide a single source of truth.
- */
 export interface DashboardData {
   users: User[];
   classes: ClassItem[];
@@ -20,9 +16,6 @@ export interface DashboardData {
   announcements: Announcement[];
 }
 
-/**
- * Empty dashboard data for initialization/fallback.
- */
 export const EMPTY_DASHBOARD_DATA: DashboardData = {
   users: [],
   classes: [],

@@ -4,158 +4,32 @@ import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
 import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
-import { useAuth } from "#/contexts/AuthContext.ts";
-import { useToast } from "#/hooks/useToast.ts";
-import { useModalState } from "#/hooks/useModalState.ts";
-import { useFilter, type FilterConfig } from "#/hooks/useFilter.ts";
 import UserDetails from "#/pages/users/UserDetails.tsx";
 import UserFilters from "#/pages/users/UserFilters.tsx";
 import UserForm from "#/pages/users/UserForm.tsx";
 import UserTable from "#/pages/users/UserTable.tsx";
-import { userService } from "#/services/user.ts";
-import type {
-  CreateUserPayload,
-  UpdateUserPayload,
-  User,
-  UserFilters as UserFiltersType,
-} from "#/types/user.ts";
-import { getErrorMessage } from "#/utils/error.ts";
-import { useAsyncData } from "#/hooks/useAsyncData.ts";
-import { useMemo, useState } from "react";
+import { useUsersPage } from "#/pages/users/useUsersPage";
 
-const initialFilters: UserFiltersType = {
-  searchName: "",
-  searchEmail: "",
-  role: "",
-  status: "",
-};
-
-function UsersPage() {
-  const { user: currentUser } = useAuth();
-  const { addToast } = useToast();
-
-  const [filters, setFilters] = useState<UserFiltersType>(initialFilters);
-
-  const userModal = useModalState<User>();
-
-  const { data: users, loading, error, refresh: refreshUsers } =
-    useAsyncData<User[]>({
-      fetcher: () => userService.getAll(),
-      deps: [],
-      fallbackError: "دریافت لیست کاربران با خطا مواجه شد.",
-    });
-
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isTogglingStatus, setIsTogglingStatus] = useState(false);
-
-  const filterConfigs = useMemo<FilterConfig<User>[]>(
-    () => [
-      {
-        filterKey: "searchName",
-        matches: (user: User, value) =>
-          user.name.toLowerCase().includes(String(value).toLowerCase()),
-      },
-      {
-        filterKey: "searchEmail",
-        matches: (user: User, value) =>
-          user.email.toLowerCase().includes(String(value).toLowerCase()),
-      },
-      {
-        filterKey: "role",
-        matches: (user: User, value) => (value ? user.role === value : true),
-      },
-      {
-        filterKey: "status",
-        matches: (user: User, value) => (value ? user.status === value : true),
-      },
-    ],
-    []
-  );
-
-  const filteredUsers = useFilter({
-    data: users,
+export default function UsersPage() {
+const {
+    currentUser,
+    loading,
+    error,
     filters,
-    filterConfigs,
-  });
-
-  const handleCreate = async (values: CreateUserPayload) => {
-    try {
-      await userService.create(values);
-      addToast("کاربر با موفقیت ایجاد شد.", "success");
-      refreshUsers();
-      userModal.close();
-    } catch (err) {
-      addToast(getErrorMessage(err, "ایجاد کاربر ناموفق بود."), "error");
-    }
-  };
-
-  const handleOpenEdit = (user: User) => {
-    userModal.openWithTarget("edit", user);
-  };
-
-  const handleUpdate = async (values: UpdateUserPayload) => {
-    const target = userModal.target;
-    if (!target) return;
-    if (currentUser?.id === target.id && values.status === "inactive") {
-      addToast("شما نمی‌توانید حساب کاربری خودتان را غیرفعال کنید.", "error");
-      return;
-    }
-    try {
-      await userService.update(target.id, values);
-      addToast("اطلاعات کاربر با موفقیت ویرایش شد.", "success");
-      refreshUsers();
-      userModal.close();
-    } catch (err) {
-      addToast(getErrorMessage(err, "ویرایش کاربر ناموفق بود."), "error");
-    }
-  };
-
-  const handleOpenDelete = (user: User) => {
-    userModal.openWithTarget("delete", user);
-  };
-
-  const handleDelete = async () => {
-    const target = userModal.target;
-    if (!target || !currentUser) return;
-    if (target.id === currentUser.id) {
-      addToast("شما نمی‌توانید حساب کاربری خودتان را حذف کنید.", "error");
-      userModal.close();
-      return;
-    }
-    setIsDeleting(true);
-    try {
-      await userService.delete(target.id);
-      addToast("کاربر با موفقیت حذف شد.", "success");
-      refreshUsers();
-    } catch (err) {
-      addToast(getErrorMessage(err, "حذف کاربر ناموفق بود."), "error");
-    } finally {
-      setIsDeleting(false);
-      userModal.close();
-    }
-  };
-
-  const handleToggleStatus = async (user: User) => {
-    if (!currentUser || isTogglingStatus) return;
-    if (user.id === currentUser.id) {
-      addToast("شما نمی‌توانید وضعیت حساب خودتان را تغییر دهید.", "error");
-      return;
-    }
-    setIsTogglingStatus(true);
-    try {
-      await userService.toggleStatus(user.id);
-      addToast("وضعیت کاربر با موفقیت تغییر کرد.", "success");
-      refreshUsers();
-    } catch (err) {
-      addToast(getErrorMessage(err, "تغییر وضعیت کاربر ناموفق بود."), "error");
-    } finally {
-      setIsTogglingStatus(false);
-    }
-  };
-
-  const handleView = (user: User) => {
-    userModal.openWithTarget("details", user);
-  };
+    setFilters,
+    resetFilters,
+    filteredUsers,
+    userModal,
+    viewModal,
+    isDeleting,
+    handleCreate,
+    handleOpenEdit,
+    handleUpdate,
+    handleOpenDelete,
+    handleDelete,
+    handleToggleStatus,
+    handleView,
+  } = useUsersPage();
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -174,7 +48,7 @@ function UsersPage() {
       <UserFilters
         filters={filters}
         onChange={setFilters}
-        onReset={() => setFilters(initialFilters)}
+        onReset={resetFilters}
       />
 
       <Card title="لیست کاربران">
@@ -182,16 +56,18 @@ function UsersPage() {
           <Loading />
         ) : error ? (
           <ErrorAlert message={error} />
-        ) : !users || users.length === 0 ? (
-          <EmptyState
-            title="کاربری ثبت نشده است"
-            description="هنوز هیچ کاربری در سیستم وجود ندارد."
-          />
-        ) : filteredUsers.length === 0 ? (
-          <EmptyState
-            title="کاربری پیدا نشد"
-            description="هیچ کاربری با فیلترهای انتخاب‌شده پیدا نشد."
-          />
+        ) : !filteredUsers || filteredUsers.length === 0 ? (
+          filteredUsers === undefined || filteredUsers.length === 0 ? (
+            <EmptyState
+              title="کاربری ثبت نشده است"
+              description="هنوز هیچ کاربری در سیستم وجود ندارد."
+            />
+          ) : (
+            <EmptyState
+              title="کاربری پیدا نشد"
+              description="هیچ کاربری با فیلترهای انتخاب‌شده پیدا نشد."
+            />
+          )
         ) : (
           <UserTable
             users={filteredUsers}
@@ -217,9 +93,9 @@ function UsersPage() {
       )}
 
       <UserDetails
-        isOpen={userModal.isOpen("details")}
-        user={userModal.target}
-        onClose={userModal.close}
+        isOpen={viewModal.isOpen("details")}
+        user={viewModal.target}
+        onClose={viewModal.close}
       />
 
       <ConfirmDialog
@@ -233,5 +109,3 @@ function UsersPage() {
     </div>
   );
 }
-
-export default UsersPage;

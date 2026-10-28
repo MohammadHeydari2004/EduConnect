@@ -16,10 +16,6 @@ interface MenuItemProps {
   ariaLabel?: string;
 }
 
-/**
- * A single row inside the mobile `ActionsMenu` (Table.tsx). Centralizes the
- * styling that was copy-pasted across UserTable / ClassTable / AssignmentsPage.
- */
 export default function MenuItem({
   label,
   icon,

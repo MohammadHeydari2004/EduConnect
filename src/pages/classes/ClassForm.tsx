@@ -8,7 +8,7 @@ import {
   validateClassForm,
   type ClassFormErrors,
 } from "#/pages/classes/classValidation.ts";
-import { DEFAULT_CLASS_CAPACITY } from "#/configs/constants.ts";
+import { DEFAULT_CLASS_CAPACITY } from "#/configs/constants";
 import { classService } from "#/services/class.ts";
 import type { ClassFormValues, ClassItem, ClassStatus } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";

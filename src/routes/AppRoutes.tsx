@@ -6,7 +6,7 @@ import {
   ALL_ROLES,
   ADMIN_ROLES,
   TEACHER_AND_ABOVE_ROLES,
-} from "#/configs/constants.ts";
+} from "#/configs/constants";
 import DashboardPage from "#/pages/dashboard/DashboardContainer.tsx";
 import LoginPage from "#/pages/auth/LoginPage.tsx";
 import ProfilePage from "#/pages/profile/ProfilePage.tsx";
@@ -17,7 +17,8 @@ import ClassDetailsPage from "#/pages/classes/ClassDetailsPage.tsx";
 import JoinClassPlaceholderPage from "#/pages/classes/JoinClassPlaceholderPage.tsx";
 import AttendancePage from "#/pages/attendance/AttendancePage.tsx";
 import AnnouncementsPage from "#/pages/announcements/AnnouncementsPage.tsx";
-import AssignmentsPage from "#/pages/assignments/AssignmentsPage.tsx";
+import TeacherAssignmentsPage from "#/pages/assignments/TeacherAssignmentsPage.tsx";
+import StudentAssignmentsPage from "#/pages/assignments/StudentAssignmentsPage.tsx";
 import SubmissionsPage from "#/pages/assignments/SubmissionsPage.tsx";
 import NotFoundPage from "#/pages/errors/NotFoundPage.tsx";
 import UnauthorizedPage from "#/pages/errors/UnauthorizedPage.tsx";
@@ -57,7 +58,7 @@ function AppRoutes() {
         />
 
         <Route
-          path="student-classes"
+          path="my-classes"
           element={
             <RoleGuard allowedRoles={["student"]}>
               <StudentClassesPage />
@@ -102,19 +103,19 @@ function AppRoutes() {
         />
 
         <Route
-          path="assignments"
+          path="assignments/:classId?"
           element={
-            <RoleGuard allowedRoles={ALL_ROLES}>
-              <AssignmentsPage />
+            <RoleGuard allowedRoles={["teacher", "admin"]}>
+              <TeacherAssignmentsPage />
             </RoleGuard>
           }
         />
 
         <Route
-          path="classes/:classId/assignments"
+          path="my-assignments/:classId?"
           element={
-            <RoleGuard allowedRoles={ALL_ROLES}>
-              <AssignmentsPage />
+            <RoleGuard allowedRoles={["student"]}>
+              <StudentAssignmentsPage />
             </RoleGuard>
           }
         />

@@ -38,9 +38,12 @@ function UserTable({
         {
           key: "name",
           title: "نام",
-          width: "15%",
+          width: "10%",
           render: (user) => (
-            <div className="font-medium text-gray-800 truncate px-1" title={user.name}>
+            <div
+              className="font-medium text-gray-800 truncate px-1"
+              title={user.name}
+            >
               {user.name}
               {user.id === currentUserId && (
                 <span className="mr-2 text-xs text-blue-600">(شما)</span>
@@ -51,7 +54,7 @@ function UserTable({
         {
           key: "email",
           title: "ایمیل",
-          width: "15%",
+          width: "10%",
           render: (user) => (
             <div className="truncate px-1" title={user.email}>
               {user.email}
@@ -61,13 +64,13 @@ function UserTable({
         {
           key: "role",
           title: "نقش",
-          width: "12%",
+          width: "4%",
           render: (user) => <span>{getRoleLabel(user.role)}</span>,
         },
         {
           key: "status",
           title: "وضعیت",
-          width: "12%",
+          width: "7%",
           render: (user) => (
             <>
               <span title={getStatusLabel(user.status)}>
@@ -80,7 +83,7 @@ function UserTable({
         {
           key: "actions",
           title: "عملیات",
-          width: "46%",
+          width: "23%",
           render: (user) => (
             <div className="w-full flex flex-wrap justify-center gap-2">
               <Button variant="secondary" onClick={() => onView(user)}>

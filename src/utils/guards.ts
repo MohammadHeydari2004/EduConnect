@@ -1,13 +1,9 @@
-import { ALL_ROLES } from "#/configs/constants.ts";
+import { ALL_ROLES } from "#/configs/constants";
 import type { RecordStatus, UserRole } from "#/types/common.ts";
 import type { User } from "#/types/user.ts";
 
 const VALID_STATUSES: RecordStatus[] = ["active", "inactive"];
 
-/**
- * Type guard to validate a plain object as a User.
- * Used when parsing stored user data from localStorage.
- */
 export function isValidUser(obj: unknown): obj is User {
   if (typeof obj !== "object" || obj === null) return false;
   const u = obj as Record<string, unknown>;

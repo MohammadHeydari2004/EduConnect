@@ -9,13 +9,8 @@ import type { ClassItem } from "#/types/class.ts";
 import type { ID } from "#/types/common.ts";
 import type { Submission } from "#/types/submission.ts";
 import type { User } from "#/types/user.ts";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
-/**
- * Centralizes the four fetches of the assignments page (users, submissions,
- * classes, assignments) plus the derived maps, so the page itself stays a
- * coordination component.
- */
 export function useAssignmentsPageData() {
   const usersAsync = useAsyncData<User[]>({
     fetcher: () => userService.getAll(),
@@ -67,6 +62,13 @@ export function useAssignmentsPageData() {
     return map;
   }, [assignments, submissions]);
 
+  const setSubmissionsOptimistic = useCallback(
+    (updater: (prev: Submission[]) => Submission[]) => {
+      submissionsAsync.setData(updater);
+    },
+    [submissionsAsync],
+  );
+
   return {
     users,
     submissions,
@@ -87,5 +89,6 @@ export function useAssignmentsPageData() {
       assignmentsAsync.error,
     refreshSubmissions: submissionsAsync.refresh,
     refreshAssignments: assignmentsAsync.refresh,
+    setSubmissionsOptimistic,
   };
 }

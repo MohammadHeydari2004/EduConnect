@@ -21,7 +21,6 @@ export { CheckIcon } from "./CheckIcon";
 export { MoreIcon } from "./MoreIcon";
 export { SeenIcon } from "./SeenIcon";
 export { ResetIcon } from "./ResetIcon";
-export { CalendarIcon } from "./CalendarIcon";
 export { ChevronLeftIcon } from "./ChevronLeftIcon";
 export { ChevronRightIcon } from "./ChevronRightIcon";
 export { LockIcon } from "./LockIcon";

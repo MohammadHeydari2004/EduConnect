@@ -1,12 +1,5 @@
 import { useEffect, useRef, type RefObject } from "react";
 
-/**
- * Invokes `onOutside` when a pointer/touch lands outside every provided ref.
- *
- * Refs are read through a ref-backed array and the callback through a ref so
- * the effect only re-subscribes when `active` flips — not on every render.
- * Pass multiple refs to cover cases like a portaled menu (trigger + panel).
- */
 export function useClickOutside(
   refs: Array<RefObject<HTMLElement | null>>,
   onOutside: () => void,

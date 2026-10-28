@@ -1,7 +1,7 @@
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Card from "#/components/ui/Card.tsx";
-import StatusChip from "#/components/ui/StatusChip.tsx";
 import StatCard from "#/components/ui/StatCard.tsx";
+import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
 import { attendanceService } from "#/services/attendance.ts";
 import type { Attendance } from "#/types/attendance.ts";
@@ -88,8 +88,8 @@ export default function StudentAttendanceView({
           />
         </div>
         <p className="mt-2 text-xs text-gray-500">
-          {studentView.attended} جلسه از {studentView.total} جلسه (حاضر + با تأخیر
-          به‌عنوان «حاضر» محاسبه می‌شود).
+          {studentView.attended} جلسه از {studentView.total} جلسه (حاضر + با
+          تأخیر به‌عنوان «حاضر» محاسبه می‌شود).
         </p>
       </Card>
       <Card title="جزئیات جلسات">
@@ -131,7 +131,7 @@ export default function StudentAttendanceView({
             renderMobileCard={(item) => (
               <div className="space-y-2 text-right">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-base font-bold text-gray-800">
+                  <span className="text-base font-bold text-gray-800 w-36">
                     {item.sessionTitle}
                   </span>
                   <StatusChip status={item.status} />

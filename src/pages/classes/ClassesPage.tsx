@@ -4,150 +4,34 @@ import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
 import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
-import { useAuth } from "#/contexts/AuthContext.ts";
-import { useToast } from "#/hooks/useToast.ts";
-import { useModalState } from "#/hooks/useModalState.ts";
-import { useFilter, type FilterConfig } from "#/hooks/useFilter.ts";
-import ClassFilters, {
-  type ClassFiltersValues,
-} from "#/pages/classes/ClassFilters";
+import ClassFilters from "#/pages/classes/ClassFilters";
 import ClassForm from "#/pages/classes/ClassForm";
 import ClassTable from "#/pages/classes/ClassTable";
-import { classService } from "#/services/class.ts";
-import { userService } from "#/services/user.ts";
-import type { ClassItem, ClassStatus } from "#/types/class.ts";
-import type { User } from "#/types/user.ts";
-import { getErrorMessage } from "#/utils/error.ts";
-import { useAsyncData } from "#/hooks/useAsyncData.ts";
-import { useCallback, useMemo, useState } from "react";
-
-const initialFilters: ClassFiltersValues = {
-  search: "",
-  statusFilter: "",
-  teacherFilter: "",
-};
+import { useClassesPage } from "#/pages/classes/useClassesPage";
 
 export default function ClassesPage() {
-  const { user: currentUser } = useAuth();
-  const { addToast } = useToast();
-
-  const [filters, setFilters] = useState<ClassFiltersValues>(initialFilters);
-
-  const classModal = useModalState<ClassItem>();
-
-  const isAdmin = currentUser?.role === "admin";
-
-  const canManageClass = useCallback(
-    () => {
-      // Only admins can manage classes (edit, delete, toggle status)
-      return isAdmin;
-    },
-    [isAdmin],
-  );
-
-  const { data: classes, loading: classesLoading, error: classesError, refresh } = useAsyncData<ClassItem[]>({
-    fetcher: () => classService.getAll(),
-    deps: [],
-    fallbackError: "دریافت لیست کلاس‌ها با خطا مواجه شد.",
-  });
-
-  const { data: users, loading: usersLoading, error: usersError } = useAsyncData<User[]>({
-    fetcher: () => userService.getAll(),
-    deps: [],
-    fallbackError: "دریافت لیست کاربران با خطا مواجه شد.",
-  });
-
-  const teachers = useMemo(
-    () => users?.filter((u) => u.role === "teacher") ?? [],
-    [users],
-  );
-
-  const loading = classesLoading || usersLoading;
-  const error = classesError || usersError;
-
-  const filterConfigs = useMemo<FilterConfig<ClassItem>[]>(
-    () => [
-      {
-        filterKey: "search",
-        matches: (cls: ClassItem, value) =>
-          (cls.title || "").toLowerCase().includes(String(value).toLowerCase()),
-      },
-      {
-        filterKey: "statusFilter",
-        matches: (cls: ClassItem, value) => (value ? cls.status === value : true),
-      },
-      {
-        filterKey: "teacherFilter",
-        matches: (cls: ClassItem, value) => (value ? cls.teacherId === value : true),
-      },
-    ],
-    []
-  );
-
-  const extraPredicate = useCallback(
-    (cls: ClassItem) => {
-      if (!isAdmin && currentUser?.role === "teacher") {
-        return cls.teacherId === currentUser.id;
-      }
-      return true;
-    },
-    [isAdmin, currentUser]
-  );
-
-  const filteredClasses = useFilter({
-    data: classes,
+  const {
+    currentUser,
+    isAdmin,
+    teachers,
+    users,
+    loading,
+    error,
     filters,
-    filterConfigs,
-    extraPredicate,
-  });
-
-  const [isStatusChanging, setIsStatusChanging] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const confirmStatusChange = async () => {
-    const target = classModal.target;
-    if (!target) return;
-    setIsStatusChanging(true);
-    try {
-      const newStatus: ClassStatus =
-        target.status === "active" ? "inactive" : "active";
-
-      if (newStatus === "inactive") {
-        await classService.setStatus(target.id, "inactive");
-        addToast(`کلاس "${target.title}" غیرفعال شد.`, "success");
-      } else {
-        await classService.setStatus(target.id, "active");
-        addToast(`کلاس "${target.title}" فعال شد.`, "success");
-      }
-      refresh();
-      classModal.close();
-    } catch (err) {
-      addToast(
-        getErrorMessage(err, "تغییر وضعیت کلاس ناموفق بود."),
-        "error",
-      );
-      classModal.close();
-    } finally {
-      setIsStatusChanging(false);
-    }
-  };
-
-  const confirmDelete = async () => {
-    const target = classModal.target;
-    if (!target) return;
-    setIsDeleting(true);
-    try {
-      await classService.delete(target.id);
-      addToast(`کلاس "${target.title}" با موفقیت حذف شد.`, "success");
-      refresh();
-      classModal.close();
-    } catch (err) {
-      addToast(getErrorMessage(err, "حذف کلاس ناموفق بود."), "error");
-      classModal.close();
-    } finally {
-      setIsDeleting(false);
-    }
-  };
+    setFilters,
+    resetFilters,
+    filteredClasses,
+    modals,
+    isStatusChanging,
+    confirmStatusChange,
+    handleOpenCreate,
+    handleOpenEdit,
+    handleOpenDelete,
+    handleDelete,
+    handleOpenStatus,
+    isDeleting,
+    canManageClass,
+  } = useClassesPage();
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -156,10 +40,7 @@ export default function ClassesPage() {
           مدیریت کلاس‌ها
         </h1>
         {(isAdmin || currentUser?.role === "teacher") && (
-          <Button
-            onClick={() => classModal.open("create")}
-            className="w-full sm:w-auto"
-          >
+          <Button onClick={handleOpenCreate} className="w-full sm:w-auto">
             ایجاد کلاس جدید
           </Button>
         )}
@@ -170,7 +51,7 @@ export default function ClassesPage() {
         teachers={teachers}
         isAdmin={isAdmin}
         onChange={setFilters}
-        onReset={() => setFilters(initialFilters)}
+        onReset={resetFilters}
       />
 
       <Card title="لیست کلاس‌ها">
@@ -178,68 +59,69 @@ export default function ClassesPage() {
           <Loading />
         ) : error ? (
           <ErrorAlert message={error} />
-        ) : !classes || classes.length === 0 ? (
-          <EmptyState
-            title="کلاسی ثبت نشده است"
-            description="هنوز هیچ کلاسی در سیستم وجود ندارد."
-          />
-        ) : filteredClasses.length === 0 ? (
-          <EmptyState
-            title="کلاسی پیدا نشد"
-            description="هیچ کلاسی با فیلترهای انتخاب‌شده پیدا نشد."
-          />
+        ) : !filteredClasses || filteredClasses.length === 0 ? (
+          filteredClasses === undefined || filteredClasses.length === 0 ? (
+            <EmptyState
+              title="کلاسی ثبت نشده است"
+              description="هنوز هیچ کلاسی در سیستم وجود ندارد."
+            />
+          ) : (
+            <EmptyState
+              title="کلاسی پیدا نشد"
+              description="هیچ کلاسی با فیلترهای انتخاب‌شده پیدا نشد."
+            />
+          )
         ) : (
           <ClassTable
             classes={filteredClasses}
             users={users ?? []}
             canManageClass={canManageClass}
-            onEdit={(c) => classModal.openWithTarget("edit", c)}
-            onToggleStatus={(c) => classModal.openWithTarget("status", c)}
-            onDelete={(c) => classModal.openWithTarget("delete", c)}
+            onEdit={handleOpenEdit}
+            onToggleStatus={handleOpenStatus}
+            onDelete={handleOpenDelete}
           />
         )}
       </Card>
 
-      {(classModal.isOpen("create") || classModal.isOpen("edit")) && (
+      {(modals.isOpen("create") || modals.isOpen("edit")) && (
         <ClassForm
-          key={`class-form-${classModal.target?.id ?? "new"}`}
+          key={`class-form-${modals.target?.id ?? "new"}`}
           users={users ?? []}
-          initialData={classModal.target}
-          onClose={classModal.close}
-          onSuccess={(message) => {
-            addToast(message, "success");
-            classModal.close();
-            refresh();
+          initialData={modals.target}
+          onClose={modals.createModal.close}
+          onSuccess={() => {
+            modals.createModal.close();
           }}
-          onError={(message) => {
-            addToast(message, "error");
+          onError={() => {
           }}
         />
       )}
 
-      <ConfirmDialog
-        isOpen={classModal.isOpen("status")}
-        title={
-          classModal.target?.status === "active"
-            ? "غیرفعال کردن کلاس"
-            : "فعال کردن کلاس"
-        }
-        message={
-          classModal.target?.status === "active"
-            ? `آیا از غیرفعال کردن کلاس "${classModal.target?.title ?? ""}" مطمئن هستید؟`
-            : `آیا از فعال کردن کلاس "${classModal.target?.title ?? ""}" مطمئن هستید؟`
-        }
-        onClose={classModal.close}
-        onConfirm={confirmStatusChange}
-        isLoading={isStatusChanging}
-      />
+      {modals.isOpen("status") && (
+        <ConfirmDialog
+          isOpen={true}
+          title={
+            modals.target?.status === "active"
+              ? "غیرفعال کردن کلاس"
+              : "فعال کردن کلاس"
+          }
+          message={
+            modals.target?.status === "active"
+              ? `آیا از غیرفعال کردن کلاس "${modals.target?.title ?? ""}" مطمئن هستید؟`
+              : `آیا از فعال کردن کلاس "${modals.target?.title ?? ""}" مطمئن هستید؟`
+          }
+          onClose={modals.createModal.close}
+          onConfirm={confirmStatusChange}
+          isLoading={isStatusChanging}
+        />
+      )}
 
       <ConfirmDialog
-        isOpen={classModal.isOpen("delete")}
+        isOpen={modals.isOpen("delete")}
         title="حذف کلاس"
-        message={`آیا از حذف کامل کلاس "${classModal.target?.title ?? ""}" مطمئن هستید؟ این عمل قابل بازگشت نیست.`}
-        onClose={classModal.close}
-        onConfirm={confirmDelete}
+        message={`آیا از حذف کامل کلاس "${modals.target?.title ?? ""}" مطمئن هستید؟ این عمل قابل بازگشت نیست.`}
+        onClose={modals.createModal.close}
+        onConfirm={handleDelete}
         isLoading={isDeleting}
       />
     </div>

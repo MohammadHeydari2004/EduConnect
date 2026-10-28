@@ -59,8 +59,6 @@ function ErrorBoundaryWrapper({
     <ReactErrorBoundary
       FallbackComponent={ErrorFallback}
       resetKeys={resetKeys}
-      // Errors keep being logged in production too (logger.error is always
-      // active), so this is the centralized production log for crashes.
       onError={(error, errorInfo) => {
         logger.error("ErrorBoundary caught an error", {
           error: error instanceof Error ? error.stack ?? error.message : String(error),

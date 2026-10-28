@@ -1,21 +1,24 @@
 import { ChevronDownIcon, CloseIcon } from "#/components/common/icons";
+import { forwardRef } from "react";
 import type { ID } from "#/types/common.ts";
-import type { MultiSelectOption } from "./MultiSelectTypes.ts";
-import type { HTMLAttributes, Ref } from "react";
-import { forwardRef, useRef } from "react";
 
-interface MultiSelectTriggerProps extends HTMLAttributes<HTMLDivElement> {
-  selectedOptions: MultiSelectOption[];
+const MAX_VISIBLE_CHIPS = 5;
+
+interface MultiSelectTriggerProps {
+  selectedOptions: Array<{ id: string; label: string; subLabel?: string }>;
   isOpen: boolean;
   placeholder: string;
   error?: string;
   onClick: () => void;
   onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => void;
   onRemoveChip: (id: ID) => void;
-  triggerRef?: Ref<HTMLDivElement>;
+  "aria-labelledby"?: string;
+  "aria-label"?: string;
+  "aria-invalid"?: boolean;
+  "aria-describedby"?: string;
+  "aria-expanded"?: boolean;
+  "aria-haspopup"?: "listbox";
 }
-
-const MAX_VISIBLE_CHIPS = 5;
 
 export const MultiSelectTrigger = forwardRef<HTMLDivElement, MultiSelectTriggerProps>(
   (
@@ -27,30 +30,19 @@ export const MultiSelectTrigger = forwardRef<HTMLDivElement, MultiSelectTriggerP
       onClick,
       onKeyDown,
       onRemoveChip,
-      triggerRef,
       "aria-labelledby": ariaLabelledBy,
       "aria-label": ariaLabel,
       "aria-invalid": ariaInvalid,
       "aria-describedby": ariaDescribedby,
       "aria-expanded": ariaExpanded,
       "aria-haspopup": ariaHaspopup,
-      ...rest
     },
     ref,
   ) => {
-    const triggerElementRef = useRef<HTMLDivElement>(null);
-    const combinedRef = (el: HTMLDivElement | null) => {
-      triggerElementRef.current = el;
-      if (typeof triggerRef === "function") triggerRef(el);
-      else if (triggerRef && typeof triggerRef === "object") triggerRef.current = el;
-      if (typeof ref === "function") ref(el);
-      else if (ref && typeof ref === "object") ref.current = el;
-    };
-
     return (
       <div className="relative">
         <div
-          ref={combinedRef}
+          ref={ref}
           tabIndex={0}
           onClick={onClick}
           onKeyDown={onKeyDown}
@@ -60,7 +52,6 @@ export const MultiSelectTrigger = forwardRef<HTMLDivElement, MultiSelectTriggerP
           aria-label={ariaLabel}
           aria-invalid={ariaInvalid}
           aria-describedby={ariaDescribedby}
-          {...rest}
           className={`flex min-h-10.5 w-full cursor-pointer items-center rounded-lg border ${
             error ? "border-red-500" : "border-gray-300"
           } bg-white px-3 py-2 text-sm transition hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100`}
@@ -116,3 +107,5 @@ export const MultiSelectTrigger = forwardRef<HTMLDivElement, MultiSelectTriggerP
     );
   },
 );
+
+MultiSelectTrigger.displayName = "MultiSelectTrigger";

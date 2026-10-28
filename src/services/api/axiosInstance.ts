@@ -1,5 +1,5 @@
 import axios, { type AxiosError } from "axios";
-import { API_REQUEST_TIMEOUT_MS } from "#/configs/constants.ts";
+import { API_REQUEST_TIMEOUT_MS } from "#/configs/constants";
 import { logger } from "#/utils/logger.ts";
 
 const API_BASE_URL =

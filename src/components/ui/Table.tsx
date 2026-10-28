@@ -6,19 +6,13 @@ interface TableColumn<T> {
   key: keyof T | string;
   title: string;
   render?: (item: T) => ReactNode;
-  /**
-   * Column width as a CSS width (e.g. "30%" or "140px"). Defining a width on
-   * any column switches the table to fixed layout, so widths are explicit
-   * instead of content-driven. Unset columns share the remaining space.
-   */
   width?: string;
 }
 
-  interface TableProps<T> {
+interface TableProps<T> {
   columns: TableColumn<T>[];
   data: T[];
   getRowKey?: (item: T, index: number) => string | number;
-  /** Short human label of a row, used to make the mobile actions menu accessible. */
   getRowLabel?: (item: T, index: number) => string;
   renderMobileCard?: (item: T) => ReactNode;
   renderMobileActions?: (item: T) => ReactNode;
@@ -46,11 +40,6 @@ function Table<T>({
       ? column.render(item)
       : String((item as Record<string, unknown>)[String(column.key)] ?? "");
 
-  // Fallback mobile layout used when a caller does not supply a dedicated
-  // `renderMobileCard`: a stacked card with one labeled row per column, which
-  // keeps narrow screens free of horizontal scrolling. The `actions` column
-  // is skipped: mobile actions are always supplied via `renderMobileActions`,
-  // and including it here would duplicate them.
   const mobileCard =
     renderMobileCard ??
     ((item: T) => (
