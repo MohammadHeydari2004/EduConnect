@@ -23,6 +23,13 @@ const MS_PER_MINUTE = 60_000;
 const MS_PER_HOUR = 60 * MS_PER_MINUTE;
 const MS_PER_DAY = 24 * MS_PER_HOUR;
 
+const RELATIVE_TIME_THRESHOLDS = [
+  { max: 1, unit: MS_PER_MINUTE, label: "لحظاتی پیش", format: (v: number) => `${v} دقیقه پیش` },
+  { max: 60, unit: MS_PER_MINUTE, label: "", format: (v: number) => `${v} دقیقه پیش` },
+  { max: 24, unit: MS_PER_HOUR, label: "", format: (v: number) => `${v} ساعت پیش` },
+  { max: 7, unit: MS_PER_DAY, label: "", format: (v: number) => `${v} روز پیش` },
+] as const;
+
 export const formatRelativeTime = (
   date: string | Date | null | undefined,
 ): string => {
@@ -36,11 +43,13 @@ export const formatRelativeTime = (
 
   const diffMinutes = Math.floor(diffMs / MS_PER_MINUTE);
   if (diffMinutes < 1) return "لحظاتی پیش";
-  if (diffMinutes < 60) return `${diffMinutes} دقیقه پیش`;
-  const diffHours = Math.floor(diffMs / MS_PER_HOUR);
-  if (diffHours < 24) return `${diffHours} ساعت پیش`;
-  const diffDays = Math.floor(diffMs / MS_PER_DAY);
-  if (diffDays < 7) return `${diffDays} روز پیش`;
+
+  for (const threshold of RELATIVE_TIME_THRESHOLDS) {
+    const value = Math.floor(diffMs / threshold.unit);
+    if (value < threshold.max) {
+      return threshold.format(value);
+    }
+  }
 
   return formatDate(dateObj);
 };

@@ -32,7 +32,7 @@ export default function SessionForm({
     classId,
   }));
   const [errors, setErrors] = useState<
-    Partial<Record<keyof SessionFormValues, string>>
+    Partial<Record<keyof SessionFormValues, string | undefined>>
   >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 

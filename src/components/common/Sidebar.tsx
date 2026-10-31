@@ -1,8 +1,8 @@
-import { useAuth } from "#/contexts/AuthContext.ts";
-import { forwardRef, useEffect } from "react";
-import { useIsMobile } from "#/hooks/useMediaQuery.ts";
-import { NavLink } from "react-router-dom";
 import { navItems } from "#/configs/navigation.tsx";
+import { useAuth } from "#/contexts/AuthContext.ts";
+import { useIsMobile } from "#/hooks/useMediaQuery.ts";
+import { forwardRef, useEffect } from "react";
+import { NavLink } from "react-router-dom";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -41,7 +41,7 @@ const Sidebar = forwardRef<HTMLElement, SidebarProps>(
         <aside
           ref={ref}
           aria-hidden={isDrawerClosed}
-          className={`fixed top-16 right-0 z-30 h-full w-64 transform border-l border-gray-200 bg-white p-4 transition-transform duration-300 ease-in-out lg:static lg:z-auto lg:h-auto lg:translate-x-0 ${isOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}`}
+          className={`fixed right-0 max-w-fit transform border-l border-gray-200 bg-white p-4 transition-transform duration-300 ease-in-out lg:static lg:z-auto lg:h-auto lg:translate-x-0 ${isMobile ? "top-0 z-50 h-[calc(100vh)]" : "top-16 z-30 h-full"} ${isOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}`}
         >
           <nav aria-label="منوی اصلی" className="flex flex-col gap-1">
             {filteredNavItems.map((item) => (
@@ -62,7 +62,7 @@ const Sidebar = forwardRef<HTMLElement, SidebarProps>(
         </aside>
       </>
     );
-  }
+  },
 );
 
 Sidebar.displayName = "Sidebar";

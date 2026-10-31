@@ -106,7 +106,7 @@ export default function TeacherAssignmentsTable({
         {
           key: "title",
           title: "عنوان",
-          width: "25%",
+          width: "24%",
           render: (a) => (
             <div className="px-1" title={a.title}>
               {a.title}
@@ -116,13 +116,13 @@ export default function TeacherAssignmentsTable({
         {
           key: "className",
           title: "کلاس",
-          width: "10%",
+          width: "9.5%",
           render: (a) => getClassName(a.classId),
         },
         {
           key: "description",
           title: "توضیحات",
-          width: "15%",
+          width: "14.5%",
           render: (a) => (
             <div className="truncate px-1" title={a.description}>
               {a.description}
@@ -132,7 +132,7 @@ export default function TeacherAssignmentsTable({
         {
           key: "deadline",
           title: "ددلاین",
-          width: "12%",
+          width: "11.5%",
           render: (a) => {
             const deadlineColor = getDeadlineColor(a.deadline);
             return (
@@ -153,13 +153,13 @@ export default function TeacherAssignmentsTable({
         {
           key: "teacher",
           title: "استاد",
-          width: "10%",
+          width: "9.5%",
           render: (a) => getTeacherName(a.teacherId),
         },
         {
           key: "status",
           title: "وضعیت تصحیح",
-          width: "8%",
+          width: "7.5%",
           render: (a) => {
             if (canManage(a)) {
               const stats = gradingStats.get(a.id) || {
@@ -178,7 +178,7 @@ export default function TeacherAssignmentsTable({
         {
           key: "actions",
           title: "عملیات",
-          width: "25%",
+          width: "23.5%",
           render: (a) => {
             return (
               <div className="flex flex-wrap justify-center gap-2">

@@ -5,6 +5,8 @@ import StudentAttendanceView from "#/pages/attendance/StudentAttendanceView.tsx"
 import TeacherAttendanceForm from "#/pages/attendance/TeacherAttendanceForm.tsx";
 import AdminAttendanceReport from "#/pages/attendance/AdminAttendanceReport.tsx";
 import { useAttendancePage } from "#/pages/attendance/useAttendancePage";
+import { useMapById } from "#/hooks/useMapById.ts";
+import type { Session } from "#/types/session.ts";
 
 export default function AttendancePage() {
   const {
@@ -28,7 +30,12 @@ export default function AttendancePage() {
     handleMarkAllPresent,
     handleMarkAllAbsent,
     handleSave,
+    attendances,
+    sessions,
+    classMap,
   } = useAttendancePage();
+
+  const sessionMap = useMapById<Session>(sessions);
 
   if (loading) return <Loading />;
   if (error) return <ErrorAlert message={error} />;
@@ -41,9 +48,9 @@ export default function AttendancePage() {
       </h1>
       {isStudent ? (
         <StudentAttendanceView
-          attendances={[]}
-          sessionMap={new Map()}
-          classMap={new Map()}
+          attendances={attendances}
+          sessionMap={sessionMap}
+          classMap={classMap}
           currentUser={currentUser}
         />
       ) : isAdmin ? (

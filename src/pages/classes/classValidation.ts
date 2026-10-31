@@ -3,12 +3,12 @@ import type { ClassFormValues } from "#/types/class.ts";
 import { validateTitle } from "#/utils/validateTitle.ts";
 
 export interface ClassFormErrors {
-  title?: string;
-  teacherId?: string;
-  capacity?: string;
-  students?: string;
-  description?: string;
-  form?: string;
+  title?: string | undefined;
+  teacherId?: string | undefined;
+  capacity?: string | undefined;
+  students?: string | undefined;
+  description?: string | undefined;
+  form?: string | undefined;
 }
 
 export function validateClassForm(form: ClassFormValues): ClassFormErrors {

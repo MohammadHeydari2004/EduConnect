@@ -11,7 +11,7 @@ export interface UseFilterOptions<T, F extends Record<string, unknown> = Record<
   data: T[] | undefined | null;
   filters: F;
   filterConfigs: FilterConfig<T>[];
-  extraPredicate?: (item: T) => boolean;
+  extraPredicate?: ((item: T) => boolean | undefined) | undefined;
 }
 
 export function useFilter<T, F extends Record<string, unknown> = Record<string, unknown>>({

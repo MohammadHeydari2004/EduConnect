@@ -139,7 +139,7 @@ export default function StudentAssignmentsTable({
         {
           key: "title",
           title: "عنوان",
-          width: "15%",
+          width: "19%",
           render: (a) => (
             <div className="px-1" title={a.title}>
               {a.title}
@@ -149,13 +149,13 @@ export default function StudentAssignmentsTable({
         {
           key: "className",
           title: "کلاس",
-          width: "10%",
+          width: "12.5%",
           render: (a) => getClassName(a.classId),
         },
         {
           key: "description",
           title: "توضیحات",
-          width: "10%",
+          width: "12.5%",
           render: (a) => (
             <div className="truncate px-1" title={a.description}>
               {a.description}
@@ -165,7 +165,7 @@ export default function StudentAssignmentsTable({
         {
           key: "deadline",
           title: "ددلاین",
-          width: "8%",
+          width: "10%",
           render: (a) => {
             const deadlineColor = getDeadlineColor(a.deadline);
             return (
@@ -186,13 +186,13 @@ export default function StudentAssignmentsTable({
         {
           key: "teacher",
           title: "استاد",
-          width: "8%",
+          width: "10%",
           render: (a) => getTeacherName(a.teacherId),
         },
         {
           key: "status",
           title: "وضعیت",
-          width: "18%",
+          width: "23%",
           render: (a) => {
             const sub = getSubmission(a.id);
             if (sub) {
@@ -242,7 +242,7 @@ export default function StudentAssignmentsTable({
         {
           key: "actions",
           title: "عملیات",
-          width: "10%",
+          width: "13%",
           render: (a) => {
             const sub = getSubmission(a.id);
             const isGraded = sub?.status === "graded";

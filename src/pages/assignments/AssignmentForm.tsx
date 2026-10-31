@@ -13,6 +13,7 @@ import type { Assignment } from "#/types/assignment.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID } from "#/types/common.ts";
 import { getErrorMessage } from "#/utils/error.ts";
+import { FORM_PLACEHOLDERS } from "#/configs/constants";
 import { useState } from "react";
 
 interface Props {
@@ -53,7 +54,7 @@ export default function AssignmentForm({
       title,
       classId,
       deadline,
-      originalDeadline: initialData?.deadline?.split("T")[0],
+      originalDeadline: initialData?.deadline?.split("T")[0] ?? "",
     });
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
@@ -120,12 +121,12 @@ export default function AssignmentForm({
             if (errors.title || errors.form)
               setErrors((prev) => ({
                 ...prev,
-                title: undefined,
-                form: undefined,
+                title: "",
+                form: "",
               }));
           }}
           error={errors.title}
-          placeholder="مثلاً: تمرین اول"
+          placeholder={FORM_PLACEHOLDERS.ASSIGNMENT_TITLE}
           required
         />
         <Select
@@ -136,8 +137,8 @@ export default function AssignmentForm({
             if (errors.classId || errors.form)
               setErrors((prev) => ({
                 ...prev,
-                classId: undefined,
-                form: undefined,
+                classId: "",
+                form: "",
               }));
           }}
           options={[
@@ -156,8 +157,8 @@ export default function AssignmentForm({
             if (errors.deadline || errors.form)
               setErrors((prev) => ({
                 ...prev,
-                deadline: undefined,
-                form: undefined,
+                deadline: "",
+                form: "",
               }));
           }}
           error={errors.deadline}
@@ -167,7 +168,7 @@ export default function AssignmentForm({
           label="توضیحات"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="توضیحات مختصر درباره تکلیف..."
+          placeholder={FORM_PLACEHOLDERS.ASSIGNMENT_DESCRIPTION}
           rows={3}
         />
         <div className="flex justify-end gap-2 border-t border-gray-200 pt-4">

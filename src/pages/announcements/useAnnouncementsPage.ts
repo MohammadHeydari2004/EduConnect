@@ -1,7 +1,7 @@
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import { useAsyncData } from "#/hooks/useAsyncData.ts";
-import { type FilterConfig } from "#/hooks/useFilter.ts";
+import { type FilterConfig, createExactMatchFilter } from "#/hooks/useFilter.ts";
 import { useMapById } from "#/hooks/useMapById.ts";
 import { useModalState } from "#/hooks/useModalState.ts";
 import { useCrudPage } from "#/hooks/useCrudPage.ts";
@@ -13,11 +13,13 @@ import type { ClassItem } from "#/types/class.ts";
 import type { ID, UserRole } from "#/types/common.ts";
 import type { User } from "#/types/user.ts";
 import { isAnnouncementVisibleTo } from "#/utils/announcementVisibility.ts";
+import { TOAST_MESSAGES } from "#/configs/constants";
 import { getErrorMessage } from "#/utils/error.ts";
 import { formatDateTime, formatRelativeTime } from "#/utils/formatDate.ts";
 import { logger } from "#/utils/logger.ts";
 import { getRoleLabel } from "#/utils/user.ts";
 import { GLOBAL_ANNOUNCEMENT_CLASS_ID } from "#/configs/constants";
+import { useAnnouncementPermissions } from "#/pages/announcements/useAnnouncementPermissions.ts";
 import { useCallback, useMemo, useState } from "react";
 
 interface AnnouncementsPageData {
@@ -50,7 +52,7 @@ export function useAnnouncementsPage() {
   const { data, loading, error, refresh } = useAsyncData<AnnouncementsPageData>({
     fetcher: fetchAnnouncementsPageData,
     deps: [],
-    fallbackError: "خطا در بارگذاری اطلاعیه‌ها.",
+    fallbackError: TOAST_MESSAGES.ANNOUNCEMENT_FETCH_ERROR,
   });
 
   const announcements = data?.announcements ?? [];
@@ -59,21 +61,6 @@ export function useAnnouncementsPage() {
 
   const viewModal = useModalState<Announcement>();
   const [isMarkingSeen, setIsMarkingSeen] = useState(false);
-
-  const isAdmin = currentUser?.role === "admin";
-  const isTeacher = currentUser?.role === "teacher";
-  const canCreate = isAdmin || isTeacher;
-
-  const canManageItem = useCallback(
-    (item: Announcement) => {
-      if (!currentUser) return false;
-      if (currentUser.role === "admin") return true;
-      if (currentUser.role === "teacher")
-        return item.authorId === currentUser.id;
-      return false;
-    },
-    [currentUser],
-  );
 
   interface AnnouncementFilters {
     authorId: string;
@@ -90,23 +77,21 @@ export function useAnnouncementsPage() {
     readStatus: "all",
   };
 
-  const formClasses = useMemo(() => {
-    if (isAdmin) return classes;
-    if (isTeacher && currentUser)
-      return classes.filter((c) => c.teacherId === currentUser.id);
-    return [];
-  }, [classes, isAdmin, isTeacher, currentUser]);
-
   const userMap = useMapById(users);
   const classMap = useMapById(classes);
 
+  const permissions = useAnnouncementPermissions(currentUser, classMap);
+
+  const formClasses = useMemo(() => {
+    if (permissions.isAdmin) return classes;
+    if (permissions.isTeacher && currentUser)
+      return classes.filter((c) => c.teacherId === currentUser.id);
+    return [];
+  }, [classes, permissions.isAdmin, permissions.isTeacher, currentUser]);
+
   const filterConfigs = useMemo<FilterConfig<Announcement>[]>(
     () => [
-      {
-        filterKey: "authorId",
-        matches: (announcement: Announcement, value) =>
-          value ? announcement.authorId === value : true,
-      },
+      createExactMatchFilter<Announcement>("authorId", (a) => a.authorId),
       {
         filterKey: "classId",
         matches: (announcement: Announcement, value) => {
@@ -124,8 +109,9 @@ export function useAnnouncementsPage() {
             return roles.includes(value as UserRole);
           } else {
             const audience = announcement.targetAudience ?? "students";
-            if (value === "teacher" && audience === "students") return false;
-            if (value === "student" && audience === "teacher") return false;
+            if (value === "admin") return false;
+            if (value === "teacher") return audience === "teacher" || audience === "both";
+            if (value === "student") return audience === "students" || audience === "both";
             return true;
           }
         },
@@ -164,8 +150,8 @@ export function useAnnouncementsPage() {
     initialFilters,
     filterConfigs,
     extraPredicate: currentUser ? extraPredicate : () => false,
-    fallbackError: "خطا در بارگذاری اطلاعیه‌ها.",
-    canManage: canManageItem,
+    fallbackError: TOAST_MESSAGES.ANNOUNCEMENT_FETCH_ERROR,
+    canManage: permissions.canManageItem,
   });
 
   const handleCloseView = useCallback(() => {
@@ -185,7 +171,7 @@ export function useAnnouncementsPage() {
     try {
       await announcementService.markAsSeen(viewingItem.id, currentUser.id);
       viewModal.close();
-      addToast("اطلاعیه به‌عنوان خوانده‌شده ثبت شد.", "success");
+      addToast(TOAST_MESSAGES.ANNOUNCEMENT_SEEN_SUCCESS, "success");
       refresh();
     } catch (err) {
       logger.error("Failed to mark announcement as seen", {
@@ -226,9 +212,9 @@ export function useAnnouncementsPage() {
 
   return {
     currentUser,
-    isAdmin,
-    isTeacher,
-    canCreate,
+    isAdmin: permissions.isAdmin,
+    isTeacher: permissions.isTeacher,
+    canCreate: permissions.canCreate,
     loading,
     error,
     announcements,
@@ -243,15 +229,17 @@ export function useAnnouncementsPage() {
     getClassName,
     getTargetDescription,
     formModal: crud.actions.createModal,
+    crudModal: crud.actions.createModal,
     viewModal,
-    deleteModal: crud.actions.createModal,
     isMarkingSeen,
     isDeleting: crud.actions.isDeleting,
     handleCloseView,
     handleMarkAsSeen,
     handleDelete: crud.actions.handleDelete,
-    canManageItem,
+    canManageItem: permissions.canManageItem,
+    canViewItem: permissions.canViewItem,
     formatDateTime,
     formatRelativeTime,
+    refresh,
   };
 }

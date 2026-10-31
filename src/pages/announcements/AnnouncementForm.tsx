@@ -10,12 +10,18 @@ import {
 import { useToast } from "#/hooks/useToast.ts";
 import { validateAnnouncementForm } from "#/pages/announcements/validators.ts";
 import { announcementService } from "#/services/announcement.ts";
-import { buildAnnouncementPayload, validateGlobalAnnouncementRoles, getAnnouncementClassOptions } from "#/pages/announcements/announcementPayload.ts";
+import {
+  buildAnnouncementPayload,
+  validateGlobalAnnouncementRoles,
+  getAnnouncementClassOptions,
+} from "#/pages/announcements/announcementPayload.ts";
+import { GlobalAnnouncementRoles } from "#/pages/announcements/AnnouncementFormParts.tsx";
+import { ClassAnnouncementAudience } from "#/pages/announcements/AnnouncementFormParts.tsx";
 import type { Announcement, TargetAudience } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID, UserRole } from "#/types/common.ts";
 import { getErrorMessage } from "#/utils/error.ts";
-import { getRoleLabel } from "#/utils/user.ts";
+import { FORM_PLACEHOLDERS } from "#/configs/constants";
 import { useEffect, useMemo, useState } from "react";
 
 interface Props {
@@ -51,6 +57,8 @@ export default function AnnouncementForm({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [classIdError, setClassIdError] = useState("");
+  const [targetAudienceError, setTargetAudienceError] = useState("");
   const isAdmin = userRole === "admin";
 
   const classOptions = useMemo(
@@ -71,6 +79,20 @@ export default function AnnouncementForm({
       setError(validationErrors.form || "خطا در اعتبارسنجی");
       return;
     }
+
+    if (!classId) {
+      setClassIdError("انتخاب کلاس الزامی است.");
+      setError("لطفاً خطاهای فرم را برطرف کنید.");
+      return;
+    }
+    setClassIdError("");
+
+    if (isAdmin && classId !== GLOBAL_ANNOUNCEMENT_CLASS_ID && !targetAudience) {
+      setTargetAudienceError("انتخاب مخاطبان الزامی است.");
+      setError("لطفاً خطاهای فرم را برطرف کنید.");
+      return;
+    }
+    setTargetAudienceError("");
 
     const roleError = validateGlobalAnnouncementRoles(isAdmin, classId, targetRoles);
     if (roleError) {
@@ -117,12 +139,20 @@ export default function AnnouncementForm({
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
-    if (error) setError("");
+    if (error || classIdError || targetAudienceError) {
+      setError("");
+      setClassIdError("");
+      setTargetAudienceError("");
+    }
   };
 
   const handleContentChange = (value: string) => {
     setContent(value);
-    if (error) setError("");
+    if (error || classIdError || targetAudienceError) {
+      setError("");
+      setClassIdError("");
+      setTargetAudienceError("");
+    }
   };
 
   return (
@@ -136,61 +166,40 @@ export default function AnnouncementForm({
           label="عنوان"
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
-          placeholder="عنوان اطلاعیه"
+          placeholder={FORM_PLACEHOLDERS.ANNOUNCEMENT_TITLE}
           required
         />
 
         <Select
           label="مخاطب (کلاس)"
           value={classId}
-          onChange={(e) => setClassId(e.target.value)}
+          onChange={(e) => {
+            setClassId(e.target.value);
+            if (classIdError) setClassIdError("");
+            if (error) setError("");
+          }}
           options={classOptions}
           required
+          error={classIdError}
         />
 
         {isAdmin && classId === GLOBAL_ANNOUNCEMENT_CLASS_ID && (
-          <fieldset className="space-y-2">
-            <legend className="text-sm font-medium text-gray-700">
-              قابل مشاهده برای (نقش‌ها):
-            </legend>
-            <div className="flex flex-wrap gap-3">
-              {DEFAULT_TARGET_ROLES.map((role) => (
-                <label
-                  key={role}
-                  className="flex cursor-pointer items-center gap-2"
-                >
-                  <input
-                    type="checkbox"
-                    checked={targetRoles.includes(role)}
-                    onChange={() => toggleRole(role)}
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="text-sm text-gray-700">
-                    {getRoleLabel(role)}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
+          <GlobalAnnouncementRoles
+            targetRoles={targetRoles}
+            onToggle={toggleRole}
+          />
         )}
 
         {isAdmin && classId !== GLOBAL_ANNOUNCEMENT_CLASS_ID && (
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              مخاطبان در کلاس:
-            </label>
-            <Select
-              value={targetAudience}
-              onChange={(e) =>
-                setTargetAudience(e.target.value as TargetAudience)
-              }
-              options={[
-                { label: "دانشجویان کلاس", value: "students" },
-                { label: "استاد کلاس", value: "teacher" },
-                { label: "دانشجویان و استاد کلاس", value: "both" },
-              ]}
-            />
-          </div>
+          <ClassAnnouncementAudience
+            targetAudience={targetAudience}
+            onChange={(value) => {
+              setTargetAudience(value);
+              if (targetAudienceError) setTargetAudienceError("");
+              if (error) setError("");
+            }}
+            error={targetAudienceError}
+          />
         )}
 
         <Textarea
@@ -198,7 +207,7 @@ export default function AnnouncementForm({
           value={content}
           onChange={(e) => handleContentChange(e.target.value)}
           rows={5}
-          placeholder="متن اطلاعیه..."
+          placeholder={FORM_PLACEHOLDERS.ANNOUNCEMENT_CONTENT}
           required
         />
 

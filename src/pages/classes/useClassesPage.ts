@@ -11,7 +11,8 @@ import { classService } from "#/services/class.ts";
 import { userService } from "#/services/user.ts";
 import type { ClassFormValues, ClassItem, ClassStatus } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
-import { getErrorMessage } from "#/utils/error.ts";
+import { TOAST_MESSAGES } from "#/configs/constants";
+import { isAdmin, isTeacher } from "#/utils/roleUtils.ts";
 import { useCallback, useMemo, useState } from "react";
 
 interface ClassFiltersValues {
@@ -30,7 +31,8 @@ const initialFilters: ClassFiltersValues = {
 export function useClassesPage() {
   const { user: currentUser } = useAuth();
 
-  const isAdmin = currentUser?.role === "admin";
+  const isAdminUser = isAdmin(currentUser);
+  const isTeacherUser = isTeacher(currentUser);
 
   const {
     data: users,
@@ -39,7 +41,7 @@ export function useClassesPage() {
   } = useAsyncData<User[]>({
     fetcher: () => userService.getAll(),
     deps: [],
-    fallbackError: "دریافت لیست کاربران با خطا مواجه شد.",
+    fallbackError: TOAST_MESSAGES.FETCH_ERROR,
   });
 
   const teachers = useMemo(
@@ -72,13 +74,13 @@ export function useClassesPage() {
       ),
     ],
     extraPredicate: (cls: ClassItem) => {
-      if (!isAdmin && currentUser?.role === "teacher") {
-        return cls.teacherId === currentUser.id;
+      if (!isAdminUser && isTeacherUser) {
+        return cls.teacherId === currentUser?.id;
       }
       return true;
     },
-    fallbackError: "دریافت لیست کلاس‌ها با خطا مواجه شد.",
-    canManage: () => isAdmin,
+    fallbackError: TOAST_MESSAGES.FETCH_ERROR,
+    canManage: () => isAdminUser,
   });
 
   const [isStatusChanging, setIsStatusChanging] = useState(false);
@@ -96,15 +98,21 @@ export function useClassesPage() {
 
       if (newStatus === "inactive") {
         await classService.setStatus(target.id, "inactive");
-        addToast(`کلاس "${target.title}" غیرفعال شد.`, "success");
+        addToast(
+          TOAST_MESSAGES.CLASS_STATUS_SUCCESS.replace("{title}", target.title ?? "").replace("{action}", "غیرفعال"),
+          "success",
+        );
       } else {
         await classService.setStatus(target.id, "active");
-        addToast(`کلاس "${target.title}" فعال شد.`, "success");
+        addToast(
+          TOAST_MESSAGES.CLASS_STATUS_SUCCESS.replace("{title}", target.title ?? "").replace("{action}", "فعال"),
+          "success",
+        );
       }
       crud.state.refresh();
       statusModal.close();
-    } catch (err) {
-      addToast(getErrorMessage(err, "تغییر وضعیت کلاس ناموفق بود."), "error");
+    } catch {
+      addToast(TOAST_MESSAGES.CLASS_STATUS_ERROR, "error");
       statusModal.close();
     } finally {
       setIsStatusChanging(false);
@@ -146,7 +154,7 @@ export function useClassesPage() {
 
   return {
     currentUser,
-    isAdmin,
+    isAdmin: isAdminUser,
     teachers,
     users,
     usersLoading,
@@ -168,7 +176,8 @@ export function useClassesPage() {
     isCreating: crud.actions.isCreating,
     isUpdating: crud.actions.isUpdating,
     isDeleting: crud.actions.isDeleting,
-    canManageClass: (_cls: ClassItem) => isAdmin,
+    canManageClass: (_cls: ClassItem) => isAdminUser,
+    refresh: crud.state.refresh,
   };
 }
 

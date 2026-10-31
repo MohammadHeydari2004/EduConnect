@@ -8,7 +8,7 @@ const MENU_DEFAULT_HEIGHT = 100;
 
 interface ActionsMenuProps {
   children: ReactNode;
-  label?: string;
+  label?: string | undefined;
 }
 
 function ActionsMenu({ children, label }: ActionsMenuProps) {

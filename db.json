@@ -9,14 +9,6 @@
       "status": "active"
     },
     {
-      "id": "admin2",
-      "name": "معاونت آموزشی 2",
-      "email": "admin2111@edu.com",
-      "password": "123456",
-      "role": "admin",
-      "status": "active"
-    },
-    {
       "id": "t1",
       "name": "دکتر محمد رضایی",
       "email": "teacher1@edu.com",
@@ -865,12 +857,12 @@
       "status": "inactive"
     },
     {
-      "id": "s99",
-      "name": "فروغ اشرفی 9999",
-      "email": "student99@edu.com",
+      "name": "Admin 2",
+      "email": "mh419421@gmail.com",
       "password": "123456",
-      "role": "student",
-      "status": "inactive"
+      "role": "admin",
+      "status": "active",
+      "id": "0APaIxhAM44"
     }
   ],
   "classes": [
@@ -1067,23 +1059,6 @@
       "updatedAt": "2025-04-20T00:00:00.000Z"
     },
     {
-      "id": "c12",
-      "title": "برنامه‌نویسی موبایل",
-      "teacherId": "t2",
-      "studentIds": [
-        "s56",
-        "s57",
-        "s58",
-        "s59",
-        "s60"
-      ],
-      "capacity": 28,
-      "status": "inactive",
-      "description": "توضیحات درس برنامه‌نویسی موبایل",
-      "createdAt": "2025-04-25T00:00:00.000Z",
-      "updatedAt": "2025-04-25T00:00:00.000Z"
-    },
-    {
       "id": "c13",
       "title": "تحلیل داده‌ها",
       "teacherId": "t3",
@@ -1169,98 +1144,19 @@
       "updatedAt": "2025-05-20T00:00:00.000Z"
     },
     {
-      "id": "c18",
-      "title": "اینترنت اشیاء",
-      "teacherId": "t8",
-      "studentIds": [
-        "s86",
-        "s87",
-        "s88",
-        "s89",
-        "s90"
-      ],
-      "capacity": 25,
-      "status": "inactive",
-      "description": "توضیحات درس اینترنت اشیاء",
-      "createdAt": "2025-05-25T00:00:00.000Z",
-      "updatedAt": "2025-05-25T00:00:00.000Z"
-    },
-    {
-      "id": "c19",
-      "title": "رباتیک",
-      "teacherId": "t9",
-      "studentIds": [
-        "s91",
-        "s92",
-        "s93",
-        "s94",
-        "s95"
-      ],
-      "capacity": 15,
-      "status": "active",
-      "description": "توضیحات درس رباتیک",
-      "createdAt": "2025-05-30T00:00:00.000Z",
-      "updatedAt": "2025-05-30T00:00:00.000Z"
-    },
-    {
       "id": "c20",
       "title": "واقعیت مجازی",
       "teacherId": "t10",
       "studentIds": [
         "s96",
         "s97",
-        "s98",
-        "s99"
+        "s98"
       ],
       "capacity": 20,
       "status": "active",
       "description": "توضیحات درس واقعیت مجازی",
       "createdAt": "2025-06-04T00:00:00.000Z",
-      "updatedAt": "2026-10-28T13:11:46.318Z"
-    },
-    {
-      "title": "تست",
-      "teacherId": "t1",
-      "studentIds": [
-        "s7",
-        "s8",
-        "s9",
-        "s10",
-        "s13",
-        "s12",
-        "s3",
-        "s11",
-        "s14"
-      ],
-      "capacity": 10,
-      "status": "active",
-      "description": "تست",
-      "createdAt": "2026-10-21T14:08:27.014Z",
-      "id": "xKVpJLgHq-s",
-      "updatedAt": "2026-10-28T13:16:24.580Z"
-    },
-    {
-      "title": "کلاس 3 test",
-      "teacherId": "t5",
-      "studentIds": [
-        "s4",
-        "s5",
-        "s6",
-        "s17",
-        "s15",
-        "s16",
-        "s22",
-        "s21",
-        "s23",
-        "s24",
-        "s31",
-        "s30"
-      ],
-      "capacity": 20,
-      "status": "active",
-      "description": "test 3",
-      "createdAt": "2026-10-28T14:13:12.360Z",
-      "id": "ra_6D1KKd0U"
+      "updatedAt": "2026-10-30T22:31:30.469Z"
     }
   ],
   "sessions": [
@@ -1531,30 +1427,6 @@
       "createdAt": "2025-08-12T00:00:00.000Z"
     },
     {
-      "id": "sc12-1",
-      "classId": "c12",
-      "title": "جلسه 1: برنامه‌نویسی موبایل - بخش 1",
-      "date": "2025-08-18",
-      "description": "توضیحات جلسه 1 درس برنامه‌نویسی موبایل",
-      "createdAt": "2025-08-13T00:00:00.000Z"
-    },
-    {
-      "id": "sc12-2",
-      "classId": "c12",
-      "title": "جلسه 2: برنامه‌نویسی موبایل - بخش 2",
-      "date": "2025-08-25",
-      "description": "توضیحات جلسه 2 درس برنامه‌نویسی موبایل",
-      "createdAt": "2025-08-20T00:00:00.000Z"
-    },
-    {
-      "id": "sc12-3",
-      "classId": "c12",
-      "title": "جلسه 3: برنامه‌نویسی موبایل - بخش 3",
-      "date": "2025-09-01",
-      "description": "توضیحات جلسه 3 درس برنامه‌نویسی موبایل",
-      "createdAt": "2025-08-27T00:00:00.000Z"
-    },
-    {
       "id": "sc13-1",
       "classId": "c13",
       "title": "جلسه 1: تحلیل داده‌ها - بخش 1",
@@ -1627,14 +1499,6 @@
       "createdAt": "2025-10-11T00:00:00.000Z"
     },
     {
-      "id": "sc16-1",
-      "classId": "c16",
-      "title": "جلسه 1: بینایی ماشین - بخش 1",
-      "date": "2025-10-17",
-      "description": "توضیحات جلسه 1 درس بینایی ماشین",
-      "createdAt": "2025-10-12T00:00:00.000Z"
-    },
-    {
       "id": "sc16-2",
       "classId": "c16",
       "title": "جلسه 2: بینایی ماشین - بخش 2",
@@ -1675,54 +1539,6 @@
       "createdAt": "2025-11-10T00:00:00.000Z"
     },
     {
-      "id": "sc18-1",
-      "classId": "c18",
-      "title": "جلسه 1: اینترنت اشیاء - بخش 1",
-      "date": "2025-11-16",
-      "description": "توضیحات جلسه 1 درس اینترنت اشیاء",
-      "createdAt": "2025-11-11T00:00:00.000Z"
-    },
-    {
-      "id": "sc18-2",
-      "classId": "c18",
-      "title": "جلسه 2: اینترنت اشیاء - بخش 2",
-      "date": "2025-11-23",
-      "description": "توضیحات جلسه 2 درس اینترنت اشیاء",
-      "createdAt": "2025-11-18T00:00:00.000Z"
-    },
-    {
-      "id": "sc18-3",
-      "classId": "c18",
-      "title": "جلسه 3: اینترنت اشیاء - بخش 3",
-      "date": "2025-11-30",
-      "description": "توضیحات جلسه 3 درس اینترنت اشیاء",
-      "createdAt": "2025-11-25T00:00:00.000Z"
-    },
-    {
-      "id": "sc19-1",
-      "classId": "c19",
-      "title": "جلسه 1: رباتیک - بخش 1",
-      "date": "2025-12-01",
-      "description": "توضیحات جلسه 1 درس رباتیک",
-      "createdAt": "2025-11-26T00:00:00.000Z"
-    },
-    {
-      "id": "sc19-2",
-      "classId": "c19",
-      "title": "جلسه 2: رباتیک - بخش 2",
-      "date": "2025-12-08",
-      "description": "توضیحات جلسه 2 درس رباتیک",
-      "createdAt": "2025-12-03T00:00:00.000Z"
-    },
-    {
-      "id": "sc19-3",
-      "classId": "c19",
-      "title": "جلسه 3: رباتیک - بخش 3",
-      "date": "2025-12-15",
-      "description": "توضیحات جلسه 3 درس رباتیک",
-      "createdAt": "2025-12-10T00:00:00.000Z"
-    },
-    {
       "id": "sc20-1",
       "classId": "c20",
       "title": "جلسه 1: واقعیت مجازی - بخش 1",
@@ -1747,39 +1563,21 @@
       "createdAt": "2025-12-25T00:00:00.000Z"
     },
     {
-      "title": "پروژه کوچک",
-      "date": "2026-10-21",
-      "description": "تست",
-      "classId": "xKVpJLgHq-s",
-      "createdAt": "2026-10-21T14:09:23.429Z",
-      "id": "Mouv37JaNas"
-    },
-    {
-      "title": "تست 1",
-      "date": "2026-10-28",
-      "description": "تست 1",
-      "classId": "c1",
-      "createdAt": "2026-10-22T11:20:03.445Z",
-      "id": "5BxOFkSzgqk",
-      "updatedAt": "2026-10-28T13:18:16.860Z"
-    },
-    {
-      "title": "تست 2",
+      "title": "تست 222",
       "date": "2026-10-28",
       "description": "test 2",
       "classId": "c1",
       "createdAt": "2026-10-28T13:18:37.252Z",
       "id": "JqAenTQEz2g",
-      "updatedAt": "2026-10-28T14:10:53.465Z"
+      "updatedAt": "2026-10-31T08:06:43.688Z"
     },
     {
-      "title": "کلاس 3 t",
-      "date": "2026-10-28",
-      "description": "",
+      "title": "تست 1",
+      "date": "2026-10-31",
+      "description": "000000000000000000000000000",
       "classId": "c1",
-      "createdAt": "2026-10-28T13:19:25.500Z",
-      "id": "1EZoycVXVO8",
-      "updatedAt": "2026-10-28T14:14:33.064Z"
+      "createdAt": "2026-10-31T08:09:53.391Z",
+      "id": "NkKdgPxHbBE"
     }
   ],
   "attendance": [
@@ -1788,14 +1586,14 @@
       "sessionId": "sc1-1",
       "classId": "c1",
       "studentId": "s4",
-      "status": "absent"
+      "status": "present"
     },
     {
       "id": "asc1-1-s5",
       "sessionId": "sc1-1",
       "classId": "c1",
       "studentId": "s5",
-      "status": "absent"
+      "status": "present"
     },
     {
       "id": "asc1-2-s4",
@@ -2876,111 +2674,6 @@
       "status": "present"
     },
     {
-      "id": "asc12-1-s56",
-      "sessionId": "sc12-1",
-      "classId": "c12",
-      "studentId": "s56",
-      "status": "present"
-    },
-    {
-      "id": "asc12-1-s57",
-      "sessionId": "sc12-1",
-      "classId": "c12",
-      "studentId": "s57",
-      "status": "late"
-    },
-    {
-      "id": "asc12-1-s58",
-      "sessionId": "sc12-1",
-      "classId": "c12",
-      "studentId": "s58",
-      "status": "absent"
-    },
-    {
-      "id": "asc12-1-s59",
-      "sessionId": "sc12-1",
-      "classId": "c12",
-      "studentId": "s59",
-      "status": "present"
-    },
-    {
-      "id": "asc12-1-s60",
-      "sessionId": "sc12-1",
-      "classId": "c12",
-      "studentId": "s60",
-      "status": "late"
-    },
-    {
-      "id": "asc12-2-s56",
-      "sessionId": "sc12-2",
-      "classId": "c12",
-      "studentId": "s56",
-      "status": "late"
-    },
-    {
-      "id": "asc12-2-s57",
-      "sessionId": "sc12-2",
-      "classId": "c12",
-      "studentId": "s57",
-      "status": "absent"
-    },
-    {
-      "id": "asc12-2-s58",
-      "sessionId": "sc12-2",
-      "classId": "c12",
-      "studentId": "s58",
-      "status": "present"
-    },
-    {
-      "id": "asc12-2-s59",
-      "sessionId": "sc12-2",
-      "classId": "c12",
-      "studentId": "s59",
-      "status": "late"
-    },
-    {
-      "id": "asc12-2-s60",
-      "sessionId": "sc12-2",
-      "classId": "c12",
-      "studentId": "s60",
-      "status": "absent"
-    },
-    {
-      "id": "asc12-3-s56",
-      "sessionId": "sc12-3",
-      "classId": "c12",
-      "studentId": "s56",
-      "status": "absent"
-    },
-    {
-      "id": "asc12-3-s57",
-      "sessionId": "sc12-3",
-      "classId": "c12",
-      "studentId": "s57",
-      "status": "present"
-    },
-    {
-      "id": "asc12-3-s58",
-      "sessionId": "sc12-3",
-      "classId": "c12",
-      "studentId": "s58",
-      "status": "late"
-    },
-    {
-      "id": "asc12-3-s59",
-      "sessionId": "sc12-3",
-      "classId": "c12",
-      "studentId": "s59",
-      "status": "absent"
-    },
-    {
-      "id": "asc12-3-s60",
-      "sessionId": "sc12-3",
-      "classId": "c12",
-      "studentId": "s60",
-      "status": "present"
-    },
-    {
       "id": "asc13-1-s61",
       "sessionId": "sc13-1",
       "classId": "c13",
@@ -3296,111 +2989,6 @@
       "status": "present"
     },
     {
-      "id": "asc16-1-s76",
-      "sessionId": "sc16-1",
-      "classId": "c16",
-      "studentId": "s76",
-      "status": "present"
-    },
-    {
-      "id": "asc16-1-s77",
-      "sessionId": "sc16-1",
-      "classId": "c16",
-      "studentId": "s77",
-      "status": "late"
-    },
-    {
-      "id": "asc16-1-s78",
-      "sessionId": "sc16-1",
-      "classId": "c16",
-      "studentId": "s78",
-      "status": "absent"
-    },
-    {
-      "id": "asc16-1-s79",
-      "sessionId": "sc16-1",
-      "classId": "c16",
-      "studentId": "s79",
-      "status": "present"
-    },
-    {
-      "id": "asc16-1-s80",
-      "sessionId": "sc16-1",
-      "classId": "c16",
-      "studentId": "s80",
-      "status": "late"
-    },
-    {
-      "id": "asc16-2-s76",
-      "sessionId": "sc16-2",
-      "classId": "c16",
-      "studentId": "s76",
-      "status": "late"
-    },
-    {
-      "id": "asc16-2-s77",
-      "sessionId": "sc16-2",
-      "classId": "c16",
-      "studentId": "s77",
-      "status": "absent"
-    },
-    {
-      "id": "asc16-2-s78",
-      "sessionId": "sc16-2",
-      "classId": "c16",
-      "studentId": "s78",
-      "status": "present"
-    },
-    {
-      "id": "asc16-2-s79",
-      "sessionId": "sc16-2",
-      "classId": "c16",
-      "studentId": "s79",
-      "status": "late"
-    },
-    {
-      "id": "asc16-2-s80",
-      "sessionId": "sc16-2",
-      "classId": "c16",
-      "studentId": "s80",
-      "status": "absent"
-    },
-    {
-      "id": "asc16-3-s76",
-      "sessionId": "sc16-3",
-      "classId": "c16",
-      "studentId": "s76",
-      "status": "absent"
-    },
-    {
-      "id": "asc16-3-s77",
-      "sessionId": "sc16-3",
-      "classId": "c16",
-      "studentId": "s77",
-      "status": "present"
-    },
-    {
-      "id": "asc16-3-s78",
-      "sessionId": "sc16-3",
-      "classId": "c16",
-      "studentId": "s78",
-      "status": "late"
-    },
-    {
-      "id": "asc16-3-s79",
-      "sessionId": "sc16-3",
-      "classId": "c16",
-      "studentId": "s79",
-      "status": "absent"
-    },
-    {
-      "id": "asc16-3-s80",
-      "sessionId": "sc16-3",
-      "classId": "c16",
-      "studentId": "s80",
-      "status": "present"
-    },
-    {
       "id": "asc17-1-s81",
       "sessionId": "sc17-1",
       "classId": "c17",
@@ -3506,216 +3094,6 @@
       "status": "present"
     },
     {
-      "id": "asc18-1-s86",
-      "sessionId": "sc18-1",
-      "classId": "c18",
-      "studentId": "s86",
-      "status": "present"
-    },
-    {
-      "id": "asc18-1-s87",
-      "sessionId": "sc18-1",
-      "classId": "c18",
-      "studentId": "s87",
-      "status": "late"
-    },
-    {
-      "id": "asc18-1-s88",
-      "sessionId": "sc18-1",
-      "classId": "c18",
-      "studentId": "s88",
-      "status": "absent"
-    },
-    {
-      "id": "asc18-1-s89",
-      "sessionId": "sc18-1",
-      "classId": "c18",
-      "studentId": "s89",
-      "status": "present"
-    },
-    {
-      "id": "asc18-1-s90",
-      "sessionId": "sc18-1",
-      "classId": "c18",
-      "studentId": "s90",
-      "status": "late"
-    },
-    {
-      "id": "asc18-2-s86",
-      "sessionId": "sc18-2",
-      "classId": "c18",
-      "studentId": "s86",
-      "status": "late"
-    },
-    {
-      "id": "asc18-2-s87",
-      "sessionId": "sc18-2",
-      "classId": "c18",
-      "studentId": "s87",
-      "status": "absent"
-    },
-    {
-      "id": "asc18-2-s88",
-      "sessionId": "sc18-2",
-      "classId": "c18",
-      "studentId": "s88",
-      "status": "present"
-    },
-    {
-      "id": "asc18-2-s89",
-      "sessionId": "sc18-2",
-      "classId": "c18",
-      "studentId": "s89",
-      "status": "late"
-    },
-    {
-      "id": "asc18-2-s90",
-      "sessionId": "sc18-2",
-      "classId": "c18",
-      "studentId": "s90",
-      "status": "absent"
-    },
-    {
-      "id": "asc18-3-s86",
-      "sessionId": "sc18-3",
-      "classId": "c18",
-      "studentId": "s86",
-      "status": "absent"
-    },
-    {
-      "id": "asc18-3-s87",
-      "sessionId": "sc18-3",
-      "classId": "c18",
-      "studentId": "s87",
-      "status": "present"
-    },
-    {
-      "id": "asc18-3-s88",
-      "sessionId": "sc18-3",
-      "classId": "c18",
-      "studentId": "s88",
-      "status": "late"
-    },
-    {
-      "id": "asc18-3-s89",
-      "sessionId": "sc18-3",
-      "classId": "c18",
-      "studentId": "s89",
-      "status": "absent"
-    },
-    {
-      "id": "asc18-3-s90",
-      "sessionId": "sc18-3",
-      "classId": "c18",
-      "studentId": "s90",
-      "status": "present"
-    },
-    {
-      "id": "asc19-1-s91",
-      "sessionId": "sc19-1",
-      "classId": "c19",
-      "studentId": "s91",
-      "status": "present"
-    },
-    {
-      "id": "asc19-1-s92",
-      "sessionId": "sc19-1",
-      "classId": "c19",
-      "studentId": "s92",
-      "status": "late"
-    },
-    {
-      "id": "asc19-1-s93",
-      "sessionId": "sc19-1",
-      "classId": "c19",
-      "studentId": "s93",
-      "status": "absent"
-    },
-    {
-      "id": "asc19-1-s94",
-      "sessionId": "sc19-1",
-      "classId": "c19",
-      "studentId": "s94",
-      "status": "present"
-    },
-    {
-      "id": "asc19-1-s95",
-      "sessionId": "sc19-1",
-      "classId": "c19",
-      "studentId": "s95",
-      "status": "late"
-    },
-    {
-      "id": "asc19-2-s91",
-      "sessionId": "sc19-2",
-      "classId": "c19",
-      "studentId": "s91",
-      "status": "late"
-    },
-    {
-      "id": "asc19-2-s92",
-      "sessionId": "sc19-2",
-      "classId": "c19",
-      "studentId": "s92",
-      "status": "absent"
-    },
-    {
-      "id": "asc19-2-s93",
-      "sessionId": "sc19-2",
-      "classId": "c19",
-      "studentId": "s93",
-      "status": "present"
-    },
-    {
-      "id": "asc19-2-s94",
-      "sessionId": "sc19-2",
-      "classId": "c19",
-      "studentId": "s94",
-      "status": "late"
-    },
-    {
-      "id": "asc19-2-s95",
-      "sessionId": "sc19-2",
-      "classId": "c19",
-      "studentId": "s95",
-      "status": "absent"
-    },
-    {
-      "id": "asc19-3-s91",
-      "sessionId": "sc19-3",
-      "classId": "c19",
-      "studentId": "s91",
-      "status": "absent"
-    },
-    {
-      "id": "asc19-3-s92",
-      "sessionId": "sc19-3",
-      "classId": "c19",
-      "studentId": "s92",
-      "status": "present"
-    },
-    {
-      "id": "asc19-3-s93",
-      "sessionId": "sc19-3",
-      "classId": "c19",
-      "studentId": "s93",
-      "status": "late"
-    },
-    {
-      "id": "asc19-3-s94",
-      "sessionId": "sc19-3",
-      "classId": "c19",
-      "studentId": "s94",
-      "status": "absent"
-    },
-    {
-      "id": "asc19-3-s95",
-      "sessionId": "sc19-3",
-      "classId": "c19",
-      "studentId": "s95",
-      "status": "present"
-    },
-    {
       "id": "asc20-1-s96",
       "sessionId": "sc20-1",
       "classId": "c20",
@@ -3735,13 +3113,6 @@
       "classId": "c20",
       "studentId": "s98",
       "status": "absent"
-    },
-    {
-      "id": "asc20-1-s99",
-      "sessionId": "sc20-1",
-      "classId": "c20",
-      "studentId": "s99",
-      "status": "present"
     },
     {
       "id": "asc20-2-s96",
@@ -3765,13 +3136,6 @@
       "status": "present"
     },
     {
-      "id": "asc20-2-s99",
-      "sessionId": "sc20-2",
-      "classId": "c20",
-      "studentId": "s99",
-      "status": "late"
-    },
-    {
       "id": "asc20-3-s96",
       "sessionId": "sc20-3",
       "classId": "c20",
@@ -3793,239 +3157,227 @@
       "status": "late"
     },
     {
-      "id": "asc20-3-s99",
-      "sessionId": "sc20-3",
-      "classId": "c20",
-      "studentId": "s99",
-      "status": "absent"
-    },
-    {
-      "sessionId": "Mouv37JaNas",
-      "classId": "xKVpJLgHq-s",
-      "studentId": "s4",
-      "status": "absent",
-      "id": "shHpr9EQVn0"
-    },
-    {
-      "sessionId": "Mouv37JaNas",
-      "classId": "xKVpJLgHq-s",
-      "studentId": "s7",
-      "status": "present",
-      "id": "E5FB4bKaOq4"
-    },
-    {
-      "sessionId": "Mouv37JaNas",
-      "classId": "xKVpJLgHq-s",
-      "studentId": "s8",
-      "status": "present",
-      "id": "r0u9-EepghU"
-    },
-    {
-      "sessionId": "Mouv37JaNas",
-      "classId": "xKVpJLgHq-s",
-      "studentId": "s9",
-      "status": "present",
-      "id": "FTB5MpjJVFk"
-    },
-    {
-      "sessionId": "Mouv37JaNas",
-      "classId": "xKVpJLgHq-s",
-      "studentId": "s10",
-      "status": "present",
-      "id": "c2Jku5VLGYs"
-    },
-    {
-      "sessionId": "5BxOFkSzgqk",
-      "classId": "c1",
-      "studentId": "s3",
-      "status": "absent",
-      "id": "mAvIiXRPlTM"
-    },
-    {
-      "sessionId": "5BxOFkSzgqk",
-      "classId": "c1",
-      "studentId": "s4",
-      "status": "absent",
-      "id": "EmzSqbU7fQU"
-    },
-    {
-      "sessionId": "5BxOFkSzgqk",
-      "classId": "c1",
-      "studentId": "s5",
-      "status": "absent",
-      "id": "0f9eOW4kt6E"
-    },
-    {
-      "sessionId": "5BxOFkSzgqk",
-      "classId": "c1",
-      "studentId": "s6",
-      "status": "absent",
-      "id": "WjPHp2TZ45Y"
-    },
-    {
-      "sessionId": "5BxOFkSzgqk",
-      "classId": "c1",
-      "studentId": "s7",
-      "status": "absent",
-      "id": "7rt8JINLxUk"
-    },
-    {
-      "sessionId": "5BxOFkSzgqk",
-      "classId": "c1",
-      "studentId": "s8",
-      "status": "absent",
-      "id": "eDnoGFl6s0w"
-    },
-    {
-      "sessionId": "5BxOFkSzgqk",
-      "classId": "c1",
-      "studentId": "s9",
-      "status": "absent",
-      "id": "L0jMruGo1jA"
-    },
-    {
-      "sessionId": "5BxOFkSzgqk",
-      "classId": "c1",
-      "studentId": "s10",
-      "status": "absent",
-      "id": "hjvxdwJkO2w"
-    },
-    {
-      "sessionId": "5BxOFkSzgqk",
-      "classId": "c1",
-      "studentId": "s11",
-      "status": "absent",
-      "id": "Z5TppiAJOTA"
-    },
-    {
-      "sessionId": "5BxOFkSzgqk",
-      "classId": "c1",
-      "studentId": "s12",
-      "status": "absent",
-      "id": "zUNE84I51Ic"
-    },
-    {
-      "sessionId": "Mouv37JaNas",
-      "classId": "xKVpJLgHq-s",
-      "studentId": "s3",
-      "status": "late",
-      "id": "7dvf4Y9MAaM"
-    },
-    {
-      "sessionId": "Mouv37JaNas",
-      "classId": "xKVpJLgHq-s",
-      "studentId": "s11",
-      "status": "absent",
-      "id": "xA6BY2Ik9Tw"
-    },
-    {
-      "sessionId": "Mouv37JaNas",
-      "classId": "xKVpJLgHq-s",
-      "studentId": "s12",
-      "status": "present",
-      "id": "iDu5M-2eE88"
-    },
-    {
-      "sessionId": "Mouv37JaNas",
-      "classId": "xKVpJLgHq-s",
-      "studentId": "s13",
-      "status": "absent",
-      "id": "h8W9P5vvxUg"
-    },
-    {
-      "sessionId": "Mouv37JaNas",
-      "classId": "xKVpJLgHq-s",
-      "studentId": "s14",
-      "status": "present",
-      "id": "9MoU5dVaNVk"
-    },
-    {
       "sessionId": "sc1-1",
       "classId": "c1",
       "studentId": "s3",
-      "status": "absent",
+      "status": "present",
       "id": "hLz6O9pHYKo"
     },
     {
       "sessionId": "sc1-1",
       "classId": "c1",
       "studentId": "s6",
-      "status": "absent",
+      "status": "present",
       "id": "OA9H1BsZhHc"
     },
     {
       "sessionId": "sc1-1",
       "classId": "c1",
       "studentId": "s7",
-      "status": "absent",
+      "status": "present",
       "id": "_12RKSzm-Og"
     },
     {
       "sessionId": "sc1-1",
       "classId": "c1",
       "studentId": "s8",
-      "status": "absent",
+      "status": "present",
       "id": "YUiJp2aQaTc"
     },
     {
       "sessionId": "sc1-1",
       "classId": "c1",
       "studentId": "s9",
-      "status": "absent",
+      "status": "present",
       "id": "tUh3cuT4qGI"
     },
     {
       "sessionId": "sc1-1",
       "classId": "c1",
       "studentId": "s10",
-      "status": "absent",
+      "status": "present",
       "id": "Ur0SfzlFHWo"
     },
     {
       "sessionId": "sc1-1",
       "classId": "c1",
       "studentId": "s11",
-      "status": "absent",
+      "status": "present",
       "id": "Bx-y5K4kFgE"
     },
     {
       "sessionId": "sc1-1",
       "classId": "c1",
       "studentId": "s12",
-      "status": "absent",
+      "status": "present",
       "id": "expgmRqRUOc"
+    },
+    {
+      "sessionId": "JqAenTQEz2g",
+      "classId": "c1",
+      "studentId": "s3",
+      "status": "present",
+      "id": "cLLJ6QpV5mU"
+    },
+    {
+      "sessionId": "JqAenTQEz2g",
+      "classId": "c1",
+      "studentId": "s4",
+      "status": "present",
+      "id": "SjvtDEPeBE0"
+    },
+    {
+      "sessionId": "JqAenTQEz2g",
+      "classId": "c1",
+      "studentId": "s5",
+      "status": "present",
+      "id": "mES2r53edPY"
+    },
+    {
+      "sessionId": "JqAenTQEz2g",
+      "classId": "c1",
+      "studentId": "s6",
+      "status": "present",
+      "id": "T7StglwLj4A"
+    },
+    {
+      "sessionId": "JqAenTQEz2g",
+      "classId": "c1",
+      "studentId": "s7",
+      "status": "present",
+      "id": "8Uwn_wCaXLc"
+    },
+    {
+      "sessionId": "JqAenTQEz2g",
+      "classId": "c1",
+      "studentId": "s8",
+      "status": "present",
+      "id": "YEzosnUaAWk"
+    },
+    {
+      "sessionId": "JqAenTQEz2g",
+      "classId": "c1",
+      "studentId": "s9",
+      "status": "present",
+      "id": "a5hXzQgXXAQ"
+    },
+    {
+      "sessionId": "JqAenTQEz2g",
+      "classId": "c1",
+      "studentId": "s10",
+      "status": "present",
+      "id": "9j3Omz2xBnc"
+    },
+    {
+      "sessionId": "JqAenTQEz2g",
+      "classId": "c1",
+      "studentId": "s11",
+      "status": "present",
+      "id": "KkkhEYxgPpU"
+    },
+    {
+      "sessionId": "JqAenTQEz2g",
+      "classId": "c1",
+      "studentId": "s12",
+      "status": "present",
+      "id": "xHVLN0_-e-U"
+    },
+    {
+      "sessionId": "NkKdgPxHbBE",
+      "classId": "c1",
+      "studentId": "s3",
+      "status": "present",
+      "id": "5rXzynB8FLA"
+    },
+    {
+      "sessionId": "NkKdgPxHbBE",
+      "classId": "c1",
+      "studentId": "s4",
+      "status": "present",
+      "id": "WwKz0Mup3pE"
+    },
+    {
+      "sessionId": "NkKdgPxHbBE",
+      "classId": "c1",
+      "studentId": "s5",
+      "status": "present",
+      "id": "R6kTrRnMLjc"
+    },
+    {
+      "sessionId": "NkKdgPxHbBE",
+      "classId": "c1",
+      "studentId": "s6",
+      "status": "present",
+      "id": "YSAFtI3gxWU"
+    },
+    {
+      "sessionId": "NkKdgPxHbBE",
+      "classId": "c1",
+      "studentId": "s7",
+      "status": "present",
+      "id": "NDvsBE3aveY"
+    },
+    {
+      "sessionId": "NkKdgPxHbBE",
+      "classId": "c1",
+      "studentId": "s8",
+      "status": "present",
+      "id": "gbTXq6Y_bNA"
+    },
+    {
+      "sessionId": "NkKdgPxHbBE",
+      "classId": "c1",
+      "studentId": "s9",
+      "status": "present",
+      "id": "IJ8OhZFntHw"
+    },
+    {
+      "sessionId": "NkKdgPxHbBE",
+      "classId": "c1",
+      "studentId": "s11",
+      "status": "present",
+      "id": "UfqGkUMw-DY"
+    },
+    {
+      "sessionId": "NkKdgPxHbBE",
+      "classId": "c1",
+      "studentId": "s12",
+      "status": "present",
+      "id": "OmGPOEN3rSY"
+    },
+    {
+      "sessionId": "NkKdgPxHbBE",
+      "classId": "c1",
+      "studentId": "s10",
+      "status": "present",
+      "id": "KRFJLomeGo0"
     }
   ],
   "announcements": [
     {
       "id": "annc1-1",
-      "title": "اطلاعیه تست",
-      "content": "تست برای تست",
-      "classId": "0",
-      "authorId": "admin1",
+      "title": "اطلاعیه 1 کلاس مبانی برنامه‌نویسی",
+      "content": "محتوای اطلاعیه 1 برای کلاس مبانی برنامه‌نویسی - مخصوص دانشجویان",
+      "classId": "c1",
+      "authorId": "t1",
       "createdAt": "2025-03-03T00:00:00.000Z",
       "seenBy": [
-        "admin1",
-        "t1"
+        "s3",
+        "s4",
+        "s5",
+        "s8"
       ],
-      "targetAudience": null,
-      "targetRoles": [
-        "admin",
-        "teacher"
-      ],
-      "updatedAt": "2026-10-28T13:21:55.443Z"
+      "targetAudience": "students",
+      "targetRoles": null
     },
     {
       "id": "annc1-2",
       "title": "اطلاعیه 2 کلاس مبانی برنامه‌نویسی",
-      "content": "محتوای اطلاعیه 2 برای کلاس مبانی برنامه‌نویسی",
+      "content": "محتوای اطلاعیه 2 برای کلاس مبانی برنامه‌نویسی - مخصوص استاد",
       "classId": "c1",
       "authorId": "t1",
       "createdAt": "2025-03-08T00:00:00.000Z",
       "seenBy": [
-        "s1",
-        "s2",
-        "admin1",
         "t1"
       ],
       "targetAudience": "teacher",
@@ -4034,16 +3386,14 @@
     {
       "id": "annc1-3",
       "title": "اطلاعیه 3 کلاس مبانی برنامه‌نویسی",
-      "content": "محتوای اطلاعیه 3 برای کلاس مبانی برنامه‌نویسی",
+      "content": "محتوای اطلاعیه 3 برای کلاس مبانی برنامه‌نویسی - برای همه",
       "classId": "c1",
       "authorId": "t1",
       "createdAt": "2025-03-13T00:00:00.000Z",
       "seenBy": [
-        "s1",
-        "s2",
         "s3",
-        "s5",
-        "admin1"
+        "s4",
+        "t1"
       ],
       "targetAudience": "both",
       "targetRoles": null
@@ -4051,30 +3401,26 @@
     {
       "id": "annc2-1",
       "title": "اطلاعیه 1 کلاس ساختمان داده‌ها و الگوریتم‌ها",
-      "content": "محتوای اطلاعیه 1 برای کلاس ساختمان داده‌ها و الگوریتم‌ها",
+      "content": "محتوای اطلاعیه 1 برای کلاس ساختمان داده‌ها و الگوریتم‌ها - مخصوص دانشجویان",
       "classId": "c2",
       "authorId": "t2",
       "createdAt": "2025-03-18T00:00:00.000Z",
       "seenBy": [
-        "s6"
+        "s6",
+        "s7"
       ],
       "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
+      "targetRoles": null
     },
     {
       "id": "annc2-2",
       "title": "اطلاعیه 2 کلاس ساختمان داده‌ها و الگوریتم‌ها",
-      "content": "محتوای اطلاعیه 2 برای کلاس ساختمان داده‌ها و الگوریتم‌ها",
+      "content": "محتوای اطلاعیه 2 برای کلاس ساختمان داده‌ها و الگوریتم‌ها - مخصوص استاد",
       "classId": "c2",
       "authorId": "t2",
       "createdAt": "2025-03-23T00:00:00.000Z",
       "seenBy": [
-        "s6",
-        "s7"
+        "t2"
       ],
       "targetAudience": "teacher",
       "targetRoles": null
@@ -4082,14 +3428,14 @@
     {
       "id": "annc2-3",
       "title": "اطلاعیه 3 کلاس ساختمان داده‌ها و الگوریتم‌ها",
-      "content": "محتوای اطلاعیه 3 برای کلاس ساختمان داده‌ها و الگوریتم‌ها",
+      "content": "محتوای اطلاعیه 3 برای کلاس ساختمان داده‌ها و الگوریتم‌ها - برای همه",
       "classId": "c2",
       "authorId": "t2",
       "createdAt": "2025-03-28T00:00:00.000Z",
       "seenBy": [
         "s6",
         "s7",
-        "s8"
+        "t2"
       ],
       "targetAudience": "both",
       "targetRoles": null
@@ -4097,30 +3443,26 @@
     {
       "id": "annc3-1",
       "title": "اطلاعیه 1 کلاس برنامه‌نویسی شیء‌گرا",
-      "content": "محتوای اطلاعیه 1 برای کلاس برنامه‌نویسی شیء‌گرا",
+      "content": "محتوای اطلاعیه 1 برای کلاس برنامه‌نویسی شیء‌گرا - مخصوص دانشجویان",
       "classId": "c3",
       "authorId": "t3",
       "createdAt": "2025-04-02T00:00:00.000Z",
       "seenBy": [
-        "s11"
+        "s11",
+        "s12"
       ],
       "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
+      "targetRoles": null
     },
     {
       "id": "annc3-2",
       "title": "اطلاعیه 2 کلاس برنامه‌نویسی شیء‌گرا",
-      "content": "محتوای اطلاعیه 2 برای کلاس برنامه‌نویسی شیء‌گرا",
+      "content": "محتوای اطلاعیه 2 برای کلاس برنامه‌نویسی شیء‌گرا - مخصوص استاد",
       "classId": "c3",
       "authorId": "t3",
       "createdAt": "2025-04-07T00:00:00.000Z",
       "seenBy": [
-        "s11",
-        "s12"
+        "t3"
       ],
       "targetAudience": "teacher",
       "targetRoles": null
@@ -4128,904 +3470,46 @@
     {
       "id": "annc3-3",
       "title": "اطلاعیه 3 کلاس برنامه‌نویسی شیء‌گرا",
-      "content": "محتوای اطلاعیه 3 برای کلاس برنامه‌نویسی شیء‌گرا",
+      "content": "محتوای اطلاعیه 3 برای کلاس برنامه‌نویسی شیء‌گرا - برای همه",
       "classId": "c3",
       "authorId": "t3",
       "createdAt": "2025-04-12T00:00:00.000Z",
       "seenBy": [
         "s11",
         "s12",
-        "s13"
+        "t3"
       ],
       "targetAudience": "both",
       "targetRoles": null
     },
     {
-      "id": "annc4-1",
-      "title": "اطلاعیه 1 کلاس پایگاه داده‌ها",
-      "content": "محتوای اطلاعیه 1 برای کلاس پایگاه داده‌ها",
-      "classId": "c4",
-      "authorId": "t4",
-      "createdAt": "2025-04-17T00:00:00.000Z",
-      "seenBy": [
-        "s16"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc4-2",
-      "title": "اطلاعیه 2 کلاس پایگاه داده‌ها",
-      "content": "محتوای اطلاعیه 2 برای کلاس پایگاه داده‌ها",
-      "classId": "c4",
-      "authorId": "t4",
-      "createdAt": "2025-04-22T00:00:00.000Z",
-      "seenBy": [
-        "s16",
-        "s17"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc4-3",
-      "title": "اطلاعیه 3 کلاس پایگاه داده‌ها",
-      "content": "محتوای اطلاعیه 3 برای کلاس پایگاه داده‌ها",
-      "classId": "c4",
-      "authorId": "t4",
-      "createdAt": "2025-04-27T00:00:00.000Z",
-      "seenBy": [
-        "s16",
-        "s17",
-        "s18"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc5-1",
-      "title": "اطلاعیه 1 کلاس مهندسی نرم‌افزار",
-      "content": "محتوای اطلاعیه 1 برای کلاس مهندسی نرم‌افزار",
-      "classId": "c5",
-      "authorId": "t5",
-      "createdAt": "2025-05-02T00:00:00.000Z",
-      "seenBy": [
-        "s21"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc5-2",
-      "title": "اطلاعیه 2 کلاس مهندسی نرم‌افزار",
-      "content": "محتوای اطلاعیه 2 برای کلاس مهندسی نرم‌افزار",
-      "classId": "c5",
-      "authorId": "t5",
-      "createdAt": "2025-05-07T00:00:00.000Z",
-      "seenBy": [
-        "s21",
-        "s22"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc5-3",
-      "title": "اطلاعیه 3 کلاس مهندسی نرم‌افزار",
-      "content": "محتوای اطلاعیه 3 برای کلاس مهندسی نرم‌افزار",
-      "classId": "c5",
-      "authorId": "t5",
-      "createdAt": "2025-05-12T00:00:00.000Z",
-      "seenBy": [
-        "s21",
-        "s22",
-        "s23"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc6-1",
-      "title": "اطلاعیه 1 کلاس شبکه‌های کامپیوتری",
-      "content": "محتوای اطلاعیه 1 برای کلاس شبکه‌های کامپیوتری",
-      "classId": "c6",
-      "authorId": "t6",
-      "createdAt": "2025-05-17T00:00:00.000Z",
-      "seenBy": [
-        "s26"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc6-2",
-      "title": "اطلاعیه 2 کلاس شبکه‌های کامپیوتری",
-      "content": "محتوای اطلاعیه 2 برای کلاس شبکه‌های کامپیوتری",
-      "classId": "c6",
-      "authorId": "t6",
-      "createdAt": "2025-05-22T00:00:00.000Z",
-      "seenBy": [
-        "s26",
-        "s27"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc6-3",
-      "title": "اطلاعیه 3 کلاس شبکه‌های کامپیوتری",
-      "content": "محتوای اطلاعیه 3 برای کلاس شبکه‌های کامپیوتری",
-      "classId": "c6",
-      "authorId": "t6",
-      "createdAt": "2025-05-27T00:00:00.000Z",
-      "seenBy": [
-        "s26",
-        "s27",
-        "s28"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc7-1",
-      "title": "اطلاعیه 1 کلاس سیستم‌عامل‌ها",
-      "content": "محتوای اطلاعیه 1 برای کلاس سیستم‌عامل‌ها",
-      "classId": "c7",
-      "authorId": "t7",
-      "createdAt": "2025-06-01T00:00:00.000Z",
-      "seenBy": [
-        "s31"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc7-2",
-      "title": "اطلاعیه 2 کلاس سیستم‌عامل‌ها",
-      "content": "محتوای اطلاعیه 2 برای کلاس سیستم‌عامل‌ها",
-      "classId": "c7",
-      "authorId": "t7",
-      "createdAt": "2025-06-06T00:00:00.000Z",
-      "seenBy": [
-        "s31",
-        "s32"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc7-3",
-      "title": "اطلاعیه 3 کلاس سیستم‌عامل‌ها",
-      "content": "محتوای اطلاعیه 3 برای کلاس سیستم‌عامل‌ها",
-      "classId": "c7",
-      "authorId": "t7",
-      "createdAt": "2025-06-11T00:00:00.000Z",
-      "seenBy": [
-        "s31",
-        "s32",
-        "s33"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc8-1",
-      "title": "اطلاعیه 1 کلاس هوش مصنوعی",
-      "content": "محتوای اطلاعیه 1 برای کلاس هوش مصنوعی",
-      "classId": "c8",
-      "authorId": "t8",
-      "createdAt": "2025-06-16T00:00:00.000Z",
-      "seenBy": [
-        "s36"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc8-2",
-      "title": "اطلاعیه 2 کلاس هوش مصنوعی",
-      "content": "محتوای اطلاعیه 2 برای کلاس هوش مصنوعی",
-      "classId": "c8",
-      "authorId": "t8",
-      "createdAt": "2025-06-21T00:00:00.000Z",
-      "seenBy": [
-        "s36",
-        "s37"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc8-3",
-      "title": "اطلاعیه 3 کلاس هوش مصنوعی",
-      "content": "محتوای اطلاعیه 3 برای کلاس هوش مصنوعی",
-      "classId": "c8",
-      "authorId": "t8",
-      "createdAt": "2025-06-26T00:00:00.000Z",
-      "seenBy": [
-        "s36",
-        "s37",
-        "s38"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc9-1",
-      "title": "اطلاعیه 1 کلاس رایانش ابری",
-      "content": "محتوای اطلاعیه 1 برای کلاس رایانش ابری",
-      "classId": "c9",
-      "authorId": "t9",
-      "createdAt": "2025-07-01T00:00:00.000Z",
-      "seenBy": [
-        "s41"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc9-2",
-      "title": "اطلاعیه 2 کلاس رایانش ابری",
-      "content": "محتوای اطلاعیه 2 برای کلاس رایانش ابری",
-      "classId": "c9",
-      "authorId": "t9",
-      "createdAt": "2025-07-06T00:00:00.000Z",
-      "seenBy": [
-        "s41",
-        "s42"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc9-3",
-      "title": "اطلاعیه 3 کلاس رایانش ابری",
-      "content": "محتوای اطلاعیه 3 برای کلاس رایانش ابری",
-      "classId": "c9",
-      "authorId": "t9",
-      "createdAt": "2025-07-11T00:00:00.000Z",
-      "seenBy": [
-        "s41",
-        "s42",
-        "s43"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc10-1",
-      "title": "اطلاعیه 1 کلاس امنیت سایبری",
-      "content": "محتوای اطلاعیه 1 برای کلاس امنیت سایبری",
-      "classId": "c10",
-      "authorId": "t10",
-      "createdAt": "2025-07-16T00:00:00.000Z",
-      "seenBy": [
-        "s46"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc10-2",
-      "title": "اطلاعیه 2 کلاس امنیت سایبری",
-      "content": "محتوای اطلاعیه 2 برای کلاس امنیت سایبری",
-      "classId": "c10",
-      "authorId": "t10",
-      "createdAt": "2025-07-21T00:00:00.000Z",
-      "seenBy": [
-        "s46",
-        "s47"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc10-3",
-      "title": "اطلاعیه 3 کلاس امنیت سایبری",
-      "content": "محتوای اطلاعیه 3 برای کلاس امنیت سایبری",
-      "classId": "c10",
-      "authorId": "t10",
-      "createdAt": "2025-07-26T00:00:00.000Z",
-      "seenBy": [
-        "s46",
-        "s47",
-        "s48"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc11-1",
-      "title": "اطلاعیه 1 کلاس طراحی وب پیشرفته",
-      "content": "محتوای اطلاعیه 1 برای کلاس طراحی وب پیشرفته",
-      "classId": "c11",
-      "authorId": "t1",
-      "createdAt": "2025-07-31T00:00:00.000Z",
-      "seenBy": [
-        "s51"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc11-2",
-      "title": "اطلاعیه 2 کلاس طراحی وب پیشرفته",
-      "content": "محتوای اطلاعیه 2 برای کلاس طراحی وب پیشرفته",
-      "classId": "c11",
-      "authorId": "t1",
-      "createdAt": "2025-08-05T00:00:00.000Z",
-      "seenBy": [
-        "s51",
-        "s52"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc11-3",
-      "title": "اطلاعیه 3 کلاس طراحی وب پیشرفته",
-      "content": "محتوای اطلاعیه 3 برای کلاس طراحی وب پیشرفته",
-      "classId": "c11",
-      "authorId": "t1",
-      "createdAt": "2025-08-10T00:00:00.000Z",
-      "seenBy": [
-        "s51",
-        "s52",
-        "s53",
-        "t1"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc12-1",
-      "title": "اطلاعیه 1 کلاس برنامه‌نویسی موبایل",
-      "content": "محتوای اطلاعیه 1 برای کلاس برنامه‌نویسی موبایل",
-      "classId": "c12",
-      "authorId": "t2",
-      "createdAt": "2025-08-15T00:00:00.000Z",
-      "seenBy": [
-        "s56"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc12-2",
-      "title": "اطلاعیه 2 کلاس برنامه‌نویسی موبایل",
-      "content": "محتوای اطلاعیه 2 برای کلاس برنامه‌نویسی موبایل",
-      "classId": "c12",
-      "authorId": "t2",
-      "createdAt": "2025-08-20T00:00:00.000Z",
-      "seenBy": [
-        "s56",
-        "s57"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc12-3",
-      "title": "اطلاعیه 3 کلاس برنامه‌نویسی موبایل",
-      "content": "محتوای اطلاعیه 3 برای کلاس برنامه‌نویسی موبایل",
-      "classId": "c12",
-      "authorId": "t2",
-      "createdAt": "2025-08-25T00:00:00.000Z",
-      "seenBy": [
-        "s56",
-        "s57",
-        "s58"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc13-1",
-      "title": "اطلاعیه 1 کلاس تحلیل داده‌ها",
-      "content": "محتوای اطلاعیه 1 برای کلاس تحلیل داده‌ها",
-      "classId": "c13",
-      "authorId": "t3",
-      "createdAt": "2025-08-30T00:00:00.000Z",
-      "seenBy": [
-        "s61"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc13-2",
-      "title": "اطلاعیه 2 کلاس تحلیل داده‌ها",
-      "content": "محتوای اطلاعیه 2 برای کلاس تحلیل داده‌ها",
-      "classId": "c13",
-      "authorId": "t3",
-      "createdAt": "2025-09-04T00:00:00.000Z",
-      "seenBy": [
-        "s61",
-        "s62"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc13-3",
-      "title": "اطلاعیه 3 کلاس تحلیل داده‌ها",
-      "content": "محتوای اطلاعیه 3 برای کلاس تحلیل داده‌ها",
-      "classId": "c13",
-      "authorId": "t3",
-      "createdAt": "2025-09-09T00:00:00.000Z",
-      "seenBy": [
-        "s61",
-        "s62",
-        "s63"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc14-1",
-      "title": "اطلاعیه 1 کلاس ماشین‌یادگیری",
-      "content": "محتوای اطلاعیه 1 برای کلاس ماشین‌یادگیری",
-      "classId": "c14",
-      "authorId": "t4",
-      "createdAt": "2025-09-14T00:00:00.000Z",
-      "seenBy": [
-        "s66"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc14-2",
-      "title": "اطلاعیه 2 کلاس ماشین‌یادگیری",
-      "content": "محتوای اطلاعیه 2 برای کلاس ماشین‌یادگیری",
-      "classId": "c14",
-      "authorId": "t4",
-      "createdAt": "2025-09-19T00:00:00.000Z",
-      "seenBy": [
-        "s66",
-        "s67"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc14-3",
-      "title": "اطلاعیه 3 کلاس ماشین‌یادگیری",
-      "content": "محتوای اطلاعیه 3 برای کلاس ماشین‌یادگیری",
-      "classId": "c14",
-      "authorId": "t4",
-      "createdAt": "2025-09-24T00:00:00.000Z",
-      "seenBy": [
-        "s66",
-        "s67",
-        "s68"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc15-1",
-      "title": "اطلاعیه 1 کلاس پردازش زبان طبیعی",
-      "content": "محتوای اطلاعیه 1 برای کلاس پردازش زبان طبیعی",
-      "classId": "c15",
-      "authorId": "t5",
-      "createdAt": "2025-09-29T00:00:00.000Z",
-      "seenBy": [
-        "s71"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc15-2",
-      "title": "اطلاعیه 2 کلاس پردازش زبان طبیعی",
-      "content": "محتوای اطلاعیه 2 برای کلاس پردازش زبان طبیعی",
-      "classId": "c15",
-      "authorId": "t5",
-      "createdAt": "2025-10-04T00:00:00.000Z",
-      "seenBy": [
-        "s71",
-        "s72"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc15-3",
-      "title": "اطلاعیه 3 کلاس پردازش زبان طبیعی",
-      "content": "محتوای اطلاعیه 3 برای کلاس پردازش زبان طبیعی",
-      "classId": "c15",
-      "authorId": "t5",
-      "createdAt": "2025-10-09T00:00:00.000Z",
-      "seenBy": [
-        "s71",
-        "s72",
-        "s73"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc16-1",
-      "title": "اطلاعیه 1 کلاس بینایی ماشین",
-      "content": "محتوای اطلاعیه 1 برای کلاس بینایی ماشین",
-      "classId": "c16",
-      "authorId": "t6",
-      "createdAt": "2025-10-14T00:00:00.000Z",
-      "seenBy": [
-        "s76"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc16-2",
-      "title": "اطلاعیه 2 کلاس بینایی ماشین",
-      "content": "محتوای اطلاعیه 2 برای کلاس بینایی ماشین",
-      "classId": "c16",
-      "authorId": "t6",
-      "createdAt": "2025-10-19T00:00:00.000Z",
-      "seenBy": [
-        "s76",
-        "s77"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc16-3",
-      "title": "اطلاعیه 3 کلاس بینایی ماشین",
-      "content": "محتوای اطلاعیه 3 برای کلاس بینایی ماشین",
-      "classId": "c16",
-      "authorId": "t6",
-      "createdAt": "2025-10-24T00:00:00.000Z",
-      "seenBy": [
-        "s76",
-        "s77",
-        "s78"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc17-1",
-      "title": "اطلاعیه 1 کلاس بلاکچین و ارزهای دیجیتال",
-      "content": "محتوای اطلاعیه 1 برای کلاس بلاکچین و ارزهای دیجیتال",
-      "classId": "c17",
-      "authorId": "t7",
-      "createdAt": "2025-10-29T00:00:00.000Z",
-      "seenBy": [
-        "s81"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc17-2",
-      "title": "اطلاعیه 2 کلاس بلاکچین و ارزهای دیجیتال",
-      "content": "محتوای اطلاعیه 2 برای کلاس بلاکچین و ارزهای دیجیتال",
-      "classId": "c17",
-      "authorId": "t7",
-      "createdAt": "2025-11-03T00:00:00.000Z",
-      "seenBy": [
-        "s81",
-        "s82"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc17-3",
-      "title": "اطلاعیه 3 کلاس بلاکچین و ارزهای دیجیتال",
-      "content": "محتوای اطلاعیه 3 برای کلاس بلاکچین و ارزهای دیجیتال",
-      "classId": "c17",
-      "authorId": "t7",
-      "createdAt": "2025-11-08T00:00:00.000Z",
-      "seenBy": [
-        "s81",
-        "s82",
-        "s83"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc18-1",
-      "title": "اطلاعیه 1 کلاس اینترنت اشیاء",
-      "content": "محتوای اطلاعیه 1 برای کلاس اینترنت اشیاء",
-      "classId": "c18",
-      "authorId": "t8",
-      "createdAt": "2025-11-13T00:00:00.000Z",
-      "seenBy": [
-        "s86"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc18-2",
-      "title": "اطلاعیه 2 کلاس اینترنت اشیاء",
-      "content": "محتوای اطلاعیه 2 برای کلاس اینترنت اشیاء",
-      "classId": "c18",
-      "authorId": "t8",
-      "createdAt": "2025-11-18T00:00:00.000Z",
-      "seenBy": [
-        "s86",
-        "s87"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc18-3",
-      "title": "اطلاعیه 3 کلاس اینترنت اشیاء",
-      "content": "محتوای اطلاعیه 3 برای کلاس اینترنت اشیاء",
-      "classId": "c18",
-      "authorId": "t8",
-      "createdAt": "2025-11-23T00:00:00.000Z",
-      "seenBy": [
-        "s86",
-        "s87",
-        "s88"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc19-1",
-      "title": "اطلاعیه 1 کلاس رباتیک",
-      "content": "محتوای اطلاعیه 1 برای کلاس رباتیک",
-      "classId": "c19",
-      "authorId": "t9",
-      "createdAt": "2025-11-28T00:00:00.000Z",
-      "seenBy": [
-        "s91"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc19-2",
-      "title": "اطلاعیه 2 کلاس رباتیک",
-      "content": "محتوای اطلاعیه 2 برای کلاس رباتیک",
-      "classId": "c19",
-      "authorId": "t9",
-      "createdAt": "2025-12-03T00:00:00.000Z",
-      "seenBy": [
-        "s91",
-        "s92"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc19-3",
-      "title": "اطلاعیه 3 کلاس رباتیک",
-      "content": "محتوای اطلاعیه 3 برای کلاس رباتیک",
-      "classId": "c19",
-      "authorId": "t9",
-      "createdAt": "2025-12-08T00:00:00.000Z",
-      "seenBy": [
-        "s91",
-        "s92",
-        "s93"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "annc20-1",
-      "title": "اطلاعیه 1 کلاس واقعیت مجازی",
-      "content": "محتوای اطلاعیه 1 برای کلاس واقعیت مجازی",
-      "classId": "c20",
-      "authorId": "t10",
-      "createdAt": "2025-12-13T00:00:00.000Z",
-      "seenBy": [
-        "s96",
-        "admin1"
-      ],
-      "targetAudience": "students",
-      "targetRoles": [
-        "admin",
-        "teacher",
-        "student"
-      ]
-    },
-    {
-      "id": "annc20-2",
-      "title": "اطلاعیه 2 کلاس واقعیت مجازی",
-      "content": "محتوای اطلاعیه 2 برای کلاس واقعیت مجازی",
-      "classId": "c20",
-      "authorId": "t10",
-      "createdAt": "2025-12-18T00:00:00.000Z",
-      "seenBy": [
-        "s96",
-        "s97"
-      ],
-      "targetAudience": "teacher",
-      "targetRoles": null
-    },
-    {
-      "id": "annc20-3",
-      "title": "اطلاعیه 3 کلاس واقعیت مجازی",
-      "content": "محتوای اطلاعیه 3 برای کلاس واقعیت مجازی",
-      "classId": "c20",
-      "authorId": "t10",
-      "createdAt": "2025-12-23T00:00:00.000Z",
-      "seenBy": [
-        "s96",
-        "s97",
-        "s98"
-      ],
-      "targetAudience": "both",
-      "targetRoles": null
-    },
-    {
-      "id": "ann-global-2",
-      "title": "اطلاعیه عمومی 2",
-      "content": "این یک اطلاعیه عمومی برای همه کاربران است - شماره 2",
-      "classId": null,
-      "authorId": "admin1",
-      "createdAt": "2026-10-12T19:55:49.636Z",
-      "seenBy": [
-        "s1",
-        "s2",
-        "s3",
-        "s4",
-        "s5",
-        "s6",
-        "s7",
-        "s8",
-        "s9",
-        "s10",
-        "admin1"
-      ],
-      "targetAudience": "students",
-      "targetRoles": null
-    },
-    {
-      "id": "ann-global-3",
-      "title": "اطلاعیه عمومی 3",
-      "content": "این یک اطلاعیه عمومی برای همه کاربران است - شماره 3",
-      "classId": null,
-      "authorId": "admin1",
-      "createdAt": "2026-10-09T19:55:49.636Z",
-      "seenBy": [
-        "s1",
-        "s2",
-        "s3",
-        "s4",
-        "s5",
-        "s6",
-        "s7",
-        "s8",
-        "s9",
-        "s10",
-        "admin1"
-      ],
-      "targetAudience": "students",
-      "targetRoles": null
-    },
-    {
-      "id": "ann-global-4",
-      "title": "اطلاعیه عمومی 4",
-      "content": "این یک اطلاعیه عمومی برای همه کاربران است - شماره 4",
-      "classId": null,
-      "authorId": "admin1",
-      "createdAt": "2026-10-06T19:55:49.636Z",
-      "seenBy": [
-        "s1",
-        "s2",
-        "s3",
-        "s4",
-        "s5",
-        "s6",
-        "s7",
-        "s8",
-        "s9",
-        "s10"
-      ],
-      "targetAudience": "students",
-      "targetRoles": null
-    },
-    {
-      "id": "ann-global-5",
-      "title": "اطلاعیه عمومی 5",
-      "content": "این یک اطلاعیه عمومی برای همه کاربران است - شماره 5",
-      "classId": null,
-      "authorId": "admin1",
-      "createdAt": "2026-10-03T19:55:49.636Z",
-      "seenBy": [
-        "s1",
-        "s2",
-        "s3",
-        "s4",
-        "s5",
-        "s6",
-        "s7",
-        "s8",
-        "s9",
-        "s10"
-      ],
-      "targetAudience": "students",
-      "targetRoles": null
-    },
-    {
-      "title": "کلاس تست ۱",
-      "content": "تست برای تست",
+      "id": "global-2",
+      "title": "اطلاعیه عمومی برای اساتید و دانشجویان",
+      "content": "این اطلاعیه عمومی فقط برای اساتید و دانشجویان قابل مشاهده است.",
       "classId": "0",
       "authorId": "admin1",
-      "targetRoles": [
-        "student"
+      "createdAt": "2025-05-02T00:00:00.000Z",
+      "seenBy": [
+        "t1"
       ],
       "targetAudience": null,
+      "targetRoles": [
+        "teacher",
+        "student"
+      ]
+    },
+    {
+      "id": "global-4",
+      "title": "اطلاعیه عمومی فقط برای دانشجویان",
+      "content": "این اطلاعیه عمومی فقط برای دانشجویان قابل مشاهده است.",
+      "classId": "0",
+      "authorId": "admin1",
+      "createdAt": "2025-05-04T00:00:00.000Z",
       "seenBy": [],
-      "createdAt": "2026-10-28T13:22:40.203Z",
-      "id": "qHi04u_nUPM"
+      "targetAudience": null,
+      "targetRoles": [
+        "student"
+      ]
     }
   ],
   "assignments": [
@@ -5570,56 +4054,6 @@
       "updatedAt": "2025-08-10T00:00:00.000Z"
     },
     {
-      "id": "asc12-1",
-      "title": "تکلیف 1: برنامه‌نویسی موبایل - موضوع 1",
-      "description": "توضیحات تکلیف 1 درس برنامه‌نویسی موبایل",
-      "classId": "c12",
-      "teacherId": "t2",
-      "deadline": "2025-08-23T23:59:59.000Z",
-      "createdAt": "2025-08-13T00:00:00.000Z",
-      "updatedAt": "2025-08-13T00:00:00.000Z"
-    },
-    {
-      "id": "asc12-2",
-      "title": "تکلیف 2: برنامه‌نویسی موبایل - موضوع 2",
-      "description": "توضیحات تکلیف 2 درس برنامه‌نویسی موبایل",
-      "classId": "c12",
-      "teacherId": "t2",
-      "deadline": "2025-08-30T23:59:59.000Z",
-      "createdAt": "2025-08-16T00:00:00.000Z",
-      "updatedAt": "2025-08-16T00:00:00.000Z"
-    },
-    {
-      "id": "asc12-3",
-      "title": "تکلیف 3: برنامه‌نویسی موبایل - موضوع 3",
-      "description": "توضیحات تکلیف 3 درس برنامه‌نویسی موبایل",
-      "classId": "c12",
-      "teacherId": "t2",
-      "deadline": "2025-09-06T23:59:59.000Z",
-      "createdAt": "2025-08-19T00:00:00.000Z",
-      "updatedAt": "2025-08-19T00:00:00.000Z"
-    },
-    {
-      "id": "asc12-4",
-      "title": "تکلیف 4: برنامه‌نویسی موبایل - موضوع 4",
-      "description": "توضیحات تکلیف 4 درس برنامه‌نویسی موبایل",
-      "classId": "c12",
-      "teacherId": "t2",
-      "deadline": "2025-09-13T23:59:59.000Z",
-      "createdAt": "2025-08-22T00:00:00.000Z",
-      "updatedAt": "2025-08-22T00:00:00.000Z"
-    },
-    {
-      "id": "asc12-5",
-      "title": "تکلیف 5: برنامه‌نویسی موبایل - موضوع 5",
-      "description": "توضیحات تکلیف 5 درس برنامه‌نویسی موبایل",
-      "classId": "c12",
-      "teacherId": "t2",
-      "deadline": "2025-09-20T23:59:59.000Z",
-      "createdAt": "2025-08-25T00:00:00.000Z",
-      "updatedAt": "2025-08-25T00:00:00.000Z"
-    },
-    {
       "id": "asc13-1",
       "title": "تکلیف 1: تحلیل داده‌ها - موضوع 1",
       "description": "توضیحات تکلیف 1 درس تحلیل داده‌ها",
@@ -5870,106 +4304,6 @@
       "updatedAt": "2025-11-08T00:00:00.000Z"
     },
     {
-      "id": "asc18-1",
-      "title": "تکلیف 1: اینترنت اشیاء - موضوع 1",
-      "description": "توضیحات تکلیف 1 درس اینترنت اشیاء",
-      "classId": "c18",
-      "teacherId": "t8",
-      "deadline": "2025-11-21T23:59:59.000Z",
-      "createdAt": "2025-11-11T00:00:00.000Z",
-      "updatedAt": "2025-11-11T00:00:00.000Z"
-    },
-    {
-      "id": "asc18-2",
-      "title": "تکلیف 2: اینترنت اشیاء - موضوع 2",
-      "description": "توضیحات تکلیف 2 درس اینترنت اشیاء",
-      "classId": "c18",
-      "teacherId": "t8",
-      "deadline": "2025-11-28T23:59:59.000Z",
-      "createdAt": "2025-11-14T00:00:00.000Z",
-      "updatedAt": "2025-11-14T00:00:00.000Z"
-    },
-    {
-      "id": "asc18-3",
-      "title": "تکلیف 3: اینترنت اشیاء - موضوع 3",
-      "description": "توضیحات تکلیف 3 درس اینترنت اشیاء",
-      "classId": "c18",
-      "teacherId": "t8",
-      "deadline": "2025-12-05T23:59:59.000Z",
-      "createdAt": "2025-11-17T00:00:00.000Z",
-      "updatedAt": "2025-11-17T00:00:00.000Z"
-    },
-    {
-      "id": "asc18-4",
-      "title": "تکلیف 4: اینترنت اشیاء - موضوع 4",
-      "description": "توضیحات تکلیف 4 درس اینترنت اشیاء",
-      "classId": "c18",
-      "teacherId": "t8",
-      "deadline": "2025-12-12T23:59:59.000Z",
-      "createdAt": "2025-11-20T00:00:00.000Z",
-      "updatedAt": "2025-11-20T00:00:00.000Z"
-    },
-    {
-      "id": "asc18-5",
-      "title": "تکلیف 5: اینترنت اشیاء - موضوع 5",
-      "description": "توضیحات تکلیف 5 درس اینترنت اشیاء",
-      "classId": "c18",
-      "teacherId": "t8",
-      "deadline": "2025-12-19T23:59:59.000Z",
-      "createdAt": "2025-11-23T00:00:00.000Z",
-      "updatedAt": "2025-11-23T00:00:00.000Z"
-    },
-    {
-      "id": "asc19-1",
-      "title": "تکلیف 1: رباتیک - موضوع 1",
-      "description": "توضیحات تکلیف 1 درس رباتیک",
-      "classId": "c19",
-      "teacherId": "t9",
-      "deadline": "2025-12-06T23:59:59.000Z",
-      "createdAt": "2025-11-26T00:00:00.000Z",
-      "updatedAt": "2025-11-26T00:00:00.000Z"
-    },
-    {
-      "id": "asc19-2",
-      "title": "تکلیف 2: رباتیک - موضوع 2",
-      "description": "توضیحات تکلیف 2 درس رباتیک",
-      "classId": "c19",
-      "teacherId": "t9",
-      "deadline": "2025-12-13T23:59:59.000Z",
-      "createdAt": "2025-11-29T00:00:00.000Z",
-      "updatedAt": "2025-11-29T00:00:00.000Z"
-    },
-    {
-      "id": "asc19-3",
-      "title": "تکلیف 3: رباتیک - موضوع 3",
-      "description": "توضیحات تکلیف 3 درس رباتیک",
-      "classId": "c19",
-      "teacherId": "t9",
-      "deadline": "2025-12-20T23:59:59.000Z",
-      "createdAt": "2025-12-02T00:00:00.000Z",
-      "updatedAt": "2025-12-02T00:00:00.000Z"
-    },
-    {
-      "id": "asc19-4",
-      "title": "تکلیف 4: رباتیک - موضوع 4",
-      "description": "توضیحات تکلیف 4 درس رباتیک",
-      "classId": "c19",
-      "teacherId": "t9",
-      "deadline": "2025-12-27T23:59:59.000Z",
-      "createdAt": "2025-12-05T00:00:00.000Z",
-      "updatedAt": "2025-12-05T00:00:00.000Z"
-    },
-    {
-      "id": "asc19-5",
-      "title": "تکلیف 5: رباتیک - موضوع 5",
-      "description": "توضیحات تکلیف 5 درس رباتیک",
-      "classId": "c19",
-      "teacherId": "t9",
-      "deadline": "2026-01-03T23:59:59.000Z",
-      "createdAt": "2025-12-08T00:00:00.000Z",
-      "updatedAt": "2025-12-08T00:00:00.000Z"
-    },
-    {
       "id": "asc20-1",
       "title": "تکلیف 1: واقعیت مجازی - موضوع 1",
       "description": "توضیحات تکلیف 1 درس واقعیت مجازی",
@@ -6020,13 +4354,13 @@
       "updatedAt": "2025-12-23T00:00:00.000Z"
     },
     {
-      "title": "تکلیف 4: مبانی برنامه‌نویسی - موضوع 4",
-      "description": "qqqqqqqqqqqqqqqqqqqqqqq",
-      "deadline": "2026-10-28T23:59:59.999Z",
+      "title": "تست 1",
+      "description": "تست 110210",
+      "deadline": "2026-10-31T23:59:59.999Z",
       "classId": "c1",
       "teacherId": "t1",
-      "createdAt": "2026-10-28T14:19:07.119Z",
-      "id": "KcXroqwkj6c"
+      "createdAt": "2026-10-31T08:03:15.865Z",
+      "id": "LczkJ9rn8GA"
     }
   ],
   "submissions": [
@@ -8836,281 +7170,6 @@
       "updatedAt": null
     },
     {
-      "id": "subasc12-1-s56",
-      "assignmentId": "asc12-1",
-      "studentId": "s56",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-1-s57",
-      "assignmentId": "asc12-1",
-      "studentId": "s57",
-      "content": "https://github.com/s57/asc12-1",
-      "submittedAt": "2025-08-21T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-1-s58",
-      "assignmentId": "asc12-1",
-      "studentId": "s58",
-      "content": "https://github.com/s58/asc12-1",
-      "submittedAt": "2025-08-20T00:00:00.000Z",
-      "status": "graded",
-      "grade": 4,
-      "feedback": "نیاز به بهبود دارد",
-      "updatedAt": "2025-08-25T00:00:00.000Z"
-    },
-    {
-      "id": "subasc12-1-s59",
-      "assignmentId": "asc12-1",
-      "studentId": "s59",
-      "content": "https://github.com/s59/asc12-1",
-      "submittedAt": "2025-08-21T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-1-s60",
-      "assignmentId": "asc12-1",
-      "studentId": "s60",
-      "content": "https://github.com/s60/asc12-1",
-      "submittedAt": "2025-08-21T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-2-s56",
-      "assignmentId": "asc12-2",
-      "studentId": "s56",
-      "content": "https://github.com/s56/asc12-2",
-      "submittedAt": "2025-08-27T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-2-s57",
-      "assignmentId": "asc12-2",
-      "studentId": "s57",
-      "content": "https://github.com/s57/asc12-2",
-      "submittedAt": "2025-08-27T00:00:00.000Z",
-      "status": "graded",
-      "grade": 11,
-      "feedback": "نیاز به بهبود دارد",
-      "updatedAt": "2025-09-01T00:00:00.000Z"
-    },
-    {
-      "id": "subasc12-2-s58",
-      "assignmentId": "asc12-2",
-      "studentId": "s58",
-      "content": "https://github.com/s58/asc12-2",
-      "submittedAt": "2025-08-28T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-2-s59",
-      "assignmentId": "asc12-2",
-      "studentId": "s59",
-      "content": "https://github.com/s59/asc12-2",
-      "submittedAt": "2025-08-26T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-2-s60",
-      "assignmentId": "asc12-2",
-      "studentId": "s60",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-3-s56",
-      "assignmentId": "asc12-3",
-      "studentId": "s56",
-      "content": "https://github.com/s56/asc12-3",
-      "submittedAt": "2025-09-04T00:00:00.000Z",
-      "status": "graded",
-      "grade": 2,
-      "feedback": "خوب بود",
-      "updatedAt": "2025-09-08T00:00:00.000Z"
-    },
-    {
-      "id": "subasc12-3-s57",
-      "assignmentId": "asc12-3",
-      "studentId": "s57",
-      "content": "https://github.com/s57/asc12-3",
-      "submittedAt": "2025-09-03T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-3-s58",
-      "assignmentId": "asc12-3",
-      "studentId": "s58",
-      "content": "https://github.com/s58/asc12-3",
-      "submittedAt": "2025-09-04T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-3-s59",
-      "assignmentId": "asc12-3",
-      "studentId": "s59",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-3-s60",
-      "assignmentId": "asc12-3",
-      "studentId": "s60",
-      "content": "https://github.com/s60/asc12-3",
-      "submittedAt": "2025-09-04T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-4-s56",
-      "assignmentId": "asc12-4",
-      "studentId": "s56",
-      "content": "https://github.com/s56/asc12-4",
-      "submittedAt": "2025-09-11T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-4-s57",
-      "assignmentId": "asc12-4",
-      "studentId": "s57",
-      "content": "https://github.com/s57/asc12-4",
-      "submittedAt": "2025-09-11T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-4-s58",
-      "assignmentId": "asc12-4",
-      "studentId": "s58",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-4-s59",
-      "assignmentId": "asc12-4",
-      "studentId": "s59",
-      "content": "https://github.com/s59/asc12-4",
-      "submittedAt": "2025-09-10T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-4-s60",
-      "assignmentId": "asc12-4",
-      "studentId": "s60",
-      "content": "https://github.com/s60/asc12-4",
-      "submittedAt": "2025-09-11T00:00:00.000Z",
-      "status": "graded",
-      "grade": 4,
-      "feedback": "خوب بود",
-      "updatedAt": "2025-09-15T00:00:00.000Z"
-    },
-    {
-      "id": "subasc12-5-s56",
-      "assignmentId": "asc12-5",
-      "studentId": "s56",
-      "content": "https://github.com/s56/asc12-5",
-      "submittedAt": "2025-09-16T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-5-s57",
-      "assignmentId": "asc12-5",
-      "studentId": "s57",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-5-s58",
-      "assignmentId": "asc12-5",
-      "studentId": "s58",
-      "content": "https://github.com/s58/asc12-5",
-      "submittedAt": "2025-09-16T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc12-5-s59",
-      "assignmentId": "asc12-5",
-      "studentId": "s59",
-      "content": "https://github.com/s59/asc12-5",
-      "submittedAt": "2025-09-17T00:00:00.000Z",
-      "status": "graded",
-      "grade": 10,
-      "feedback": "خوب بود",
-      "updatedAt": "2025-09-22T00:00:00.000Z"
-    },
-    {
-      "id": "subasc12-5-s60",
-      "assignmentId": "asc12-5",
-      "studentId": "s60",
-      "content": "https://github.com/s60/asc12-5",
-      "submittedAt": "2025-09-19T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
       "id": "subasc13-1-s61",
       "assignmentId": "asc13-1",
       "studentId": "s61",
@@ -9936,83 +7995,6 @@
       "updatedAt": null
     },
     {
-      "id": "subasc16-1-s76",
-      "assignmentId": "asc16-1",
-      "studentId": "s76",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc16-1-s77",
-      "assignmentId": "asc16-1",
-      "studentId": "s77",
-      "content": "https://github.com/s77/asc16-1",
-      "submittedAt": "2025-10-21T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc16-1-s78",
-      "assignmentId": "asc16-1",
-      "studentId": "s78",
-      "content": "https://github.com/s78/asc16-1",
-      "submittedAt": "2025-10-22T00:00:00.000Z",
-      "status": "graded",
-      "grade": 0,
-      "feedback": "نیاز به بهبود دارد",
-      "updatedAt": "2025-10-24T00:00:00.000Z"
-    },
-    {
-      "id": "subasc16-1-s79",
-      "assignmentId": "asc16-1",
-      "studentId": "s79",
-      "content": "https://github.com/s79/asc16-1",
-      "submittedAt": "2025-10-22T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc16-1-s80",
-      "assignmentId": "asc16-1",
-      "studentId": "s80",
-      "content": "https://github.com/s80/asc16-1",
-      "submittedAt": "2025-10-19T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc16-2-s76",
-      "assignmentId": "asc16-2",
-      "studentId": "s76",
-      "content": "https://github.com/s76/asc16-2",
-      "submittedAt": "2025-10-27T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc16-2-s77",
-      "assignmentId": "asc16-2",
-      "studentId": "s77",
-      "content": "https://github.com/s77/asc16-2",
-      "submittedAt": "2025-10-29T00:00:00.000Z",
-      "status": "graded",
-      "grade": 16,
-      "feedback": "خوب بود",
-      "updatedAt": "2025-10-31T00:00:00.000Z"
-    },
-    {
       "id": "subasc16-2-s78",
       "assignmentId": "asc16-2",
       "studentId": "s78",
@@ -10486,556 +8468,6 @@
       "updatedAt": null
     },
     {
-      "id": "subasc18-1-s86",
-      "assignmentId": "asc18-1",
-      "studentId": "s86",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-1-s87",
-      "assignmentId": "asc18-1",
-      "studentId": "s87",
-      "content": "https://github.com/s87/asc18-1",
-      "submittedAt": "2025-11-19T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-1-s88",
-      "assignmentId": "asc18-1",
-      "studentId": "s88",
-      "content": "https://github.com/s88/asc18-1",
-      "submittedAt": "2025-11-19T00:00:00.000Z",
-      "status": "graded",
-      "grade": 3,
-      "feedback": "خوب بود",
-      "updatedAt": "2025-11-23T00:00:00.000Z"
-    },
-    {
-      "id": "subasc18-1-s89",
-      "assignmentId": "asc18-1",
-      "studentId": "s89",
-      "content": "https://github.com/s89/asc18-1",
-      "submittedAt": "2025-11-21T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-1-s90",
-      "assignmentId": "asc18-1",
-      "studentId": "s90",
-      "content": "https://github.com/s90/asc18-1",
-      "submittedAt": "2025-11-21T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-2-s86",
-      "assignmentId": "asc18-2",
-      "studentId": "s86",
-      "content": "https://github.com/s86/asc18-2",
-      "submittedAt": "2025-11-25T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-2-s87",
-      "assignmentId": "asc18-2",
-      "studentId": "s87",
-      "content": "https://github.com/s87/asc18-2",
-      "submittedAt": "2025-11-27T00:00:00.000Z",
-      "status": "graded",
-      "grade": 3,
-      "feedback": "نیاز به بهبود دارد",
-      "updatedAt": "2025-11-30T00:00:00.000Z"
-    },
-    {
-      "id": "subasc18-2-s88",
-      "assignmentId": "asc18-2",
-      "studentId": "s88",
-      "content": "https://github.com/s88/asc18-2",
-      "submittedAt": "2025-11-28T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-2-s89",
-      "assignmentId": "asc18-2",
-      "studentId": "s89",
-      "content": "https://github.com/s89/asc18-2",
-      "submittedAt": "2025-11-25T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-2-s90",
-      "assignmentId": "asc18-2",
-      "studentId": "s90",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-3-s86",
-      "assignmentId": "asc18-3",
-      "studentId": "s86",
-      "content": "https://github.com/s86/asc18-3",
-      "submittedAt": "2025-12-03T00:00:00.000Z",
-      "status": "graded",
-      "grade": 7,
-      "feedback": "نیاز به بهبود دارد",
-      "updatedAt": "2025-12-07T00:00:00.000Z"
-    },
-    {
-      "id": "subasc18-3-s87",
-      "assignmentId": "asc18-3",
-      "studentId": "s87",
-      "content": "https://github.com/s87/asc18-3",
-      "submittedAt": "2025-12-01T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-3-s88",
-      "assignmentId": "asc18-3",
-      "studentId": "s88",
-      "content": "https://github.com/s88/asc18-3",
-      "submittedAt": "2025-12-03T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-3-s89",
-      "assignmentId": "asc18-3",
-      "studentId": "s89",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-3-s90",
-      "assignmentId": "asc18-3",
-      "studentId": "s90",
-      "content": "https://github.com/s90/asc18-3",
-      "submittedAt": "2025-12-05T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-4-s86",
-      "assignmentId": "asc18-4",
-      "studentId": "s86",
-      "content": "https://github.com/s86/asc18-4",
-      "submittedAt": "2025-12-12T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-4-s87",
-      "assignmentId": "asc18-4",
-      "studentId": "s87",
-      "content": "https://github.com/s87/asc18-4",
-      "submittedAt": "2025-12-08T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-4-s88",
-      "assignmentId": "asc18-4",
-      "studentId": "s88",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-4-s89",
-      "assignmentId": "asc18-4",
-      "studentId": "s89",
-      "content": "https://github.com/s89/asc18-4",
-      "submittedAt": "2025-12-12T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-4-s90",
-      "assignmentId": "asc18-4",
-      "studentId": "s90",
-      "content": "https://github.com/s90/asc18-4",
-      "submittedAt": "2025-12-11T00:00:00.000Z",
-      "status": "graded",
-      "grade": 18,
-      "feedback": "نیاز به بهبود دارد",
-      "updatedAt": "2025-12-14T00:00:00.000Z"
-    },
-    {
-      "id": "subasc18-5-s86",
-      "assignmentId": "asc18-5",
-      "studentId": "s86",
-      "content": "https://github.com/s86/asc18-5",
-      "submittedAt": "2025-12-16T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-5-s87",
-      "assignmentId": "asc18-5",
-      "studentId": "s87",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-5-s88",
-      "assignmentId": "asc18-5",
-      "studentId": "s88",
-      "content": "https://github.com/s88/asc18-5",
-      "submittedAt": "2025-12-19T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc18-5-s89",
-      "assignmentId": "asc18-5",
-      "studentId": "s89",
-      "content": "https://github.com/s89/asc18-5",
-      "submittedAt": "2025-12-17T00:00:00.000Z",
-      "status": "graded",
-      "grade": 19,
-      "feedback": "خوب بود",
-      "updatedAt": "2025-12-21T00:00:00.000Z"
-    },
-    {
-      "id": "subasc18-5-s90",
-      "assignmentId": "asc18-5",
-      "studentId": "s90",
-      "content": "https://github.com/s90/asc18-5",
-      "submittedAt": "2025-12-15T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-1-s91",
-      "assignmentId": "asc19-1",
-      "studentId": "s91",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-1-s92",
-      "assignmentId": "asc19-1",
-      "studentId": "s92",
-      "content": "https://github.com/s92/asc19-1",
-      "submittedAt": "2025-12-05T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-1-s93",
-      "assignmentId": "asc19-1",
-      "studentId": "s93",
-      "content": "https://github.com/s93/asc19-1",
-      "submittedAt": "2025-12-03T00:00:00.000Z",
-      "status": "graded",
-      "grade": 12,
-      "feedback": "خوب بود",
-      "updatedAt": "2025-12-08T00:00:00.000Z"
-    },
-    {
-      "id": "subasc19-1-s94",
-      "assignmentId": "asc19-1",
-      "studentId": "s94",
-      "content": "https://github.com/s94/asc19-1",
-      "submittedAt": "2025-12-02T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-1-s95",
-      "assignmentId": "asc19-1",
-      "studentId": "s95",
-      "content": "https://github.com/s95/asc19-1",
-      "submittedAt": "2025-12-02T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-2-s91",
-      "assignmentId": "asc19-2",
-      "studentId": "s91",
-      "content": "https://github.com/s91/asc19-2",
-      "submittedAt": "2025-12-13T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-2-s92",
-      "assignmentId": "asc19-2",
-      "studentId": "s92",
-      "content": "https://github.com/s92/asc19-2",
-      "submittedAt": "2025-12-09T00:00:00.000Z",
-      "status": "graded",
-      "grade": 4,
-      "feedback": "نیاز به بهبود دارد",
-      "updatedAt": "2025-12-15T00:00:00.000Z"
-    },
-    {
-      "id": "subasc19-2-s93",
-      "assignmentId": "asc19-2",
-      "studentId": "s93",
-      "content": "https://github.com/s93/asc19-2",
-      "submittedAt": "2025-12-10T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-2-s94",
-      "assignmentId": "asc19-2",
-      "studentId": "s94",
-      "content": "https://github.com/s94/asc19-2",
-      "submittedAt": "2025-12-09T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-2-s95",
-      "assignmentId": "asc19-2",
-      "studentId": "s95",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-3-s91",
-      "assignmentId": "asc19-3",
-      "studentId": "s91",
-      "content": "https://github.com/s91/asc19-3",
-      "submittedAt": "2025-12-16T00:00:00.000Z",
-      "status": "graded",
-      "grade": 13,
-      "feedback": "نیاز به بهبود دارد",
-      "updatedAt": "2025-12-22T00:00:00.000Z"
-    },
-    {
-      "id": "subasc19-3-s92",
-      "assignmentId": "asc19-3",
-      "studentId": "s92",
-      "content": "https://github.com/s92/asc19-3",
-      "submittedAt": "2025-12-17T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-3-s93",
-      "assignmentId": "asc19-3",
-      "studentId": "s93",
-      "content": "https://github.com/s93/asc19-3",
-      "submittedAt": "2025-12-20T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-3-s94",
-      "assignmentId": "asc19-3",
-      "studentId": "s94",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-3-s95",
-      "assignmentId": "asc19-3",
-      "studentId": "s95",
-      "content": "https://github.com/s95/asc19-3",
-      "submittedAt": "2025-12-16T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-4-s91",
-      "assignmentId": "asc19-4",
-      "studentId": "s91",
-      "content": "https://github.com/s91/asc19-4",
-      "submittedAt": "2025-12-27T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-4-s92",
-      "assignmentId": "asc19-4",
-      "studentId": "s92",
-      "content": "https://github.com/s92/asc19-4",
-      "submittedAt": "2025-12-23T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-4-s93",
-      "assignmentId": "asc19-4",
-      "studentId": "s93",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-4-s94",
-      "assignmentId": "asc19-4",
-      "studentId": "s94",
-      "content": "https://github.com/s94/asc19-4",
-      "submittedAt": "2025-12-23T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-4-s95",
-      "assignmentId": "asc19-4",
-      "studentId": "s95",
-      "content": "https://github.com/s95/asc19-4",
-      "submittedAt": "2025-12-26T00:00:00.000Z",
-      "status": "graded",
-      "grade": 10,
-      "feedback": "نیاز به بهبود دارد",
-      "updatedAt": "2025-12-29T00:00:00.000Z"
-    },
-    {
-      "id": "subasc19-5-s91",
-      "assignmentId": "asc19-5",
-      "studentId": "s91",
-      "content": "https://github.com/s91/asc19-5",
-      "submittedAt": "2026-01-01T00:00:00.000Z",
-      "status": "returned",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-5-s92",
-      "assignmentId": "asc19-5",
-      "studentId": "s92",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-5-s93",
-      "assignmentId": "asc19-5",
-      "studentId": "s93",
-      "content": "https://github.com/s93/asc19-5",
-      "submittedAt": "2026-01-02T00:00:00.000Z",
-      "status": "submitted",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc19-5-s94",
-      "assignmentId": "asc19-5",
-      "studentId": "s94",
-      "content": "https://github.com/s94/asc19-5",
-      "submittedAt": "2025-12-30T00:00:00.000Z",
-      "status": "graded",
-      "grade": 17,
-      "feedback": "نیاز به بهبود دارد",
-      "updatedAt": "2026-01-05T00:00:00.000Z"
-    },
-    {
-      "id": "subasc19-5-s95",
-      "assignmentId": "asc19-5",
-      "studentId": "s95",
-      "content": "https://github.com/s95/asc19-5",
-      "submittedAt": "2025-12-31T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
       "id": "subasc20-1-s96",
       "assignmentId": "asc20-1",
       "studentId": "s96",
@@ -11069,17 +8501,6 @@
       "updatedAt": "2025-12-23T00:00:00.000Z"
     },
     {
-      "id": "subasc20-1-s99",
-      "assignmentId": "asc20-1",
-      "studentId": "s99",
-      "content": "https://github.com/s99/asc20-1",
-      "submittedAt": "2025-12-17T00:00:00.000Z",
-      "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
       "id": "subasc20-2-s96",
       "assignmentId": "asc20-2",
       "studentId": "s96",
@@ -11108,17 +8529,6 @@
       "content": "https://github.com/s98/asc20-2",
       "submittedAt": "2025-12-28T00:00:00.000Z",
       "status": "late",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc20-2-s99",
-      "assignmentId": "asc20-2",
-      "studentId": "s99",
-      "content": "https://github.com/s99/asc20-2",
-      "submittedAt": "2025-12-25T00:00:00.000Z",
-      "status": "returned",
       "grade": null,
       "feedback": null,
       "updatedAt": null
@@ -11157,17 +8567,6 @@
       "updatedAt": null
     },
     {
-      "id": "subasc20-3-s99",
-      "assignmentId": "asc20-3",
-      "studentId": "s99",
-      "content": "",
-      "submittedAt": "",
-      "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
       "id": "subasc20-4-s96",
       "assignmentId": "asc20-4",
       "studentId": "s96",
@@ -11196,17 +8595,6 @@
       "content": "",
       "submittedAt": "",
       "status": "pending",
-      "grade": null,
-      "feedback": null,
-      "updatedAt": null
-    },
-    {
-      "id": "subasc20-4-s99",
-      "assignmentId": "asc20-4",
-      "studentId": "s99",
-      "content": "https://github.com/s99/asc20-4",
-      "submittedAt": "2026-01-07T00:00:00.000Z",
-      "status": "submitted",
       "grade": null,
       "feedback": null,
       "updatedAt": null
@@ -11245,23 +8633,12 @@
       "updatedAt": null
     },
     {
-      "id": "subasc20-5-s99",
-      "assignmentId": "asc20-5",
-      "studentId": "s99",
-      "content": "https://github.com/s99/asc20-5",
-      "submittedAt": "2026-01-14T00:00:00.000Z",
-      "status": "graded",
-      "grade": 2,
-      "feedback": "نیاز به بهبود دارد",
-      "updatedAt": "2026-01-20T00:00:00.000Z"
-    },
-    {
-      "assignmentId": "KcXroqwkj6c",
-      "studentId": "s5",
-      "content": "test 1",
+      "assignmentId": "LczkJ9rn8GA",
+      "studentId": "s8",
+      "content": "تست ۱",
       "status": "submitted",
-      "submittedAt": "2026-10-28T14:39:32.794Z",
-      "id": "DAHB-y6AljQ"
+      "submittedAt": "2026-10-31T08:11:10.151Z",
+      "id": "nEcGrKlJ5Lc"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

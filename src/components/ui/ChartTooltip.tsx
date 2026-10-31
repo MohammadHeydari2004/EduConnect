@@ -38,8 +38,8 @@ export function ChartTooltip({
 
 export function defaultChartLabel(entry: ChartPayloadEntry): string {
   return String(
-    entry.name ??
-      (entry.payload?.name as string | undefined) ??
+    entry["name"] ??
+      (entry.payload?.["name"] as string | undefined) ??
       entry.value ??
       "",
   );

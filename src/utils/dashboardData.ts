@@ -152,26 +152,31 @@ export function useGradingStats(
 ) {
   return useMemo(() => {
     const assignmentClassMap = new Map<string, string>();
-    assignments.forEach((a) => {
+    for (const a of assignments) {
       if (myClassIdSet.has(a.classId)) {
         assignmentClassMap.set(a.id, a.classId);
       }
-    });
+    }
 
-    const classStats = new Map<string, { graded: number; total: number }>();
-    myClasses.forEach((c) => classStats.set(c.id, { graded: 0, total: 0 }));
-
-    submissions.forEach((s) => {
+    const classStats = submissions.reduce((acc, s) => {
       const classId = assignmentClassMap.get(s.assignmentId);
-      if (classId && classStats.has(classId)) {
-        const stats = classStats.get(classId)!;
+      if (classId && myClassIdSet.has(classId)) {
+        const stats = acc.get(classId) ?? { graded: 0, total: 0 };
         stats.total++;
         if (s.status === "graded") stats.graded++;
+        acc.set(classId, stats);
+      }
+      return acc;
+    }, new Map<string, { graded: number; total: number }>());
+
+    myClasses.forEach((c) => {
+      if (!classStats.has(c.id)) {
+        classStats.set(c.id, { graded: 0, total: 0 });
       }
     });
 
     return myClasses.map((c) => {
-      const stats = classStats.get(c.id) || { graded: 0, total: 0 };
+      const stats = classStats.get(c.id)!;
       return {
         name: c.title,
         graded: stats.graded,

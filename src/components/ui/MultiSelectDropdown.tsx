@@ -1,6 +1,6 @@
 import { SearchIcon } from "#/components/common/icons";
 import { createPortal } from "react-dom";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { MultiSelectActions } from "#/components/ui/MultiSelectActions.tsx";
 import { MultiSelectEmpty } from "#/components/ui/MultiSelectEmpty.tsx";
 import { MultiSelectOptionComponent } from "#/components/ui/MultiSelectOption.tsx";
@@ -63,6 +63,8 @@ export function MultiSelectDropdown({
     left: number;
     width: number;
   }>({ top: 0, left: 0, width: 0 });
+
+  const selectedIdsSet = useMemo(() => new Set(selectedIds), [selectedIds]);
 
   useEffect(() => {
     if (isOpen && searchInputRef.current) {
@@ -188,7 +190,7 @@ export function MultiSelectDropdown({
           <MultiSelectEmpty />
         ) : (
           filteredOptions.map((opt, index) => {
-            const isSelected = selectedIds.includes(opt.id);
+            const isSelected = selectedIdsSet.has(opt.id);
             const isActive = index === activeIndex;
             return (
               <MultiSelectOptionComponent

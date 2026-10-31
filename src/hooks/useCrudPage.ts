@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useAsyncData } from "#/hooks/useAsyncData.ts";
 import { useFilter, type FilterConfig } from "#/hooks/useFilter.ts";
 import { useModalState } from "#/hooks/useModalState.ts";
@@ -18,7 +18,7 @@ export interface CrudPageConfig<T extends { id: ID }, CreatePayload, UpdatePaylo
   service: CrudService<T, CreatePayload, UpdatePayload>;
   initialFilters: FilterState;
   filterConfigs: FilterConfig<T>[];
-  extraPredicate?: (item: T) => boolean;
+  extraPredicate?: (item: T) => boolean | undefined;
   fallbackError?: string;
   onCreateSuccess?: (item: T) => void;
   onUpdateSuccess?: (item: T) => void;
@@ -82,6 +82,7 @@ export function useCrudPage<T extends { id: ID }, CreatePayload, UpdatePayload, 
   });
 
   const modal = useModalState<T>();
+  const deleteTargetIdRef = useRef<ID | null>(null);
 
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -127,15 +128,20 @@ export function useCrudPage<T extends { id: ID }, CreatePayload, UpdatePayload, 
 
   const handleDelete = useCallback(
     async () => {
-      const target = modal.target;
-      if (!target) return;
+      const targetId = deleteTargetIdRef.current ?? modal.target?.id;
+      if (!targetId) {
+        console.warn("[useCrudPage] Delete target ID not found");
+        return;
+      }
       try {
         setIsDeleting(true);
-        await service.delete(target.id);
+        await service.delete(targetId);
         addToast("با موفقیت حذف شد.", "success");
-        onDeleteSuccess?.(target.id);
-        refresh();
+        onDeleteSuccess?.(targetId);
+        // Clear ref and close modal BEFORE refresh
+        deleteTargetIdRef.current = null;
         modal.close();
+        refresh();
       } catch (err) {
         addToast(getErrorMessage(err, "حذف با خطا مواجه شد."), "error");
       } finally {
@@ -158,6 +164,7 @@ export function useCrudPage<T extends { id: ID }, CreatePayload, UpdatePayload, 
 
   const handleOpenDelete = useCallback(
     (item: T) => {
+      deleteTargetIdRef.current = item.id;
       modal.openWithTarget("delete", item);
     },
     [modal],

@@ -12,6 +12,8 @@ import type { Session } from "#/types/session.ts";
 import type { User } from "#/types/user.ts";
 import { getErrorMessage } from "#/utils/error.ts";
 import { useAsyncData } from "#/hooks/useAsyncData.ts";
+import { TOAST_MESSAGES } from "#/configs/constants";
+import { isAdmin, isTeacher } from "#/utils/roleUtils.ts";
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -46,7 +48,7 @@ export function useAttendancePage() {
   >({
     fetcher: fetchAttendancePageData,
     deps: [],
-    fallbackError: "دریافت اطلاعات با خطا مواجه شد.",
+    fallbackError: TOAST_MESSAGES.FETCH_ERROR,
   });
 
 const selectedClassId = searchParams.get("classId") ?? "";
@@ -58,8 +60,8 @@ const selectedClassId = searchParams.get("classId") ?? "";
   const [isSaving, setIsSaving] = useState(false);
   const initializedSessionRef = useRef<string | null>(null);
 
-  const isAdmin = currentUser?.role === "admin";
-  const isTeacher = currentUser?.role === "teacher";
+  const isAdminUser = isAdmin(currentUser);
+  const isTeacherUser = isTeacher(currentUser);
   const isStudent = currentUser?.role === "student";
 
   const classes = pageData?.classes ?? [];
@@ -87,12 +89,9 @@ const selectedClassId = searchParams.get("classId") ?? "";
       return;
     }
 
-    // Only initialize if we have attendance data loaded (not loading and attendances exist)
-    // or if we're switching to a different session
     const hasAttendanceData = attendances.length > 0;
     const isNewSession = initializedSessionRef.current !== selectedSessionId;
 
-    // Use functional update to check current draft state without adding to deps
     if (isNewSession) {
       setDraftAttendanceMap(sessionAttendances);
       initializedSessionRef.current = selectedSessionId;
@@ -107,10 +106,10 @@ const selectedClassId = searchParams.get("classId") ?? "";
   }, [selectedSessionId, sessionAttendances, attendances.length]);
 
   const availableClasses = useMemo(() => {
-    if (isAdmin) return classes;
-    if (isTeacher) return classes.filter((c) => c.teacherId === currentUser?.id);
+    if (isAdminUser) return classes;
+    if (isTeacherUser) return classes.filter((c) => c.teacherId === currentUser?.id);
     return [];
-  }, [classes, isAdmin, isTeacher, currentUser]);
+  }, [classes, isAdminUser, isTeacherUser, currentUser]);
 
   const availableSessions = useMemo(() => {
     if (!selectedClassId) return [];
@@ -162,9 +161,9 @@ const selectedClassId = searchParams.get("classId") ?? "";
         records,
       );
       refresh();
-      addToast("حضور و غیاب با موفقیت ذخیره شد.", "success");
+      addToast(TOAST_MESSAGES.ATTENDANCE_SAVE_SUCCESS, "success");
     } catch (err) {
-      addToast(getErrorMessage(err, "ذخیره حضور و غیاب با خطا مواجه شد."), "error");
+      addToast(getErrorMessage(err, TOAST_MESSAGES.ATTENDANCE_SAVE_ERROR), "error");
     } finally {
       setIsSaving(false);
     }
@@ -197,8 +196,8 @@ const selectedClassId = searchParams.get("classId") ?? "";
 
   return {
     currentUser,
-    isAdmin,
-    isTeacher,
+    isAdmin: isAdminUser,
+    isTeacher: isTeacherUser,
     isStudent,
     loading,
     error,
@@ -216,5 +215,8 @@ const selectedClassId = searchParams.get("classId") ?? "";
     handleMarkAllPresent,
     handleMarkAllAbsent,
     handleSave,
+    attendances,
+    sessions,
+    classMap,
   };
 }

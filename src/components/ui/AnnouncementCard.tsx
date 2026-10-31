@@ -13,9 +13,10 @@ interface AnnouncementCardProps {
   formatDateTime: (date: string) => string;
   formatRelativeTime: (date: string) => string;
   onView: () => void;
-  onEdit?: () => void;
-  onDelete?: () => void;
+  onEdit?: (() => void) | undefined;
+  onDelete?: (() => void) | undefined;
   canManage: boolean;
+  canView: boolean;
 }
 
 export function AnnouncementCard({
@@ -30,6 +31,7 @@ export function AnnouncementCard({
   onEdit,
   onDelete,
   canManage,
+  canView,
 }: AnnouncementCardProps) {
   return (
     <Card key={item.id}>
@@ -82,9 +84,11 @@ export function AnnouncementCard({
           {item.content}
         </p>
         <div className="mt-auto flex flex-wrap gap-2">
-          <Button variant="secondary" onClick={onView}>
-            مشاهده
-          </Button>
+          {canView && (
+            <Button variant="secondary" onClick={onView}>
+              مشاهده
+            </Button>
+          )}
           {canManage && (
             <>
               {onEdit && (

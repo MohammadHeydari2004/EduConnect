@@ -104,15 +104,16 @@ export default function StudentAssignmentsPage() {
       handleSubmissionFormClose();
       // Optimistically update the submissions list
       setSubmissionsOptimistic((prev) => {
-        const existingIndex = prev.findIndex(
+        const submissions = prev ?? [];
+        const existingIndex = submissions.findIndex(
           (s) => s.assignmentId === submission.assignmentId && s.studentId === submission.studentId,
         );
         if (existingIndex >= 0) {
-          const updated = [...prev];
+          const updated = [...submissions];
           updated[existingIndex] = submission;
           return updated;
         }
-        return [...prev, submission];
+        return [...submissions, submission];
       });
       refreshSubmissions();
     },

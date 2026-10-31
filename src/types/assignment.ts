@@ -10,3 +10,7 @@ export interface Assignment {
   readonly createdAt?: string;
   readonly updatedAt?: string;
 }
+
+export type CreateAssignmentPayload = Omit<Assignment, "id" | "createdAt" | "updatedAt">;
+
+export type UpdateAssignmentPayload = Partial<Assignment>;

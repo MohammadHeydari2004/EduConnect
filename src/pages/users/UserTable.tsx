@@ -15,7 +15,7 @@ import { getRoleLabel, getStatusLabel } from "#/utils/user.ts";
 
 interface UserTableProps {
   users: User[];
-  currentUserId?: ID;
+  currentUserId?: ID | undefined;
   onView: (user: User) => void;
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
@@ -38,7 +38,7 @@ function UserTable({
         {
           key: "name",
           title: "نام",
-          width: "10%",
+          width: "18.5%",
           render: (user) => (
             <div
               className="font-medium text-gray-800 truncate px-1"
@@ -54,7 +54,7 @@ function UserTable({
         {
           key: "email",
           title: "ایمیل",
-          width: "10%",
+          width: "18.5%",
           render: (user) => (
             <div className="truncate px-1" title={user.email}>
               {user.email}
@@ -64,13 +64,13 @@ function UserTable({
         {
           key: "role",
           title: "نقش",
-          width: "4%",
+          width: "7.5%",
           render: (user) => <span>{getRoleLabel(user.role)}</span>,
         },
         {
           key: "status",
           title: "وضعیت",
-          width: "7%",
+          width: "13%",
           render: (user) => (
             <>
               <span title={getStatusLabel(user.status)}>
@@ -83,7 +83,7 @@ function UserTable({
         {
           key: "actions",
           title: "عملیات",
-          width: "23%",
+          width: "42.5%",
           render: (user) => (
             <div className="w-full flex flex-wrap justify-center gap-2">
               <Button variant="secondary" onClick={() => onView(user)}>

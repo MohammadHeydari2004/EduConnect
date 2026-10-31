@@ -16,7 +16,7 @@ export interface SearchableMultiSelectProps {
   onChange: (ids: ID[]) => void;
   placeholder?: string;
   label?: string;
-  error?: string;
+  error?: string | undefined;
   searchPlaceholder?: string;
   openDirection?: "down" | "up";
 }

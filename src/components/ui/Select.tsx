@@ -11,7 +11,7 @@ interface Option {
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   options: Option[];
-  error?: string;
+  error?: string | undefined;
   compact?: boolean;
 }
 

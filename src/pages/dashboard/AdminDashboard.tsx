@@ -33,23 +33,24 @@ interface Props {
 
 export default function AdminDashboard({ data }: Props) {
   const { users, classes, sessions, assignments } = data;
+  const roleCounts = useMemo(() => {
+    const counts = { admin: 0, teacher: 0, student: 0 };
+    for (const u of users) {
+      if (u.role in counts) counts[u.role as keyof typeof counts]++;
+    }
+    return counts;
+  }, [users]);
   const roleData: RoleDataItem[] = useMemo(
     () => [
-      { name: "مدیر", value: users.filter((u) => u.role === "admin").length },
-      {
-        name: "استاد",
-        value: users.filter((u) => u.role === "teacher").length,
-      },
-      {
-        name: "دانشجو",
-        value: users.filter((u) => u.role === "student").length,
-      },
+      { name: "مدیر", value: roleCounts.admin },
+      { name: "استاد", value: roleCounts.teacher },
+      { name: "دانشجو", value: roleCounts.student },
     ],
-    [users],
+    [roleCounts],
   );
   const totalUsers = useMemo(
-    () => roleData.reduce((sum, item) => sum + item.value, 0),
-    [roleData],
+    () => roleCounts.admin + roleCounts.teacher + roleCounts.student,
+    [roleCounts],
   );
   const recentClasses = useMemo(() => {
     return [...classes]
@@ -90,7 +91,6 @@ export default function AdminDashboard({ data }: Props) {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card title="توزیع نقش‌های کاربران">
           <div className="h-64" role="img" aria-label={chartSummary}>
-            <span className="sr-only">{chartSummary}</span>
             {totalUsers === 0 ? (
               <div className="flex h-full items-center justify-center text-sm text-gray-500">
                 هنوز کاربری ثبت نشده است.
@@ -110,7 +110,7 @@ export default function AdminDashboard({ data }: Props) {
                     {roleData.map((_, index) => (
                       <Cell
                         key={`cell-${index}`}
-                        fill={CHART_COLORS[index % CHART_COLORS.length]}
+                        fill={CHART_COLORS[index % CHART_COLORS.length] as string}
                       />
                     ))}
                   </Pie>

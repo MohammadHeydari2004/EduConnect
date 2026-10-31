@@ -138,8 +138,8 @@ export default function SubmissionForm({
             if (errors.content || errors.form) {
               setErrors((prev) => ({
                 ...prev,
-                content: undefined,
-                form: undefined,
+                content: "",
+                form: "",
               }));
             }
           }}

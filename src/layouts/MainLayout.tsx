@@ -36,7 +36,7 @@ function MainLayout({ children }: MainLayoutProps) {
   useEffect(() => {
     if (isMobile && isSidebarOpen && sidebarRef.current) {
       const firstFocusable = sidebarRef.current.querySelector<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
       firstFocusable?.focus();
     } else if (!isSidebarOpen && mainContentRef.current) {
@@ -46,13 +46,6 @@ function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-50 focus:rounded-lg focus:bg-blue-600 focus:px-4 focus:py-2 focus:text-white focus:shadow-lg"
-      >
-        پرش به محتوای اصلی
-      </a>
-
       <Header
         isSidebarOpen={isSidebarOpen}
         onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}

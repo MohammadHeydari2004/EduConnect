@@ -17,8 +17,8 @@ export function ChartLegend({ payload, resolveLabel }: ChartLegendProps) {
         const label = resolveLabel
           ? resolveLabel(entry, index)
           : String(
-              entry.name ??
-                (entry.payload?.name as string | undefined) ??
+              entry["name"] ??
+                (entry.payload?.["name"] as string | undefined) ??
                 entry.value ??
                 "",
             );

@@ -11,7 +11,7 @@
 
 هدف غایی این پروژه، ارائه یک راهکار نرم‌افزاری چابک برای پوشش نیازهای آموزشی، مدیریت کلاس‌ها، رصد حضور و غیاب، چرخه حیات تکالیف و ارائه داشبوردهای تحلیلی اختصاصی است.
 
-> در نسخه **3.8.0** تمرکز اصلی، **معماریِ ماژولارِ هوک‌ها**، **زیرساخت تست**، **ارتقای ماژول اطلاعیه‌ها** و **تفکیک نقش‌محور تکالیف** بوده است: ماژولارسازی `constants`، الگوی `use*Page` برای ۸ هوک صفحه، کامپوننت‌های `AnnouncementCard`/`AnnouncementViewModal`، جداسازی `StudentAssignmentsPage`/`TeacherAssignmentsPage`، فونت وزیرمتن کامل و Vitest + RTL.
+> در نسخه **3.9.7** تمرکز اصلی، **بازسازی معماری و کیفیت کد**، **متمرکزسازی پیام‌ها و ثابت‌ها**، **استخراج مجوزهای اطلاعیه‌ها**، **اصلاح شرایط رقابتی در CRUD** و **پیکربندی سخت‌گیرانه Линت/بیلد** بوده است: استخراج `formStrings.ts` و `toastMessages.ts`، ایجاد `roleUtils.ts` و `useAnnouncementPermissions`، تفکیک `AnnouncementFormParts`، اصلاح `useCrudPage` با `useRef`، ارتقای `cascadeDelete` به الگوی جنریک، اضافه شدن `husky` pre-commit، oxlint سخت‌گیرانه، minify با oxc/lightningcss، و آپدیت وابستگی‌ها.
 
 </div>
 
@@ -102,13 +102,13 @@
 | **هسته فرانت‌اند**   | React, TypeScript (Strict Mode), Vite     | 19.3, 7.0, 8.3 |
 | **طراحی و استایل**   | Tailwind CSS (v4، پیکربندی با `@theme`), Vazirmatn Font, RTL Support | 4.3 |
 | **مسیریابی و State** | React Router DOM, React Context API       | 7.18           |
-| **مدیریت فرم‌ها**    | React Hook Form, Custom Validators        | 7.88           |
-| **لایه شبکه**        | Axios, Custom API Wrapper (baseApi)       | 1.20           |
+| **مدیریت فرم‌ها**    | React Hook Form, Custom Validators        | 7.91           |
+| **لایه شبکه**        | Axios, Custom API Wrapper (baseApi)       | 1.21           |
 | **مصورسازی داده**    | Recharts (با تولتیپ/لیجند قابل اشتراک)     | 3.10           |
 | **مدیریت خطا**       | react-error-boundary                      | 6.1            |
 | **تقویم جلالی**      | کامپوننت `DatePicker` اختصاصی (تاریخ شمسی) | —              |
 | **سرور شبیه‌ساز**    | JSON Server (Mock REST API)               | 1.0            |
-| **کیفیت کد**         | oxlint, Prettier, TypeScript Strict Mode  | —              |
+| **کیفیت کد**         | oxlint, Prettier, TypeScript Strict Mode, Husky | —              |
 | **تست واحد/یکپارچگی** | Vitest, React Testing Library, jsdom      | 5.0, 16.3, 30.1 |
 | **متغیرهای محیطی**   | `.env` با پشتیبانی از `import.meta.env`   | —              |
 
@@ -425,6 +425,51 @@ npm run build
 
 <div dir="rtl">
 
+## 📈 پیشرفت‌ها و بهبودهای اعمال‌شده نسبت به نسخه 3.8.0
+
+نسخه **3.9.7** تمرکز بر **بازسازی معماری، متمرکزسازی ثابت‌ها و پیام‌ها، استخراج منطق مجوز، اصلاح شرایط رقابتی و سخت‌گیری‌های بیلد/لینت** است:
+
+### 🏗️ معماری و ساختار کد
+
+| مورد                        | نسخه 3.8.0                                    | نسخه 3.9.7                                                                   |
+| :-------------------------- | :-------------------------------------------- | :--------------------------------------------------------------------------- |
+| ثابت‌های فرم و پیام‌ها      | پراکنده در کامپوننت‌ها/هوک‌ها                 | ✅ متمرکز: `formStrings.ts` (placeholder/label/button)، `toastMessages.ts` (پارامتریزده) |
+| توابع کمکی نقش (Role Utils) | بررسی inline در صفحات/هوک‌ها                  | ✅ `utils/roleUtils.ts`: `hasRole`, `isAdmin`, `isTeacher`, `isStudent`      |
+| مجوزهای اطلاعیه‌ها         | inline در `useAnnouncementsPage`              | ✅ هوک اختصاصی `useAnnouncementPermissions` با `canViewItem`/`canManageItem` |
+| کامپوننت‌های فرم اطلاعیه    | یک فایل `AnnouncementForm.tsx` حجیم           | ✅ تفکیک: `AnnouncementFormParts` (`GlobalAnnouncementRoles`, `ClassAnnouncementAudience`) |
+| اعتبارسنجی فیلدها          | پیام خطای عمومی `error`                       | ✅ خطاهای فیلد مجزا: `classIdError`, `targetAudienceError` + prop `error` در Select |
+| CRUD صفحه (useCrudPage)    | هدف حذف در closure modal                      | ✅ `useRef` برای `deleteTargetIdRef` → رفع race condition حذف              |
+| فیلترهای جدول              | فکتوری inline در هر هوک                       | ✅ کارخانه‌های مشترک: `createExactMatchFilter`, `createStringContainsFilter` |
+| حذف آبشاری (cascadeDelete) | توابع جداگانه تکراری                          | ✅ جنریک `cascadeDeleteByFilter<T>` + کانفیگ‌های اعلان/حضور/پاسخ/کلاس     |
+| انتزاع localStorage (Auth)  | مستقیم در `AuthProvider`                       | ✅ `authStorage.ts`: `setStoredUser`, `clearStoredUser` + حذف `STORAGE_KEYS` |
+
+### 🛠 ابزارها، بیلد و کیفیت کد
+
+| مورد                        | نسخه 3.8.0                    | نسخه 3.9.7                                                    |
+| :-------------------------- | :---------------------------- | :------------------------------------------------------------ |
+| Pre-commit Hook             | ❌                            | ✅ **Husky**: `typecheck` + `lint:check` قبل از هر کامیت     |
+| oxlint                      | قواعد پایه + `warn` برای hooks | ✅ **سخت‌گیرانه**: همه قواعد `error`، `exhaustive-deps` error، فرمت‌بندی کامل |
+| Bilde (Vite)                | esbuild minify                | ✅ **oxc minify** + **lightningcss** + target `esnext` + chunk splitting سخت‌گیرانه |
+| Scripts                     | `dev`, `build`, `lint`, `test` | ✅ افزوده: `typecheck`, `check` (همه چک‌ها)، `test:ci`، `prepare` |
+| وابستگی‌ها (Deps)           | React 19.3.0, Vite 8.3.0      | ✅ React 19.3.1, Vite 8.3.5, Vitest 5.0.5, oxlint 1.90.0, Husky 9.1.7 |
+| تست                         | `vitest run`                  | ✅ **Coverage** پیش‌فرض + `test:ci` با reporter verbose      |
+
+### 🎨 رابط کاربری و تجربه کاربری (UX)
+
+| مورد                       | نسخه 3.8.0 | نسخه 3.9.7                       |
+| :------------------------- | :--------- | :------------------------------- |
+| پیام‌های توست              | متن‌های سخت‌کد | ✅ متمرکز در `TOAST_MESSAGES` با توابع پارامتریزده (`PREVENT_SELF_ACTION`) |
+| Placeholder فرم‌ها         | متن مستقیم در JSX | ✅ از `FORM_PLACEHOLDERS` متمرکز |
+| Select component           | بدون prop خطا | ✅ پشتیبانی از `error` prop برای نمایش خطای اعتبارسنجی |
+| سرور توسعه                 | `vite`     | ✅ `--strictPort --host` + HMR overlay |
+| پیش‌نمایش (Preview)       | `vite preview` | ✅ `--strictPort --host`       |
+
+</div>
+
+---
+
+<div dir="rtl">
+
 ## 📈 پیشرفت‌ها و بهبودهای اعمال‌شده نسبت به نسخه 3.7.0
 
 نسخه **3.8.0** تمرکز بر **معماری ماژولار هوک‌ها**، **زیرساخت تست**، **ارتقای ماژول اطلاعیه‌ها** و **تفکیک نقش‌محور تکالیف** است:
@@ -571,6 +616,6 @@ npm run build
 
 _طراحی، معماری و پیاده‌سازی شده با ❤️ | مبتنی بر اکوسیستم React و TypeScript_
 
-**نسخه: 3.8.0** | **آخرین به‌روزرسانی: آذر ۱۴۰۵**
+**نسخه: 3.9.7** | **آخرین به‌روزرسانی: آذر ۱۴۰۵**
 
 </div>

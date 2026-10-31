@@ -62,7 +62,7 @@ function ClassFilters({
           ]}
         />
       )}
-      {(filters.search || filters.classId || filters.statusFilter) && (
+      {(filters.search || filters["classId"] || filters.statusFilter) && (
         <div className="flex items-end">
           <Button variant="secondary" className="w-full" onClick={onReset}>
             پاک‌کردن فیلترها

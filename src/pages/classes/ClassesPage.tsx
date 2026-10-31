@@ -8,8 +8,10 @@ import ClassFilters from "#/pages/classes/ClassFilters";
 import ClassForm from "#/pages/classes/ClassForm";
 import ClassTable from "#/pages/classes/ClassTable";
 import { useClassesPage } from "#/pages/classes/useClassesPage";
+import { useToast } from "#/hooks/useToast.ts";
 
 export default function ClassesPage() {
+  const { addToast } = useToast();
   const {
     currentUser,
     isAdmin,
@@ -31,6 +33,7 @@ export default function ClassesPage() {
     handleOpenStatus,
     isDeleting,
     canManageClass,
+    refresh,
   } = useClassesPage();
 
   return (
@@ -89,10 +92,13 @@ export default function ClassesPage() {
           users={users ?? []}
           initialData={modals.target}
           onClose={modals.createModal.close}
-          onSuccess={() => {
+          onSuccess={(message) => {
+            addToast(message, "success");
             modals.createModal.close();
+            refresh();
           }}
-          onError={() => {
+          onError={(message) => {
+            addToast(message, "error");
           }}
         />
       )}

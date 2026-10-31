@@ -8,16 +8,16 @@ interface MultiSelectTriggerProps {
   selectedOptions: Array<{ id: string; label: string; subLabel?: string }>;
   isOpen: boolean;
   placeholder: string;
-  error?: string;
+  error?: string | undefined;
   onClick: () => void;
   onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => void;
   onRemoveChip: (id: ID) => void;
-  "aria-labelledby"?: string;
-  "aria-label"?: string;
-  "aria-invalid"?: boolean;
-  "aria-describedby"?: string;
-  "aria-expanded"?: boolean;
-  "aria-haspopup"?: "listbox";
+  "aria-labelledby"?: string | undefined;
+  "aria-label"?: string | undefined;
+  "aria-invalid"?: boolean | undefined;
+  "aria-describedby"?: string | undefined;
+  "aria-expanded"?: boolean | undefined;
+  "aria-haspopup"?: "listbox" | undefined;
 }
 
 export const MultiSelectTrigger = forwardRef<HTMLDivElement, MultiSelectTriggerProps>(

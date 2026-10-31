@@ -7,18 +7,18 @@ const API_BASE_URL =
 
 export class ApiError extends Error {
   public readonly userMessage: string;
-  public readonly status?: number;
-  public readonly code?: string;
-  public readonly url?: string;
+  public readonly status?: number | undefined;
+  public readonly code?: string | undefined;
+  public readonly url?: string | undefined;
   public readonly serverData?: unknown;
   public readonly originalError: unknown;
 
   constructor(options: {
     userMessage: string;
     originalError: unknown;
-    status?: number;
-    code?: string;
-    url?: string;
+    status?: number | undefined;
+    code?: string | undefined;
+    url?: string | undefined;
     serverData?: unknown;
   }) {
     super(options.userMessage, { cause: options.originalError });

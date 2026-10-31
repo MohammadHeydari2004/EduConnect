@@ -46,24 +46,22 @@ export function useAssignmentsPageData() {
 
   const gradingStatsMap = useMemo(() => {
     const map = new Map<ID, { graded: number; total: number }>();
-    const byAssignment = new Map<ID, Submission[]>();
     for (const sub of submissions) {
-      const list = byAssignment.get(sub.assignmentId);
-      if (list) list.push(sub);
-      else byAssignment.set(sub.assignmentId, [sub]);
+      const stats = map.get(sub.assignmentId) ?? { graded: 0, total: 0 };
+      stats.total++;
+      if (sub.status === "graded") stats.graded++;
+      map.set(sub.assignmentId, stats);
     }
     for (const a of assignments) {
-      const subs = byAssignment.get(a.id) ?? [];
-      map.set(a.id, {
-        graded: subs.filter((s) => s.status === "graded").length,
-        total: subs.length,
-      });
+      if (!map.has(a.id)) {
+        map.set(a.id, { graded: 0, total: 0 });
+      }
     }
     return map;
   }, [assignments, submissions]);
 
   const setSubmissionsOptimistic = useCallback(
-    (updater: (prev: Submission[]) => Submission[]) => {
+    (updater: (prev: Submission[] | null) => Submission[] | null) => {
       submissionsAsync.setData(updater);
     },
     [submissionsAsync],

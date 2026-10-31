@@ -8,7 +8,7 @@ import {
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  error?: string;
+  error?: string | undefined;
   suffix?: ReactNode;
   compact?: boolean;
 }

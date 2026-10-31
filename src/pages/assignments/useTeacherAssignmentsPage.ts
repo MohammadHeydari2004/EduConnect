@@ -4,8 +4,10 @@ import { type FilterConfig, createStringContainsFilter, createExactMatchFilter, 
 import { useAssignmentsPageData } from "#/pages/assignments/useAssignmentsPageData.ts";
 import { useCrudPage } from "#/hooks/useCrudPage.ts";
 import { assignmentService } from "#/services/assignment.ts";
-import type { Assignment } from "#/types/assignment.ts";
+import type { Assignment, CreateAssignmentPayload, UpdateAssignmentPayload } from "#/types/assignment.ts";
 import type { ID } from "#/types/common.ts";
+import { TOAST_MESSAGES } from "#/configs/constants";
+import { isAdmin, isTeacher } from "#/utils/roleUtils.ts";
 import { useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -33,21 +35,21 @@ export function useTeacherAssignmentsPage() {
     userMap,
     classMap,
     gradingStatsMap,
-    refreshAssignments,
   } = useAssignmentsPageData();
 
-  const isAdmin = currentUser?.role === "admin";
-  const isTeacher = currentUser?.role === "teacher";
+  const isAdminUser = isAdmin(currentUser);
+  const isTeacherUser = isTeacher(currentUser);
   const classId = classIdParam ?? null;
   const isClassPage = !!classIdParam;
 
   const canManageAssignment = useCallback(
     (a: Assignment) => {
-      if (isAdmin) return true;
-      if (isTeacher) return a.teacherId === currentUser?.id;
+      if (!currentUser) return false;
+      if (isAdminUser) return true;
+      if (isTeacherUser) return a.teacherId === currentUser.id;
       return false;
     },
-    [isAdmin, isTeacher, currentUser?.id],
+    [isAdminUser, isTeacherUser, currentUser?.id],
   );
 
   const getTeacherName = useCallback(
@@ -62,10 +64,10 @@ export function useTeacherAssignmentsPage() {
 
   const myClasses = useMemo(() => {
     if (!currentUser) return [];
-    if (isAdmin) return classes;
-    if (isTeacher) return classes.filter((c) => c.teacherId === currentUser.id);
+    if (isAdminUser) return classes;
+    if (isTeacherUser) return classes.filter((c) => c.teacherId === currentUser.id);
     return [];
-  }, [classes, currentUser, isAdmin, isTeacher]);
+  }, [classes, currentUser, isAdminUser, isTeacherUser]);
 
   const filterConfigs = useMemo<FilterConfig<Assignment>[]>(
     () => [
@@ -79,36 +81,36 @@ export function useTeacherAssignmentsPage() {
   const extraPredicate = useCallback(
     (assignment: Assignment) => {
       if (isClassPage && classId && assignment.classId !== classId) return false;
-      if (isTeacher) {
+      if (isTeacherUser) {
         const cls = classMap.get(assignment.classId);
         if (!cls || cls.teacherId !== currentUser?.id) return false;
       }
       return true;
     },
-    [isClassPage, classId, isTeacher, classMap, currentUser],
+    [isClassPage, classId, isTeacherUser, classMap, currentUser],
   );
 
-  const crud = useCrudPage<Assignment, Partial<Assignment>, Partial<Assignment>, AssignmentFilters>({
+  const crud = useCrudPage<Assignment, CreateAssignmentPayload, UpdateAssignmentPayload, AssignmentFilters>({
     service: {
       getAll: () => assignmentService.getAll(),
       getById: (id: ID) => assignmentService.getById(id),
-      create: (data: Partial<Assignment>) => assignmentService.create(data as any),
-      update: (id: ID, data: Partial<Assignment>) => assignmentService.update(id, data as any),
+      create: (data: CreateAssignmentPayload) => assignmentService.create(data),
+      update: (id: ID, data: UpdateAssignmentPayload) => assignmentService.update(id, data),
       delete: (id: ID) => assignmentService.delete(id),
     },
     initialFilters,
     filterConfigs,
     extraPredicate,
-    fallbackError: "دریافت لیست تکالیف با خطا مواجه شد.",
+    fallbackError: TOAST_MESSAGES.FETCH_ERROR,
     canManage: canManageAssignment,
     onCreateSuccess: () => {
-      addToast("تکلیف با موفقیت ایجاد شد.", "success");
+      addToast(TOAST_MESSAGES.ASSIGNMENT_CREATE_SUCCESS, "success");
     },
     onUpdateSuccess: () => {
-      addToast("تکلیف با موفقیت ویرایش شد.", "success");
+      addToast(TOAST_MESSAGES.ASSIGNMENT_UPDATE_SUCCESS, "success");
     },
     onDeleteSuccess: () => {
-      addToast("تکلیف با موفقیت حذف شد.", "success");
+      addToast(TOAST_MESSAGES.ASSIGNMENT_DELETE_SUCCESS, "success");
     },
   });
 
@@ -121,13 +123,13 @@ export function useTeacherAssignmentsPage() {
 
   const handleAssignmentSuccess = () => {
     handleAssignmentFormClose();
-    refreshAssignments();
+    crud.state.refresh();
   };
 
   return {
     currentUser,
-    isAdmin,
-    isTeacher,
+    isAdmin: isAdminUser,
+    isTeacher: isTeacherUser,
     isClassPage,
     classId,
     myClasses,

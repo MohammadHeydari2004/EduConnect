@@ -1,26 +1,61 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import path from "path";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 
-const __dirname =
-  import.meta.dirname ?? path.dirname(new URL(import.meta.url).pathname);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
+export default defineConfig(({ mode }) => ({
+  plugins: [
+    react({
+      jsxImportSource: "react",
+    }),
+    tailwindcss(),
+  ],
+
   resolve: {
     alias: {
       "#": path.resolve(__dirname, "./src"),
     },
   },
+
   server: {
     port: 5173,
-    open: true,
+    strictPort: true,
+    host: true,
+    open: false,
+    hmr: {
+      overlay: true,
+    },
   },
+
+  preview: {
+    port: 4173,
+    strictPort: true,
+    host: true,
+    open: false,
+  },
+
   build: {
     sourcemap: true,
-    chunkSizeWarningLimit: 2000,
+    target: "esnext",
+    minify: "oxc",
+    cssMinify: "lightningcss",
+    cssTarget: "chrome120",
+    modulePreload: {
+      polyfill: true,
+    },
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 500,
+    assetsInlineLimit: 4096,
+
     rollupOptions: {
+      treeshake: {
+        moduleSideEffects: "no-external",
+        propertyReadSideEffects: false,
+      },
+
       output: {
         manualChunks(id) {
           if (id.includes("node_modules")) {
@@ -38,8 +73,26 @@ export default defineConfig({
 
             return "vendor";
           }
+
+          return undefined;
         },
+
+        entryFileNames: "assets/[name]-[hash].js",
+        chunkFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash].[ext]",
       },
     },
+
+    reportCompressedSize: true,
+    emptyOutDir: true,
   },
-});
+
+  optimizeDeps: {
+    include: ["react", "react-dom", "react-router-dom"],
+    exclude: [],
+  },
+
+  define: {
+    "process.env.NODE_ENV": JSON.stringify(mode),
+  },
+}));

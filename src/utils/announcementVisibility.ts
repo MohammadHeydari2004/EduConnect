@@ -11,8 +11,18 @@ export function isAnnouncementVisibleTo(
   if (user.role === "admin") return true;
   if (announcement.authorId === user.id) return true;
 
+  return isUserInTargetAudience(user, announcement, classMap);
+}
+
+export function isUserInTargetAudience(
+  user: User,
+  announcement: Announcement,
+  classMap: Map<string, ClassItem>,
+): boolean {
   if (announcement.classId === GLOBAL_ANNOUNCEMENT_CLASS_ID) {
-    const roles = announcement.targetRoles ?? DEFAULT_TARGET_ROLES;
+    const roles = announcement.targetRoles?.length
+      ? announcement.targetRoles
+      : DEFAULT_TARGET_ROLES;
     return roles.includes(user.role);
   }
 
@@ -23,8 +33,11 @@ export function isAnnouncementVisibleTo(
   const isTeacherOfThisClass = targetClass.teacherId === user.id;
   const isStudentInThisClass = (targetClass.studentIds || []).includes(user.id);
 
-  if (audience === "teacher") return isTeacherOfThisClass;
-  if (audience === "students") return isStudentInThisClass;
-  if (audience === "both") return isTeacherOfThisClass || isStudentInThisClass;
-  return false;
+  const audienceCheck: Record<string, boolean> = {
+    teacher: isTeacherOfThisClass,
+    students: isStudentInThisClass,
+    both: isTeacherOfThisClass || isStudentInThisClass,
+  };
+
+  return audienceCheck[audience] ?? false;
 }

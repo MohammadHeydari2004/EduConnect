@@ -1,4 +1,6 @@
-export const GLOBAL_ANNOUNCEMENT_CLASS_ID = "0";
+export type GlobalAnnouncementClassId = string & { readonly brand: unique symbol };
+
+export const GLOBAL_ANNOUNCEMENT_CLASS_ID = "0" as GlobalAnnouncementClassId;
 
 export const DEFAULT_CLASS_CAPACITY = 10;
 

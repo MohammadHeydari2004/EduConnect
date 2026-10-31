@@ -76,3 +76,4 @@ repomix.config.json
 EduConnect.md
 .kilo
 generate-db.cjs
+.husky\pre-commit

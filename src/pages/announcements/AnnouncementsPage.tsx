@@ -28,16 +28,18 @@ export default function AnnouncementsPage() {
     getClassName,
     getTargetDescription,
     formModal,
+    crudModal,
     viewModal,
-    deleteModal,
     isMarkingSeen,
     isDeleting,
     handleCloseView,
     handleMarkAsSeen,
     handleDelete,
     canManageItem,
+    canViewItem,
     formatDateTime,
     formatRelativeTime,
+    refresh,
   } = useAnnouncementsPage();
 
   if (loading) return <Loading />;
@@ -141,6 +143,7 @@ export default function AnnouncementsPage() {
             const isSeen = currentUser
               ? announcementService.isSeenBy(item, currentUser.id)
               : true;
+            const canView = canViewItem(item);
 
             return (
               <AnnouncementCard
@@ -154,8 +157,9 @@ export default function AnnouncementsPage() {
                 formatRelativeTime={formatRelativeTime}
                 onView={() => viewModal.openWithTarget("view", item)}
                 onEdit={canManageItem(item) ? () => formModal.openWithTarget("edit", item) : undefined}
-                onDelete={canManageItem(item) ? () => deleteModal.openWithTarget("delete", item) : undefined}
+                onDelete={canManageItem(item) ? () => crudModal.openWithTarget("delete", item) : undefined}
                 canManage={canManageItem(item)}
+                canView={canView}
               />
             );
           })}
@@ -173,6 +177,7 @@ export default function AnnouncementsPage() {
           onClose={formModal.close}
           onSuccess={() => {
             formModal.close();
+            refresh();
           }}
         />
       )}
@@ -192,10 +197,10 @@ export default function AnnouncementsPage() {
       />
 
       <ConfirmDialog
-        isOpen={deleteModal.isOpen("delete")}
+        isOpen={crudModal.isOpen("delete")}
         title="حذف اطلاعیه"
-        message={`آیا از حذف اطلاعیه "${deleteModal.target?.title ?? ""}" مطمئن هستید؟`}
-        onClose={deleteModal.close}
+        message={`آیا از حذف اطلاعیه "${crudModal.target?.title ?? ""}" مطمئن هستید؟`}
+        onClose={crudModal.close}
         onConfirm={handleDelete}
         isLoading={isDeleting}
       />

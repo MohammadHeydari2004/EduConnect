@@ -44,7 +44,7 @@ function ClassTable({
     {
       key: "title",
       title: "عنوان",
-      width: "15%",
+      width: "24%",
       render: (c: ClassItem) => (
         <button
           onClick={() => navigate(`/classes/${c.id}`)}
@@ -57,13 +57,13 @@ function ClassTable({
     {
       key: "teacherId",
       title: "استاد",
-      width: "10%",
+      width: "16%",
       render: (c: ClassItem) => getTeacherName(c.teacherId),
     },
     {
       key: "capacity",
       title: "ظرفیت",
-      width: "5%",
+      width: "8%",
       render: (c: ClassItem) => {
         const studentCount = (c.studentIds || []).length;
         const capacity = c.capacity || 0;
@@ -77,7 +77,7 @@ function ClassTable({
     {
       key: "status",
       title: "وضعیت",
-      width: "7%",
+      width: "11%",
       render: (c: ClassItem) => (
         <span title={getStatusLabel(getEffectiveStatus(c))}>
           <StatusChip status={getEffectiveStatus(c)} />
@@ -89,7 +89,7 @@ function ClassTable({
           {
             key: "actions",
             title: "عملیات",
-            width: "25%",
+            width: "41%",
             render: (c: ClassItem) => (
               <div className="w-full flex flex-wrap justify-center gap-2">
                 {canManageClass(c) && (

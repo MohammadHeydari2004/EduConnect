@@ -3,7 +3,7 @@ import { forwardRef, useId, type TextareaHTMLAttributes } from "react";
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
-  error?: string;
+  error?: string | undefined;
 }
 
 const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(

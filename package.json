@@ -1,26 +1,30 @@
 {
   "name": "educonnect",
   "private": true,
-  "version": "3.8.5",
+  "version": "3.9.7",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && oxlint ./src && vite build",
-    "lint": "oxlint ./src --fix",
-    "lint:check": "oxlint ./src",
-    "preview": "vite preview",
-    "server": "cross-env JSON_SERVER_PORT=4003 json-server --watch db.json --port 4003",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "dev": "vite --strictPort --host",
+    "build": "tsc -b && oxlint ./src --deny-warnings && vite build --mode production",
+    "lint": "oxlint ./src --deny-warnings --fix",
+    "lint:check": "oxlint ./src --deny-warnings",
+    "typecheck": "tsc -b --pretty false",
+    "preview": "vite preview --strictPort --host",
+    "server": "cross-env JSON_SERVER_PORT=4003 json-server --watch db.json --port 4003 --static ./public",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest --coverage",
+    "test:ci": "vitest run --coverage --reporter=verbose",
+    "check": "npm run typecheck && npm run lint:check && npm run test:ci",
+    "prepare": "husky"
   },
   "dependencies": {
-    "axios": "^1.20.0",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
-    "react-error-boundary": "^6.1.5",
-    "react-hook-form": "^7.88.0",
-    "react-is": "^19.3.0",
-    "react-router-dom": "^7.18.3",
+    "axios": "^1.21.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-error-boundary": "^6.1.6",
+    "react-hook-form": "^7.91.0",
+    "react-is": "^19.3.1",
+    "react-router-dom": "^7.18.5",
     "recharts": "^3.10.1"
   },
   "devDependencies": {
@@ -28,23 +32,28 @@
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",
     "@types/jsdom": "^30.0.0",
-    "@types/node": "^26.5.1",
+    "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/react-is": "^19.3.0",
-    "@vitejs/plugin-react": "^6.1.1",
+    "@vitejs/plugin-react": "^6.1.2",
+    "@vitest/coverage-v8": "^5.0.5",
     "cross-env": "^10.1.0",
+    "esbuild": "^0.28.2",
+    "husky": "^9.1.7",
     "jsdom": "^30.1.3",
     "json-server": "^1.0.0-beta.15",
-    "oxlint": "^1.83.0",
-    "prettier": "^3.9.9",
+    "oxlint": "^1.90.0",
+    "prettier": "^3.9.10",
     "tailwindcss": "^4.3.3",
     "typescript": "~7.0.2",
-    "vite": "^8.3.0",
-    "vite-tsconfig-paths": "^6.1.1",
+    "vite": "^8.3.5",
     "vitest": "^5.0.5"
   },
   "imports": {
     "#/*": "./src/*"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
   }
 }

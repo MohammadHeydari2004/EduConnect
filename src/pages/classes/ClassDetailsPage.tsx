@@ -21,6 +21,27 @@ import { getStatusLabel } from "#/utils/user.ts";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+function getClassRoles(
+  currentUser: User | undefined | null,
+  classItem: ClassItem | null,
+): { isAdmin: boolean; isTeacherOfThisClass: boolean; isStudentInThisClass: boolean; canManageSessions: boolean } {
+  const isAdmin = currentUser?.role === "admin";
+  const isTeacherOfThisClass =
+    currentUser?.role === "teacher" &&
+    classItem !== null &&
+    classItem.teacherId === currentUser.id;
+  const isStudentInThisClass =
+    currentUser?.role === "student" &&
+    classItem !== null &&
+    (classItem.studentIds || []).includes(currentUser.id);
+  return {
+    isAdmin,
+    isTeacherOfThisClass,
+    isStudentInThisClass,
+    canManageSessions: isAdmin || isTeacherOfThisClass,
+  };
+}
+
 export default function ClassDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -39,16 +60,10 @@ export default function ClassDetailsPage() {
   );
   const [showSessionForm, setShowSessionForm] = useState(false);
 
-  const isAdmin = currentUser?.role === "admin";
-  const isTeacherOfThisClass =
-    currentUser?.role === "teacher" &&
-    classItem !== null &&
-    classItem.teacherId === currentUser.id;
-  const isStudentInThisClass =
-    currentUser?.role === "student" &&
-    classItem !== null &&
-    (classItem.studentIds || []).includes(currentUser.id);
-  const canManageSessions = isAdmin || isTeacherOfThisClass;
+  const { isTeacherOfThisClass, isStudentInThisClass, canManageSessions } = useMemo(
+    () => getClassRoles(currentUser, classItem),
+    [currentUser, classItem],
+  );
 
   useEffect(() => {
     if (isInvalidId) return;

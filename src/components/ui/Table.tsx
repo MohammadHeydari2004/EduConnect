@@ -12,7 +12,7 @@ interface TableColumn<T> {
 interface TableProps<T> {
   columns: TableColumn<T>[];
   data: T[];
-  getRowKey?: (item: T, index: number) => string | number;
+  getRowKey: (item: T, index: number) => string | number;
   getRowLabel?: (item: T, index: number) => string;
   renderMobileCard?: (item: T) => ReactNode;
   renderMobileActions?: (item: T) => ReactNode;
@@ -87,7 +87,7 @@ function Table<T>({
       <tbody>
         {data.map((item, index) => (
           <tr
-            key={getRowKey ? getRowKey(item, index) : index}
+            key={getRowKey(item, index)}
             className="border-t border-gray-200 transition-colors hover:bg-gray-50"
           >
             {columns.map((column) => (
@@ -113,7 +113,7 @@ function Table<T>({
       <div className="space-y-3 md:hidden">
         {data.map((item, index) => (
           <div
-            key={getRowKey ? getRowKey(item, index) : index}
+            key={getRowKey(item, index)}
             className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
           >
             {mobileCard(item)}

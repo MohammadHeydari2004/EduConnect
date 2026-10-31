@@ -48,7 +48,7 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
 
 interface ErrorBoundaryWrapperProps {
   children: ReactNode;
-  resetKeys?: unknown[];
+  resetKeys?: unknown[] | undefined;
 }
 
 function ErrorBoundaryWrapper({
@@ -58,7 +58,7 @@ function ErrorBoundaryWrapper({
   return (
     <ReactErrorBoundary
       FallbackComponent={ErrorFallback}
-      resetKeys={resetKeys}
+      {...(resetKeys !== undefined ? { resetKeys } : {})}
       onError={(error, errorInfo) => {
         logger.error("ErrorBoundary caught an error", {
           error: error instanceof Error ? error.stack ?? error.message : String(error),
