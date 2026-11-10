@@ -1,7 +1,19 @@
-import { DEFAULT_TARGET_ROLES, GLOBAL_ANNOUNCEMENT_CLASS_ID } from "#/configs/constants";
+import { ALL_ROLES, GLOBAL_ANNOUNCEMENT_CLASS_ID } from "#/configs/constants";
 import type { Announcement } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
+import { getRoleLabel } from "#/utils/userLabels.ts";
+
+export function getTargetDescription(item: Announcement): string {
+  if (item.classId === GLOBAL_ANNOUNCEMENT_CLASS_ID) {
+    const roles = item.targetRoles ?? ["admin", "teacher", "student"];
+    return roles.map((r) => getRoleLabel(r)).join("، ");
+  }
+  const audience = item.targetAudience ?? "students";
+  if (audience === "teacher") return "استاد کلاس";
+  if (audience === "students") return "دانشجویان کلاس";
+  return "دانشجویان و استاد کلاس";
+}
 
 export function isAnnouncementVisibleTo(
   user: User,
@@ -22,7 +34,7 @@ export function isUserInTargetAudience(
   if (announcement.classId === GLOBAL_ANNOUNCEMENT_CLASS_ID) {
     const roles = announcement.targetRoles?.length
       ? announcement.targetRoles
-      : DEFAULT_TARGET_ROLES;
+      : ALL_ROLES;
     return roles.includes(user.role);
   }
 

@@ -1,6 +1,6 @@
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
-import Badge from "#/components/ui/Badge.tsx";
+import ClassCapacityBadge from "#/components/common/ClassCapacityBadge.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
@@ -32,13 +32,9 @@ export default function StudentClassesPage() {
     return classes.filter((c) => c.studentIds?.includes(currentUser.id));
   }, [classes, currentUser]);
 
-  const handleJoinClass = (classId: string) => {
-    navigate(`/classes/join/${classId}`);
-  };
-
   return (
     <div className="space-y-4 sm:space-y-6">
-      <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
+      <h1 className="text-xl font-bold text-gray-800 sm:text-2xl max-sm:mt-2.5">
         کلاس‌های من
       </h1>
 
@@ -66,18 +62,7 @@ export default function StudentClassesPage() {
                   <div className="mt-4 flex flex-wrap gap-3 text-sm text-gray-600">
                     <span>
                       <span className="text-gray-500">ظرفیت: </span>
-                      <Badge
-                        variant={
-                          (c.studentIds?.length ?? 0) >= (c.capacity ?? 0)
-                            ? "red"
-                            : (c.studentIds?.length ?? 0) >=
-                                (c.capacity ?? 0) * 0.8
-                              ? "yellow"
-                              : "green"
-                        }
-                      >
-                        {c.studentIds?.length ?? 0}/{c.capacity ?? 0}
-                      </Badge>
+                      <ClassCapacityBadge classItem={c} />
                     </span>
                     <span className="inline-flex items-center gap-1">
                       <span className="text-gray-500">وضعیت: </span>
@@ -87,10 +72,10 @@ export default function StudentClassesPage() {
                 </div>
                 <Button
                   variant="success"
-                  onClick={() => handleJoinClass(c.id)}
+                  onClick={() => navigate(`/classes/${c.id}`)}
                   className="w-full sm:w-auto"
                 >
-                  شرکت در کلاس
+                  مشاهده کلاس
                 </Button>
               </div>
             ))}

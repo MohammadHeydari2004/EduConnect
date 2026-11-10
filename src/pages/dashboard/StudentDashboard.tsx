@@ -1,19 +1,23 @@
+import EmptyState from "#/components/common/EmptyState.tsx";
 import Card from "#/components/ui/Card.tsx";
 import ChartLegend from "#/components/ui/ChartLegend.tsx";
 import ChartTooltip, {
   defaultChartLabel,
   type ChartPayloadEntry,
 } from "#/components/ui/ChartTooltip.tsx";
-import EmptyState from "#/components/common/EmptyState.tsx";
 import StatCard from "#/components/ui/StatCard.tsx";
 import { ATTENDANCE_LABELS } from "#/components/ui/StatusChip.tsx";
-import type { DashboardData } from "#/types/dashboard.ts";
+import { useStudentDashboardData } from "#/hooks/dashboardData";
 import { attendanceService } from "#/services/attendance.ts";
-import type { User } from "#/types/user.ts";
 import type { AttendanceStatus } from "#/types/common.ts";
-import { formatDate, formatRelativeTime } from "#/utils/formatDate.ts";
+import type { DashboardData } from "#/types/dashboard.ts";
+import type { User } from "#/types/user.ts";
 import { isAnnouncementVisibleTo } from "#/utils/announcementVisibility.ts";
-import { useStudentDashboardData } from "#/utils/dashboardData.ts";
+import { formatDate, formatRelativeTime } from "#/utils/formatDate.ts";
+import {
+  NEAR_DEADLINE_DAYS,
+  NEAR_DEADLINE_HOURS,
+} from "#/utils/tableHelpers.ts";
 import { useMemo } from "react";
 import {
   Cell,
@@ -45,7 +49,7 @@ export default function StudentDashboard({ data, currentUser }: Props) {
     myAssignments,
     mySubmissions,
     classMap,
-  } = useStudentDashboardData(data, currentUser);
+  } = useStudentDashboardData(currentUser.id, data);
 
   const attendanceStats = useMemo(
     () => attendanceService.calculateStudentStats(myAttendances),
@@ -74,16 +78,21 @@ export default function StudentDashboard({ data, currentUser }: Props) {
 
   const upcomingAssignments = useMemo(() => {
     const submittedIds = new Set(mySubmissions.map((s) => s.assignmentId));
-    const now = new Date();
-    const threeDaysFromNow = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
-    
+    const nowDate = Date.now();
+    const threeDaysFromNow = new Date(
+      nowDate + NEAR_DEADLINE_DAYS * 24 * 60 * 60 * 1000,
+    );
+
     return myAssignments
       .filter((a) => {
         if (submittedIds.has(a.id)) return false;
         const deadline = new Date(a.deadline);
-        return deadline >= now && deadline <= threeDaysFromNow;
+        return deadline.getTime() >= nowDate && deadline <= threeDaysFromNow;
       })
-      .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+      .sort(
+        (a, b) =>
+          new Date(a.deadline).getTime() - new Date(b.deadline).getTime(),
+      )
       .slice(0, 5);
   }, [myAssignments, mySubmissions]);
 
@@ -133,79 +142,96 @@ export default function StudentDashboard({ data, currentUser }: Props) {
               هنوز رکورد حضور و غیابی ثبت نشده است.
             </div>
           ) : (
-            <div className="h-72" role="img" aria-label={chartSummary}>
-              <span className="sr-only">{chartSummary}</span>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                  <Pie
-                    data={attendanceChartData}
-                    cx="50%"
-                    cy="40%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    fill={FALLBACK_COLOR}
-                    dataKey="value"
+            <>
+              <div className="sm:hidden space-y-2">
+                {attendanceChartData.map((entry) => (
+                  <div
+                    key={entry.key}
+                    className="flex items-center justify-between text-sm"
                   >
-                    {attendanceChartData.map((entry) => (
-                      <Cell
-                        key={`cell-${entry.key}`}
-                        fill={ATTENDANCE_COLORS[entry.key] ?? FALLBACK_COLOR}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    content={
-                      <ChartTooltip>
-                        {(first: ChartPayloadEntry) => {
-                          const itemColor = first.color ?? "#333";
-                          const value =
-                            typeof first.value === "number"
-                              ? first.value
-                              : 0;
-                          const percentage =
-                            ((first.payload as { percentage?: number } | undefined)
-                              ?.percentage ?? 0) as number;
-                          const name =
-                            ((first.payload as { name?: string } | undefined)
-                              ?.name ?? first.name) as string;
-                          return (
-                            <div className="min-w-40">
-                              <p
-                                style={{ color: itemColor }}
-                                className="mb-2 border-b pb-1 font-bold"
-                              >
-                                {name}
-                              </p>
-                              <div className="flex items-center justify-between gap-4 py-0.5">
-                                <span className="text-gray-600">
-                                  تعداد جلسات:
-                                </span>
-                                <span className="font-bold text-gray-800">
-                                  {value}
-                                </span>
+                    <span className="text-gray-700">{entry.name}</span>
+                    <span className="font-medium text-gray-900">
+                      {entry.value} جلسه
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div
+                className="hidden sm:block h-72"
+                role="group"
+                aria-label={chartSummary}
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart
+                    margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                  >
+                    <Pie
+                      data={attendanceChartData}
+                      cx="50%"
+                      cy="40%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      fill={FALLBACK_COLOR}
+                      dataKey="value"
+                    >
+                      {attendanceChartData.map((entry) => (
+                        <Cell
+                          key={`cell-${entry.key}`}
+                          fill={ATTENDANCE_COLORS[entry.key] ?? FALLBACK_COLOR}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      content={
+                        <ChartTooltip>
+                          {(first: ChartPayloadEntry) => {
+                            const itemColor = first.color ?? "#333";
+                            const value =
+                              typeof first.value === "number" ? first.value : 0;
+                            const percentage = ((
+                              first.payload as
+                                { percentage?: number } | undefined
+                            )?.percentage ?? 0) as number;
+                            const name = ((
+                              first.payload as { name?: string } | undefined
+                            )?.name ?? first.name) as string;
+                            return (
+                              <div className="min-w-40">
+                                <p
+                                  style={{ color: itemColor }}
+                                  className="mb-2 border-b pb-1 font-bold"
+                                >
+                                  {name}
+                                </p>
+                                <div className="flex items-center justify-between gap-4 py-0.5">
+                                  <span className="text-gray-600">
+                                    تعداد جلسات:
+                                  </span>
+                                  <span className="font-bold text-gray-800">
+                                    {value}
+                                  </span>
+                                </div>
+                                <div className="flex items-center justify-between gap-4 py-0.5">
+                                  <span className="text-gray-600">درصد:</span>
+                                  <span className="font-bold text-gray-800">
+                                    {percentage.toFixed(1)}%
+                                  </span>
+                                </div>
                               </div>
-                              <div className="flex items-center justify-between gap-4 py-0.5">
-                                <span className="text-gray-600">درصد:</span>
-                                <span className="font-bold text-gray-800">
-                                  {percentage.toFixed(1)}%
-                                </span>
-                              </div>
-                            </div>
-                          );
-                        }}
-                      </ChartTooltip>
-                    }
-                  />
-                  <Legend
-                    verticalAlign="bottom"
-                    height={36}
-                    content={
-                      <ChartLegend resolveLabel={defaultChartLabel} />
-                    }
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+                            );
+                          }}
+                        </ChartTooltip>
+                      }
+                    />
+                    <Legend
+                      verticalAlign="bottom"
+                      height={36}
+                      content={<ChartLegend resolveLabel={defaultChartLabel} />}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </>
           )}
         </Card>
 
@@ -219,10 +245,11 @@ export default function StudentDashboard({ data, currentUser }: Props) {
             <div className="space-y-3">
               {upcomingAssignments.map((assignment) => {
                 const deadline = new Date(assignment.deadline);
-                const now = new Date();
-                const diffHours = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60));
-                const isUrgent = diffHours <= 24;
-                
+                const diffHours = Math.ceil(
+                  (deadline.getTime() - Date.now()) / (1000 * 60 * 60),
+                );
+                const isUrgent = diffHours <= NEAR_DEADLINE_HOURS;
+
                 return (
                   <div
                     key={assignment.id}
@@ -230,20 +257,23 @@ export default function StudentDashboard({ data, currentUser }: Props) {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-gray-800 truncate">
+                        <h3 className="font-semibold text-gray-800 truncate">
                           {assignment.title}
-                        </h4>
+                        </h3>
                         <p className="mt-1 text-sm text-gray-600">
-                          کلاس: {classMap.get(assignment.classId)?.title ?? "نامشخص"}
+                          کلاس:{" "}
+                          {classMap.get(assignment.classId)?.title ?? "نامشخص"}
                         </p>
                       </div>
                       <div className="flex flex-col items-end gap-1 shrink-0">
-                        <span className={`text-xs font-medium ${isUrgent ? "text-red-600" : "text-amber-600"}`}>
+                        <span
+                          className={`text-xs font-medium ${isUrgent ? "text-red-600" : "text-amber-600"}`}
+                        >
                           {diffHours <= 0
                             ? "مهلت تمام شده"
                             : diffHours < 24
-                            ? `${diffHours} ساعت باقی‌مانده`
-                            : `${Math.ceil(diffHours / 24)} روز باقی‌مانده`}
+                              ? `${diffHours} ساعت باقی‌مانده`
+                              : `${Math.ceil(diffHours / 24)} روز باقی‌مانده`}
                         </span>
                         <span className="text-xs text-gray-400">
                           {formatRelativeTime(assignment.deadline)}
@@ -269,7 +299,7 @@ export default function StudentDashboard({ data, currentUser }: Props) {
                 className="rounded-lg border border-gray-100 bg-gray-50 p-3"
               >
                 <div className="flex items-center justify-between">
-                  <h4 className="font-semibold text-gray-800">{ann.title}</h4>
+                  <h3 className="font-semibold text-gray-800">{ann.title}</h3>
                   <span className="text-xs text-gray-400">
                     {formatDate(ann.createdAt)}
                   </span>

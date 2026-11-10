@@ -1,13 +1,8 @@
 import type { ID } from "#/types/common.ts";
 import { isDateBeforeToday } from "#/utils/formatDate.ts";
 import { validateTitle } from "#/utils/validateTitle.ts";
-
-export interface AssignmentFormErrors {
-  title?: string;
-  deadline?: string;
-  classId?: string;
-  form?: string;
-}
+import type { AssignmentFormErrors } from "#/types/assignment.ts";
+import type { SubmissionFormErrors } from "#/types/submission.ts";
 
 export function validateAssignmentForm(values: {
   title: string;
@@ -35,16 +30,7 @@ export function validateAssignmentForm(values: {
     errors.deadline = "ددلاین نمی‌تواند در گذشته باشد.";
   }
 
-  if (Object.keys(errors).length > 0) {
-    errors.form = "لطفاً خطاهای فرم را برطرف کنید.";
-  }
-
   return errors;
-}
-
-export interface SubmissionFormErrors {
-  content?: string;
-  form?: string;
 }
 
 export function validateSubmissionForm(
@@ -60,10 +46,6 @@ export function validateSubmissionForm(
 
   if (!values.content.trim()) {
     errors.content = "پاسخ شما نمی‌تواند خالی باشد.";
-  }
-
-  if (Object.keys(errors).length > 0) {
-    errors.form = "لطفاً خطاهای فرم را برطرف کنید.";
   }
 
   return errors;

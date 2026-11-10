@@ -1,9 +1,5 @@
 import axios, { type AxiosError } from "axios";
-import { API_REQUEST_TIMEOUT_MS } from "#/configs/constants";
-import { logger } from "#/utils/logger.ts";
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:4003";
+import { API_REQUEST_TIMEOUT_MS, HTTP_STATUS_MESSAGES } from "#/configs/constants";
 
 export class ApiError extends Error {
   public readonly userMessage: string;
@@ -41,16 +37,6 @@ export function isApiError(error: unknown): error is ApiError {
   return error instanceof ApiError;
 }
 
-const STATUS_MESSAGES: Record<number, string> = {
-  400: "درخواست ارسال‌شده نامعتبر است.",
-  401: "اعتبار احراز هوایی منقضی شده است. لطفاً دوباره وارد شوید.",
-  403: "دسترسی به این منبع مجاز نیست.",
-  404: "منبع موردنظر در سرور یافت نشد.",
-  409: "تضادی در وضعیت منبع رخ داده است.",
-  500: "خطای داخلی سرور رخ داد. لطفاً بعدا‌ً تلاش کنید.",
-  503: "سرور در حال حاضر در دسترس نیست.",
-};
-
 function resolveUserMessage(
   error: AxiosError<{ message?: string; error?: string }>,
 ): string {
@@ -68,54 +54,23 @@ function resolveUserMessage(
   if (serverMessage) return serverMessage;
 
   return (
-    STATUS_MESSAGES[error.response.status] ??
+    HTTP_STATUS_MESSAGES[error.response.status] ??
     "خطای ناشناخته‌ای در ارتباط با سرور رخ داد."
   );
 }
 
 const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:4003",
   headers: {
     "Content-Type": "application/json",
   },
   timeout: API_REQUEST_TIMEOUT_MS,
 });
 
-if (import.meta.env.VITE_APP_ENV === "development") {
-  axiosInstance.interceptors.request.use(
-    (config) => {
-      logger.debug("API Request", {
-        method: config.method?.toUpperCase(),
-        url: `${config.baseURL}${config.url}`,
-        data: config.data || config.params,
-      });
-      return config;
-    },
-    (error) => Promise.reject(error),
-  );
-}
-
 axiosInstance.interceptors.response.use(
-  (response) => {
-    if (import.meta.env.VITE_APP_ENV === "development") {
-      logger.info("API Response", {
-        status: response.status,
-        url: response.config.url,
-        data: response.data,
-      });
-    }
-    return response;
-  },
+  (response) => response,
   (error: AxiosError<{ message?: string; error?: string }>) => {
     const userMessage = resolveUserMessage(error);
-
-    if (import.meta.env.VITE_APP_ENV === "development") {
-      logger.error("API Error", {
-        url: error.config?.url,
-        message: userMessage,
-        error,
-      });
-    }
 
     return Promise.reject(
       new ApiError({

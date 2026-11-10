@@ -3,24 +3,15 @@ import Button from "#/components/ui/Button.tsx";
 import MenuItem from "#/components/ui/MenuItem.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
+import { DeadlineBadge } from "#/components/ui/DeadlineBadge.tsx";
 import type { Assignment } from "#/types/assignment.ts";
 import type { ID } from "#/types/common.ts";
 import type { Submission } from "#/types/submission.ts";
-import { formatDate } from "#/utils/formatDate.ts";
-import {
-  getDeadlineBadgeLabel,
-  getDeadlineBadgeVariant,
-  getDeadlineColor,
-  getDeadlineColorClass,
-  getSubmissionPreview,
-  isAssignmentExpired,
-} from "#/utils/tableHelpers.ts";
-import { useCallback } from "react";
+import { getSubmissionPreview, getAssignmentSubmissionStatus } from "#/utils/tableHelpers.ts";
 
 interface StudentAssignmentsTableProps {
   data: Assignment[];
   getSubmission: (assignmentId: ID) => Submission | undefined;
-  gradingStats: Map<ID, { graded: number; total: number }>;
   getClassName: (classId: ID) => string;
   getTeacherName: (teacherId: ID) => string;
   onOpenSubmissionForm: (assignment: Assignment) => void;
@@ -29,107 +20,92 @@ interface StudentAssignmentsTableProps {
 export default function StudentAssignmentsTable({
   data,
   getSubmission,
-  gradingStats,
   getClassName,
   getTeacherName,
   onOpenSubmissionForm,
 }: StudentAssignmentsTableProps) {
-  const renderMobileCard = useCallback(
-    (a: Assignment) => {
-      const sub = getSubmission(a.id);
-      const isGraded = sub?.status === "graded";
-      const isReturned = sub?.status === "returned";
-      const deadlineColor = getDeadlineColor(a.deadline);
-      return (
-        <div className="space-y-2 text-right">
-          <div className="flex items-start justify-between gap-2">
-            <span className="text-base font-bold text-gray-800 w-34">
-              {a.title}
-            </span>
-            {sub ? (
-              <StatusChip status={sub.status} />
-            ) : (
-              <Badge variant="gray">ارسال نشده</Badge>
-            )}
-          </div>
-          <div className="text-sm text-gray-600">
-            <span className="text-gray-500">کلاس: </span>{" "}
-            {getClassName(a.classId)}
-          </div>
-          <div className="text-sm text-gray-600">
-            <span className="text-gray-500">استاد: </span>{" "}
-            {getTeacherName(a.teacherId)}
-          </div>
-          {a.description && (
-            <p className="line-clamp-2 text-xs text-gray-500">
-              {a.description}
-            </p>
-          )}
-          {sub && sub.content && (
-            <p className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded line-clamp-2">
-              <span className="font-medium text-gray-500">پاسخ: </span>
-              {getSubmissionPreview(sub.content, 80)}
-            </p>
-          )}
-          <div
-            className={`inline-flex items-center gap-2 text-sm ${getDeadlineColorClass(deadlineColor)}`}
-          >
-            <span className="text-gray-500">ددلاین: </span>{" "}
-            <span className="font-medium">{formatDate(a.deadline)}</span>
-            <Badge variant={getDeadlineBadgeVariant(deadlineColor)}>
-              {getDeadlineBadgeLabel(deadlineColor)}
-            </Badge>
-          </div>
-          {isGraded && sub?.grade !== undefined && (
-            <div className="rounded-lg bg-green-50 px-3 py-1.5 text-sm font-bold text-green-700">
-              نمره: {sub.grade}
-            </div>
-          )}
-          {isReturned && (
-            <div className="rounded-lg bg-orange-50 px-3 py-1.5 text-sm font-bold text-orange-700">
-              پاسخ برگشتی - لطفاً مجدداً ارسال کنید
-            </div>
+  const renderMobileCard = (a: Assignment) => {
+    const { sub, isGraded, isReturned } = getAssignmentSubmissionStatus(
+      a,
+      getSubmission,
+    );
+    return (
+      <div className="space-y-2 text-right">
+        <div className="flex items-start justify-between gap-2">
+          <span className="text-base font-bold text-gray-800 w-34">
+            {a.title}
+          </span>
+          {sub ? (
+            <StatusChip status={sub.status} />
+          ) : (
+            <Badge variant="gray">ارسال نشده</Badge>
           )}
         </div>
-      );
-    },
-    [getSubmission, gradingStats, getClassName, getTeacherName],
-  );
+        <div className="text-sm text-gray-600">
+          <span className="text-gray-500">کلاس: </span>{" "}
+          {getClassName(a.classId)}
+        </div>
+        <div className="text-sm text-gray-600">
+          <span className="text-gray-500">استاد: </span>{" "}
+          {getTeacherName(a.teacherId)}
+        </div>
+        {a.description && (
+          <p className="line-clamp-2 text-xs text-gray-500">
+            {a.description}
+          </p>
+        )}
+        {sub && sub.content && (
+          <p className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded line-clamp-2">
+            <span className="font-medium text-gray-500">پاسخ: </span>
+            {getSubmissionPreview(sub.content, 80)}
+          </p>
+        )}
+        <DeadlineBadge deadline={a.deadline} />
+        {isGraded && typeof sub?.grade === "number" && (
+          <div className="rounded-lg bg-green-50 px-3 py-1.5 text-sm font-bold text-green-700">
+            نمره: {sub.grade}
+          </div>
+        )}
+        {isReturned && (
+          <div className="rounded-lg bg-orange-50 px-3 py-1.5 text-sm font-bold text-orange-700">
+            پاسخ برگشتی - لطفاً مجدداً ارسال کنید
+          </div>
+        )}
+      </div>
+    );
+  };
 
-  const renderMobileActions = useCallback(
-    (a: Assignment) => {
-      const sub = getSubmission(a.id);
-      const isGraded = sub?.status === "graded";
-      const isReturned = sub?.status === "returned";
-      const isExpired = isAssignmentExpired(a);
-      return (
-        <>
-          {!sub ? (
-            <MenuItem
-              label="ارسال پاسخ"
-              onAction={() => onOpenSubmissionForm(a)}
-              disabled={isExpired}
-            />
-          ) : isReturned ? (
-            <MenuItem
-              label="پاسخ مجدد"
-              onAction={() => onOpenSubmissionForm(a)}
-              disabled={isExpired}
-            />
-          ) : !isGraded ? (
-            <div className="w-full rounded-md px-3 py-2 text-right text-sm text-blue-700 font-medium">
-              منتظر پاسخ استاد
-            </div>
-          ) : (
-            <div className="w-full rounded-md px-3 py-2 text-right text-sm text-gray-400">
-              نمره نهایی شده ({sub.grade})
-            </div>
-          )}
-        </>
-      );
-    },
-    [getSubmission, onOpenSubmissionForm],
-  );
+  const renderMobileActions = (a: Assignment) => {
+    const { sub, isGraded, isReturned, isExpired } = getAssignmentSubmissionStatus(
+      a,
+      getSubmission,
+    );
+    return (
+      <>
+        {!sub ? (
+          <MenuItem
+            label="ارسال پاسخ"
+            onAction={() => onOpenSubmissionForm(a)}
+            disabled={isExpired}
+          />
+        ) : isReturned ? (
+          <MenuItem
+            label="پاسخ مجدد"
+            onAction={() => onOpenSubmissionForm(a)}
+            disabled={isExpired}
+          />
+        ) : !isGraded ? (
+          <div className="w-full rounded-md px-3 py-2 text-right text-sm text-blue-700 font-medium">
+            منتظر پاسخ استاد
+          </div>
+        ) : (
+          <div className="w-full rounded-md px-3 py-2 text-right text-sm text-gray-400">
+            نمره نهایی شده ({sub.grade})
+          </div>
+        )}
+      </>
+    );
+  };
 
   return (
     <Table
@@ -166,22 +142,7 @@ export default function StudentAssignmentsTable({
           key: "deadline",
           title: "ددلاین",
           width: "10%",
-          render: (a) => {
-            const deadlineColor = getDeadlineColor(a.deadline);
-            return (
-              <span className="inline-flex flex-col items-center gap-2">
-                <span
-                  className={getDeadlineColorClass(deadlineColor)}
-                  font-medium
-                >
-                  {formatDate(a.deadline)}
-                </span>
-                <Badge variant={getDeadlineBadgeVariant(deadlineColor)}>
-                  {getDeadlineBadgeLabel(deadlineColor)}
-                </Badge>
-              </span>
-            );
-          },
+          render: (a) => <DeadlineBadge deadline={a.deadline} />,
         },
         {
           key: "teacher",
@@ -194,13 +155,13 @@ export default function StudentAssignmentsTable({
           title: "وضعیت",
           width: "23%",
           render: (a) => {
-            const sub = getSubmission(a.id);
+            const { sub } = getAssignmentSubmissionStatus(a, getSubmission);
             if (sub) {
               if (sub.status === "graded") {
                 return (
                   <span className="inline-flex items-center gap-1 text-green-700 font-medium">
                     <StatusChip status={sub.status} />
-                    {sub.grade !== undefined && <span>نمره: {sub.grade}</span>}
+                    {typeof sub.grade === "number" && <span>نمره: {sub.grade}</span>}
                   </span>
                 );
               }
@@ -212,14 +173,6 @@ export default function StudentAssignmentsTable({
                   </span>
                 );
               }
-              if (sub.status === "late") {
-                return (
-                  <span className="inline-flex items-center gap-1 text-red-700 font-medium">
-                    <StatusChip status={sub.status} />
-                    <span>منتظر پاسخ استاد (با تأخیر)</span>
-                  </span>
-                );
-              }
               if (sub.status === "pending") {
                 return (
                   <span className="inline-flex items-center gap-1 text-yellow-700 font-medium">
@@ -228,7 +181,6 @@ export default function StudentAssignmentsTable({
                   </span>
                 );
               }
-              // submitted
               return (
                 <span className="inline-flex items-center gap-1 text-blue-700 font-medium">
                   <StatusChip status={sub.status} />
@@ -244,10 +196,8 @@ export default function StudentAssignmentsTable({
           title: "عملیات",
           width: "13%",
           render: (a) => {
-            const sub = getSubmission(a.id);
-            const isGraded = sub?.status === "graded";
-            const isReturned = sub?.status === "returned";
-            const isExpired = isAssignmentExpired(a);
+            const { sub, isGraded, isReturned, isExpired } =
+              getAssignmentSubmissionStatus(a, getSubmission);
             return (
               <div className="flex flex-wrap justify-center gap-2">
                 {!sub ? (

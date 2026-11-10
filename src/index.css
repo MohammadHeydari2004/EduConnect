@@ -11,3 +11,9 @@
 @theme {
   --font-sans: "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
 }
+
+html,
+body {
+  direction: rtl;
+  text-align: right;
+}

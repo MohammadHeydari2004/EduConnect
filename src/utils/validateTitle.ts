@@ -1,8 +1,4 @@
-export interface TitleRule {
-  titleLabel?: string;
-  min?: number;
-  max?: number;
-}
+import type { TitleRule } from "#/types/common.ts";
 
 export function validateTitle(
   value: string,

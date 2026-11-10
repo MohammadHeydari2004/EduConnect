@@ -1,8 +1,4 @@
-interface MultiSelectOption {
-  id: string;
-  label: string;
-  subLabel?: string;
-}
+import type { MultiSelectOption } from "#/types/hooks.ts";
 
 interface MultiSelectActionsProps {
   options: MultiSelectOption[];

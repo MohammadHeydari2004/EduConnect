@@ -1,36 +1,14 @@
-import { getErrorMessage } from "#/utils/error.ts";
+import { getErrorMessage } from "#/services/error.ts";
 import {
   useCallback,
   useEffect,
   useRef,
   useState,
   type DependencyList,
-  type Dispatch,
-  type SetStateAction,
 } from "react";
 
-function isPrimitive(value: unknown): boolean {
-  return (
-    value === null ||
-    (typeof value !== "object" && typeof value !== "function")
-  );
-}
-
-function validateDeps(deps: DependencyList): void {
-  if (import.meta.env.DEV) {
-    for (const dep of deps) {
-      if (!isPrimitive(dep)) {
-        console.warn(
-          "[useAsyncData] Dependency array contains non-primitive value. This may cause infinite refetches. Use primitive values (string, number, boolean) or stable references only.",
-          dep,
-        );
-      }
-    }
-  }
-}
-
 interface UseAsyncDataOptions<T> {
-  fetcher: () => Promise<T>;
+  fetcher: (signal: AbortSignal) => Promise<T>;
   deps: DependencyList;
   fallbackError: string;
 }
@@ -38,10 +16,8 @@ interface UseAsyncDataOptions<T> {
 interface UseAsyncDataResult<T> {
   data: T | null;
   loading: boolean;
-  isRefreshing: boolean;
   error: string;
   refresh: () => void;
-  setData: Dispatch<SetStateAction<T | null>>;
 }
 
 export function useAsyncData<T>({
@@ -49,11 +25,8 @@ export function useAsyncData<T>({
   deps,
   fallbackError,
 }: UseAsyncDataOptions<T>): UseAsyncDataResult<T> {
-  validateDeps(deps);
-
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -63,57 +36,53 @@ export function useAsyncData<T>({
   fallbackRef.current = fallbackError;
 
   const dataRef = useRef<T | null>(null);
-
-  const setDataOptimistic = useCallback<Dispatch<SetStateAction<T | null>>>(
-    (action) => {
-      setData((prev) => {
-        const next =
-          typeof action === "function"
-            ? (action as (value: T | null) => T | null)(prev)
-            : action;
-        dataRef.current = next;
-        return next;
-      });
-    },
-    [],
-  );
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const refresh = useCallback(() => {
-    setIsRefreshing(dataRef.current !== null);
     setRefreshKey((key) => key + 1);
   }, []);
 
   useEffect(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    const { signal } = controller;
+
     let ignore = false;
 
     const hasData = dataRef.current !== null;
-    setLoading(!hasData);
-    setIsRefreshing(hasData);
-    setError("");
+        setLoading(!hasData);
+        setError("");
 
     fetcherRef
-      .current()
+      .current(signal)
       .then((result) => {
-        if (ignore) return;
+        if (ignore || signal.aborted) return;
         dataRef.current = result;
         setData(result);
         setError("");
       })
       .catch((err: unknown) => {
-        if (ignore) return;
+        if (ignore || signal.aborted) return;
+        if (err instanceof DOMException && err.name === "AbortError") {
+          return;
+        }
         setError(getErrorMessage(err, fallbackRef.current));
       })
       .finally(() => {
-        if (!ignore) {
+        if (!ignore && !signal.aborted) {
           setLoading(false);
-          setIsRefreshing(false);
         }
       });
 
     return () => {
       ignore = true;
+      controller.abort();
     };
+    
   }, [refreshKey, ...deps]);
 
-  return { data, loading, isRefreshing, error, refresh, setData: setDataOptimistic };
+  return { data, loading, error, refresh };
 }

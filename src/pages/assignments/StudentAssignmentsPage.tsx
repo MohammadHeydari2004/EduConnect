@@ -1,33 +1,35 @@
-import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
-import Button from "#/components/ui/Button.tsx";
-import Card from "#/components/ui/Card.tsx";
+import { EmptyListState } from "#/components/ui/EmptyListState.tsx";
 import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
-import Input from "#/components/ui/Input.tsx";
-import Select from "#/components/ui/Select.tsx";
+import Card from "#/components/ui/Card.tsx";
+import {
+  assignmentFilterConfigs,
+  initialAssignmentFilters,
+  TOAST_MESSAGES,
+} from "#/configs/constants";
 import { useAuth } from "#/contexts/AuthContext.ts";
+import { useAssignmentsPageData } from "#/hooks/useAssignmentsPageData";
+import { useAsyncData } from "#/hooks/useAsyncData.ts";
+import { useFilter } from "#/hooks/useFilter.ts";
 import { useMapById } from "#/hooks/useMapById.ts";
 import { useModalState } from "#/hooks/useModalState.ts";
-import { useFilter, type FilterConfig, createStringContainsFilter, createExactMatchFilter, createDateStatusFilter } from "#/hooks/useFilter.ts";
 import { useToast } from "#/hooks/useToast.ts";
+import AssignmentFilterCard from "#/components/common/AssignmentFilterCard.tsx";
 import StudentAssignmentsTable from "#/pages/assignments/StudentAssignmentsTable.tsx";
 import SubmissionForm from "#/pages/assignments/SubmissionForm";
-import { useAssignmentsPageData } from "#/pages/assignments/useAssignmentsPageData.ts";
-import type { Assignment } from "#/types/assignment.ts";
+import { assignmentService } from "#/services/assignment.ts";
+import type { Assignment, AssignmentFilters } from "#/types/assignment.ts";
 import type { ID } from "#/types/common.ts";
-import type { Submission } from "#/types/submission.ts";
+import type { NewSubmissionDraft, Submission } from "#/types/submission.ts";
+import {
+  getClassNameFromMap,
+  getUserNameFromMap,
+} from "#/utils/nameHelpers.ts";
 import { useCallback, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 
-interface AssignmentFilters {
-  search: string;
-  classId: string;
-  status: "" | "active" | "expired";
-  [key: string]: string;
-}
-
 export default function StudentAssignmentsPage() {
-  const submissionModal = useModalState<Submission>();
+  const submissionModal = useModalState<Submission | NewSubmissionDraft>();
 
   const { classId: classIdParam } = useParams<{ classId?: string }>();
   const { user: currentUser } = useAuth();
@@ -36,37 +38,56 @@ export default function StudentAssignmentsPage() {
   const {
     classes,
     submissions,
-    assignments,
     userMap,
     classMap,
-    gradingStatsMap,
     loading,
     error,
     refreshSubmissions,
-    setSubmissionsOptimistic,
   } = useAssignmentsPageData();
 
   const isStudent = currentUser?.role === "student";
   const classId = classIdParam ?? null;
   const isClassPage = !!classIdParam;
 
-  const [filters, setFilters] = useState<AssignmentFilters>({
-    search: "",
-    classId: "",
-    status: "",
+  const [filters, setFilters] = useState<AssignmentFilters>(
+    initialAssignmentFilters,
+  );
+
+  const {
+    data: assignments,
+    loading: assignmentsLoading,
+    error: assignmentsError,
+  } = useAsyncData<Assignment[]>({
+    fetcher: (signal) => assignmentService.getAll(undefined, signal),
+    deps: [],
+    fallbackError: TOAST_MESSAGES.FETCH_ERROR,
   });
 
-  const assignmentMap = useMapById(assignments);
+  const filteredAssignments = useFilter({
+    data: assignments,
+    filters,
+    filterConfigs: assignmentFilterConfigs,
+    extraPredicate: (assignment: Assignment) => {
+      if (isClassPage && classId && assignment.classId !== classId)
+        return false;
+      if (isStudent && currentUser) {
+        const cls = classMap.get(assignment.classId);
+        if (!cls || !(cls.studentIds || []).includes(currentUser.id))
+          return false;
+      }
+      return true;
+    },
+  });
+
+  const assignmentMap = useMapById(assignments ?? []);
 
   const submissionMap = useMemo(() => {
     const map = new Map<ID, Submission>();
-    if (currentUser) {
-      submissions.forEach((s: Submission) => {
-        if (s.studentId === currentUser.id) {
-          map.set(s.assignmentId, s);
-        }
-      });
-    }
+    submissions.forEach((s: Submission) => {
+      if (s.studentId === currentUser?.id) {
+        map.set(s.assignmentId, s);
+      }
+    });
     return map;
   }, [submissions, currentUser?.id]);
 
@@ -75,78 +96,8 @@ export default function StudentAssignmentsPage() {
     [submissionMap],
   );
 
-  const getTeacherName = useCallback(
-    (teacherId: ID) => userMap.get(teacherId)?.name ?? "—",
-    [userMap],
-  );
-
-  const getClassName = useCallback(
-    (cId: ID) => classMap.get(cId)?.title ?? "—",
-    [classMap],
-  );
-
-  const handleOpenSubmissionForm = (assignment: Assignment) => {
-    const isExpired = new Date() > new Date(assignment.deadline);
-    if (isExpired) {
-      addToast("مهلت ارسال این تکلیف به پایان رسیده است.", "error");
-      return;
-    }
-    submissionModal.setTarget({ assignmentId: assignment.id, ...getSubmissionForUser(assignment.id) } as Submission);
-    submissionModal.open("form");
-  };
-
-  const handleSubmissionFormClose = () => {
-    submissionModal.close();
-  };
-
-  const handleSubmissionSuccess = useCallback(
-    (submission: Submission) => {
-      handleSubmissionFormClose();
-      // Optimistically update the submissions list
-      setSubmissionsOptimistic((prev) => {
-        const submissions = prev ?? [];
-        const existingIndex = submissions.findIndex(
-          (s) => s.assignmentId === submission.assignmentId && s.studentId === submission.studentId,
-        );
-        if (existingIndex >= 0) {
-          const updated = [...submissions];
-          updated[existingIndex] = submission;
-          return updated;
-        }
-        return [...submissions, submission];
-      });
-      refreshSubmissions();
-    },
-    [handleSubmissionFormClose, refreshSubmissions, setSubmissionsOptimistic],
-  );
-
-  const filterConfigs = useMemo<FilterConfig<Assignment>[]>(
-    () => [
-      createStringContainsFilter<Assignment>("search", (assignment) => assignment.title),
-      createExactMatchFilter<Assignment>("classId", (assignment) => assignment.classId),
-      createDateStatusFilter<Assignment>("status", (assignment) => assignment.deadline),
-    ],
-    [],
-  );
-
-  const extraPredicate = useCallback(
-    (assignment: Assignment) => {
-      if (isClassPage && classId && assignment.classId !== classId) return false;
-      if (isStudent) {
-        const cls = classMap.get(assignment.classId);
-        if (!cls || !(cls.studentIds || []).includes(currentUser?.id ?? "")) return false;
-      }
-      return true;
-    },
-    [isClassPage, classId, isStudent, classMap, currentUser],
-  );
-
-  const filteredAssignments = useFilter({
-    data: assignments,
-    filters,
-    filterConfigs,
-    extraPredicate,
-  });
+  const getTeacherName = (userId: ID) => getUserNameFromMap(userMap, userId);
+  const getClassName = (classId: ID) => getClassNameFromMap(classMap, classId);
 
   const myClasses = useMemo(() => {
     if (!currentUser) return [];
@@ -157,11 +108,34 @@ export default function StudentAssignmentsPage() {
     return [];
   }, [classes, currentUser, isStudent]);
 
+  const handleOpenSubmissionForm = (assignment: Assignment) => {
+    const isExpired = new Date() > new Date(assignment.deadline);
+    if (isExpired) {
+      addToast("مهلت ارسال این تکلیف به پایان رسیده است.", "error");
+      return;
+    }
+    const existing = getSubmissionForUser(assignment.id);
+    const target: Submission | NewSubmissionDraft = existing
+      ? existing
+      : { assignmentId: assignment.id };
+    submissionModal.setTarget(target);
+    submissionModal.open("form");
+  };
+
+  const handleSubmissionFormClose = useCallback(() => {
+    submissionModal.close();
+  }, [submissionModal]);
+
+  const handleSubmissionSuccess = useCallback(() => {
+    handleSubmissionFormClose();
+    refreshSubmissions();
+  }, [handleSubmissionFormClose, refreshSubmissions]);
+
   const submissionFormProps = useMemo(() => {
     if (!submissionModal.isOpen("form") || !currentUser) return null;
     const target = submissionModal.target;
     const assignmentId = target?.assignmentId ?? "";
-    const existingSubmission = target?.id ? target : null;
+    const existingSubmission = target && "id" in target && target.id ? target : null;
     const deadline = assignmentMap.get(assignmentId)?.deadline ?? "";
     return {
       key: `submission-form-${assignmentId}`,
@@ -172,15 +146,26 @@ export default function StudentAssignmentsPage() {
       onClose: handleSubmissionFormClose,
       onSuccess: handleSubmissionSuccess,
     };
-  }, [submissionModal, currentUser, assignmentMap, handleSubmissionFormClose, handleSubmissionSuccess]);
+  }, [
+    submissionModal,
+    currentUser,
+    assignmentMap,
+    handleSubmissionFormClose,
+    handleSubmissionSuccess,
+  ]);
 
-  if (loading) return <Loading />;
-  if (error) return <ErrorAlert message={error} />;
+  if (loading || assignmentsLoading) return <Loading />;
+  if (error || assignmentsError)
+    return <ErrorAlert message={error || assignmentsError} />;
+
+  const hasActiveFilters = Boolean(
+    filters.search || filters.classId || filters.status,
+  );
 
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
+        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl max-sm:mt-2.5">
           {isClassPage && classId
             ? `تکالیف کلاس: ${getClassName(classId)}`
             : "تکالیف من"}
@@ -188,59 +173,28 @@ export default function StudentAssignmentsPage() {
       </div>
 
       {!isClassPage && (
-        <Card className="mb-4">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <Input
-              label="جستجوی عنوان"
-              value={filters.search}
-              onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              placeholder="جستجو..."
-            />
-            {!isClassPage && (
-              <Select
-                label="کلاس"
-                value={filters.classId}
-                onChange={(e) => setFilters({ ...filters, classId: e.target.value })}
-                options={[
-                  { value: "", label: "همه کلاس‌ها" },
-                  ...myClasses.map((c) => ({ value: c.id, label: c.title || "(بدون عنوان)" })),
-                ]}
-              />
-            )}
-            <Select
-              label="وضعیت"
-              value={filters.status}
-              onChange={(e) => setFilters({ ...filters, status: e.target.value as "" | "active" | "expired" })}
-              options={[
-                { value: "", label: "همه" },
-                { value: "active", label: "فعال" },
-                { value: "expired", label: "منقضی شده" },
-              ]}
-            />
-          </div>
-          {(filters.search || filters.classId || filters.status) && (
-            <Button
-              variant="secondary"
-              className="mt-2"
-              onClick={() => setFilters({ search: "", classId: "", status: "" })}
-            >
-              پاک کردن فیلترها
-            </Button>
-          )}
-        </Card>
+        <AssignmentFilterCard
+          filters={filters}
+          onChange={(next) => setFilters({ ...filters, ...next })}
+          onReset={() => setFilters(initialAssignmentFilters)}
+          classes={myClasses}
+          hasActiveFilters={hasActiveFilters}
+        />
       )}
 
       {filteredAssignments.length === 0 ? (
-        <EmptyState
-          title="تکلیفی وجود ندارد"
-          description="تکلیفی برای نمایش موجود نیست."
+        <EmptyListState
+          items={filteredAssignments}
+          emptyTitle="تکلیفی وجود ندارد"
+          emptyDescription="تکلیفی برای نمایش موجود نیست."
+          notFoundTitle="تکلیفی وجود ندارد"
+          notFoundDescription="تکلیفی برای نمایش موجود نیست."
         />
       ) : (
         <Card noPadding={true}>
           <StudentAssignmentsTable
             data={filteredAssignments}
             getSubmission={getSubmissionForUser}
-            gradingStats={gradingStatsMap}
             getClassName={getClassName}
             getTeacherName={getTeacherName}
             onOpenSubmissionForm={handleOpenSubmissionForm}
@@ -248,9 +202,7 @@ export default function StudentAssignmentsPage() {
         </Card>
       )}
 
-      {submissionFormProps && (
-        <SubmissionForm {...submissionFormProps} />
-      )}
+      {submissionFormProps && <SubmissionForm {...submissionFormProps} />}
     </div>
   );
 }

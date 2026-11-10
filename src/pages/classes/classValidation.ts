@@ -1,15 +1,10 @@
-import { MAX_CLASS_CAPACITY, MAX_CLASS_DESCRIPTION_LENGTH } from "#/configs/constants";
-import type { ClassFormValues } from "#/types/class.ts";
+import {
+  MAX_CLASS_CAPACITY,
+  MAX_CLASS_DESCRIPTION_LENGTH,
+  MAX_CLASS_TITLE_LENGTH,
+} from "#/configs/constants";
+import type { ClassFormValues, ClassFormErrors } from "#/types/class.ts";
 import { validateTitle } from "#/utils/validateTitle.ts";
-
-export interface ClassFormErrors {
-  title?: string | undefined;
-  teacherId?: string | undefined;
-  capacity?: string | undefined;
-  students?: string | undefined;
-  description?: string | undefined;
-  form?: string | undefined;
-}
 
 export function validateClassForm(form: ClassFormValues): ClassFormErrors {
   const newErrors: ClassFormErrors = {};
@@ -17,7 +12,7 @@ export function validateClassForm(form: ClassFormValues): ClassFormErrors {
   const titleError = validateTitle(form.title, {
     titleLabel: "کلاس",
     min: 3,
-    max: 100,
+    max: MAX_CLASS_TITLE_LENGTH,
   });
   if (titleError) newErrors.title = titleError;
 
@@ -32,7 +27,7 @@ export function validateClassForm(form: ClassFormValues): ClassFormErrors {
   }
 
   if (form.studentIds.length > form.capacity) {
-    newErrors.students = `تعداد دانشجویان (${form.studentIds.length}) بیشتر از ظرفیت (${form.capacity}) است.`;
+    newErrors.studentIds = `تعداد دانشجویان (${form.studentIds.length}) بیشتر از ظرفیت (${form.capacity}) است.`;
   }
 
   if (form.description && form.description.length > MAX_CLASS_DESCRIPTION_LENGTH) {

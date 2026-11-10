@@ -1,4 +1,10 @@
-import type { ChartPayloadEntry } from "#/components/ui/ChartTooltip.tsx";
+import { CHART_COLORS } from "#/configs/constants/chartConstants.ts";
+import {
+  defaultChartLabel,
+  getChartEntryColor,
+  getChartEntryKey,
+  type ChartPayloadEntry,
+} from "#/utils/chart.ts";
 
 interface ChartLegendProps {
   payload?: ChartPayloadEntry[];
@@ -16,15 +22,12 @@ export function ChartLegend({ payload, resolveLabel }: ChartLegendProps) {
       {payload.map((entry, index) => {
         const label = resolveLabel
           ? resolveLabel(entry, index)
-          : String(
-              entry["name"] ??
-                (entry.payload?.["name"] as string | undefined) ??
-                entry.value ??
-                "",
-            );
-        const color = entry.color ?? "#8884d8";
+          : defaultChartLabel(entry);
+        const fallback = CHART_COLORS[index % CHART_COLORS.length] ?? CHART_COLORS[0] ?? "#3b82f6";
+        const color = getChartEntryColor(entry, fallback);
+        const key = getChartEntryKey(entry, index);
         return (
-          <li key={`${index}-${label}`} className="flex items-center gap-1.5 text-sm">
+          <li key={key} className="flex items-center gap-1.5 text-sm">
             <span
               className="inline-block h-2.5 w-2.5 rounded-full"
               style={{ backgroundColor: color }}

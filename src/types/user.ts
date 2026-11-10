@@ -23,10 +23,10 @@ export interface CreateUserPayload {
 }
 
 export interface UpdateUserPayload {
-  name: string;
-  email: string;
-  role: UserRole;
-  status: RecordStatus;
+  name?: string;
+  email?: string;
+  role?: UserRole;
+  status?: RecordStatus;
 }
 
 export interface UserFilters {
@@ -34,5 +34,4 @@ export interface UserFilters {
   searchEmail: string;
   role: "" | UserRole;
   status: "" | RecordStatus;
-  [key: string]: string | UserRole | RecordStatus | "";
 }

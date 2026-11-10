@@ -1,41 +1,29 @@
-import { forwardRef, useId, type InputHTMLAttributes } from "react";
+import Input from "#/components/ui/Input.tsx";
+import { forwardRef, type InputHTMLAttributes } from "react";
 import { SearchIcon } from "#/components/common/icons";
 
 interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
+  label?: string | undefined;
+  error?: string | undefined;
 }
 
 const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
   (
-    { label, className = "", id: propId, placeholder = "جستجو...", ...props },
+    { label, error, className = "", placeholder = "جستجو...", ...props },
     ref,
   ) => {
-    const generatedId = useId();
-    const id = propId || generatedId;
-
     return (
-      <div className="flex flex-col gap-1.5">
-        {label && (
-          <label htmlFor={id} className="text-sm font-medium text-gray-700">
-            {label}
-          </label>
-        )}
-        <div className="relative">
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <SearchIcon className="h-4 w-4 text-gray-400" />
-          </div>
-
-          <input
-            ref={ref}
-            id={id}
-            type="search"
-            aria-label={label ? undefined : "جستجو"}
-            placeholder={placeholder}
-            className={`w-full rounded-lg border border-gray-300 bg-white py-2 pr-9 pl-3 text-sm text-gray-900 transition-colors outline-none placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 ${className}`}
-            {...props}
-          />
-        </div>
-      </div>
+      <Input
+        ref={ref}
+        label={label}
+        error={error}
+        type="search"
+        aria-label={label ? undefined : "جستجو"}
+        placeholder={placeholder}
+        suffix={<SearchIcon className="h-4 w-4 text-gray-400" />}
+        className={`pr-9 pl-3 ${className}`}
+        {...props}
+      />
     );
   },
 );

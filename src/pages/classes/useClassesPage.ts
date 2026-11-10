@@ -1,4 +1,4 @@
-import { useAuth } from "#/contexts/AuthContext.ts";
+﻿import { useAuth } from "#/contexts/AuthContext.ts";
 import { useAsyncData } from "#/hooks/useAsyncData.ts";
 import { useCrudPage } from "#/hooks/useCrudPage.ts";
 import {
@@ -9,18 +9,12 @@ import { useModalState } from "#/hooks/useModalState.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import { classService } from "#/services/class.ts";
 import { userService } from "#/services/user.ts";
-import type { ClassFormValues, ClassItem, ClassStatus } from "#/types/class.ts";
+import type { ClassFormValues, ClassItem, ClassStatus, ClassFiltersValues } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
 import { TOAST_MESSAGES } from "#/configs/constants";
 import { isAdmin, isTeacher } from "#/utils/roleUtils.ts";
+import { showErrorToast } from "#/hooks/useToastHelpers.ts";
 import { useCallback, useMemo, useState } from "react";
-
-interface ClassFiltersValues {
-  search: string;
-  statusFilter: ClassStatus | "";
-  teacherFilter: string;
-  [key: string]: string | ClassStatus | "";
-}
 
 const initialFilters: ClassFiltersValues = {
   search: "",
@@ -34,12 +28,12 @@ export function useClassesPage() {
   const isAdminUser = isAdmin(currentUser);
   const isTeacherUser = isTeacher(currentUser);
 
+  const { addToast } = useToast();
+
   const {
     data: users,
-    loading: usersLoading,
-    error: usersError,
   } = useAsyncData<User[]>({
-    fetcher: () => userService.getAll(),
+    fetcher: (signal) => userService.getAll(undefined, signal),
     deps: [],
     fallbackError: TOAST_MESSAGES.FETCH_ERROR,
   });
@@ -74,17 +68,18 @@ export function useClassesPage() {
       ),
     ],
     extraPredicate: (cls: ClassItem) => {
-      if (!isAdminUser && isTeacherUser) {
+      if (isTeacherUser) {
         return cls.teacherId === currentUser?.id;
       }
       return true;
     },
     fallbackError: TOAST_MESSAGES.FETCH_ERROR,
-    canManage: () => isAdminUser,
+    onDeleteSuccess: () => {
+      addToast(TOAST_MESSAGES.CLASS_DELETE_SUCCESS, "success");
+    },
   });
 
   const [isStatusChanging, setIsStatusChanging] = useState(false);
-  const { addToast } = useToast();
 
   const statusModal = useModalState<ClassItem>();
 
@@ -96,23 +91,15 @@ export function useClassesPage() {
       const newStatus: ClassStatus =
         target.status === "active" ? "inactive" : "active";
 
-      if (newStatus === "inactive") {
-        await classService.setStatus(target.id, "inactive");
-        addToast(
-          TOAST_MESSAGES.CLASS_STATUS_SUCCESS.replace("{title}", target.title ?? "").replace("{action}", "غیرفعال"),
-          "success",
-        );
-      } else {
-        await classService.setStatus(target.id, "active");
-        addToast(
-          TOAST_MESSAGES.CLASS_STATUS_SUCCESS.replace("{title}", target.title ?? "").replace("{action}", "فعال"),
-          "success",
-        );
-      }
+      await classService.setStatus(target.id, newStatus);
+      addToast(
+        TOAST_MESSAGES.CLASS_STATUS(target.title ?? "", newStatus === "inactive" ? "غیرفعال" : "فعال"),
+        "success",
+      );
       crud.state.refresh();
       statusModal.close();
     } catch {
-      addToast(TOAST_MESSAGES.CLASS_STATUS_ERROR, "error");
+      showErrorToast(addToast, TOAST_MESSAGES.CLASS_STATUS_ERROR);
       statusModal.close();
     } finally {
       setIsStatusChanging(false);
@@ -139,16 +126,19 @@ export function useClassesPage() {
       : crud.modals.target,
     createModal: {
       close: () => {
-        crud.actions.createModal.close();
+        crud.actions.modal.close();
         statusModal.close();
       },
       openWithTarget: (kind: string, target: ClassItem) => {
         if (kind === "status") {
           statusModal.openWithTarget("status", target);
         } else {
-          crud.actions.createModal.openWithTarget(kind, target);
+          crud.actions.modal.openWithTarget(kind, target);
         }
       },
+    },
+    deleteModal: {
+      close: () => crud.actions.modal.close(),
     },
   };
 
@@ -157,10 +147,8 @@ export function useClassesPage() {
     isAdmin: isAdminUser,
     teachers,
     users,
-    usersLoading,
-    usersError,
-    loading: crud.state.loading || usersLoading,
-    error: crud.state.error || usersError,
+    loading: crud.state.loading,
+    error: crud.state.error,
     filters: crud.state.filters,
     setFilters: crud.state.setFilters,
     resetFilters: crud.state.resetFilters,
@@ -173,12 +161,8 @@ export function useClassesPage() {
     handleOpenDelete: crud.actions.handleOpenDelete,
     handleDelete: crud.actions.handleDelete,
     handleOpenStatus,
-    isCreating: crud.actions.isCreating,
-    isUpdating: crud.actions.isUpdating,
     isDeleting: crud.actions.isDeleting,
     canManageClass: (_cls: ClassItem) => isAdminUser,
     refresh: crud.state.refresh,
   };
 }
-
-export type { ClassFiltersValues };

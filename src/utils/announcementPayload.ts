@@ -1,12 +1,7 @@
-import type { Announcement, TargetAudience } from "#/types/announcement.ts";
+import type { TargetAudience, AnnouncementPayload } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID, UserRole } from "#/types/common.ts";
 import { GLOBAL_ANNOUNCEMENT_CLASS_ID } from "#/configs/constants";
-
-export type AnnouncementPayload = Omit<
-  Announcement,
-  "id" | "createdAt" | "seenBy"
->;
 
 interface BuildAnnouncementPayloadOptions {
   title: string;
@@ -16,7 +11,6 @@ interface BuildAnnouncementPayloadOptions {
   isAdmin: boolean;
   targetRoles: UserRole[];
   targetAudience: TargetAudience;
-  classOptions: { value: string }[];
 }
 
 export function buildAnnouncementPayload({
@@ -27,17 +21,11 @@ export function buildAnnouncementPayload({
   isAdmin,
   targetRoles,
   targetAudience,
-  classOptions,
 }: BuildAnnouncementPayloadOptions): AnnouncementPayload {
-  const validClassIds = classOptions.map((o) => o.value);
-  const finalClassId = validClassIds.includes(classId)
-    ? classId
-    : classOptions[0]?.value ?? GLOBAL_ANNOUNCEMENT_CLASS_ID;
-
-  const basePayload = { title, content, classId: finalClassId, authorId };
+  const basePayload = { title, content, classId, authorId };
 
   if (isAdmin) {
-    if (finalClassId === GLOBAL_ANNOUNCEMENT_CLASS_ID) {
+    if (classId === GLOBAL_ANNOUNCEMENT_CLASS_ID) {
       return { ...basePayload, targetRoles, targetAudience: null };
     }
     return { ...basePayload, targetAudience, targetRoles: null };

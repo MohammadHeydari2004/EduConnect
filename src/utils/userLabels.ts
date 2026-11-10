@@ -8,6 +8,8 @@ export const getRoleLabel = (role: UserRole): string => {
       return "استاد";
     case "student":
       return "دانشجو";
+    default:
+      return "نامشخص";
   }
 };
 
@@ -28,5 +30,7 @@ export const getStatusLabel = (status: RecordStatus): string => {
       return "فعال";
     case "inactive":
       return "غیرفعال";
+    default:
+      return "نامشخص";
   }
 };

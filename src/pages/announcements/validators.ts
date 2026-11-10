@@ -1,10 +1,5 @@
 import { validateTitle } from "#/utils/validateTitle.ts";
-
-export interface AnnouncementFormErrors {
-  title?: string;
-  content?: string;
-  form?: string;
-}
+import type { AnnouncementFormErrors } from "#/types/announcement.ts";
 
 export function validateAnnouncementForm(values: {
   title: string;

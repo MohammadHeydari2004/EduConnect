@@ -1,14 +1,16 @@
 import { baseApi } from "#/services/api/baseApi.ts";
+import { safeDelete } from "#/services/api/safeDelete.ts";
 import type { ID } from "#/types/common.ts";
 import type { Submission } from "#/types/submission.ts";
 
 const endpoint = "/submissions";
 
 export const submissionService = {
-  getAll: () => baseApi.getAll<Submission>(endpoint),
+  getAll: (params?: Record<string, string | number | boolean>, signal?: AbortSignal) =>
+    baseApi.getAll<Submission>(endpoint, params, signal),
 
-  getByAssignment: (assignmentId: ID) =>
-    baseApi.getAll<Submission>(endpoint, { assignmentId }),
+  getByAssignment: (assignmentId: ID, signal?: AbortSignal) =>
+    baseApi.getAll<Submission>(endpoint, { assignmentId }, signal),
 
   create: (data: Omit<Submission, "id" | "submittedAt">) =>
     baseApi.create<Submission>(endpoint, {
@@ -22,5 +24,5 @@ export const submissionService = {
       updatedAt: new Date().toISOString(),
     }),
 
-  delete: (id: ID) => baseApi.delete(endpoint, id),
+  delete: (id: ID) => safeDelete((deleteId: ID) => baseApi.delete(endpoint, deleteId), id, endpoint),
 };

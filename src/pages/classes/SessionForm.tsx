@@ -5,8 +5,8 @@ import Textarea from "#/components/ui/Textarea.tsx";
 import { validateSessionForm } from "#/pages/classes/sessionValidation.ts";
 import { sessionService } from "#/services/session.ts";
 import type { ID } from "#/types/common.ts";
-import type { Session, SessionFormValues } from "#/types/session.ts";
-import { getErrorMessage } from "#/utils/error.ts";
+import type { Session, SessionFormErrors, SessionFormValues } from "#/types/session.ts";
+import { classifyError } from "#/services/error.ts";
 import { useState } from "react";
 
 interface Props {
@@ -31,9 +31,7 @@ export default function SessionForm({
     description: initialData?.description ?? "",
     classId,
   }));
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof SessionFormValues, string | undefined>>
-  >({});
+  const [errors, setErrors] = useState<SessionFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
@@ -53,7 +51,8 @@ export default function SessionForm({
       }
       onSuccess(isEdit ? "جلسه با موفقیت ویرایش شد." : "جلسه با موفقیت ایجاد شد.", newSession);
     } catch (err) {
-      onError(getErrorMessage(err, isEdit ? "ویرایش جلسه با خطا مواجه شد." : "ایجاد جلسه با خطا مواجه شد."));
+      const info = classifyError(err);
+      onError(info.userMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -67,7 +66,7 @@ export default function SessionForm({
           value={form.title}
           onChange={(e) => {
             setForm({ ...form, title: e.target.value });
-            if (errors.title) setErrors({ ...errors, title: undefined });
+            if (errors.title) setErrors({ ...errors, title: undefined } as unknown as SessionFormErrors);
           }}
           error={errors.title}
           placeholder="مثلاً: جلسه اول"
@@ -100,7 +99,7 @@ export default function SessionForm({
           <Button type="button" variant="secondary" onClick={onClose}>
             انصراف
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
+          <Button onClick={handleSubmit}>
             {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
           </Button>
         </div>

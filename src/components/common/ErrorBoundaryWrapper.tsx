@@ -1,12 +1,17 @@
 import { WarningIcon } from "#/components/common/icons";
+import Button from "#/components/ui/Button.tsx";
 import type { ReactNode } from "react";
 import {
   type FallbackProps,
   ErrorBoundary as ReactErrorBoundary,
 } from "react-error-boundary";
-import { logger } from "#/utils/logger.ts";
 
-function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+function ErrorFallback({
+  error,
+  resetErrorBoundary,
+  heading = "h2",
+}: FallbackProps & { heading?: "h1" | "h2" | "h3" }) {
+  const HeadingTag = heading;
   return (
     <div
       role="alert"
@@ -16,9 +21,9 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
           <WarningIcon className="h-8 w-8 text-red-600" />
         </div>
-        <h1 className="mb-2 text-xl font-bold text-gray-800">
+        <HeadingTag className="mb-2 text-xl font-bold text-gray-800 ">
           خطای غیرمنتظره در رندر
-        </h1>
+        </HeadingTag>
         <p className="mb-6 text-sm text-gray-600">
           متأسفانه مشکلی در بارگذاری برنامه رخ داده است. می‌توانید دوباره
           تلاش کنید.
@@ -35,12 +40,7 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
           </pre>
         ) : null}
 
-        <button
-          onClick={resetErrorBoundary}
-          className="rounded-lg bg-blue-600 px-6 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
-        >
-          تلاش مجدد
-        </button>
+        <Button onClick={resetErrorBoundary}>تلاش مجدد</Button>
       </div>
     </div>
   );
@@ -49,22 +49,27 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
 interface ErrorBoundaryWrapperProps {
   children: ReactNode;
   resetKeys?: unknown[] | undefined;
+  heading?: "h1" | "h2" | "h3";
 }
 
 function ErrorBoundaryWrapper({
   children,
   resetKeys,
+  heading = "h2",
 }: ErrorBoundaryWrapperProps) {
   return (
     <ReactErrorBoundary
-      FallbackComponent={ErrorFallback}
+      FallbackComponent={({
+        error,
+        resetErrorBoundary,
+      }: FallbackProps) => (
+        <ErrorFallback
+          error={error}
+          heading={heading}
+          resetErrorBoundary={resetErrorBoundary}
+        />
+      )}
       {...(resetKeys !== undefined ? { resetKeys } : {})}
-      onError={(error, errorInfo) => {
-        logger.error("ErrorBoundary caught an error", {
-          error: error instanceof Error ? error.stack ?? error.message : String(error),
-          errorInfo,
-        });
-      }}
     >
       {children}
     </ReactErrorBoundary>

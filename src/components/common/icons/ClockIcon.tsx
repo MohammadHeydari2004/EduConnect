@@ -1,10 +1,6 @@
-import type { ReactNode } from "react";
+﻿import type { IconProps } from "./types.ts";
 
-interface IconProps {
-  className?: string;
-}
-
-export function ChevronLeftIcon({ className = "h-5 w-5" }: IconProps): ReactNode {
+export function ClockIcon({ className = "h-3 w-3" }: IconProps) {
   return (
     <svg
       className={className}
@@ -17,8 +13,10 @@ export function ChevronLeftIcon({ className = "h-5 w-5" }: IconProps): ReactNode
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={2}
-        d="M15 19l-7-7 7-7"
+        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
       />
     </svg>
   );
 }
+
+

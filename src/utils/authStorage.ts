@@ -1,5 +1,4 @@
 import { STORAGE_KEYS } from "#/configs/constants";
-import { logger } from "#/utils/logger.ts";
 import { isValidUser } from "#/utils/guards.ts";
 import type { User } from "#/types/user.ts";
 
@@ -16,26 +15,27 @@ export function getStoredUser(): User | null {
   let storedUser: string | null = null;
   try {
     storedUser = localStorage.getItem(STORAGE_KEYS.authUser);
-  } catch (error) {
-    logger.error("Failed to read auth user from localStorage", { error });
+  } catch {
     return null;
   }
 
   if (!storedUser) return null;
 
+  let parsed: unknown = null;
   try {
-    const parsed = JSON.parse(storedUser);
-    if (isValidUser(parsed)) {
-      return parsed;
-    }
-  } catch (error) {
-    logger.error("Failed to parse stored auth user", { error });
+    parsed = JSON.parse(storedUser);
+  } catch {
+    parsed = null;
+  }
+
+  if (isValidUser(parsed)) {
+    return parsed;
   }
 
   try {
     localStorage.removeItem(STORAGE_KEYS.authUser);
-  } catch (error) {
-    logger.error("Failed to remove corrupted auth user from localStorage", { error });
+  } catch {
+    return null;
   }
 
   return null;
@@ -49,9 +49,17 @@ export function getStorageErrorMessage(error: unknown): string {
 }
 
 export function setStoredUser(user: User): void {
-  localStorage.setItem(STORAGE_KEYS.authUser, JSON.stringify(user));
+  try {
+    localStorage.setItem(STORAGE_KEYS.authUser, JSON.stringify(user));
+  } catch (error) {
+    throw new Error(getStorageErrorMessage(error));
+  }
 }
 
 export function clearStoredUser(): void {
-  localStorage.removeItem(STORAGE_KEYS.authUser);
+  try {
+    localStorage.removeItem(STORAGE_KEYS.authUser);
+  } catch (error) {
+    throw new Error(getStorageErrorMessage(error));
+  }
 }

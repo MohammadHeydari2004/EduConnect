@@ -1,10 +1,5 @@
 import { CheckIcon } from "#/components/common/icons";
-
-interface MultiSelectOption {
-  id: string;
-  label: string;
-  subLabel?: string;
-}
+import type { MultiSelectOption } from "#/types/hooks.ts";
 
 interface MultiSelectOptionProps {
   option: MultiSelectOption;
@@ -12,9 +7,7 @@ interface MultiSelectOptionProps {
   isActive: boolean;
   onClick: () => void;
   id: string;
-  role: "option";
   "aria-selected": boolean;
-  tabIndex: -1;
   "data-active": string;
 }
 
@@ -23,13 +16,18 @@ export function MultiSelectOptionComponent({
   isSelected,
   isActive,
   onClick,
-  ...props
+  id,
+  "aria-selected": ariaSelected,
+  "data-active": dataActive,
 }: MultiSelectOptionProps) {
   return (
     <div
-      {...props}
+      id={id}
+      role="option"
+      aria-selected={ariaSelected}
+      data-active={dataActive}
       onClick={onClick}
-      className={`flex cursor-pointer items-center gap-3 border-b border-gray-50 px-3 py-2.5 text-sm transition last:border-0 hover:bg-gray-50 ${
+      className={`flex w-full cursor-pointer items-center gap-3 border-b border-gray-50 px-3 py-2.5 text-sm transition last:border-0 hover:bg-gray-50 ${
         isSelected ? "bg-blue-50/50" : ""
       } ${isActive ? "bg-blue-50" : ""}`}
     >

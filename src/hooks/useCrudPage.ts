@@ -1,56 +1,23 @@
-import { useCallback, useRef, useState } from "react";
+﻿import { useCallback, useState } from "react";
 import { useAsyncData } from "#/hooks/useAsyncData.ts";
-import { useFilter, type FilterConfig } from "#/hooks/useFilter.ts";
+import { useFilter } from "#/hooks/useFilter.ts";
 import { useModalState } from "#/hooks/useModalState.ts";
 import { useToast } from "#/hooks/useToast.ts";
-import { getErrorMessage } from "#/utils/error.ts";
+import { showErrorToastWithInfo } from "#/hooks/useToastHelpers.ts";
+import { getErrorMessage, classifyError } from "#/services/error.ts";
 import type { ID } from "#/types/common.ts";
+import type {
+  CrudPageConfig,
+  CrudPageState,
+} from "#/types/hooks.ts";
+import { TOAST_MESSAGES } from "#/configs/constants";
 
-export interface CrudService<T, CreatePayload, UpdatePayload> {
-  getAll: () => Promise<T[]>;
-  getById: (id: ID) => Promise<T>;
-  create: (data: CreatePayload) => Promise<T>;
-  update: (id: ID, data: UpdatePayload) => Promise<T>;
-  delete: (id: ID) => Promise<void>;
-}
-
-export interface CrudPageConfig<T extends { id: ID }, CreatePayload, UpdatePayload, FilterState extends Record<string, any>> {
-  service: CrudService<T, CreatePayload, UpdatePayload>;
-  initialFilters: FilterState;
-  filterConfigs: FilterConfig<T>[];
-  extraPredicate?: (item: T) => boolean | undefined;
-  fallbackError?: string;
-  onCreateSuccess?: (item: T) => void;
-  onUpdateSuccess?: (item: T) => void;
-  onDeleteSuccess?: (id: ID) => void;
-  canManage?: (item: T) => boolean;
-}
-
-export interface CrudPageState<T extends { id: ID }, FilterState> {
-  data: T[] | null;
-  loading: boolean;
-  error: string;
-  filters: FilterState;
-  filteredData: T[];
-  refresh: () => void;
-  setFilters: (filters: FilterState) => void;
-  resetFilters: () => void;
-}
-
-export interface CrudPageActions<T extends { id: ID }, CreatePayload, UpdatePayload> {
-  createModal: ReturnType<typeof useModalState<T>>;
-  handleCreate: (values: CreatePayload) => Promise<void>;
-  handleUpdate: (values: UpdatePayload) => Promise<void>;
-  handleDelete: () => Promise<void>;
-  handleOpenCreate: () => void;
-  handleOpenEdit: (item: T) => void;
-  handleOpenDelete: (item: T) => void;
-  isCreating: boolean;
-  isUpdating: boolean;
-  isDeleting: boolean;
-}
-
-export function useCrudPage<T extends { id: ID }, CreatePayload, UpdatePayload, FilterState extends Record<string, any>>(
+export function useCrudPage<
+  T extends { id: ID },
+  CreatePayload,
+  UpdatePayload,
+  FilterState extends object,
+>(
   config: CrudPageConfig<T, CreatePayload, UpdatePayload, FilterState>,
 ) {
   const {
@@ -58,18 +25,17 @@ export function useCrudPage<T extends { id: ID }, CreatePayload, UpdatePayload, 
     initialFilters,
     filterConfigs,
     extraPredicate,
-    fallbackError = "دریافت لیست با خطا مواجه شد.",
+    fallbackError = TOAST_MESSAGES.FETCH_ERROR,
     onCreateSuccess,
     onUpdateSuccess,
     onDeleteSuccess,
-    canManage,
   } = config;
 
   const { addToast } = useToast();
   const [filters, setFilters] = useState<FilterState>(initialFilters);
 
   const { data, loading, error, refresh } = useAsyncData<T[]>({
-    fetcher: () => service.getAll(),
+    fetcher: (signal) => service.getAll(undefined, signal),
     deps: [],
     fallbackError,
   });
@@ -81,94 +47,111 @@ export function useCrudPage<T extends { id: ID }, CreatePayload, UpdatePayload, 
     extraPredicate,
   });
 
-  const modal = useModalState<T>();
-  const deleteTargetIdRef = useRef<ID | null>(null);
+  const { kind, target, open, openWithTarget, setTarget, close, isOpen } =
+    useModalState<T>();
 
-  const [isCreating, setIsCreating] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleCreate = useCallback(
     async (values: CreatePayload) => {
       try {
-        setIsCreating(true);
         const result = await service.create(values);
-        addToast("با موفقیت ایجاد شد.", "success");
-        onCreateSuccess?.(result);
-        refresh();
-        modal.close();
-      } catch (err) {
-        addToast(getErrorMessage(err, "ایجاد با خطا مواجه شد."), "error");
-      } finally {
-        setIsCreating(false);
-      }
-    },
-    [service, addToast, refresh, modal, onCreateSuccess],
-  );
+        close();
+        if (onCreateSuccess) {
+          onCreateSuccess(result);
+        } else {
+          addToast(TOAST_MESSAGES.CREATE_SUCCESS, "success");
+        }
 
-  const handleUpdate = useCallback(
-    async (values: UpdatePayload) => {
-      const target = modal.target;
-      if (!target) return;
-      try {
-        setIsUpdating(true);
-        const result = await service.update(target.id, values);
-        addToast("با موفقیت ویرایش شد.", "success");
-        onUpdateSuccess?.(result);
-        refresh();
-        modal.close();
-      } catch (err) {
-        addToast(getErrorMessage(err, "ویرایش با خطا مواجه شد."), "error");
-      } finally {
-        setIsUpdating(false);
-      }
-    },
-    [service, addToast, refresh, modal, onUpdateSuccess],
-  );
-
-  const handleDelete = useCallback(
-    async () => {
-      const targetId = deleteTargetIdRef.current ?? modal.target?.id;
-      if (!targetId) {
-        console.warn("[useCrudPage] Delete target ID not found");
-        return;
-      }
-      try {
-        setIsDeleting(true);
-        await service.delete(targetId);
-        addToast("با موفقیت حذف شد.", "success");
-        onDeleteSuccess?.(targetId);
-        // Clear ref and close modal BEFORE refresh
-        deleteTargetIdRef.current = null;
-        modal.close();
         refresh();
       } catch (err) {
-        addToast(getErrorMessage(err, "حذف با خطا مواجه شد."), "error");
+        const info = classifyError(err);
+        showErrorToastWithInfo(
+          addToast,
+          info,
+          getErrorMessage(err, TOAST_MESSAGES.CREATE_ERROR),
+        );
       } finally {
         setIsDeleting(false);
       }
     },
-    [service, addToast, refresh, modal, onDeleteSuccess],
+    [service, addToast, refresh, close, onCreateSuccess],
+  );
+
+  const handleUpdate = useCallback(
+    async (values: UpdatePayload) => {
+      if (!target) return;
+      try {
+        const result = await service.update(target.id, values);
+        close();
+        if (onUpdateSuccess) {
+          onUpdateSuccess(result);
+        } else {
+          addToast(TOAST_MESSAGES.UPDATE_SUCCESS, "success");
+        }
+
+        refresh();
+      } catch (err) {
+        const info = classifyError(err);
+        showErrorToastWithInfo(
+          addToast,
+          info,
+          getErrorMessage(err, TOAST_MESSAGES.UPDATE_ERROR),
+        );
+      } finally {
+        setIsDeleting(false);
+      }
+    },
+    [service, addToast, refresh, close, target, onUpdateSuccess],
+  );
+
+  const handleDelete = useCallback(
+    async () => {
+      if (!target) return;
+      try {
+        setIsDeleting(true);
+        await service.delete(target.id);
+        close();
+        if (onDeleteSuccess) {
+          onDeleteSuccess(target.id);
+        } else {
+          addToast(TOAST_MESSAGES.DELETE_SUCCESS, "success");
+        }
+
+        refresh();
+      } catch (err) {
+        const info = classifyError(err);
+        showErrorToastWithInfo(
+          addToast,
+          info,
+          getErrorMessage(err, TOAST_MESSAGES.DELETE_ERROR),
+        );
+      } finally {
+        setIsDeleting(false);
+      }
+    },
+    [service, addToast, refresh, close, target, onDeleteSuccess],
   );
 
   const handleOpenCreate = useCallback(() => {
-    modal.open("create");
-  }, [modal]);
+    open("create");
+  }, [open]);
 
   const handleOpenEdit = useCallback(
     (item: T) => {
-      modal.openWithTarget("edit", item);
+      openWithTarget("edit", item);
     },
-    [modal],
+    [openWithTarget],
   );
 
   const handleOpenDelete = useCallback(
     (item: T) => {
-      deleteTargetIdRef.current = item.id;
-      modal.openWithTarget("delete", item);
+      openWithTarget("delete", item);
     },
-    [modal],
+    [openWithTarget],
   );
+
+  const modal = { kind, target, open, openWithTarget, setTarget, close, isOpen };
 
   const resetFilters = useCallback(() => {
     setFilters(initialFilters);
@@ -193,17 +176,14 @@ export function useCrudPage<T extends { id: ID }, CreatePayload, UpdatePayload, 
       kind: modal.kind,
     },
     actions: {
-      createModal: modal,
+      modal,
       handleCreate,
       handleUpdate,
       handleDelete,
       handleOpenCreate,
       handleOpenEdit,
       handleOpenDelete,
-      isCreating,
-      isUpdating,
       isDeleting,
-    } as CrudPageActions<T, CreatePayload, UpdatePayload>,
-    canManage,
+    },
   };
 }

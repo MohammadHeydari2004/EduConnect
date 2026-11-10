@@ -77,3 +77,6 @@ EduConnect.md
 .kilo
 generate-db.cjs
 .husky\pre-commit
+scripts
+free-port.mjs
+reports

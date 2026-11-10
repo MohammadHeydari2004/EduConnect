@@ -35,7 +35,7 @@ export default function StudentAttendanceView({
       return {
         ...a,
         sessionTitle: session?.title || "—",
-        sessionDate: session?.date || "—",
+        sessionDate: session?.date,
         classTitle: cls?.title || "—",
       };
     });
@@ -112,13 +112,21 @@ export default function StudentAttendanceView({
                 key: "sessionTitle",
                 title: "جلسه",
                 width: "30%",
-                render: (item) => item.sessionTitle,
+                render: (item) => (
+                  <span
+                    className="block max-w-full truncate"
+                    title={item.sessionTitle}
+                  >
+                    {item.sessionTitle}
+                  </span>
+                ),
               },
               {
                 key: "sessionDate",
                 title: "تاریخ",
                 width: "20%",
-                render: (item) => formatDate(item.sessionDate),
+                render: (item) =>
+                  item.sessionDate ? formatDate(item.sessionDate) : "—",
               },
               {
                 key: "status",
@@ -131,18 +139,21 @@ export default function StudentAttendanceView({
             renderMobileCard={(item) => (
               <div className="space-y-2 text-right">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-base font-bold text-gray-800 w-36">
+                  <span
+                    className="w-36 min-w-0 flex-1 truncate text-base font-bold text-gray-800"
+                    title={item.sessionTitle}
+                  >
                     {item.sessionTitle}
                   </span>
                   <StatusChip status={item.status} />
                 </div>
                 <div className="text-sm text-gray-600">
                   <span className="text-gray-500">کلاس: </span>{" "}
-                  {item.classTitle}
+                  <span className="wrap-break-word">{item.classTitle}</span>
                 </div>
                 <div className="text-sm text-gray-600">
                   <span className="text-gray-500">تاریخ: </span>{" "}
-                  {formatDate(item.sessionDate)}
+                  {item.sessionDate ? formatDate(item.sessionDate) : "—"}
                 </div>
               </div>
             )}

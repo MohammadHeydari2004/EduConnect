@@ -5,11 +5,11 @@ import Card from "#/components/ui/Card.tsx";
 import Select from "#/components/ui/Select.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
+import AttendanceClassSessionSelector from "#/components/common/AttendanceClassSessionSelector.tsx";
 import type { ClassItem } from "#/types/class.ts";
 import type { AttendanceStatus } from "#/types/common.ts";
 import type { Session } from "#/types/session.ts";
 import type { User } from "#/types/user.ts";
-import { formatDate } from "#/utils/formatDate.ts";
 
 const ATTENDANCE_STATUS_OPTIONS: Array<{
   label: string;
@@ -67,35 +67,14 @@ export default function TeacherAttendanceForm({
   } = handlers;
   return (
     <>
-      <Card title="ثبت حضور و غیاب">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Select
-            label="کلاس"
-            value={selectedClassId}
-            onChange={(e) => onClassChange(e.target.value)}
-            options={[
-              { label: "انتخاب کلاس...", value: "" },
-              ...classes.map((c) => ({
-                label: c.title || "(بدون عنوان)",
-                value: c.id,
-              })),
-            ]}
-          />
-          <Select
-            label="جلسه"
-            value={selectedSessionId}
-            onChange={(e) => onSessionChange(e.target.value)}
-            disabled={!selectedClassId}
-            options={[
-              { label: "انتخاب جلسه...", value: "" },
-              ...sessions.map((s) => ({
-                label: `${s.title} - ${formatDate(s.date)}`,
-                value: s.id,
-              })),
-            ]}
-          />
-        </div>
-      </Card>
+      <AttendanceClassSessionSelector
+        classes={classes}
+        sessions={sessions}
+        selectedClassId={selectedClassId}
+        selectedSessionId={selectedSessionId}
+        onClassChange={onClassChange}
+        onSessionChange={onSessionChange}
+      />
       {selectedSessionId && (
         <Card title="لیست دانشجویان">
           {classStudents.length === 0 ? (
@@ -159,7 +138,12 @@ export default function TeacherAttendanceForm({
                         onChange={(e) =>
                           onStatusChange(
                             student.id,
-                            e.target.value as AttendanceStatus,
+                            (() => {
+                              const v = e.target.value;
+                              return (["present", "late", "absent"].includes(v)
+                                ? v
+                                : "present") as AttendanceStatus;
+                            })(),
                           )
                         }
                         options={ATTENDANCE_STATUS_OPTIONS}
@@ -189,7 +173,12 @@ export default function TeacherAttendanceForm({
                         onChange={(e) =>
                           onStatusChange(
                             student.id,
-                            e.target.value as AttendanceStatus,
+                            (() => {
+                              const v = e.target.value;
+                              return (["present", "late", "absent"].includes(v)
+                                ? v
+                                : "present") as AttendanceStatus;
+                            })(),
                           )
                         }
                         options={ATTENDANCE_STATUS_OPTIONS}

@@ -1,83 +1,91 @@
-import { useClickOutside } from "#/hooks/useClickOutside.ts";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { MenuCloseContext } from "#/hooks/useMenuPropagation.ts";
+import { usePortalPosition } from "#/hooks/usePortalPosition.ts";
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { MoreIcon } from "#/components/common/icons";
-
-const MENU_DEFAULT_WIDTH = 160;
-const MENU_DEFAULT_HEIGHT = 100;
+import { useClickOutside } from "#/hooks/useClickOutside.ts";
 
 interface ActionsMenuProps {
   children: ReactNode;
   label?: string | undefined;
 }
 
+function getMenuItems(container: HTMLElement): HTMLElement[] {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>("[role='menuitem']:not([disabled])"),
+  );
+}
+
 function ActionsMenu({ children, label }: ActionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const menuId = useId();
+  const closeMenu = useCallback((returnFocus = false) => {
+    setIsOpen(false);
+    if (returnFocus) buttonRef.current?.focus();
+  }, []);
 
-  useClickOutside([buttonRef, menuRef], () => setIsOpen(false), isOpen);
+  useClickOutside([buttonRef, menuRef], () => closeMenu(), isOpen);
+
+  const position = usePortalPosition({
+    triggerRef: buttonRef,
+    menuRef: menuRef,
+    defaultWidth: 160,
+    defaultHeight: 100,
+    viewportPadding: 8,
+    openDirection: "down",
+  });
 
   useEffect(() => {
     if (!isOpen) return;
-
-    const updatePosition = () => {
-      if (!buttonRef.current) return;
-
-      const btnRect = buttonRef.current.getBoundingClientRect();
-      const viewportWidth = document.documentElement.clientWidth;
-      const viewportHeight = window.innerHeight;
-
-      const menuWidth = menuRef.current?.offsetWidth || MENU_DEFAULT_WIDTH;
-      const menuHeight = menuRef.current?.offsetHeight || MENU_DEFAULT_HEIGHT;
-
-      let left = btnRect.left;
-
-      if (left + menuWidth > viewportWidth - 8) {
-        left = btnRect.right - menuWidth;
+    const menuEl = menuRef.current;
+    if (!menuEl) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeMenu(true);
+        return;
       }
-
-      if (left < 8) {
-        left = 8;
+      if (e.key !== "ArrowDown" && e.key !== "ArrowUp" && e.key !== "Home" && e.key !== "End") return;
+      e.preventDefault();
+      if (!menuRef.current) return;
+      const focusable = getMenuItems(menuRef.current);
+      if (focusable.length === 0) return;
+      const currentIdx = focusable.indexOf(document.activeElement as HTMLElement);
+      let nextIdx: number;
+      if (e.key === "Home") {
+        nextIdx = 0;
+      } else if (e.key === "End") {
+        nextIdx = focusable.length - 1;
+      } else {
+        const delta = e.key === "ArrowDown" ? 1 : -1;
+        nextIdx =
+          currentIdx === -1
+            ? delta === 1
+              ? 0
+              : focusable.length - 1
+            : (currentIdx + delta + focusable.length) % focusable.length;
       }
-
-      let top = btnRect.bottom + 4;
-
-      if (top + menuHeight > viewportHeight - 8) {
-        top = btnRect.top - menuHeight - 4;
-      }
-
-      setCoords({ top, left });
+      focusable[nextIdx]?.focus();
     };
-
-    const rafId = requestAnimationFrame(updatePosition);
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    window.addEventListener("scroll", updatePosition, true);
-    window.addEventListener("resize", updatePosition);
-
+    document.addEventListener("keydown", handleKey);
+    requestAnimationFrame(() => {
+      const items = getMenuItems(menuEl);
+      items[0]?.focus();
+    });
     return () => {
-      cancelAnimationFrame(rafId);
-      document.removeEventListener("keydown", handleEscape);
-      window.removeEventListener("scroll", updatePosition, true);
-      window.removeEventListener("resize", updatePosition);
+      document.removeEventListener("keydown", handleKey);
     };
-  }, [isOpen]);
+  }, [isOpen, closeMenu]);
 
   const toggleMenu = () => {
-    if (!isOpen && buttonRef.current) {
-      const btnRect = buttonRef.current.getBoundingClientRect();
-      setCoords({
-        top: btnRect.bottom + 4,
-        left: btnRect.left,
-      });
-    }
     setIsOpen((prev) => !prev);
+  };
+
+  const onTriggerKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+      if (!isOpen) setIsOpen(true);
+    }
   };
 
   return (
@@ -85,22 +93,30 @@ function ActionsMenu({ children, label }: ActionsMenuProps) {
       <button
         ref={buttonRef}
         onClick={toggleMenu}
+        onKeyDown={onTriggerKeyDown}
         className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100"
         aria-label={label ? `عملیات روی ${label}` : "عملیات"}
         aria-expanded={isOpen}
-        aria-haspopup="true"
+        aria-controls={menuId}
+        aria-haspopup="menu"
       >
         <MoreIcon className="h-5 w-5" />
       </button>
       {isOpen &&
         createPortal(
           <div
+            id={menuId}
             ref={menuRef}
             role="menu"
             className="fixed z-50 flex min-w-40 flex-col gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
-            style={{ top: `${coords.top}px`, left: `${coords.left}px` }}
+            style={{
+              top: `${position.top}px`,
+              left: `${position.left}px`,
+            }}
           >
-            {children}
+            <MenuCloseContext.Provider value={() => closeMenu(true)}>
+              {children}
+            </MenuCloseContext.Provider>
           </div>,
           document.body,
         )}

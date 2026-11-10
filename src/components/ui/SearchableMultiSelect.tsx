@@ -1,14 +1,9 @@
 import { useClickOutside } from "#/hooks/useClickOutside.ts";
 import { useId, useMemo, useRef, useState } from "react";
 import type { ID } from "#/types/common.ts";
+import type { MultiSelectOption } from "#/types/hooks.ts";
 import { MultiSelectTrigger } from "#/components/ui/MultiSelectTrigger.tsx";
 import { MultiSelectDropdown } from "#/components/ui/MultiSelectDropdown.tsx";
-
-interface MultiSelectOption {
-  id: string;
-  label: string;
-  subLabel?: string;
-}
 
 export interface SearchableMultiSelectProps {
   options: MultiSelectOption[];
@@ -19,6 +14,7 @@ export interface SearchableMultiSelectProps {
   error?: string | undefined;
   searchPlaceholder?: string;
   openDirection?: "down" | "up";
+  disabled?: boolean;
 }
 
 export default function SearchableMultiSelect({
@@ -30,6 +26,7 @@ export default function SearchableMultiSelect({
   error,
   searchPlaceholder = "جستجو...",
   openDirection = "down",
+  disabled = false,
 }: SearchableMultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,10 +34,11 @@ export default function SearchableMultiSelect({
   const containerRef = useRef<HTMLDivElement>(null);
   const listboxRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const triggerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const labelId = useId();
   const errorId = error ? `${labelId}-error` : undefined;
+  const listboxId = `${labelId}-listbox`;
 
   useClickOutside(
     [containerRef, triggerRef, dropdownRef],
@@ -95,18 +93,20 @@ export default function SearchableMultiSelect({
   };
 
   const toggleDropdown = () => {
-    setIsOpen((prev) => {
-      if (prev) setSearchTerm("");
-      return !prev;
-    });
+    if (disabled) return;
+    setIsOpen((prev) => !prev);
+    if (isOpen) setSearchTerm("");
   };
 
-  const handleTriggerKeyDown = (
-    event: React.KeyboardEvent<HTMLDivElement>,
-  ) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      toggleDropdown();
+  const handleTriggerKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
+      if (!isOpen) {
+        event.preventDefault();
+        setIsOpen(true);
+      }
+    }
+    if (event.key === "Escape") {
+      setIsOpen(false);
     }
   };
 
@@ -116,13 +116,19 @@ export default function SearchableMultiSelect({
     switch (event.key) {
       case "ArrowDown":
         event.preventDefault();
-        setActiveIndex((prev) =>
-          Math.min(prev + 1, filteredOptions.length - 1),
-        );
+        setActiveIndex((prev) => {
+          const next = prev + 1;
+          if (next >= filteredOptions.length) return 0;
+          return next;
+        });
         break;
       case "ArrowUp":
         event.preventDefault();
-        setActiveIndex((prev) => Math.max(prev - 1, 0));
+        setActiveIndex((prev) => {
+          const next = prev - 1;
+          if (next < 0) return filteredOptions.length - 1;
+          return next;
+        });
         break;
       case "Home":
         event.preventDefault();
@@ -134,15 +140,20 @@ export default function SearchableMultiSelect({
         break;
       case "Enter":
       case " ": {
-        const option = filteredOptions[activeIndex];
-        if (option) {
-          event.preventDefault();
-          handleToggleOption(option.id);
+        event.preventDefault();
+        if (activeIndex >= 0) {
+          const option = filteredOptions[activeIndex];
+          if (option) {
+            handleToggleOption(option.id);
+          }
+        } else if (filteredOptions.length === 1 && filteredOptions[0]) {
+          handleToggleOption(filteredOptions[0].id);
         }
         break;
       }
       case "Escape":
         setIsOpen(false);
+        setSearchTerm("");
         break;
       default:
         break;
@@ -163,26 +174,30 @@ export default function SearchableMultiSelect({
         </label>
       )}
 
-      <MultiSelectTrigger
-        ref={triggerRef}
-        selectedOptions={selectedOptions}
-        isOpen={isOpen}
-        placeholder={placeholder}
-        error={error}
-        onClick={toggleDropdown}
-        onKeyDown={handleTriggerKeyDown}
-        onRemoveChip={handleRemoveSelected}
-        aria-labelledby={label ? labelId : undefined}
-        aria-label={label ? undefined : placeholder}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? errorId : undefined}
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
-      />
+      <div onKeyDown={handleTriggerKeyDown}>
+        <MultiSelectTrigger
+          ref={triggerRef}
+          selectedOptions={selectedOptions}
+          isOpen={isOpen}
+          placeholder={placeholder}
+          error={error}
+          disabled={disabled}
+          onClick={toggleDropdown}
+          onRemoveChip={handleRemoveSelected}
+          aria-labelledby={label ? labelId : undefined}
+          aria-label={label ? undefined : placeholder}
+          aria-invalid={!!error}
+          aria-describedby={error ? errorId : undefined}
+          aria-expanded={isOpen}
+          aria-haspopup="listbox"
+          aria-controls={listboxId}
+        />
+      </div>
 
       <MultiSelectDropdown
         isOpen={isOpen}
         openDirection={openDirection}
+        listboxId={listboxId}
         options={options}
         filteredOptions={filteredOptions}
         selectedIds={selectedIds}
@@ -206,7 +221,6 @@ export default function SearchableMultiSelect({
         <span
           id={errorId}
           className="mt-1 block text-xs text-red-600"
-          role="alert"
         >
           {error}
         </span>

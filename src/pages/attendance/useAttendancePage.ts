@@ -1,8 +1,12 @@
+﻿import { TOAST_MESSAGES } from "#/configs/constants";
 import { useAuth } from "#/contexts/AuthContext.ts";
-import { useToast } from "#/hooks/useToast.ts";
+import { useAsyncData } from "#/hooks/useAsyncData.ts";
 import { useMapById } from "#/hooks/useMapById.ts";
+import { useToast } from "#/hooks/useToast.ts";
+import { showErrorToast } from "#/hooks/useToastHelpers.ts";
 import { attendanceService } from "#/services/attendance.ts";
 import { classService } from "#/services/class.ts";
+import { getErrorMessage } from "#/services/error.ts";
 import { sessionService } from "#/services/session.ts";
 import { userService } from "#/services/user.ts";
 import type { Attendance } from "#/types/attendance.ts";
@@ -10,11 +14,8 @@ import type { ClassItem } from "#/types/class.ts";
 import type { AttendanceStatus } from "#/types/common.ts";
 import type { Session } from "#/types/session.ts";
 import type { User } from "#/types/user.ts";
-import { getErrorMessage } from "#/utils/error.ts";
-import { useAsyncData } from "#/hooks/useAsyncData.ts";
-import { TOAST_MESSAGES } from "#/configs/constants";
 import { isAdmin, isTeacher } from "#/utils/roleUtils.ts";
-import { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 interface AttendancePageData {
@@ -24,12 +25,14 @@ interface AttendancePageData {
   attendances: Attendance[];
 }
 
-function fetchAttendancePageData(): Promise<AttendancePageData> {
+function fetchAttendancePageData(
+  signal?: AbortSignal,
+): Promise<AttendancePageData> {
   return Promise.all([
     classService.getAll(),
-    userService.getAll(),
-    sessionService.getAll(),
-    attendanceService.getAll(),
+    userService.getAll(undefined, signal),
+    sessionService.getAll(undefined, signal),
+    attendanceService.getAll(undefined, signal),
   ]).then(([classes, users, sessions, attendances]) => ({
     classes,
     users,
@@ -43,22 +46,24 @@ export function useAttendancePage() {
   const { addToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { data: pageData, loading, error, refresh } = useAsyncData<
-    AttendancePageData
-  >({
-    fetcher: fetchAttendancePageData,
+  const {
+    data: pageData,
+    loading,
+    error,
+    refresh,
+  } = useAsyncData<AttendancePageData>({
+    fetcher: (signal) => fetchAttendancePageData(signal),
     deps: [],
     fallbackError: TOAST_MESSAGES.FETCH_ERROR,
   });
 
-const selectedClassId = searchParams.get("classId") ?? "";
+  const selectedClassId = searchParams.get("classId") ?? "";
   const selectedSessionId = searchParams.get("sessionId") ?? "";
 
   const [draftAttendanceMap, setDraftAttendanceMap] = useState<
     Record<string, AttendanceStatus>
   >({});
   const [isSaving, setIsSaving] = useState(false);
-  const initializedSessionRef = useRef<string | null>(null);
 
   const isAdminUser = isAdmin(currentUser);
   const isTeacherUser = isTeacher(currentUser);
@@ -83,31 +88,13 @@ const selectedClassId = searchParams.get("classId") ?? "";
   }, [attendances, selectedSessionId]);
 
   useEffect(() => {
-    if (!selectedSessionId) {
-      setDraftAttendanceMap({});
-      initializedSessionRef.current = null;
-      return;
-    }
-
-    const hasAttendanceData = attendances.length > 0;
-    const isNewSession = initializedSessionRef.current !== selectedSessionId;
-
-    if (isNewSession) {
-      setDraftAttendanceMap(sessionAttendances);
-      initializedSessionRef.current = selectedSessionId;
-    } else if (hasAttendanceData) {
-      setDraftAttendanceMap((prev) => {
-        if (Object.keys(prev).length === 0) {
-          return sessionAttendances;
-        }
-        return prev;
-      });
-    }
-  }, [selectedSessionId, sessionAttendances, attendances.length]);
+    setDraftAttendanceMap({ ...sessionAttendances });
+  }, [sessionAttendances]);  
 
   const availableClasses = useMemo(() => {
     if (isAdminUser) return classes;
-    if (isTeacherUser) return classes.filter((c) => c.teacherId === currentUser?.id);
+    if (isTeacherUser)
+      return classes.filter((c) => c.teacherId === currentUser?.id);
     return [];
   }, [classes, isAdminUser, isTeacherUser, currentUser]);
 
@@ -144,55 +131,83 @@ const selectedClassId = searchParams.get("classId") ?? "";
     [classStudents],
   );
 
-  const handleMarkAllPresent = useCallback(() => setAllStatus("present"), [setAllStatus]);
-  const handleMarkAllAbsent = useCallback(() => setAllStatus("absent"), [setAllStatus]);
+  const handleMarkAllPresent = useCallback(
+    () => setAllStatus("present"),
+    [setAllStatus],
+  );
+  const handleMarkAllAbsent = useCallback(
+    () => setAllStatus("absent"),
+    [setAllStatus],
+  );
 
   const handleSave = useCallback(async () => {
     if (!selectedSessionId || !selectedClassId) return;
     setIsSaving(true);
     try {
-      const records = classStudents.map((student) => ({
-        studentId: student.id,
-        status: draftAttendanceMap[student.id] ?? "present",
-      }));
+      const records = classStudents
+        .map((student) => {
+          const status = draftAttendanceMap[student.id];
+          if (!status) return null;
+          return { studentId: student.id, status };
+        })
+        .filter(
+          (r): r is { studentId: string; status: AttendanceStatus } =>
+            r !== null,
+        );
       await attendanceService.saveAttendanceForSession(
         selectedSessionId,
         selectedClassId,
         records,
       );
-      refresh();
       addToast(TOAST_MESSAGES.ATTENDANCE_SAVE_SUCCESS, "success");
+      refresh();
     } catch (err) {
-      addToast(getErrorMessage(err, TOAST_MESSAGES.ATTENDANCE_SAVE_ERROR), "error");
+      showErrorToast(
+        addToast,
+        getErrorMessage(err, TOAST_MESSAGES.ATTENDANCE_SAVE_ERROR),
+      );
     } finally {
       setIsSaving(false);
     }
-  }, [selectedSessionId, selectedClassId, classStudents, draftAttendanceMap, refresh, addToast]);
+  }, [
+    selectedSessionId,
+    selectedClassId,
+    classStudents,
+    draftAttendanceMap,
+    refresh,
+    addToast,
+  ]);
 
-  const handleClassChange = useCallback((newClassId: string) => {
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev);
-      if (newClassId) {
-        next.set("classId", newClassId);
-      } else {
-        next.delete("classId");
-      }
-      next.delete("sessionId");
-      return next;
-    });
-  }, [setSearchParams]);
-
-  const handleSessionChange = useCallback((newSessionId: string) => {
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev);
-      if (newSessionId) {
-        next.set("sessionId", newSessionId);
-      } else {
+  const handleClassChange = useCallback(
+    (newClassId: string) => {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        if (newClassId) {
+          next.set("classId", newClassId);
+        } else {
+          next.delete("classId");
+        }
         next.delete("sessionId");
-      }
-      return next;
-    });
-  }, [setSearchParams]);
+        return next;
+      });
+    },
+    [setSearchParams],
+  );
+
+  const handleSessionChange = useCallback(
+    (newSessionId: string) => {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        if (newSessionId) {
+          next.set("sessionId", newSessionId);
+        } else {
+          next.delete("sessionId");
+        }
+        return next;
+      });
+    },
+    [setSearchParams],
+  );
 
   return {
     currentUser,

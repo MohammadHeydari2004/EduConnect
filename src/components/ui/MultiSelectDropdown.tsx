@@ -1,16 +1,12 @@
 import { SearchIcon } from "#/components/common/icons";
 import { createPortal } from "react-dom";
-import { useEffect, useId, useMemo, useState } from "react";
+import { usePortalPosition } from "#/hooks/usePortalPosition.ts";
+import { useEffect, useMemo, useRef } from "react";
 import { MultiSelectActions } from "#/components/ui/MultiSelectActions.tsx";
 import { MultiSelectEmpty } from "#/components/ui/MultiSelectEmpty.tsx";
 import { MultiSelectOptionComponent } from "#/components/ui/MultiSelectOption.tsx";
 import type { ID } from "#/types/common.ts";
-
-interface MultiSelectOption {
-  id: string;
-  label: string;
-  subLabel?: string;
-}
+import type { MultiSelectOption } from "#/types/hooks.ts";
 
 interface MultiSelectDropdownProps {
   isOpen: boolean;
@@ -24,17 +20,19 @@ interface MultiSelectDropdownProps {
   setActiveIndex: (index: number) => void;
   searchInputRef: React.RefObject<HTMLInputElement | null>;
   listboxRef: React.RefObject<HTMLDivElement | null>;
-  triggerRef: React.RefObject<HTMLDivElement | null>;
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
   dropdownRef: React.RefObject<HTMLDivElement | null>;
+  listboxId: string;
   onSearchChange: (value: string) => void;
   onSearchKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   onOptionClick: (id: ID) => void;
   onSelectAll: () => void;
   onSelectFiltered: () => void;
   onDeselectAll: () => void;
+  onActiveIndexChange?: (index: number) => void;
 }
 
-const MENU_DEFAULT_HEIGHT = 384;
+const MENU_DEFAULT_HEIGHT = 320;
 
 export function MultiSelectDropdown({
   isOpen,
@@ -50,26 +48,32 @@ export function MultiSelectDropdown({
   listboxRef,
   triggerRef,
   dropdownRef,
+  listboxId,
   onSearchChange,
   onSearchKeyDown,
   onOptionClick,
   onSelectAll,
   onSelectFiltered,
   onDeselectAll,
+  onActiveIndexChange,
 }: MultiSelectDropdownProps) {
-  const optionListId = useId();
-  const [position, setPosition] = useState<{
-    top: number;
-    left: number;
-    width: number;
-  }>({ top: 0, left: 0, width: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const selectedIdsSet = useMemo(() => new Set(selectedIds), [selectedIds]);
+
+  const position = usePortalPosition({
+    triggerRef: triggerRef,
+    menuRef: dropdownRef,
+    defaultWidth: 280,
+    defaultHeight: MENU_DEFAULT_HEIGHT,
+    viewportPadding: 8,
+    openDirection,
+  });
 
   useEffect(() => {
     if (isOpen && searchInputRef.current) {
       searchInputRef.current.focus();
-    } else {
+    } else if (!isOpen) {
       setActiveIndex(-1);
     }
   }, [isOpen, searchInputRef, setActiveIndex]);
@@ -86,65 +90,29 @@ export function MultiSelectDropdown({
     setActiveIndex(-1);
   }, [searchTerm, setActiveIndex]);
 
-  useEffect(() => {
-    if (!isOpen || !triggerRef.current) return;
-
-    const updatePosition = () => {
-      if (!triggerRef.current) return;
-
-      const btnRect = triggerRef.current.getBoundingClientRect();
-      const viewportWidth = document.documentElement.clientWidth;
-      const viewportHeight = window.innerHeight;
-
-      const dropdownWidth = Math.max(btnRect.width, 280);
-      const dropdownHeight = MENU_DEFAULT_HEIGHT;
-
-      let left = btnRect.left;
-      if (left + dropdownWidth > viewportWidth - 8) {
-        left = viewportWidth - dropdownWidth - 8;
-      }
-      if (left < 8) left = 8;
-
-      let top: number;
-      if (openDirection === "up") {
-        top = btnRect.top - dropdownHeight - 4;
-        if (top < 4) {
-          top = btnRect.bottom + 4;
-        }
-      } else {
-        top = btnRect.bottom + 4;
-        if (top + dropdownHeight > viewportHeight - 4) {
-          top = btnRect.top - dropdownHeight - 4;
-        }
-      }
-
-      setPosition({ top, left, width: dropdownWidth });
-    };
-
-    updatePosition();
-    window.addEventListener("scroll", updatePosition, true);
-    window.addEventListener("resize", updatePosition);
-
-    return () => {
-      window.removeEventListener("scroll", updatePosition, true);
-      window.removeEventListener("resize", updatePosition);
-    };
-  }, [isOpen, openDirection, triggerRef]);
-
   const activeOptionId =
-    activeIndex >= 0 ? `${optionListId}-option-${activeIndex}` : undefined;
+    activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined;
 
   if (!isOpen) return null;
 
+  const viewportH =
+    typeof window !== "undefined" ? window.innerHeight : 800;
+  const maxH = Math.min(384, Math.max(200, viewportH - 32));
+
   return createPortal(
     <div
-      ref={dropdownRef}
-      className="max-h-96 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg"
+      ref={(el) => {
+        (dropdownRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+        (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+      }}
+      className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg"
       style={{
         position: "fixed",
         top: position.top,
         left: position.left,
         width: position.width,
+        maxWidth: "calc(100vw - 16px)",
+        maxHeight: maxH,
         zIndex: 60,
       }}
     >
@@ -157,7 +125,7 @@ export function MultiSelectDropdown({
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             onKeyDown={onSearchKeyDown}
-            aria-controls={optionListId}
+            aria-controls={listboxId}
             aria-expanded={isOpen}
             aria-activedescendant={activeOptionId}
             placeholder={searchPlaceholder}
@@ -181,8 +149,8 @@ export function MultiSelectDropdown({
 
       <div
         ref={listboxRef}
-        id={optionListId}
-        className="max-h-60 overflow-y-auto"
+        id={listboxId}
+        className="max-h-56 overflow-y-auto"
         role="listbox"
         aria-multiselectable="true"
       >
@@ -195,14 +163,15 @@ export function MultiSelectDropdown({
             return (
               <MultiSelectOptionComponent
                 key={opt.id}
-                id={`${optionListId}-option-${index}`}
+                id={`${listboxId}-option-${index}`}
                 option={opt}
                 isSelected={isSelected}
                 isActive={isActive}
-                onClick={() => onOptionClick(opt.id)}
-                role="option"
+                onClick={() => {
+                  onOptionClick(opt.id);
+                  if (onActiveIndexChange) onActiveIndexChange(index);
+                }}
                 aria-selected={isSelected}
-                tabIndex={-1}
                 data-active={isActive ? "true" : "false"}
               />
             );
@@ -211,7 +180,7 @@ export function MultiSelectDropdown({
       </div>
 
       <div className="border-t border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-500">
-        برای جستجو تایپ کنید و برای انتخاب روی گزینه کلیک کنید
+        برای جستجو تایپ کنید و برای انتخاب روی گزینه کلیک کنید یا Enter بزنید
       </div>
     </div>,
     document.body,

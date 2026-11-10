@@ -1,8 +1,7 @@
 import { RouterErrorBoundary } from "#/components/common/RouterErrorBoundary";
-import ScrollToTop from "#/components/common/ScrollToTop";
 import AuthProvider from "#/contexts/AuthProvider";
-import { ToastProvider } from "#/contexts/ToastProvider.tsx";
-import AppRoutes from "#/routes/AppRoutes.tsx";
+import { ToastProvider } from "#/contexts/ToastProvider";
+import AppRoutes from "#/routes/AppRoutes";
 import "#/index.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -19,7 +18,6 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <BrowserRouter>
-      <ScrollToTop />
       <RouterErrorBoundary>
         <ToastProvider>
           <AuthProvider>

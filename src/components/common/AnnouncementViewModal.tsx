@@ -1,15 +1,14 @@
 import Button from "#/components/ui/Button.tsx";
 import Modal from "#/components/ui/Modal.tsx";
+import { getTargetDescription } from "#/utils/announcementVisibility.ts";
+import { formatDateTime } from "#/utils/formatDate.ts";
 import type { Announcement } from "#/types/announcement.ts";
 
 interface AnnouncementViewModalProps {
   isOpen: boolean;
   announcement: Announcement | null;
   getClassName: (classId: string) => string;
-  getTargetDescription: (item: Announcement) => string;
   getAuthorName: (authorId: string) => string;
-  formatDateTime: (date: string) => string;
-  formatRelativeTime: (date: string) => string;
   onClose: () => void;
   onMarkAsSeen: () => void;
   isMarkingSeen: boolean;
@@ -20,10 +19,7 @@ export function AnnouncementViewModal({
   isOpen,
   announcement,
   getClassName,
-  getTargetDescription,
   getAuthorName,
-  formatDateTime,
-  formatRelativeTime,
   onClose,
   onMarkAsSeen,
   isMarkingSeen,
@@ -46,9 +42,9 @@ export function AnnouncementViewModal({
           <span className="font-semibold">نویسنده:</span>{" "}
           {getAuthorName(announcement.authorId)}
         </p>
-        <p title={formatDateTime(announcement.createdAt)}>
+        <p className="text-xs text-gray-500">
           <span className="font-semibold">تاریخ:</span>{" "}
-          {formatRelativeTime(announcement.createdAt)}
+          {formatDateTime(announcement.createdAt)}
         </p>
         <hr className="my-2" />
         <p className="leading-relaxed whitespace-pre-wrap">

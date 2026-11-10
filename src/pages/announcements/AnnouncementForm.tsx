@@ -1,10 +1,10 @@
-import Button from "#/components/ui/Button.tsx";
+﻿import Button from "#/components/ui/Button.tsx";
 import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Select from "#/components/ui/Select.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
 import {
-  DEFAULT_TARGET_ROLES,
+  ALL_ROLES,
   GLOBAL_ANNOUNCEMENT_CLASS_ID,
 } from "#/configs/constants";
 import { useToast } from "#/hooks/useToast.ts";
@@ -14,13 +14,13 @@ import {
   buildAnnouncementPayload,
   validateGlobalAnnouncementRoles,
   getAnnouncementClassOptions,
-} from "#/pages/announcements/announcementPayload.ts";
-import { GlobalAnnouncementRoles } from "#/pages/announcements/AnnouncementFormParts.tsx";
-import { ClassAnnouncementAudience } from "#/pages/announcements/AnnouncementFormParts.tsx";
+} from "#/utils/announcementPayload";
+import { GlobalAnnouncementRoles } from "#/components/ui/AnnouncementFormParts";
+import { ClassAnnouncementAudience } from "#/components/ui/AnnouncementFormParts";
 import type { Announcement, TargetAudience } from "#/types/announcement.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID, UserRole } from "#/types/common.ts";
-import { getErrorMessage } from "#/utils/error.ts";
+import { getErrorMessage } from "#/services/error.ts";
 import { FORM_PLACEHOLDERS } from "#/configs/constants";
 import { useEffect, useMemo, useState } from "react";
 
@@ -47,18 +47,20 @@ export default function AnnouncementForm({
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [content, setContent] = useState(initialData?.content ?? "");
   const [classId, setClassId] = useState<string>(
-    initialData?.classId?.toString() ?? GLOBAL_ANNOUNCEMENT_CLASS_ID,
+    initialData?.classId ?? GLOBAL_ANNOUNCEMENT_CLASS_ID,
   );
   const [targetRoles, setTargetRoles] = useState<UserRole[]>(
-    initialData?.targetRoles ?? DEFAULT_TARGET_ROLES,
+    initialData?.targetRoles ?? ALL_ROLES,
   );
   const [targetAudience, setTargetAudience] = useState<TargetAudience>(
     initialData?.targetAudience ?? "students",
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const [classIdError, setClassIdError] = useState("");
-  const [targetAudienceError, setTargetAudienceError] = useState("");
+  const [titleError, setTitleError] = useState("");
+  const [contentError, setContentError] = useState("");
+  const [classError, setClassError] = useState("");
+  const [audienceError, setAudienceError] = useState("");
+  const [rolesError, setRolesError] = useState("");
   const isAdmin = userRole === "admin";
 
   const classOptions = useMemo(
@@ -75,28 +77,27 @@ export default function AnnouncementForm({
 
   const handleSubmit = async () => {
     const validationErrors = validateAnnouncementForm({ title, content });
-    if (Object.keys(validationErrors).length > 0) {
-      setError(validationErrors.form || "خطا در اعتبارسنجی");
-      return;
-    }
+    setTitleError(validationErrors.title ?? "");
+    setContentError(validationErrors.content ?? "");
+    setClassError("");
+    setAudienceError("");
+    setRolesError("");
+    if (Object.keys(validationErrors).length > 0) return;
 
     if (!classId) {
-      setClassIdError("انتخاب کلاس الزامی است.");
-      setError("لطفاً خطاهای فرم را برطرف کنید.");
+      setClassError("انتخاب کلاس الزامی است.");
       return;
     }
-    setClassIdError("");
+    setClassError("");
 
     if (isAdmin && classId !== GLOBAL_ANNOUNCEMENT_CLASS_ID && !targetAudience) {
-      setTargetAudienceError("انتخاب مخاطبان الزامی است.");
-      setError("لطفاً خطاهای فرم را برطرف کنید.");
+      setAudienceError("انتخاب مخاطبان الزامی است.");
       return;
     }
-    setTargetAudienceError("");
 
     const roleError = validateGlobalAnnouncementRoles(isAdmin, classId, targetRoles);
     if (roleError) {
-      setError(roleError);
+      setRolesError(roleError);
       return;
     }
 
@@ -110,7 +111,6 @@ export default function AnnouncementForm({
         isAdmin,
         targetRoles,
         targetAudience,
-        classOptions,
       });
 
       let result: Announcement;
@@ -139,20 +139,12 @@ export default function AnnouncementForm({
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
-    if (error || classIdError || targetAudienceError) {
-      setError("");
-      setClassIdError("");
-      setTargetAudienceError("");
-    }
+    setTitleError("");
   };
 
   const handleContentChange = (value: string) => {
     setContent(value);
-    if (error || classIdError || targetAudienceError) {
-      setError("");
-      setClassIdError("");
-      setTargetAudienceError("");
-    }
+    setContentError("");
   };
 
   return (
@@ -161,13 +153,14 @@ export default function AnnouncementForm({
       title={initialData ? "ویرایش اطلاعیه" : "ایجاد اطلاعیه جدید"}
       onClose={onClose}
     >
-      <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         <Input
           label="عنوان"
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
           placeholder={FORM_PLACEHOLDERS.ANNOUNCEMENT_TITLE}
           required
+          error={titleError || undefined}
         />
 
         <Select
@@ -175,18 +168,22 @@ export default function AnnouncementForm({
           value={classId}
           onChange={(e) => {
             setClassId(e.target.value);
-            if (classIdError) setClassIdError("");
-            if (error) setError("");
+            setClassError("");
+            setRolesError("");
           }}
           options={classOptions}
           required
-          error={classIdError}
+          error={classError || undefined}
         />
 
         {isAdmin && classId === GLOBAL_ANNOUNCEMENT_CLASS_ID && (
           <GlobalAnnouncementRoles
             targetRoles={targetRoles}
-            onToggle={toggleRole}
+            onToggle={(role) => {
+              toggleRole(role);
+              setRolesError("");
+            }}
+            error={rolesError || undefined}
           />
         )}
 
@@ -195,10 +192,10 @@ export default function AnnouncementForm({
             targetAudience={targetAudience}
             onChange={(value) => {
               setTargetAudience(value);
-              if (targetAudienceError) setTargetAudienceError("");
-              if (error) setError("");
+              setClassError("");
+              setAudienceError("");
             }}
-            error={targetAudienceError}
+            error={audienceError || undefined}
           />
         )}
 
@@ -209,23 +206,18 @@ export default function AnnouncementForm({
           rows={5}
           placeholder={FORM_PLACEHOLDERS.ANNOUNCEMENT_CONTENT}
           required
+          error={contentError || undefined}
         />
 
-        {error && (
-          <p className="text-sm text-red-600" role="alert">
-            {error}
-          </p>
-        )}
-
         <div className="flex justify-end gap-2 pt-2">
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" type="button" onClick={onClose}>
             انصراف
           </Button>
-          <Button onClick={handleSubmit} isLoading={isSubmitting} disabled={isSubmitting}>
+          <Button type="submit" isLoading={isSubmitting}>
             {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
           </Button>
         </div>
-      </div>
+      </form>
     </Modal>
   );
 }

@@ -1,20 +1,7 @@
 import { useMemo } from "react";
+import type { FilterConfig, UseFilterOptions } from "#/types/hooks.ts";
 
-export interface FilterConfig<T> {
-  filterKey: string;
-  matches: (item: T, filterValue: unknown) => boolean;
-  transformFilter?: (value: unknown) => unknown;
-  transformItem?: (item: T) => unknown;
-}
-
-export interface UseFilterOptions<T, F extends Record<string, unknown> = Record<string, unknown>> {
-  data: T[] | undefined | null;
-  filters: F;
-  filterConfigs: FilterConfig<T>[];
-  extraPredicate?: ((item: T) => boolean | undefined) | undefined;
-}
-
-export function useFilter<T, F extends Record<string, unknown> = Record<string, unknown>>({
+export function useFilter<T, F extends object = Record<string, unknown>>({
   data,
   filters,
   filterConfigs,
@@ -23,21 +10,16 @@ export function useFilter<T, F extends Record<string, unknown> = Record<string, 
   return useMemo(() => {
     if (!data) return [];
 
+    const filtersRecord = filters as Record<string, unknown>;
+
     return data.filter((item) => {
       for (const config of filterConfigs) {
-        const filterValue = filters[config.filterKey];
+        const filterValue = filtersRecord[config.filterKey];
         if (filterValue === "" || filterValue === null || filterValue === undefined) {
           continue;
         }
 
-        const transformedFilter = config.transformFilter
-          ? config.transformFilter(filterValue)
-          : filterValue;
-        const transformedItem = config.transformItem
-          ? config.transformItem(item)
-          : item;
-
-        if (!config.matches(transformedItem as T, transformedFilter)) {
+        if (!config.matches(item, filterValue)) {
           return false;
         }
       }

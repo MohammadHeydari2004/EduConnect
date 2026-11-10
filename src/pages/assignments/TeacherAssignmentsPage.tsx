@@ -1,12 +1,12 @@
-import EmptyState from "#/components/common/EmptyState.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
-import Input from "#/components/ui/Input.tsx";
-import Select from "#/components/ui/Select.tsx";
 import AssignmentForm from "#/pages/assignments/AssignmentForm.tsx";
 import TeacherAssignmentsTable from "#/pages/assignments/TeacherAssignmentsTable.tsx";
 import { useTeacherAssignmentsPage } from "#/pages/assignments/useTeacherAssignmentsPage";
+import AssignmentFilterCard from "#/components/common/AssignmentFilterCard.tsx";
+import type { Assignment } from "#/types/assignment.ts";
+import { EmptyListState } from "#/components/ui/EmptyListState.tsx";
 
 export default function TeacherAssignmentsPage() {
   const {
@@ -21,6 +21,7 @@ export default function TeacherAssignmentsPage() {
     setFilters,
     resetFilters,
     filteredAssignments,
+    assignmentsLoading,
     assignmentModal,
     isDeleting,
     handleOpenCreate,
@@ -32,81 +33,49 @@ export default function TeacherAssignmentsPage() {
     getClassName,
     handleAssignmentFormClose,
     handleAssignmentSuccess,
-    canManageAssignment,
   } = useTeacherAssignmentsPage();
+
+  const hasActiveFilters = Boolean(
+    filters.search || filters.classId || filters.status,
+  );
+
+  const canManageAssignment = (a: Assignment) => {
+    if (!currentUser) return false;
+    return currentUser.role === "teacher" && a.teacherId === currentUser.id;
+  };
 
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
+        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl max-sm:mt-2.5">
           {isClassPage && classId
             ? `تکالیف کلاس: ${getClassName(classId)}`
             : "تکالیف"}
         </h1>
-        {(isAdmin || isTeacher) && (
+        {isTeacher && (
           <Button onClick={handleOpenCreate}>ایجاد تکلیف جدید</Button>
         )}
       </div>
 
       {!isClassPage && (
-        <Card className="mb-4">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 items-end">
-            <Input
-              label="جستجوی عنوان"
-              value={filters.search}
-              onChange={(e) =>
-                setFilters({ ...filters, search: e.target.value })
-              }
-              placeholder="جستجو..."
-            />
-            {!isClassPage && (
-              <Select
-                label="کلاس"
-                value={filters.classId}
-                onChange={(e) =>
-                  setFilters({ ...filters, classId: e.target.value })
-                }
-                options={[
-                  { value: "", label: "همه کلاس‌ها" },
-                  ...myClasses.map((c) => ({
-                    value: c.id,
-                    label: c.title || "(بدون عنوان)",
-                  })),
-                ]}
-              />
-            )}
-            <Select
-              label="وضعیت"
-              value={filters.status}
-              onChange={(e) =>
-                setFilters({
-                  ...filters,
-                  status: e.target.value as "" | "active" | "expired",
-                })
-              }
-              options={[
-                { value: "", label: "همه" },
-                { value: "active", label: "فعال" },
-                { value: "expired", label: "منقضی شده" },
-              ]}
-            />
-            {(filters.search || filters.classId || filters.status) && (
-              <Button
-                variant="secondary"
-                className="mt-2"
-                onClick={resetFilters}
-              >
-                پاک کردن فیلترها
-              </Button>
-            )}
-          </div>
-        </Card>
+        <AssignmentFilterCard
+          filters={filters}
+          onChange={(next) => setFilters({ ...filters, ...next })}
+          onReset={resetFilters}
+          classes={myClasses}
+          hasActiveFilters={hasActiveFilters}
+        />
       )}
 
-      {filteredAssignments.length === 0 ? (
-        <EmptyState
-          title="تکلیفی وجود ندارد"
-          description="تکلیفی برای نمایش موجود نیست."
+      {assignmentsLoading ? (
+        <div className="py-10 text-center text-sm text-gray-500">در حال بارگذاری...</div>
+      ) : filteredAssignments.length === 0 ? (
+        <EmptyListState
+          items={filteredAssignments}
+          emptyTitle="تکلیفی وجود ندارد"
+          emptyDescription="تکلیفی برای نمایش موجود نیست."
+          notFoundTitle="تکلیفی وجود ندارد"
+          notFoundDescription="تکلیفی برای نمایش موجود نیست."
         />
       ) : (
         <Card noPadding={true}>

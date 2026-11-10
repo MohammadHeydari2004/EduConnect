@@ -1,4 +1,3 @@
-import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
 import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import StudentAttendanceView from "#/pages/attendance/StudentAttendanceView.tsx";
@@ -12,7 +11,6 @@ export default function AttendancePage() {
   const {
     currentUser,
     isAdmin,
-    isTeacher,
     isStudent,
     loading,
     error,
@@ -37,13 +35,14 @@ export default function AttendancePage() {
 
   const sessionMap = useMapById<Session>(sessions);
 
+  if (!currentUser) return null;
+
   if (loading) return <Loading />;
   if (error) return <ErrorAlert message={error} />;
-  if (!currentUser) return <EmptyState title="دسترسی محدود" description="شما دسترسی به این بخش ندارید." />;
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
+      <h1 className="text-xl font-bold text-gray-800 sm:text-2xl max-sm:mt-2.5">
         حضور و غیاب
       </h1>
       {isStudent ? (
@@ -64,7 +63,7 @@ export default function AttendancePage() {
           onClassChange={handleClassChange}
           onSessionChange={handleSessionChange}
         />
-      ) : isTeacher ? (
+      ) : (
         <TeacherAttendanceForm
           data={{
             classes: availableClasses,
@@ -83,11 +82,6 @@ export default function AttendancePage() {
             onMarkAllAbsent: handleMarkAllAbsent,
             onSave: handleSave,
           }}
-        />
-      ) : (
-        <EmptyState
-          title="دسترسی محدود"
-          description="شما دسترسی به این بخش ندارید."
         />
       )}
     </div>

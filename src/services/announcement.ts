@@ -1,14 +1,16 @@
 import { baseApi } from "#/services/api/baseApi.ts";
-import type { Announcement } from "#/types/announcement.ts";
+import { safeDelete } from "#/services/api/safeDelete.ts";
+import type { Announcement, AnnouncementPayload } from "#/types/announcement.ts";
 import type { ID } from "#/types/common.ts";
 
 const endpoint = "/announcements";
 
 export const announcementService = {
-  getAll: () => baseApi.getAll<Announcement>(endpoint),
+  getAll: (params?: Record<string, string | number | boolean>, signal?: AbortSignal) =>
+    baseApi.getAll<Announcement>(endpoint, params, signal),
   getById: (id: ID) => baseApi.getById<Announcement>(endpoint, id),
 
-  create: (data: Omit<Announcement, "id" | "createdAt" | "seenBy">) =>
+  create: (data: AnnouncementPayload) =>
     baseApi.create<Announcement>(endpoint, {
       ...data,
       seenBy: [],
@@ -21,7 +23,7 @@ export const announcementService = {
       updatedAt: new Date().toISOString(),
     }),
 
-  delete: (id: ID) => baseApi.delete(endpoint, id),
+  delete: (id: ID) => safeDelete((deleteId: ID) => baseApi.delete(endpoint, deleteId), id, endpoint),
 
   markAsSeen: async (id: ID, userId: ID) => {
     const announcement = await baseApi.getById<Announcement>(endpoint, id);

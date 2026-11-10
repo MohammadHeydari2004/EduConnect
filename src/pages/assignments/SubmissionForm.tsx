@@ -2,14 +2,13 @@ import Button from "#/components/ui/Button.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
 import { useToast } from "#/hooks/useToast.ts";
-import {
-  validateSubmissionForm,
-  type SubmissionFormErrors,
-} from "#/pages/assignments/validators.ts";
+import { validateSubmissionForm } from "#/pages/assignments/validators.ts";
+import type { SubmissionFormErrors } from "#/types/submission.ts";
 import { submissionService } from "#/services/submission.ts";
 import type { ID } from "#/types/common.ts";
 import type { Submission } from "#/types/submission.ts";
-import { getErrorMessage } from "#/utils/error.ts";
+import { classifyError } from "#/services/error.ts";
+import { showErrorToastWithInfo } from "#/hooks/useToastHelpers.ts";
 import { formatDate } from "#/utils/formatDate.ts";
 import { useMemo, useState } from "react";
 
@@ -74,11 +73,9 @@ export default function SubmissionForm({
       }
       onSuccess(result);
     } catch (err) {
-      const message = getErrorMessage(
-        err,
-        "خطا در ذخیره پاسخ. لطفاً دوباره تلاش کنید.",
-      );
-      setErrors({ form: message });
+      const info = classifyError(err);
+      showErrorToastWithInfo(addToast, info, "خطا در ذخیره پاسخ. لطفاً دوباره تلاش کنید.");
+      setErrors({ form: info.userMessage });
     } finally {
       setIsSubmitting(false);
     }
@@ -136,7 +133,7 @@ export default function SubmissionForm({
           onChange={(e) => {
             setContent(e.target.value);
             if (errors.content || errors.form) {
-              setErrors((prev) => ({
+              setErrors((prev: SubmissionFormErrors) => ({
                 ...prev,
                 content: "",
                 form: "",

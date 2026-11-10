@@ -23,11 +23,24 @@ const MS_PER_MINUTE = 60_000;
 const MS_PER_HOUR = 60 * MS_PER_MINUTE;
 const MS_PER_DAY = 24 * MS_PER_HOUR;
 
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+
 const RELATIVE_TIME_THRESHOLDS = [
-  { max: 1, unit: MS_PER_MINUTE, label: "لحظاتی پیش", format: (v: number) => `${v} دقیقه پیش` },
-  { max: 60, unit: MS_PER_MINUTE, label: "", format: (v: number) => `${v} دقیقه پیش` },
-  { max: 24, unit: MS_PER_HOUR, label: "", format: (v: number) => `${v} ساعت پیش` },
-  { max: 7, unit: MS_PER_DAY, label: "", format: (v: number) => `${v} روز پیش` },
+  {
+    max: 60,
+    unit: MS_PER_MINUTE,
+    format: (v: number) => `${v} دقیقه پیش`,
+  },
+  {
+    max: 24,
+    unit: MS_PER_HOUR,
+    format: (v: number) => `${v} ساعت پیش`,
+  },
+  {
+    max: 7,
+    unit: MS_PER_DAY,
+    format: (v: number) => `${v} روز پیش`,
+  },
 ] as const;
 
 export const formatRelativeTime = (
@@ -57,38 +70,22 @@ export const formatRelativeTime = (
 function parseDate(date: string | Date | null | undefined): Date | null {
   if (!date) return null;
   try {
-    const dateObj = typeof date === "string" ? new Date(date) : date;
+    let dateObj: Date;
+    if (typeof date === "string" && DATE_ONLY.test(date)) {
+      const parts = date.split("-");
+      const y = Number(parts[0]);
+      const m = Number(parts[1]);
+      const d = Number(parts[2]);
+      dateObj = new Date(y, m - 1, d);
+    } else {
+      dateObj = typeof date === "string" ? new Date(date) : date;
+    }
     if (isNaN(dateObj.getTime())) return null;
     return dateObj;
   } catch {
     return null;
   }
 }
-
-export const toDateInputValue = (
-  date: string | Date | null | undefined,
-): string => {
-  const dateObj = parseDate(date);
-  if (!dateObj) return "";
-  const year = String(dateObj.getFullYear());
-  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-  const day = String(dateObj.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
-export const toIsoWithEndOfDay = (dateValue: string): string => {
-  const [year, month, day] = dateValue.split("-");
-  if (!year || !month || !day) return "";
-  return new Date(
-    Number(year),
-    Number(month) - 1,
-    Number(day),
-    23,
-    59,
-    59,
-    999,
-  ).toISOString();
-};
 
 export const isDateBeforeToday = (date: string | Date): boolean => {
   const dateObj = parseDate(date);

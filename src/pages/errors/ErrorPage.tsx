@@ -27,6 +27,14 @@ function ErrorPage({
   const navigate = useNavigate();
   const colors = COLOR_CLASSES[colorVariant];
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 text-center">
       <div
@@ -49,7 +57,7 @@ function ErrorPage({
         <Button onClick={() => navigate("/")}>
           بازگشت به صفحه اصلی
         </Button>
-        <Button variant="secondary" onClick={() => window.history.back()}>
+        <Button variant="secondary" onClick={handleBack}>
           بازگشت به صفحه قبل
         </Button>
       </div>

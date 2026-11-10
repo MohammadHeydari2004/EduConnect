@@ -4,16 +4,18 @@ import Modal from "#/components/ui/Modal.tsx";
 import SearchableMultiSelect from "#/components/ui/SearchableMultiSelect.tsx";
 import Select from "#/components/ui/Select.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
-import {
-  validateClassForm,
-  type ClassFormErrors,
-} from "#/pages/classes/classValidation.ts";
 import { DEFAULT_CLASS_CAPACITY } from "#/configs/constants";
+import { validateClassForm } from "#/pages/classes/classValidation.ts";
 import { classService } from "#/services/class.ts";
-import type { ClassFormValues, ClassItem, ClassStatus } from "#/types/class.ts";
+import { getErrorMessage } from "#/services/error.ts";
+import { removeStudentsFromClassCascade } from "#/services/cascadeDelete.ts";
+import type {
+  ClassFormErrors,
+  ClassFormValues,
+  ClassItem,
+} from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
-import { getErrorMessage } from "#/utils/error.ts";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface Props {
   users: User[];
@@ -39,22 +41,28 @@ export default function ClassForm({
     [users],
   );
 
-  const [form, setForm] = useState<ClassFormValues>(() => ({
+  const studentOptions = useMemo(
+    () => students.map((s) => ({ id: s.id, label: s.name, subLabel: s.email })),
+    [students],
+  );
+
+  const buildInitialForm = useCallback((): ClassFormValues => ({
     title: initialData?.title || "",
     teacherId: initialData?.teacherId ?? null,
     studentIds: initialData?.studentIds || [],
     capacity: initialData?.capacity || DEFAULT_CLASS_CAPACITY,
     status: initialData?.status || "active",
     description: initialData?.description || "",
-  }));
+  }), [initialData]);
 
+  const [form, setForm] = useState<ClassFormValues>(buildInitialForm);
   const [errors, setErrors] = useState<ClassFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const studentOptions = useMemo(
-    () => students.map((s) => ({ id: s.id, label: s.name, subLabel: s.email })),
-    [students],
-  );
+  useEffect(() => {
+    setForm(buildInitialForm());
+    setErrors({});
+  }, [buildInitialForm]);
 
   const handleSubmit = async () => {
     const validationErrors = validateClassForm(form);
@@ -65,6 +73,20 @@ export default function ClassForm({
       setIsSubmitting(true);
       if (initialData) {
         await classService.update(initialData.id, form);
+
+        const currentStudentIds = new Set(form.studentIds);
+
+        const removedStudentIds = initialData.studentIds.filter(
+          (id) => !currentStudentIds.has(id),
+        );
+
+        if (removedStudentIds.length > 0) {
+          await removeStudentsFromClassCascade(
+            initialData.id,
+            removedStudentIds,
+          );
+        }
+
         onSuccess("کلاس با موفقیت ویرایش شد.");
       } else {
         await classService.create(form);
@@ -87,7 +109,7 @@ export default function ClassForm({
           value={form.title}
           onChange={(e) => {
             setForm({ ...form, title: e.target.value });
-            if (errors.title) setErrors({ ...errors, title: undefined });
+            if (errors.title) setErrors({ ...errors, title: undefined } as unknown as ClassFormErrors);
           }}
           error={errors.title}
           placeholder="مثلاً: مبانی برنامه‌نویسی"
@@ -128,7 +150,10 @@ export default function ClassForm({
             label="وضعیت"
             value={form.status}
             onChange={(e) =>
-              setForm({ ...form, status: e.target.value as ClassStatus })
+              setForm({ ...form, status: (() => {
+                const v = e.target.value;
+                return v === "active" || v === "inactive" ? v : "active";
+              })() })
             }
             options={[
               { label: "فعال", value: "active" },
@@ -143,7 +168,10 @@ export default function ClassForm({
           onChange={(e) => {
             setForm({ ...form, description: e.target.value });
             if (errors.description)
-              setErrors((prev) => ({ ...prev, description: undefined }));
+              setErrors((prev: ClassFormErrors) => ({
+                ...prev,
+                description: undefined,
+              }));
           }}
           error={errors.description}
           placeholder="توضیحات مختصر درباره کلاس..."
@@ -161,13 +189,12 @@ export default function ClassForm({
             selectedIds={form.studentIds}
             onChange={(ids) => {
               setForm({ ...form, studentIds: ids });
-              if (errors.students)
-                setErrors({ ...errors, students: undefined });
+              if (errors.studentIds)
+                setErrors({ ...errors, studentIds: undefined });
             }}
             placeholder="دانشجویان را جستجو و انتخاب کنید..."
             searchPlaceholder="جستجوی دانشجو (نام یا ایمیل)..."
-            error={errors.students}
-            openDirection="up"
+            error={errors.studentIds}
           />
         )}
 
@@ -175,7 +202,7 @@ export default function ClassForm({
           <Button type="button" variant="secondary" onClick={onClose}>
             انصراف
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
+          <Button onClick={handleSubmit}>
             {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
           </Button>
         </div>

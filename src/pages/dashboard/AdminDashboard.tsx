@@ -34,7 +34,11 @@ interface Props {
 export default function AdminDashboard({ data }: Props) {
   const { users, classes, sessions, assignments } = data;
   const roleCounts = useMemo(() => {
-    const counts = { admin: 0, teacher: 0, student: 0 };
+    const counts: Record<"admin" | "teacher" | "student", number> = {
+      admin: 0,
+      teacher: 0,
+      student: 0,
+    };
     for (const u of users) {
       if (u.role in counts) counts[u.role as keyof typeof counts]++;
     }
@@ -90,65 +94,82 @@ export default function AdminDashboard({ data }: Props) {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card title="توزیع نقش‌های کاربران">
-          <div className="h-64" role="img" aria-label={chartSummary}>
-            {totalUsers === 0 ? (
-              <div className="flex h-full items-center justify-center text-sm text-gray-500">
-                هنوز کاربری ثبت نشده است.
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                  <Pie
-                    data={roleData}
-                    cx="50%"
-                    cy="40%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
+          {totalUsers === 0 ? (
+            <div className="flex h-full items-center justify-center text-sm text-gray-500">
+              هنوز کاربری ثبت نشده است.
+            </div>
+          ) : (
+            <>
+              <div className="sm:hidden space-y-2">
+                {roleData.map((r) => (
+                  <div
+                    key={r.name}
+                    className="flex items-center justify-between text-sm"
                   >
-                    {roleData.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={CHART_COLORS[index % CHART_COLORS.length] as string}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    content={
-                      <ChartTooltip>
-                        {(first: ChartPayloadEntry) => {
-                          const itemColor = first.color ?? "#333";
-                          const value =
-                            typeof first.value === "number" ? first.value : 0;
-                          const percentage =
-                            totalUsers > 0 ? (value / totalUsers) * 100 : 0;
-                          return (
-                            <p
-                              style={{ color: itemColor }}
-                              className="font-bold"
-                            >
-                              {`${first.name ?? ""}: ${percentage.toFixed(1)}% (${value} نفر)`}
-                            </p>
-                          );
-                        }}
-                      </ChartTooltip>
-                    }
-                    contentStyle={{ direction: "rtl", textAlign: "right" }}
-                  />
-                  <Legend
-                    verticalAlign="bottom"
-                    height={36}
-                    content={
-                      <ChartLegend
-                        resolveLabel={defaultChartLabel}
-                      />
-                    }
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            )}
-          </div>
+                    <span className="text-gray-700">{r.name}</span>
+                    <span className="font-medium text-gray-900">{r.value} نفر</span>
+                  </div>
+                ))}
+              </div>
+              <div
+                className="hidden sm:block h-64"
+                role="group"
+                aria-label={chartSummary}
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                    <Pie
+                      data={roleData}
+                      cx="50%"
+                      cy="40%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {roleData.map((_, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={CHART_COLORS[index % CHART_COLORS.length] as string}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      content={
+                        <ChartTooltip>
+                          {(first: ChartPayloadEntry) => {
+                            const itemColor = first.color ?? "#333";
+                            const value =
+                              typeof first.value === "number" ? first.value : 0;
+                            const percentage =
+                              totalUsers > 0 ? (value / totalUsers) * 100 : 0;
+                            return (
+                              <p
+                                style={{ color: itemColor }}
+                                className="font-bold"
+                              >
+                                {`${first.name ?? ""}: ${percentage.toFixed(1)}% (${value} نفر)`}
+                              </p>
+                            );
+                          }}
+                        </ChartTooltip>
+                      }
+                      contentStyle={{ direction: "rtl", textAlign: "right" }}
+                    />
+                    <Legend
+                      verticalAlign="bottom"
+                      height={36}
+                      content={
+                        <ChartLegend
+                          resolveLabel={defaultChartLabel}
+                        />
+                      }
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </>
+          )}
         </Card>
 
         <Card title="آخرین کلاس‌های ثبت‌شده">

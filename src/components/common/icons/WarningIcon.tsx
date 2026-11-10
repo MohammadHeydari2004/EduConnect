@@ -1,10 +1,6 @@
-import type { ReactNode } from "react";
+﻿import type { IconProps } from "./types.ts";
 
-interface IconProps {
-  className?: string;
-}
-
-export function WarningIcon({ className = "h-6 w-6" }: IconProps): ReactNode {
+export function WarningIcon({ className = "h-6 w-6" }: IconProps) {
   return (
     <svg
       className={className}
@@ -22,3 +18,4 @@ export function WarningIcon({ className = "h-6 w-6" }: IconProps): ReactNode {
     </svg>
   );
 }
+

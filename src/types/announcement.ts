@@ -1,4 +1,4 @@
-import type { ID, Maybe, UserRole } from "#/types/common.ts";
+import type { ID, Maybe, UserRole, BaseFormErrors } from "#/types/common.ts";
 
 export type TargetAudience = "students" | "teacher" | "both";
 
@@ -13,4 +13,13 @@ export interface Announcement {
   seenBy: ID[];
   targetRoles: Maybe<UserRole[]>;
   targetAudience: Maybe<TargetAudience>;
+}
+
+export type AnnouncementPayload = Omit<
+  Announcement,
+  "id" | "createdAt" | "seenBy"
+>;
+
+export interface AnnouncementFormErrors extends BaseFormErrors {
+  content?: string;
 }

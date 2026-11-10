@@ -1,12 +1,6 @@
-import type { SessionFormValues } from "#/types/session.ts";
+import type { SessionFormValues, SessionFormErrors } from "#/types/session.ts";
 import { validateTitle } from "#/utils/validateTitle.ts";
-
-export interface SessionFormErrors {
-  title?: string;
-  date?: string;
-  description?: string;
-  form?: string;
-}
+import { MAX_CLASS_DESCRIPTION_LENGTH } from "#/configs/constants";
 
 export function validateSessionForm(
   values: SessionFormValues,
@@ -29,7 +23,7 @@ export function validateSessionForm(
     }
   }
 
-  if (values.description && values.description.length > 500) {
+  if (values.description && values.description.length > MAX_CLASS_DESCRIPTION_LENGTH) {
     newErrors.description = "توضیحات نباید بیشتر از ۵۰۰ کاراکتر باشد.";
   }
 

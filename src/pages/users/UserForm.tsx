@@ -7,7 +7,8 @@ import {
   validateEmail,
   validateName,
   validatePassword,
-} from "#/pages/users/validators.ts";
+} from "#/utils/validation.ts";
+import { ROLE_FORM_OPTIONS, STATUS_FORM_OPTIONS, EMAIL_ALREADY_REGISTERED } from "#/configs/constants";
 import { isApiError } from "#/services/api/axiosInstance.ts";
 import type {
   CreateUserPayload,
@@ -49,7 +50,7 @@ function resolveError(err: unknown): {
     return { field: "root", message: "خطای غیرمنتظره‌ای رخ داد." };
   }
 
-  if (message.includes("قبلاً ثبت شده")) {
+  if (message.includes(EMAIL_ALREADY_REGISTERED)) {
     return { field: "email", message };
   }
   return { field: "root", message };
@@ -78,7 +79,7 @@ function UserForm({
       role: "student",
       status: "active",
     },
-    mode: mode === "edit" ? "onChange" : "onBlur",
+    mode: mode === "edit" ? "onChange" : "onSubmit",
   });
 
   useEffect(() => {
@@ -114,7 +115,11 @@ function UserForm({
       onClose();
     } catch (err) {
       const { field, message } = resolveError(err);
+      
       setError(field, { type: "server", message });
+      if (field !== "root") {
+        clearErrors("root");
+      }
     }
   };
 
@@ -122,7 +127,7 @@ function UserForm({
 
   return (
     <Modal isOpen={isOpen} title={title} onClose={onClose}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <div className="space-y-4">
           {errors.root && (
             <ErrorAlert message={errors.root.message ?? "خطایی رخ داد."} />
@@ -172,11 +177,7 @@ function UserForm({
               required: "لطفاً نقش خود را انتخاب کنید.",
             })}
             required
-            options={[
-              { label: "مدیر", value: "admin" },
-              { label: "استاد", value: "teacher" },
-              { label: "دانشجو", value: "student" },
-            ]}
+            options={ROLE_FORM_OPTIONS}
             error={errors.role?.message}
           />
 
@@ -186,10 +187,7 @@ function UserForm({
               required: "لطفاً وضعیت خود را انتخاب کنید.",
             })}
             required
-            options={[
-              { label: "فعال", value: "active" },
-              { label: "غیرفعال", value: "inactive" },
-            ]}
+            options={STATUS_FORM_OPTIONS}
             error={errors.status?.message}
           />
 
@@ -197,7 +195,7 @@ function UserForm({
             <Button type="button" variant="secondary" onClick={onClose}>
               انصراف
             </Button>
-            <Button type="submit" isLoading={isSubmitting} disabled={isSubmitting}>
+            <Button type="submit" isLoading={isSubmitting}>
               {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
             </Button>
           </div>

@@ -17,24 +17,30 @@ function AuthProvider({ children }: AuthProviderProps) {
   const login = useCallback(
     async (payload: LoginPayload) => {
       const loggedInUser = await loginUser(payload);
-      setUser(loggedInUser);
 
       try {
         setStoredUser(loggedInUser);
       } catch (error) {
-        addToast(getStorageErrorMessage(error), "error");
+        const message = getStorageErrorMessage(error);
+        addToast(message, "error");
+        throw new Error(message);
       }
+
+      setUser(loggedInUser);
     },
     [addToast],
   );
 
   const logout = useCallback(() => {
-    setUser(null);
     try {
       clearStoredUser();
     } catch (error) {
-      addToast(getStorageErrorMessage(error), "error");
+      const message = getStorageErrorMessage(error);
+      addToast(message, "error");
+      return;
     }
+
+    setUser(null);
   }, [addToast]);
 
   const value: Readonly<AuthContextType> = useMemo(

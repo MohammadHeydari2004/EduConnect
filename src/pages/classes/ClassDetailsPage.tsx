@@ -6,8 +6,10 @@ import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
+import { showErrorToastWithInfo } from "#/hooks/useToastHelpers.ts";
 import ClassSessionsPanel from "#/pages/classes/ClassSessionsPanel.tsx";
 import ClassStudentsPanel from "#/pages/classes/ClassStudentsPanel.tsx";
+import ClassCapacityBadge from "#/components/common/ClassCapacityBadge.tsx";
 import SessionForm from "#/pages/classes/SessionForm.tsx";
 import { classService } from "#/services/class.ts";
 import { sessionService } from "#/services/session.ts";
@@ -16,9 +18,9 @@ import type { ClassItem } from "#/types/class.ts";
 import type { Session } from "#/types/session.ts";
 import type { User } from "#/types/user.ts";
 import { getEffectiveStatus } from "#/utils/class.ts";
-import { getErrorMessage } from "#/utils/error.ts";
-import { getStatusLabel } from "#/utils/user.ts";
-import { useEffect, useMemo, useState } from "react";
+import { classifyError } from "#/services/error.ts";
+import { getStatusLabel } from "#/utils/userLabels.ts";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 function getClassRoles(
@@ -85,6 +87,14 @@ export default function ClassDetailsPage() {
           sessionService.getByClass(classId!),
         ]);
         if (!cancelled) {
+          
+          if (
+            currentUser?.role === "teacher" &&
+            c.teacherId !== currentUser.id
+          ) {
+            navigate("/unauthorized", { replace: true });
+            return;
+          }
           setError("");
           setClassItem(c);
           setUsers(u);
@@ -93,9 +103,8 @@ export default function ClassDetailsPage() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(
-            getErrorMessage(err, "دریافت اطلاعات کلاس با خطا مواجه شد."),
-          );
+          const info = classifyError(err);
+          showErrorToastWithInfo(addToast, info, "دریافت اطلاعات کلاس با خطا مواجه شد.");
           setLoading(false);
         }
       }
@@ -105,18 +114,18 @@ export default function ClassDetailsPage() {
     return () => {
       cancelled = true;
     };
-  }, [classId, isInvalidId]);
+  }, [classId, isInvalidId, currentUser, navigate]);
 
-  useEffect(() => {
-    if (
-      !loading &&
-      classItem &&
-      currentUser?.role === "teacher" &&
-      classItem.teacherId !== currentUser.id
-    ) {
-      navigate("/unauthorized", { replace: true });
+  const refreshSessions = useCallback(async () => {
+    if (!classId) return;
+    try {
+      const currentSessions = await sessionService.getByClass(classId);
+      setSessions(currentSessions);
+    } catch (err) {
+      const info = classifyError(err);
+      showErrorToastWithInfo(addToast, info, "به‌روزرسانی لیست جلسات ناموفق بود.");
     }
-  }, [loading, classItem, currentUser, navigate]);
+  }, [classId, addToast]);
 
   const students = useMemo(() => {
     if (!classItem) return [];
@@ -172,12 +181,12 @@ export default function ClassDetailsPage() {
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Button
             variant="secondary"
-            onClick={() => navigate("/classes")}
+            onClick={() => navigate(currentUser?.role === "student" ? "/my-classes" : "/classes")}
             className="w-full sm:w-auto"
           >
             → بازگشت
           </Button>
-          <h1 className="text-lg font-bold text-gray-800 sm:text-2xl">
+          <h1 className="text-lg font-bold text-gray-800 sm:text-2xl max-sm:mt-2.5">
             {classItem.title || "(بدون عنوان)"}
           </h1>
           <StatusChip status={classStatus} />
@@ -224,7 +233,7 @@ export default function ClassDetailsPage() {
             </p>
             <p>
               <span className="font-semibold">ظرفیت:</span>{" "}
-              {(classItem.studentIds || []).length} / {classItem.capacity || 0}
+              <ClassCapacityBadge classItem={classItem} />
             </p>
             <p className="flex items-center gap-2">
               <span className="font-semibold">وضعیت:</span>
@@ -245,7 +254,7 @@ export default function ClassDetailsPage() {
         classId={classId!}
         canManage={canManageSessions}
         onAddSession={() => setShowSessionForm(true)}
-        onSessionChange={setSessions}
+        onSessionsChanged={refreshSessions}
       />
 
       {showSessionForm && (
@@ -253,11 +262,10 @@ export default function ClassDetailsPage() {
           key={`session-form-${classId}`}
           classId={classId!}
           onClose={() => setShowSessionForm(false)}
-          onSuccess={(message, newSession) => {
+          onSuccess={(message) => {
             addToast(message, "success");
             setShowSessionForm(false);
-
-            setSessions((prev) => [...prev, newSession]);
+            void refreshSessions();
           }}
           onError={(message) => {
             addToast(message, "error");

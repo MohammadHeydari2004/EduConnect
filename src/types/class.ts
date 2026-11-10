@@ -1,4 +1,4 @@
-import type { ID, Maybe, RecordStatus } from "#/types/common.ts";
+import type { ID, Maybe, RecordStatus, BaseFormErrors } from "#/types/common.ts";
 
 export type ClassStatus = RecordStatus;
 
@@ -21,4 +21,17 @@ export interface ClassFormValues {
   capacity: number;
   status: ClassStatus;
   description?: string;
+}
+
+export interface ClassFiltersValues {
+  search: string;
+  statusFilter: ClassStatus | "";
+  teacherFilter: string;
+}
+
+export interface ClassFormErrors extends BaseFormErrors {
+  teacherId?: string | undefined;
+  capacity?: string | undefined;
+  studentIds?: string | undefined;
+  description?: string | undefined;
 }

@@ -1,18 +1,20 @@
 import Badge from "#/components/ui/Badge.tsx";
 import Card from "#/components/ui/Card.tsx";
+import Loading from "#/components/common/Loading.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import UserDetailsList from "#/components/ui/UserDetailsList.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
-import { getRoleLabel, getRoleVariant } from "#/utils/user.ts";
+import { DIALOG_STRINGS } from "#/configs/constants/formStrings.ts";
+import { getRoleLabel, getRoleVariant } from "#/utils/userLabels.ts";
 
 function ProfilePage() {
   const { user } = useAuth();
 
-  if (!user) return null;
+  if (!user) return <Loading />;
 
   return (
-    <div className="space-y-4 sm:space-y-6 ">
-      <h1 className="text-xl font-bold text-gray-800 sm:text-2xl ">پروفایل</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <h1 className="text-xl font-bold text-gray-800 sm:text-2xl max-sm:mt-2.5">{DIALOG_STRINGS.PROFILE_TITLE}</h1>
       <div className="sm:grid sm:grid-cols-2">
         <Card>
           <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">

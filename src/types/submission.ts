@@ -1,4 +1,4 @@
-import type { ID, Nullable, SubmissionStatus } from "#/types/common.ts";
+import type { ID, BaseFormErrors, Maybe, SubmissionStatus } from "#/types/common.ts";
 
 export interface Submission {
   readonly id: ID;
@@ -7,7 +7,16 @@ export interface Submission {
   content: string;
   readonly submittedAt: string;
   status: SubmissionStatus;
-  grade?: number;
-  feedback?: Nullable<string>;
-  readonly updatedAt?: string;
+  grade?: number | null;
+  feedback?: Maybe<string>;
+  readonly updatedAt?: string | null;
+}
+
+export interface SubmissionFormErrors extends BaseFormErrors {
+  content?: string;
+  form?: string;
+}
+
+export interface NewSubmissionDraft {
+  assignmentId: ID;
 }

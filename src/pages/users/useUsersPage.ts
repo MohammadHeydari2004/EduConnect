@@ -1,13 +1,12 @@
-import { useAuth } from "#/contexts/AuthContext.ts";
+﻿import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import { useCrudPage } from "#/hooks/useCrudPage.ts";
 import {
   createExactMatchFilter,
   createStringContainsFilter,
-  type FilterConfig,
 } from "#/hooks/useFilter.ts";
+import type { FilterConfig } from "#/types/hooks.ts";
 import { userService } from "#/services/user.ts";
-import type { ID } from "#/types/common.ts";
 import type {
   CreateUserPayload,
   UpdateUserPayload,
@@ -15,7 +14,8 @@ import type {
   UserFilters as UserFiltersType,
 } from "#/types/user.ts";
 import { TOAST_MESSAGES } from "#/configs/constants";
-import { isAdmin } from "#/utils/roleUtils.ts";
+import { showErrorToastWithInfo } from "#/hooks/useToastHelpers.ts";
+import { classifyError } from "#/services/error.ts";
 import { useCallback, useMemo } from "react";
 
 const initialFilters: UserFiltersType = {
@@ -62,16 +62,15 @@ export function useUsersPage() {
     UserFiltersType
   >({
     service: {
-      getAll: () => userService.getAll(),
-      getById: (id: ID) => userService.getById(id),
-      create: (data: CreateUserPayload) => userService.create(data),
-      update: (id: ID, data: UpdateUserPayload) => userService.update(id, data),
-      delete: (id: ID) => userService.delete(id),
+      getAll: userService.getAll,
+      getById: userService.getById,
+      create: userService.create,
+      update: userService.update,
+      delete: userService.delete,
     },
     initialFilters,
     filterConfigs,
     fallbackError: TOAST_MESSAGES.FETCH_ERROR,
-    canManage: () => isAdmin(currentUser),
     onCreateSuccess: () => {
       addToast(TOAST_MESSAGES.USER_CREATE_SUCCESS, "success");
     },
@@ -103,19 +102,6 @@ export function useUsersPage() {
     [crud.actions, currentUser, addToast],
   );
 
-  const handleDelete = useCallback(async () => {
-    if (!currentUser) return;
-    await crud.actions.handleDelete();
-  }, [crud.actions, currentUser]);
-
-  const handleUpdate = useCallback(
-    async (values: UpdateUserPayload) => {
-      if (!currentUser) return;
-      await crud.actions.handleUpdate(values);
-    },
-    [crud.actions, currentUser],
-  );
-
   const handleToggleStatus = useCallback(
     async (user: User) => {
       if (!currentUser) return;
@@ -126,8 +112,9 @@ export function useUsersPage() {
         await userService.toggleStatus(user.id);
         addToast(TOAST_MESSAGES.USER_STATUS_SUCCESS, "success");
         crud.state.refresh();
-      } catch {
-        addToast(TOAST_MESSAGES.USER_STATUS_ERROR, "error");
+      } catch (err) {
+        const info = classifyError(err);
+        showErrorToastWithInfo(addToast, info, TOAST_MESSAGES.USER_STATUS_ERROR);
       }
     },
     [currentUser, addToast, crud.state.refresh],
@@ -135,7 +122,7 @@ export function useUsersPage() {
 
   const handleView = useCallback(
     (user: User) => {
-      crud.actions.createModal.openWithTarget("details", user);
+      crud.actions.modal.openWithTarget("details", user);
     },
     [crud.actions],
   );
@@ -148,14 +135,13 @@ export function useUsersPage() {
     setFilters: crud.state.setFilters,
     resetFilters: crud.state.resetFilters,
     filteredUsers: crud.state.filteredData,
-    userModal: crud.actions.createModal,
-    viewModal: crud.actions.createModal,
+    userModal: crud.actions.modal,
     isDeleting: crud.actions.isDeleting,
     handleCreate: crud.actions.handleCreate,
     handleOpenEdit,
-    handleUpdate,
+    handleUpdate: crud.actions.handleUpdate,
     handleOpenDelete,
-    handleDelete,
+    handleDelete: crud.actions.handleDelete,
     handleToggleStatus,
     handleView,
   };

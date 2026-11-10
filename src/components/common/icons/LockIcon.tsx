@@ -1,10 +1,6 @@
-import type { ReactNode } from "react";
+﻿import type { IconProps } from "./types.ts";
 
-interface IconProps {
-  className?: string;
-}
-
-export function LockIcon({ className = "h-full w-full" }: IconProps): ReactNode {
+export function LockIcon({ className = "h-full w-full" }: IconProps) {
   return (
     <svg
       className={className}
@@ -22,3 +18,4 @@ export function LockIcon({ className = "h-full w-full" }: IconProps): ReactNode 
     </svg>
   );
 }
+

@@ -1,13 +1,12 @@
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Card from "#/components/ui/Card.tsx";
-import Select from "#/components/ui/Select.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
+import AttendanceClassSessionSelector from "#/components/common/AttendanceClassSessionSelector.tsx";
 import type { ClassItem } from "#/types/class.ts";
 import type { AttendanceStatus } from "#/types/common.ts";
 import type { Session } from "#/types/session.ts";
 import type { User } from "#/types/user.ts";
-import { formatDate } from "#/utils/formatDate.ts";
 
 interface AdminAttendanceReportProps {
   classes: ClassItem[];
@@ -19,12 +18,6 @@ interface AdminAttendanceReportProps {
   onClassChange: (newClassId: string) => void;
   onSessionChange: (newSessionId: string) => void;
 }
-
-const ATTENDANCE_STATUS_LABELS: Record<AttendanceStatus, string> = {
-  present: "حاضر",
-  late: "با تأخیر",
-  absent: "غایب",
-};
 
 export default function AdminAttendanceReport({
   classes,
@@ -45,39 +38,21 @@ export default function AdminAttendanceReport({
   const absentCount = classStudents.filter(
     (s) => attendances[s.id] === "absent",
   ).length;
+  const unrecordedCount = classStudents.filter(
+    (s) => !attendances[s.id],
+  ).length;
   const totalStudents = classStudents.length;
 
   return (
     <>
-      <Card title="گزارش حضور و غیاب">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Select
-            label="کلاس"
-            value={selectedClassId}
-            onChange={(e) => onClassChange(e.target.value)}
-            options={[
-              { label: "انتخاب کلاس...", value: "" },
-              ...classes.map((c) => ({
-                label: c.title || "(بدون عنوان)",
-                value: c.id,
-              })),
-            ]}
-          />
-          <Select
-            label="جلسه"
-            value={selectedSessionId}
-            onChange={(e) => onSessionChange(e.target.value)}
-            disabled={!selectedClassId}
-            options={[
-              { label: "انتخاب جلسه...", value: "" },
-              ...sessions.map((s) => ({
-                label: `${s.title} - ${formatDate(s.date)}`,
-                value: s.id,
-              })),
-            ]}
-          />
-        </div>
-      </Card>
+      <AttendanceClassSessionSelector
+        classes={classes}
+        sessions={sessions}
+        selectedClassId={selectedClassId}
+        selectedSessionId={selectedSessionId}
+        onClassChange={onClassChange}
+        onSessionChange={onSessionChange}
+      />
       {selectedSessionId && (
         <>
           <Card title="خلاصه جلسه">
@@ -98,6 +73,12 @@ export default function AdminAttendanceReport({
                 <div className="text-2xl font-bold text-red-700">{absentCount}</div>
                 <div className="text-sm text-red-600">غایب</div>
               </div>
+              {unrecordedCount > 0 && (
+                <div className="bg-gray-50 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-gray-700">{unrecordedCount}</div>
+                  <div className="text-sm text-gray-600">ثبت‌نشده</div>
+                </div>
+              )}
             </div>
           </Card>
           <Card title="لیست دانشجویان">
@@ -133,48 +114,43 @@ export default function AdminAttendanceReport({
                   {
                     key: "status",
                     title: "وضعیت حضور",
-                    width: "20%",
+                    width: "25%",
                     render: (student) => {
-                      const status = attendances[student.id] ?? "present";
-                      return (
-                        <StatusChip status={status} />
-                      );
-                    },
-                  },
-                  {
-                    key: "statusLabel",
-                    title: "برچسب",
-                    width: "15%",
-                    render: (student) => {
-                      const status = attendances[student.id] ?? "present";
-                      return (
-                        <span className="text-sm font-medium text-gray-700">
-                          {ATTENDANCE_STATUS_LABELS[status]}
-                        </span>
-                      );
+                      const status = attendances[student.id];
+                      if (!status) {
+                        return (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/20">
+                            ثبت‌نشده
+                          </span>
+                        );
+                      }
+                      return <StatusChip status={status} />;
                     },
                   },
                 ]}
                 data={classStudents}
-                renderMobileCard={(student) => {
-                  const status = attendances[student.id] ?? "present";
-                  return (
-                    <div className="space-y-3 text-right">
-                      <div className="flex items-center justify-between">
-                        <span className="text-base font-bold text-gray-800">
-                          {student.name}
-                        </span>
-                        <StatusChip status={status} />
+                  renderMobileCard={(student) => {
+                    const status = attendances[student.id];
+                    return (
+                      <div className="space-y-3 text-right">
+                        <div className="flex items-center justify-between">
+                          <span className="text-base font-bold text-gray-800">
+                            {student.name}
+                          </span>
+                          {!status ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/20">
+                              ثبت‌نشده
+                            </span>
+                          ) : (
+                            <StatusChip status={status} />
+                          )}
+                        </div>
+                        <div className="text-sm break-all text-gray-600">
+                          {student.email}
+                        </div>
                       </div>
-                      <div className="text-sm break-all text-gray-600">
-                        {student.email}
-                      </div>
-                      <div className="text-sm font-medium text-gray-700">
-                        {ATTENDANCE_STATUS_LABELS[status]}
-                      </div>
-                    </div>
-                  );
-                }}
+                    );
+                  }}
               />
             )}
           </Card>

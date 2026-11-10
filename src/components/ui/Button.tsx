@@ -23,18 +23,18 @@ const VARIANT_CLASSES: Record<NonNullable<ButtonProps["variant"]>, string> = {
     "bg-red-50 text-red-700 hover:bg-red-100 focus:ring-red-400",
 };
 
-const DISABLED_CLASSES = "opacity-50 cursor-not-allowed pointer-events-none";
+const DISABLED_CLASSES = "opacity-50 cursor-not-allowed";
 
 function buildClassName(
   variant: ButtonProps["variant"],
   disabled: boolean,
-  className: string,
+  className: string | undefined,
 ): string {
   const parts = [
     BASE_CLASSES,
     VARIANT_CLASSES[variant ?? "primary"],
     disabled ? DISABLED_CLASSES : "",
-    className,
+    className ?? "",
   ];
   return parts.filter(Boolean).join(" ");
 }
@@ -42,10 +42,12 @@ function buildClassName(
 function Button({
   children,
   variant = "primary",
-  className = "",
+  className,
   isLoading = false,
   type = "button",
   disabled,
+  "aria-busy": ariaBusy,
+  "aria-disabled": ariaDisabled,
   ...props
 }: ButtonProps) {
   const isDisabled = disabled || isLoading;
@@ -55,6 +57,8 @@ function Button({
       type={type}
       className={buildClassName(variant, isDisabled, className)}
       disabled={isDisabled}
+      aria-busy={ariaBusy ?? (isLoading ? true : undefined)}
+      aria-disabled={ariaDisabled ?? (isDisabled ? true : undefined)}
       {...props}
     >
       {isLoading && <Spinner size="sm" />}

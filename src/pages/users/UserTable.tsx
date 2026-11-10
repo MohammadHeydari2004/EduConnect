@@ -11,7 +11,7 @@ import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
 import type { ID } from "#/types/common.ts";
 import type { User } from "#/types/user.ts";
-import { getRoleLabel, getStatusLabel } from "#/utils/user.ts";
+import { getRoleLabel, getStatusLabel } from "#/utils/userLabels.ts";
 
 interface UserTableProps {
   users: User[];
@@ -30,6 +30,9 @@ function UserTable({
   onDelete,
   onToggleStatus,
 }: UserTableProps) {
+  const getStatusToggleLabel = (user: User) =>
+    user.status === "active" ? "غیرفعال‌سازی" : "فعال‌سازی";
+
   return (
     <Table
       getRowKey={(user) => user.id}
@@ -46,7 +49,7 @@ function UserTable({
             >
               {user.name}
               {user.id === currentUserId && (
-                <span className="mr-2 text-xs text-blue-600">(شما)</span>
+                <span className="ms-1 text-xs text-blue-600">(شما)</span>
               )}
             </div>
           ),
@@ -73,9 +76,7 @@ function UserTable({
           width: "13%",
           render: (user) => (
             <>
-              <span title={getStatusLabel(user.status)}>
-                <StatusChip status={user.status} />
-              </span>
+              <StatusChip status={user.status} />
               <span className="sr-only">{getStatusLabel(user.status)}</span>
             </>
           ),
@@ -93,7 +94,7 @@ function UserTable({
                 ویرایش
               </Button>
               <Button variant="secondary" onClick={() => onToggleStatus(user)}>
-                {user.status === "active" ? "غیرفعال‌سازی" : "فعال‌سازی"}
+                {getStatusToggleLabel(user)}
               </Button>
               <Button variant="danger" onClick={() => onDelete(user)}>
                 حذف
@@ -109,7 +110,7 @@ function UserTable({
             <span className="font-bold text-gray-800">
               {user.name}
               {user.id === currentUserId && (
-                <span className="mr-2 text-xs text-blue-600">(شما)</span>
+                <span className="ms-1 text-xs text-blue-600">(شما)</span>
               )}
             </span>
             <StatusChip status={user.status} />
@@ -137,7 +138,7 @@ function UserTable({
             onAction={() => onEdit(user)}
           />
           <MenuItem
-            label={user.status === "active" ? "غیرفعال‌سازی" : "فعال‌سازی"}
+            label={getStatusToggleLabel(user)}
             icon={user.status === "active" ? <BanIcon /> : <CheckCircleIcon />}
             onAction={() => onToggleStatus(user)}
           />

@@ -6,11 +6,12 @@ import type { ClassItem } from "#/types/class.ts";
 import type { Session } from "#/types/session.ts";
 import { formatDate } from "#/utils/formatDate.ts";
 import { useNavigate } from "react-router-dom";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useToast } from "#/hooks/useToast.ts";
 import SessionForm from "#/pages/classes/SessionForm.tsx";
 import { sessionService } from "#/services/session.ts";
-import { getErrorMessage } from "#/utils/error.ts";
+import { classifyError } from "#/services/error.ts";
+import { showErrorToastWithInfo } from "#/hooks/useToastHelpers.ts";
 
 interface ClassSessionsPanelProps {
   sessions: Session[];
@@ -18,7 +19,7 @@ interface ClassSessionsPanelProps {
   classId: string;
   canManage: boolean;
   onAddSession: () => void;
-  onSessionChange?: (sessions: Session[] | ((prev: Session[]) => Session[])) => void;
+  onSessionsChanged?: () => void;
 }
 
 function ClassSessionsPanel({
@@ -27,18 +28,13 @@ function ClassSessionsPanel({
   classId,
   canManage,
   onAddSession,
-  onSessionChange,
+  onSessionsChanged,
 }: ClassSessionsPanelProps) {
   const navigate = useNavigate();
   const { addToast } = useToast();
   const [editingSession, setEditingSession] = useState<Session | null>(null);
   const [deletingSession, setDeletingSession] = useState<Session | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const sessionsRef = useRef(sessions);
-
-  useEffect(() => {
-    sessionsRef.current = sessions;
-  }, [sessions]);
 
   const confirmDelete = async () => {
     if (!deletingSession) return;
@@ -47,9 +43,10 @@ function ClassSessionsPanel({
       await sessionService.delete(deletingSession.id);
       addToast("جلسه با موفقیت حذف شد.", "success");
       setDeletingSession(null);
-      onSessionChange?.((prev: Session[]) => prev.filter((s: Session) => s.id !== deletingSession!.id));
+      onSessionsChanged?.();
     } catch (err) {
-      addToast(getErrorMessage(err, "حذف جلسه با خطا مواجه شد."), "error");
+      const info = classifyError(err);
+      showErrorToastWithInfo(addToast, info, "حذف جلسه با خطا مواجه شد.");
       setDeletingSession(null);
     } finally {
       setIsDeleting(false);
@@ -127,18 +124,16 @@ function ClassSessionsPanel({
             ))}
         </div>
       )}
-      {editingSession && (
+       {editingSession && (
         <SessionForm
           key={`session-form-edit-${editingSession.id}`}
           classId={classId}
           initialData={editingSession}
           onClose={() => setEditingSession(null)}
-          onSuccess={(message, updatedSession) => {
+          onSuccess={(message) => {
             addToast(message, "success");
             setEditingSession(null);
-            onSessionChange?.(
-              sessions.map((s) => (s.id === updatedSession.id ? updatedSession : s)),
-            );
+            onSessionsChanged?.();
           }}
           onError={(message) => {
             addToast(message, "error");

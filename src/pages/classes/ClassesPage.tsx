@@ -1,19 +1,18 @@
-import EmptyState from "#/components/common/EmptyState.tsx";
-import Loading from "#/components/common/Loading.tsx";
+﻿import Loading from "#/components/common/Loading.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
+import { EmptyListState } from "#/components/ui/EmptyListState.tsx";
 import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
-import ClassFilters from "#/pages/classes/ClassFilters";
-import ClassForm from "#/pages/classes/ClassForm";
-import ClassTable from "#/pages/classes/ClassTable";
-import { useClassesPage } from "#/pages/classes/useClassesPage";
 import { useToast } from "#/hooks/useToast.ts";
+import ClassFilters from "#/pages/classes/ClassFilters.tsx";
+import ClassForm from "#/pages/classes/ClassForm.tsx";
+import ClassTable from "#/pages/classes/ClassTable.tsx";
+import { useClassesPage } from "#/pages/classes/useClassesPage.ts";
 
 export default function ClassesPage() {
   const { addToast } = useToast();
   const {
-    currentUser,
     isAdmin,
     teachers,
     users,
@@ -39,10 +38,10 @@ export default function ClassesPage() {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
+        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl max-sm:mt-2.5">
           مدیریت کلاس‌ها
         </h1>
-        {(isAdmin || currentUser?.role === "teacher") && (
+        {isAdmin && (
           <Button onClick={handleOpenCreate} className="w-full sm:w-auto">
             ایجاد کلاس جدید
           </Button>
@@ -62,27 +61,26 @@ export default function ClassesPage() {
           <Loading />
         ) : error ? (
           <ErrorAlert message={error} />
-        ) : !filteredClasses || filteredClasses.length === 0 ? (
-          filteredClasses === undefined || filteredClasses.length === 0 ? (
-            <EmptyState
-              title="کلاسی ثبت نشده است"
-              description="هنوز هیچ کلاسی در سیستم وجود ندارد."
-            />
-          ) : (
-            <EmptyState
-              title="کلاسی پیدا نشد"
-              description="هیچ کلاسی با فیلترهای انتخاب‌شده پیدا نشد."
-            />
-          )
         ) : (
-          <ClassTable
-            classes={filteredClasses}
-            users={users ?? []}
-            canManageClass={canManageClass}
-            onEdit={handleOpenEdit}
-            onToggleStatus={handleOpenStatus}
-            onDelete={handleOpenDelete}
-          />
+          <>
+            <EmptyListState
+              items={filteredClasses}
+              emptyTitle="کلاسی ثبت نشده است"
+              emptyDescription="هنوز هیچ کلاسی در سیستم وجود ندارد."
+              notFoundTitle="کلاسی پیدا نشد"
+              notFoundDescription="هیچ کلاسی با فیلترهای انتخاب‌شده پیدا نشد."
+            />
+            {filteredClasses && filteredClasses.length > 0 && (
+              <ClassTable
+                classes={filteredClasses}
+                users={users ?? []}
+                canManageClass={canManageClass}
+                onEdit={handleOpenEdit}
+                onToggleStatus={handleOpenStatus}
+                onDelete={handleOpenDelete}
+              />
+            )}
+          </>
         )}
       </Card>
 
@@ -126,7 +124,7 @@ export default function ClassesPage() {
         isOpen={modals.isOpen("delete")}
         title="حذف کلاس"
         message={`آیا از حذف کامل کلاس "${modals.target?.title ?? ""}" مطمئن هستید؟ این عمل قابل بازگشت نیست.`}
-        onClose={modals.createModal.close}
+        onClose={modals.deleteModal.close}
         onConfirm={handleDelete}
         isLoading={isDeleting}
       />

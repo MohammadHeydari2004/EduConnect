@@ -6,8 +6,8 @@ import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
 import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import Select from "#/components/ui/Select.tsx";
 import AnnouncementForm from "#/pages/announcements/AnnouncementForm.tsx";
-import { AnnouncementCard } from "#/components/ui/AnnouncementCard.tsx";
-import { AnnouncementViewModal } from "#/components/ui/AnnouncementViewModal.tsx";
+import { AnnouncementCard } from "#/components/common/AnnouncementCard";
+import { AnnouncementViewModal } from "#/components/common/AnnouncementViewModal";
 import { announcementService } from "#/services/announcement.ts";
 import { useAnnouncementsPage } from "#/pages/announcements/useAnnouncementsPage.ts";
 
@@ -26,9 +26,7 @@ export default function AnnouncementsPage() {
     resetFilters,
     getAuthorName,
     getClassName,
-    getTargetDescription,
     formModal,
-    crudModal,
     viewModal,
     isMarkingSeen,
     isDeleting,
@@ -37,19 +35,17 @@ export default function AnnouncementsPage() {
     handleDelete,
     canManageItem,
     canViewItem,
-    formatDateTime,
-    formatRelativeTime,
+    canMarkAsSeen,
     refresh,
   } = useAnnouncementsPage();
 
   if (loading) return <Loading />;
   if (error) return <ErrorAlert message={error} />;
-  if (!currentUser) return <EmptyState title="دسترسی محدود" description="شما دسترسی به این بخش ندارید." />;
 
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
+        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl max-sm:mt-2.5">
           اطلاعیه‌ها
         </h1>
         {canCreate && (
@@ -151,13 +147,10 @@ export default function AnnouncementsPage() {
                 item={item}
                 isSeen={isSeen}
                 getClassName={getClassName}
-                getTargetDescription={getTargetDescription}
                 getAuthorName={getAuthorName}
-                formatDateTime={formatDateTime}
-                formatRelativeTime={formatRelativeTime}
                 onView={() => viewModal.openWithTarget("view", item)}
                 onEdit={canManageItem(item) ? () => formModal.openWithTarget("edit", item) : undefined}
-                onDelete={canManageItem(item) ? () => crudModal.openWithTarget("delete", item) : undefined}
+                onDelete={canManageItem(item) ? () => formModal.openWithTarget("delete", item) : undefined}
                 canManage={canManageItem(item)}
                 canView={canView}
               />
@@ -186,21 +179,18 @@ export default function AnnouncementsPage() {
         isOpen={viewModal.isOpen("view")}
         announcement={viewModal.target}
         getClassName={getClassName}
-        getTargetDescription={getTargetDescription}
         getAuthorName={getAuthorName}
-        formatDateTime={formatDateTime}
-        formatRelativeTime={formatRelativeTime}
         onClose={handleCloseView}
         onMarkAsSeen={handleMarkAsSeen}
         isMarkingSeen={isMarkingSeen}
-        canMarkAsSeen={!!currentUser && !!viewModal.target && !announcementService.isSeenBy(viewModal.target, currentUser.id)}
+        canMarkAsSeen={viewModal.target ? canMarkAsSeen(viewModal.target) : false}
       />
 
       <ConfirmDialog
-        isOpen={crudModal.isOpen("delete")}
+        isOpen={formModal.isOpen("delete")}
         title="حذف اطلاعیه"
-        message={`آیا از حذف اطلاعیه "${crudModal.target?.title ?? ""}" مطمئن هستید؟`}
-        onClose={crudModal.close}
+        message={`آیا از حذف اطلاعیه "${formModal.target?.title ?? ""}" مطمئن هستید؟`}
+        onClose={formModal.close}
         onConfirm={handleDelete}
         isLoading={isDeleting}
       />

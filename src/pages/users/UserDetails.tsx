@@ -1,7 +1,8 @@
 import Card from "#/components/ui/Card.tsx";
 import Modal from "#/components/ui/Modal.tsx";
-import UserDetailsList from "#/components/ui/UserDetailsList.tsx";
+import StatusChip from "#/components/ui/StatusChip.tsx";
 import type { User } from "#/types/user.ts";
+import { getRoleLabel, getStatusLabel } from "#/utils/userLabels.ts";
 
 interface UserDetailsProps {
   isOpen: boolean;
@@ -24,7 +25,19 @@ function UserDetails({ isOpen, user, onClose }: UserDetailsProps) {
             <p className="text-sm break-all text-gray-500">{user.email}</p>
           </div>
         </div>
-        <UserDetailsList user={user} dense />
+        <dl className="divide-y divide-gray-100 py-3">
+          <div className="px-3 py-3 sm:flex sm:gap-4">
+            <dt className="text-sm font-medium text-gray-900">نقش در سیستم</dt>
+            <dd className="mt-1 text-sm text-gray-700 sm:mt-0">{getRoleLabel(user.role)}</dd>
+          </div>
+          <div className="px-3 py-3 sm:flex sm:gap-4">
+            <dt className="text-sm font-medium text-gray-900">وضعیت حساب</dt>
+            <dd className="mt-1 text-sm text-gray-700 sm:mt-0">
+              <StatusChip status={user.status} />
+              <span className="sr-only">وضعیت: {getStatusLabel(user.status)}</span>
+            </dd>
+          </div>
+        </dl>
       </Card>
     </Modal>
   );

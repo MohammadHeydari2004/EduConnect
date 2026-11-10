@@ -6,8 +6,8 @@ import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import { useState, type FormEvent } from "react";
 import { Navigate } from "react-router-dom";
-import { getErrorMessage } from "#/utils/error.ts";
-import { validateEmail, validatePassword } from "#/pages/users/validators.ts";
+import { getErrorMessage } from "#/services/error.ts";
+import { validateEmail, validatePassword } from "#/utils/validation.ts";
 
 function LoginPage() {
   const { login, isAuthenticated } = useAuth();
@@ -27,16 +27,14 @@ function LoginPage() {
     }
   };
 
-  if (isAuthenticated) return <Navigate to="/" replace />;
-
   const validate = () => {
     const newErrors: { email?: string; password?: string } = {};
     const emailError = validateEmail(formData.email);
-    if (emailError !== true) {
+    if (emailError) {
       newErrors.email = emailError;
     }
     const passwordError = validatePassword(formData.password);
-    if (passwordError !== true) {
+    if (passwordError) {
       newErrors.password = passwordError;
     }
     return newErrors;
@@ -63,14 +61,14 @@ function LoginPage() {
     await performLogin(formData.email, formData.password);
   };
 
+  if (isAuthenticated) return <Navigate to="/" replace />;
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 px-4 py-8">
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-white shadow-lg">
-            <span className="text-5xl" role="img" aria-label="لوگوی EduConnect">
-              🎓
-            </span>
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-white shadow-lg" aria-hidden="true">
+            <span className="text-5xl">🎓</span>
           </div>
           <h1 className="text-3xl font-bold text-gray-800">EduConnect</h1>
           <p className="mt-2 text-sm text-gray-600">
@@ -78,7 +76,7 @@ function LoginPage() {
           </p>
         </div>
         <Card>
-          <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <Input
               label="ایمیل"
               type="email"
@@ -87,7 +85,7 @@ function LoginPage() {
               onChange={(e) => handleChange("email", e.target.value)}
               error={errors.email}
               autoComplete="email"
-              autoFocus
+              enterKeyHint="next"
               required
             />
             <Input
@@ -98,6 +96,7 @@ function LoginPage() {
               onChange={(e) => handleChange("password", e.target.value)}
               error={errors.password}
               autoComplete="current-password"
+              enterKeyHint="go"
               required
               suffix={
                 <button
@@ -120,7 +119,6 @@ function LoginPage() {
             <Button
               type="submit"
               className="w-full"
-              disabled={isSubmitting}
               isLoading={isSubmitting}
             >
               {isSubmitting ? "در حال ورود..." : "ورود به حساب"}

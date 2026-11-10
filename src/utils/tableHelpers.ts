@@ -1,19 +1,25 @@
 import type { Assignment } from "#/types/assignment.ts";
+import type { ID } from "#/types/common.ts";
+import type { Submission } from "#/types/submission.ts";
 
-export type BadgeVariant = "green" | "yellow" | "red";
+export type DeadlineColor = "green" | "yellow" | "red";
+export type CapacityVariant = "green" | "yellow" | "red";
 
-export function getDeadlineColor(deadline: string): BadgeVariant {
+export const NEAR_DEADLINE_DAYS = 3;
+export const NEAR_DEADLINE_HOURS = 24;
+
+export function getDeadlineColor(deadline: string): DeadlineColor {
   const now = Date.now();
   const deadlineTime = new Date(deadline).getTime();
   const diffMs = deadlineTime - now;
   const diffDays = diffMs / (1000 * 60 * 60 * 24);
 
   if (diffMs < 0) return "red";
-  if (diffDays <= 3) return "yellow";
+  if (diffDays <= NEAR_DEADLINE_DAYS) return "yellow";
   return "green";
 }
 
-export function getDeadlineColorClass(color: BadgeVariant): string {
+export function getDeadlineColorClass(color: DeadlineColor): string {
   switch (color) {
     case "green":
       return "text-green-600";
@@ -24,11 +30,7 @@ export function getDeadlineColorClass(color: BadgeVariant): string {
   }
 }
 
-export function getDeadlineBadgeVariant(color: BadgeVariant): BadgeVariant {
-  return color;
-}
-
-export function getDeadlineBadgeLabel(color: BadgeVariant): string {
+export function getDeadlineBadgeLabel(color: DeadlineColor): string {
   switch (color) {
     case "green":
       return "وقت کافی";
@@ -58,10 +60,28 @@ const CAPACITY_THRESHOLDS = {
 export function getCapacityVariant(
   currentCount: number,
   capacity: number,
-): "green" | "yellow" | "red" {
-  if (capacity <= 0) return "green";
+): CapacityVariant {
+  if (capacity <= 0) return "red";
   const ratio = currentCount / capacity;
   if (ratio >= CAPACITY_THRESHOLDS.OVER_CAPACITY) return "red";
   if (ratio >= CAPACITY_THRESHOLDS.NEAR_CAPACITY) return "yellow";
   return "green";
+}
+
+export interface AssignmentSubmissionStatus {
+  sub: Submission | undefined;
+  isGraded: boolean;
+  isReturned: boolean;
+  isExpired: boolean;
+}
+
+export function getAssignmentSubmissionStatus(
+  assignment: Assignment,
+  getSubmission: (assignmentId: ID) => Submission | undefined,
+): AssignmentSubmissionStatus {
+  const sub = getSubmission(assignment.id);
+  const isGraded = sub?.status === "graded";
+  const isReturned = sub?.status === "returned";
+  const isExpired = isAssignmentExpired(assignment);
+  return { sub, isGraded, isReturned, isExpired };
 }

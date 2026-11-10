@@ -1,4 +1,3 @@
-import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
@@ -9,9 +8,11 @@ import UserFilters from "#/pages/users/UserFilters.tsx";
 import UserForm from "#/pages/users/UserForm.tsx";
 import UserTable from "#/pages/users/UserTable.tsx";
 import { useUsersPage } from "#/pages/users/useUsersPage";
+import { hasActiveUserFilters } from "#/utils/hasActiveFilters.ts";
+import { EmptyListState } from "#/components/ui/EmptyListState.tsx";
 
 export default function UsersPage() {
-const {
+  const {
     currentUser,
     loading,
     error,
@@ -20,7 +21,6 @@ const {
     resetFilters,
     filteredUsers,
     userModal,
-    viewModal,
     isDeleting,
     handleCreate,
     handleOpenEdit,
@@ -30,11 +30,12 @@ const {
     handleToggleStatus,
     handleView,
   } = useUsersPage();
+  const hasActiveFilters = hasActiveUserFilters(filters);
 
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
+        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl max-sm:mt-2.5">
           مدیریت کاربران
         </h1>
         <Button
@@ -56,33 +57,33 @@ const {
           <Loading />
         ) : error ? (
           <ErrorAlert message={error} />
-        ) : !filteredUsers || filteredUsers.length === 0 ? (
-          filteredUsers === undefined || filteredUsers.length === 0 ? (
-            <EmptyState
-              title="کاربری ثبت نشده است"
-              description="هنوز هیچ کاربری در سیستم وجود ندارد."
-            />
-          ) : (
-            <EmptyState
-              title="کاربری پیدا نشد"
-              description="هیچ کاربری با فیلترهای انتخاب‌شده پیدا نشد."
-            />
-          )
         ) : (
-          <UserTable
-            users={filteredUsers}
-            currentUserId={currentUser?.id}
-            onView={handleView}
-            onEdit={handleOpenEdit}
-            onDelete={handleOpenDelete}
-            onToggleStatus={handleToggleStatus}
-          />
+          <>
+            <EmptyListState
+              items={filteredUsers}
+              hasActiveFilters={hasActiveFilters}
+              emptyTitle="کاربری ثبت نشده است"
+              emptyDescription="هنوز هیچ کاربری در سیستم وجود ندارد."
+              notFoundTitle="کاربری پیدا نشد"
+              notFoundDescription="هیچ کاربری با فیلترهای انتخاب‌شده پیدا نشد."
+            />
+            {filteredUsers && filteredUsers.length > 0 && (
+              <UserTable
+                users={filteredUsers}
+                currentUserId={currentUser?.id}
+                onView={handleView}
+                onEdit={handleOpenEdit}
+                onDelete={handleOpenDelete}
+                onToggleStatus={handleToggleStatus}
+              />
+            )}
+          </>
         )}
       </Card>
 
       {(userModal.isOpen("create") || userModal.isOpen("edit")) && (
         <UserForm
-          key={userModal.kind ?? "none"}
+          key={userModal.kind === "edit" ? `edit-${userModal.target?.id ?? "unknown"}` : "create"}
           isOpen
           mode={userModal.kind === "edit" ? "edit" : "create"}
           user={userModal.kind === "edit" ? userModal.target : null}
@@ -93,9 +94,9 @@ const {
       )}
 
       <UserDetails
-        isOpen={viewModal.isOpen("details")}
-        user={viewModal.target}
-        onClose={viewModal.close}
+        isOpen={userModal.isOpen("details")}
+        user={userModal.target}
+        onClose={userModal.close}
       />
 
       <ConfirmDialog

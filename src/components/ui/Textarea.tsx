@@ -1,8 +1,11 @@
-import { buildAriaDescribedBy } from "#/utils/accessibility.ts";
-import { forwardRef, useId, type TextareaHTMLAttributes } from "react";
+import {
+  FieldWrapper,
+  useField,
+} from "#/components/ui/FieldWrapper.tsx";
+import { forwardRef, type TextareaHTMLAttributes } from "react";
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label?: string;
+  label?: string | undefined;
   error?: string | undefined;
 }
 
@@ -16,13 +19,12 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       required,
       disabled,
       readOnly,
+      "aria-describedby": ariaDescribedBy,
       ...props
     },
     ref,
   ) => {
-    const generatedId = useId();
-    const id = propId || generatedId;
-    const errorId = error ? `${id}-error` : undefined;
+    const { id, errorId, describedBy } = useField({ id: propId, error });
 
     const stateClasses = disabled
       ? "cursor-not-allowed bg-gray-100 text-gray-500"
@@ -35,32 +37,24 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
     return (
       <div className="flex flex-col gap-1.5">
-        {label && (
-          <label htmlFor={id} className="text-sm font-medium text-gray-700">
-            {label}
-            {required && (
-              <span className="mr-1 text-red-500" aria-hidden="true">
-                *
-              </span>
-            )}
-          </label>
-        )}
+        <FieldWrapper
+          label={label}
+          required={required}
+          htmlFor={id}
+          error={error}
+          errorId={errorId}
+        />
         <textarea
           ref={ref}
           id={id}
           aria-invalid={!!error}
-          aria-describedby={buildAriaDescribedBy(errorId)}
+          aria-describedby={ariaDescribedBy ?? describedBy}
           required={required}
           disabled={disabled}
           readOnly={readOnly}
           className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors outline-none focus:ring-2 ${borderClasses} ${stateClasses} ${className}`}
           {...props}
         />
-        {error && (
-          <span id={errorId} className="text-xs text-red-600" role="alert">
-            {error}
-          </span>
-        )}
       </div>
     );
   },

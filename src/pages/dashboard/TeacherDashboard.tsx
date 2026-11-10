@@ -3,17 +3,16 @@ import type { ChartPayloadEntry } from "#/components/ui/ChartTooltip.tsx";
 import ChartTooltip from "#/components/ui/ChartTooltip.tsx";
 import StatCard from "#/components/ui/StatCard.tsx";
 import Table from "#/components/ui/Table.tsx";
-import type { DashboardData } from "#/types/dashboard.ts";
-import type { User } from "#/types/user.ts";
 import {
   useChartSummary,
   useGradingStats,
   useRecentSessions,
   useTeacherDashboardData,
-} from "#/utils/dashboardData.ts";
-import { formatDate, formatRelativeTime } from "#/utils/formatDate.ts";
+} from "#/hooks/dashboardData";
+import type { DashboardData } from "#/types/dashboard.ts";
+import type { ID } from "#/types/common.ts";
+import { formatDate } from "#/utils/formatDate.ts";
 import { useMemo } from "react";
-import { useIsMobile } from "#/hooks/useMediaQuery.ts";
 import {
   Bar,
   BarChart,
@@ -26,17 +25,19 @@ import {
 } from "recharts";
 
 const CHART_LABELS: Record<string, string> = {
-  graded: "  نمره داده شده  ",
-  pending: "  در انتظار بررسی  ",
+  graded: "نمره داده شده",
+  pending: "در انتظار بررسی",
 };
 
 interface Props {
   data: DashboardData;
-  currentUser: User;
+  currentUserId: ID;
 }
 
-export default function TeacherDashboard({ data, currentUser }: Props) {
-  const isMobile = useIsMobile();
+export default function TeacherDashboard({
+  data,
+  currentUserId,
+}: Props) {
   const {
     myClasses,
     myClassIdSet,
@@ -44,7 +45,7 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
     mySessions,
     myAnnouncements,
     classMap,
-  } = useTeacherDashboardData(data, currentUser);
+  } = useTeacherDashboardData(currentUserId, data);
 
   const ungradedCount = useMemo(
     () => mySubmissions.filter((s) => s.status !== "graded").length,
@@ -62,6 +63,7 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
 
   const chartSummary = useChartSummary(chartData);
   const chartMinWidth = Math.max(600, chartData.length * 70);
+  const showMobileList = chartData.length > 8;
 
   return (
     <div className="space-y-6">
@@ -90,22 +92,26 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
       </div>
 
       <div className="grid grid-flow-row gap-6">
-<Card title="وضعیت تصحیح تکالیف به تفکیک کلاس">
+        <Card title="وضعیت تصحیح تکالیف به تفکیک کلاس">
           {chartData.every((d) => d.totalSubmissions === 0) ? (
             <div className="flex h-64 items-center justify-center text-sm text-gray-500">
               هنوز پاسخی برای تکالیف ثبت نشده است.
             </div>
           ) : (
             <>
-              {isMobile && (
-                <div className="space-y-3" role="list" aria-label={chartSummary}>
+              {showMobileList ? (
+                <div
+                  className="space-y-3"
+                  role="list"
+                  aria-label={chartSummary}
+                >
                   {chartData.map((row) => (
                     <div
                       key={row.name}
                       className="rounded-lg border border-gray-200 bg-white p-4"
                       role="listitem"
                     >
-                      <h4 className="font-bold text-gray-800">{row.name}</h4>
+                      <h3 className="font-bold text-gray-800">{row.name}</h3>
                       <div className="mt-2 flex flex-wrap gap-4 text-sm">
                         <span className="flex items-center gap-1.5 text-green-700">
                           <span className="inline-block h-2.5 w-2.5 rounded-full bg-green-500" />
@@ -121,24 +127,24 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
                         </span>
                       </div>
                       <div className="mt-2 flex items-center justify-between border-t pt-2">
-                        <span className="font-medium text-gray-600">پیشرفت تصحیح:</span>
+                        <span className="font-medium text-gray-600">
+                          پیشرفت تصحیح:
+                        </span>
                         <span className="font-bold text-blue-600">
                           {row.totalSubmissions > 0
-                            ? ((row.graded / row.totalSubmissions) * 100).toFixed(0)
-                            : "0"}%
+                            ? (
+                                (row.graded / row.totalSubmissions) *
+                                100
+                              ).toFixed(0)
+                            : "0"}
+                          %
                         </span>
                       </div>
                     </div>
                   ))}
                 </div>
-              )}
-              {!isMobile && (
-                <div
-                  className="overflow-x-auto"
-                  role="img"
-                  aria-label={chartSummary}
-                >
-                  <span className="sr-only">{chartSummary}</span>
+              ) : (
+                <div className="overflow-x-auto" aria-label={chartSummary}>
                   <div style={{ minWidth: chartMinWidth }}>
                     <ResponsiveContainer width="100%" height={384}>
                       <BarChart
@@ -153,16 +159,13 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
                         />
                         <XAxis
                           dataKey="name"
-                          tick={{
-                            fontSize: 12,
-                            fill: "#64748b",
-                            textAnchor: "middle",
-                          }}
-                          interval={0}
+                          tick={{ fontSize: 12, fill: "#64748b" }}
+                          interval={chartData.length > 6 ? 1 : 0}
                           height={80}
                           axisLine={false}
                           tickLine={false}
-                          angle={0}
+                          angle={chartData.length > 6 ? -30 : 0}
+                          textAnchor={chartData.length > 6 ? "end" : "middle"}
                           dy={10}
                         />
                         <YAxis
@@ -192,27 +195,33 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
                                     <p className="mb-2 border-b pb-1 font-bold text-gray-800">
                                       {row.name}
                                     </p>
-                                    {all.map((entry, index) => (
-                                      <div
-                                        key={index}
-                                        className="flex items-center justify-between gap-4 py-0.5"
-                                      >
-                                        <span
-                                          style={{ color: entry.color }}
-                                          className="flex items-center gap-1.5 font-medium"
+                                    {all.map((entry, index) => {
+                                      const dataKey = String(
+                                        entry.dataKey ?? "",
+                                      );
+                                      return (
+                                        <div
+                                          key={index}
+                                          className="flex items-center justify-between gap-4 py-0.5"
                                         >
                                           <span
-                                            className="inline-block h-2.5 w-2.5 rounded-full"
-                                            style={{ backgroundColor: entry.color }}
-                                          />
-                                          {CHART_LABELS[String(entry.dataKey)] ??
-                                            entry.name}
-                                        </span>
-                                        <span className="font-bold text-gray-700">
-                                          {String(entry.value ?? 0)}
-                                        </span>
-                                      </div>
-                                    ))}
+                                            style={{ color: entry.color }}
+                                            className="flex items-center gap-1.5 font-medium"
+                                          >
+                                            <span
+                                              className="inline-block h-2.5 w-2.5 rounded-full"
+                                              style={{
+                                                backgroundColor: entry.color,
+                                              }}
+                                            />
+                                            {CHART_LABELS[dataKey] ?? dataKey}
+                                          </span>
+                                          <span className="font-bold text-gray-700">
+                                            {String(entry.value ?? 0)}
+                                          </span>
+                                        </div>
+                                      );
+                                    })}
                                     <div className="mt-2 flex items-center justify-between border-t pt-2">
                                       <span className="font-medium text-gray-600">
                                         پیشرفت تصحیح:
@@ -239,6 +248,9 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
                               flexWrap: "wrap",
                               justifyContent: "center",
                             }}
+                            labelStyle={{
+                              paddingRight: 5,
+                            }}
                             iconType="circle"
                             iconSize={14}
                             formatter={(value: string) =>
@@ -250,13 +262,13 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
                           dataKey="graded"
                           fill="#10b981"
                           radius={[4, 4, 0, 0]}
-                          barSize={24}
+                          barSize={20}
                         />
                         <Bar
                           dataKey="pending"
                           fill="#f59e0b"
                           radius={[4, 4, 0, 0]}
-                          barSize={24}
+                          barSize={20}
                         />
                       </BarChart>
                     </ResponsiveContainer>
@@ -284,11 +296,7 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
                   key: "date",
                   title: "تاریخ",
                   width: "25%",
-                  render: (s) => (
-                    <span title={formatDate(s.date)}>
-                      {formatRelativeTime(s.date)}
-                    </span>
-                  ),
+                  render: (s) => formatDate(s.date),
                 },
                 {
                   key: "classId",
@@ -313,12 +321,9 @@ export default function TeacherDashboard({ data, currentUser }: Props) {
                     <span className="text-gray-500">کلاس:</span>{" "}
                     {classMap.get(s.classId)?.title || "نامشخص"}
                   </div>
-                  <div
-                    className="text-sm text-gray-600"
-                    title={formatDate(s.date)}
-                  >
+                  <div className="text-sm text-gray-600">
                     <span className="text-gray-500">تاریخ:</span>{" "}
-                    {formatRelativeTime(s.date)}
+                    {formatDate(s.date)}
                   </div>
                 </div>
               )}

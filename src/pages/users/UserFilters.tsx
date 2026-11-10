@@ -3,6 +3,8 @@ import SearchInput from "#/components/ui/SearchInput.tsx";
 import Select from "#/components/ui/Select.tsx";
 import { ResetIcon } from "#/components/common/icons";
 import type { UserFilters as UserFiltersType } from "#/types/user.ts";
+import { ROLE_FILTER_OPTIONS, STATUS_FILTER_OPTIONS } from "#/configs/constants";
+import { hasActiveUserFilters } from "#/utils/hasActiveFilters.ts";
 
 interface UserFiltersProps {
   filters: UserFiltersType;
@@ -11,6 +13,7 @@ interface UserFiltersProps {
 }
 
 function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
+  const hasActiveFilters = hasActiveUserFilters(filters);
   return (
     <div className="grid grid-cols-1 gap-4 rounded-xl border border-gray-200 bg-white p-4 md:grid-cols-2 xl:grid-cols-5">
       <SearchInput
@@ -31,15 +34,13 @@ function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
         onChange={(e) =>
           onChange({
             ...filters,
-            role: e.target.value as UserFiltersType["role"],
+            role: (() => {
+              const v = e.target.value;
+              return v === "admin" || v === "teacher" || v === "student" || v === "" ? v : "";
+            })(),
           })
         }
-        options={[
-          { label: "همه نقش‌ها", value: "" },
-          { label: "مدیر", value: "admin" },
-          { label: "استاد", value: "teacher" },
-          { label: "دانشجو", value: "student" },
-        ]}
+        options={ROLE_FILTER_OPTIONS}
       />
       <Select
         label="وضعیت"
@@ -47,21 +48,22 @@ function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
         onChange={(e) =>
           onChange({
             ...filters,
-            status: e.target.value as UserFiltersType["status"],
+            status: (() => {
+              const v = e.target.value;
+              return v === "active" || v === "inactive" || v === "" ? v : "";
+            })(),
           })
         }
-        options={[
-          { label: "همه وضعیت‌ها", value: "" },
-          { label: "فعال", value: "active" },
-          { label: "غیرفعال", value: "inactive" },
-        ]}
+        options={STATUS_FILTER_OPTIONS}
       />
-      <div className="flex items-end">
-        <Button variant="secondary" className="w-full" onClick={onReset}>
-          <ResetIcon className="h-4 w-4" />
-          پاک‌کردن فیلترها
-        </Button>
-      </div>
+      {hasActiveFilters && (
+        <div className="flex items-end">
+          <Button variant="secondary" className="w-full" onClick={onReset}>
+            <ResetIcon className="h-4 w-4" />
+            پاک‌کردن فیلترها
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

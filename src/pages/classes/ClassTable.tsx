@@ -1,15 +1,15 @@
-import Badge from "#/components/ui/Badge.tsx";
+import { Link } from "react-router-dom";
 import Button from "#/components/ui/Button.tsx";
 import MenuItem from "#/components/ui/MenuItem.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
+import ClassCapacityBadge from "#/components/common/ClassCapacityBadge.tsx";
 import { useMapById } from "#/hooks/useMapById.ts";
 import type { ClassItem } from "#/types/class.ts";
-import type { ID } from "#/types/common.ts";
 import type { User } from "#/types/user.ts";
 import { getEffectiveStatus } from "#/utils/class.ts";
-import { getStatusLabel } from "#/utils/user.ts";
-import { getCapacityVariant } from "#/utils/tableHelpers.ts";
+import { getStatusLabel } from "#/utils/userLabels.ts";
+import { getUserNameFromMap } from "#/utils/nameHelpers.ts";
 import { useNavigate } from "react-router-dom";
 
 interface ClassTableProps {
@@ -33,11 +33,6 @@ function ClassTable({
 
   const userMap = useMapById(users);
 
-  const getTeacherName = (teacherId: ID | null | undefined): string => {
-    if (teacherId === null || teacherId === undefined) return "—";
-    return userMap.get(teacherId)?.name ?? "—";
-  };
-
   const hasManageableClass = classes.some(canManageClass);
 
   const columns = [
@@ -46,33 +41,25 @@ function ClassTable({
       title: "عنوان",
       width: "24%",
       render: (c: ClassItem) => (
-        <button
-          onClick={() => navigate(`/classes/${c.id}`)}
+        <Link
+          to={`/classes/${c.id}`}
           className="font-medium text-blue-600 hover:underline"
         >
           {c.title || "(بدون عنوان)"}
-        </button>
+        </Link>
       ),
     },
-    {
-      key: "teacherId",
-      title: "استاد",
-      width: "16%",
-      render: (c: ClassItem) => getTeacherName(c.teacherId),
-    },
+{
+        key: "teacherId",
+        title: "استاد",
+        width: "16%",
+        render: (c: ClassItem) => getUserNameFromMap(userMap, c.teacherId),
+      },
     {
       key: "capacity",
       title: "ظرفیت",
       width: "8%",
-      render: (c: ClassItem) => {
-        const studentCount = (c.studentIds || []).length;
-        const capacity = c.capacity || 0;
-        return (
-          <Badge variant={getCapacityVariant(studentCount, capacity)}>
-            {studentCount}/{capacity}
-          </Badge>
-        );
-      },
+      render: (c: ClassItem) => <ClassCapacityBadge classItem={c} />,
     },
     {
       key: "status",
@@ -119,29 +106,25 @@ function ClassTable({
       columns={columns}
       data={classes}
       renderMobileCard={(c: ClassItem) => {
-        const studentCount = (c.studentIds || []).length;
-        const capacity = c.capacity || 0;
         return (
           <div className="space-y-2 text-right">
             <div className="flex items-center justify-between gap-2">
-              <button
-                onClick={() => navigate(`/classes/${c.id}`)}
+              <Link
+                to={`/classes/${c.id}`}
                 className="text-base font-bold text-blue-600 hover:underline"
               >
                 {c.title || "(بدون عنوان)"}
-              </button>
+              </Link>
               <StatusChip status={getEffectiveStatus(c)} />
             </div>
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
               <span>
                 <span className="text-gray-500">استاد:</span>{" "}
-                {getTeacherName(c.teacherId)}
+                {getUserNameFromMap(userMap, c.teacherId)}
               </span>
               <span className="inline-flex items-center gap-1">
                 <span className="text-gray-500">ظرفیت:</span>{" "}
-                <Badge variant={getCapacityVariant(studentCount, capacity)}>
-                  {studentCount}/{capacity}
-                </Badge>
+                <ClassCapacityBadge classItem={c} />
               </span>
             </div>
           </div>

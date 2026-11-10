@@ -70,7 +70,7 @@
 - **سیستم نوتیفیکیشن (Toast):** بازخورد لحظه‌ای با `ToastContext`/`ToastProvider` و **سقف `MAX_TOASTS = 5`**.
 - **مدال‌های بهینه:** بستن با Escape، کلیک خارج، مدیریت اسکرول، رندر با `createPortal` و **Focus Trap کامل** (`Tab`/`Shift+Tab`).
 - **مدیریت خطای پیشرفته:** `react-error-boundary` با `ErrorBoundaryWrapper`/`RouterErrorBoundary` و پشتیبانی `resetKeys` + **صفحه خطای پایه** `ErrorPage` (که `NotFound` و `Unauthorized` از آن بهره می‌برند) و `ErrorAlert` برای خطاهای داده.
-- **اسکرول به بالا:** `ScrollToTop` اسکرول نرمِ محدوده‌ی محتوای اصلی (نه کل صفحه) در تغییر مسیر.
+- **اسکرول به بالا:** اسکرول نرمِ محدوده‌ی محتوای اصلی (نه کل صفحه) در تغییر مسیر.
 - **لینک پرش به محتوا:** دسترسی‌پذیری بهتر با لینک «پرش به محتوای اصلی» + `buildAriaDescribedBy` در `utils/accessibility.ts`.
 - **آیکون‌های متمرکز:** ۳۰+ آیکون SVG در یک فایل مشترک `components/common/icons.tsx` (قابل اشتراک‌گذاری و بدون تکرار).
 - **فونت فارسی وزیرمتن:** پشتیبانی کامل از زبان فارسی و جهت‌گیری RTL (پیکربندی با `@theme` در `index.css` برای Tailwind v4).
@@ -82,9 +82,8 @@
 
 - **عدم ذخیره رمز عبور:** حذف `password` از شیء کاربر (با `removePassword`) قبل از ذخیره در `localStorage`.
 - **اعتبارسنجی ساختار کاربر:** تابع `isValidUser` برای بررسی صحت داده‌های ذخیره‌شده.
-- **مدیریت خطای شبکه:** کلاس ساختاریافته `ApiError` با `userMessage`، `status`، `code`، `url` و `serverData` + Type Guard `isApiError` + استخراج یکپارچه پیام با `getErrorMessage` (`utils/error.ts`).
+- **مدیریت خطای شبکه:** کلاس ساختاریافته `ApiError` با `userMessage`، `status`، `code`، `url` و `serverData` + Type Guard `isApiError` + استخراج یکپارچه پیام با `getErrorMessage` (`services/error.ts`).
 - **پیام‌های اختصاصی خطا:** برای تایم‌اوت، عدم دسترسی به سرور، خطای سرور، ۴۰۱ و ۴۰۳ (با جدول `STATUS_MESSAGES`).
-- **لاگر توسعه‌محور:** کلاس `Logger` (`utils/logger.ts`) برای لاگ درخواست/پاسخ/خطا فقط در محیط توسعه.
 - **اینترسپتورهای Axios:** لاگ و مدیریت یکپارچه خطاها؛ تایم‌اوت از ثابت `API_REQUEST_TIMEOUT_MS`.
 - **حذف آبشاری:** حذف خودکار جلسات، حضور و غیاب و تکالیف مرتبط هنگام حذف کلاس.
 - **دسترس‌پذیری (A11y):** استفاده از `sr-only`، `aria-label`، `role` و `aria-live` در سراسر کامپوننت‌ها.
@@ -109,7 +108,6 @@
 | **تقویم جلالی**      | کامپوننت `DatePicker` اختصاصی (تاریخ شمسی) | —              |
 | **سرور شبیه‌ساز**    | JSON Server (Mock REST API)               | 1.0            |
 | **کیفیت کد**         | oxlint, Prettier, TypeScript Strict Mode, Husky | —              |
-| **تست واحد/یکپارچگی** | Vitest, React Testing Library, jsdom      | 5.0, 16.3, 30.1 |
 | **متغیرهای محیطی**   | `.env` با پشتیبانی از `import.meta.env`   | —              |
 
 </div>
@@ -129,12 +127,11 @@ src/
 ├── components/
 │   ├── common/          # کامپوننت‌های مشترک
 │   │   ├── EmptyState.tsx              # حالت خالی با آیکون و اکشن
-│   │   ├── ErrorBoundaryWrapper.tsx    # مدیریت خطا با react-error-boundary + Logger
+│   │   ├── ErrorBoundaryWrapper.tsx    # مدیریت خطا با react-error-boundary
 │   │   ├── Header.tsx                  # هدر با دکمه منو، نشان نقش و خروج
-│   │   ├── icons.tsx                   # ★ ۳۰+ آیکون SVG متمرکز و قابل اشتراک
+│   │   ├── icons/index.ts              # ★ ۳۰+ آیکون SVG متمرکز و قابل اشتراک
 │   │   ├── Loading.tsx                 # اسپینر (با استفاده از Spinner)
 │   │   ├── RouterErrorBoundary.tsx     # مرز خطا بر اساس مسیر
-│   │   ├── ScrollToTop.tsx             # اسکرول محدوده محتوا در تغییر مسیر
 │   │   └── Sidebar.tsx                 # منو با آیکون + فیلتر نقش‌محور از navigation
 │   └── ui/               # کامپوننت‌های پایه رابط کاربری
     │       ├── ActionsMenu.tsx             # ★ منوی اکشن با پورتال و موقعیت‌یابی هوشمند
@@ -289,8 +286,6 @@ src/
 │   ├── dashboardData.ts  # ★ هوک‌های داده داشبورد و آمار تصحیح
 │   ├── error.ts          # ★ getErrorMessage
 │   ├── formatDate.ts     # ★ formatDate, formatDateTime, formatRelativeTime, toDateInputValue, isDateBeforeToday
-│   ├── guards.ts         # ★ isValidUser
-│   ├── logger.ts         # ★ کلاس Logger توسعه‌محور
 │   ├── tableHelpers.ts   # ★ توابع کمکی جدول (sort، filter، pagination)
 │   ├── user.ts           # ★ getRoleLabel, getRoleVariant, getStatusLabel
 │   ├── userSanitization.ts # ★ removePassword
@@ -353,6 +348,10 @@ npm run server
 <div dir="rtl">
 
 > این دستور `json-server` را برای ارائه API فیک بر اساس فایل `db.json` در پورت `4003` اجرا می‌کند.
+
+> اسکریپت `server` بدون watcher فایل اجرا می‌شود تا همپوشانی «بازخوانی خودکار state» با نوشتن‌های پشت‌سرهم (حذف کلاس و عملیات کاسکادی) ایجاد نکند و از احیا شدن رکورد‌های حذف‌شده جلوگیری شود. اگر `db.json` را به‌صورت دستی ویرایش می‌کنید، برای اعمال تغییرات باید سرور را متوقف و دوباره راه‌اندازی نمایید.
+
+> هر دو اسکریپت پیش از اجرا پورت `4003` را آزاد می‌کنند (`scripts/free-port.mjs`)؛ اگر نمونه‌ی قبلی `json-server` به‌صورت یتیم مانده باشد (مثلاً بعد از `Terminate batch job`)، خودکار بسته می‌شود و خطای `EADDRINUSE` رخ نمی‌دهد.
 
 </div>
 
@@ -450,9 +449,8 @@ npm run build
 | Pre-commit Hook             | ❌                            | ✅ **Husky**: `typecheck` + `lint:check` قبل از هر کامیت     |
 | oxlint                      | قواعد پایه + `warn` برای hooks | ✅ **سخت‌گیرانه**: همه قواعد `error`، `exhaustive-deps` error، فرمت‌بندی کامل |
 | Bilde (Vite)                | esbuild minify                | ✅ **oxc minify** + **lightningcss** + target `esnext` + chunk splitting سخت‌گیرانه |
-| Scripts                     | `dev`, `build`, `lint`, `test` | ✅ افزوده: `typecheck`, `check` (همه چک‌ها)، `test:ci`، `prepare` |
-| وابستگی‌ها (Deps)           | React 19.3.0, Vite 8.3.0      | ✅ React 19.3.1, Vite 8.3.5, Vitest 5.0.5, oxlint 1.90.0, Husky 9.1.7 |
-| تست                         | `vitest run`                  | ✅ **Coverage** پیش‌فرض + `test:ci` با reporter verbose      |
+| Scripts                     | `dev`, `build`, `lint` | ✅ افزوده: `typecheck`, `check` (همه چک‌ها)، `prepare` |
+| وابستگی‌ها (Deps)           | React 19.3.0, Vite 8.3.0      | ✅ React 19.3.1, Vite 8.3.5, oxlint 1.90.0, Husky 9.1.7 |
 
 ### 🎨 رابط کاربری و تجربه کاربری (UX)
 
@@ -482,7 +480,6 @@ npm run build
 | هوک‌های سطح صفحه           | ❌ (منطق در کامپوننت‌های صفحه)                 | ✅ ۸ هوک `use*Page`: `useCrudPage`، `useAnnouncementsPage`، `useAttendancePage`، `useClassesPage`، `useUsersPage`، `useSubmissionsPage`، `useTeacherAssignmentsPage`، `useFilteredAnnouncements` |
 | ماژول اطلاعیه‌ها           | `AnnouncementsPage` + `useFilteredAnnouncements` | ✅ کامپوننت‌های `AnnouncementCard`، `AnnouncementViewModal`، `announcementPayload.ts`، `useAnnouncementsPage` |
 | ماژول تکالیف                | `AssignmentsPage` یکپارچه برای هر دو نقش      | ✅ تفکیک کامل: `StudentAssignmentsPage`/`Table` + `TeacherAssignmentsPage`/`Table` + هوک‌های مخصوص |
-| تست واحد/یکپارچگی         | ❌                                            | ✅ **Vitest** + **React Testing Library** + **jsdom** + اسکریپت‌های `test`/`test:watch` |
 | فونت فارسی                  | پیکربندی پایه                                 | ✅ فونت **وزیرمتن** کامل (۱۱ وزن: Thin تا Black + Variable) |
 
 ### 🎨 رابط کاربری و تجربه کاربری (UX)
@@ -498,7 +495,6 @@ npm run build
 
 | مورد                        | نسخه 3.7.0 | نسخه 3.8.0                    |
 | :-------------------------- | :--------- | :---------------------------- |
-| زیرساخت تست                | ❌         | ✅ Vitest + RTL + jsdom پیکربندی‌شده |
 | حذف آبشاری یکپارچه        | پراکنده در سرویس‌ها | ✅ `services/cascadeDelete.ts` متمرکز |
 | انتزاع localStorage         | استفاده مستقیم در کد | ✅ `utils/authStorage.ts` برای توکن/کاربر |
 | کمک‌های جدول               | تکراری در صفحات | ✅ `utils/tableHelpers.ts` (sort/filter/pagination) |
@@ -579,11 +575,11 @@ npm run build
 |  ۶  | اطلاعیه‌ها                        | ✅ تکمیل | `AnnouncementsPage` با کارت‌های ریسپانسیو، `AnnouncementForm`، مخاطب‌گذاری بر اساس کلاس/نقش/مخاطب داخل کلاس، وضعیت مشاهده (`Seen`/`Unseen`) با نشانگر بصری، بازنشانی وضعیت مشاهده پس از ویرایش، هوک اختصاصی `useFilteredAnnouncements` با `isAnnouncementVisibleTo` |
 |  ۷  | تکالیف و ارزیابی                  | ✅ تکمیل | `AssignmentsPage` + `AssignmentsTable` با ددلاینِ رنگی و `useAssignmentsPageData`، `AssignmentForm` با **تقویم جلالی** و اعتبارسنجی ددلاین، `SubmissionForm` (ارسال/ویرایش/مشاهده پس از ددلاین + کپی)، `SubmissionsPage` با نمره‌دهی ۰ تا ۲۰ و بازخورد، حذف آبشاری پاسخ‌ها |
 |  ۸  | داشبوردهای اختصاصی                | ✅ تکمیل | `DashboardContainer` با واکشی نقش‌محورِ `useAsyncData`، استخراج داده به `utils/dashboardData`، `AdminDashboard`/`TeacherDashboard`/`StudentDashboard` با نمودارهای `Recharts` + `ChartTooltip`/`ChartLegend` مشترک و `StatCard` |
-|  ۹  | یکپارچه‌سازی و UX ضروری           | ✅ تکمیل | مدیریت جامع خطاها در `axiosInstance` (کلاس `ApiError` + `Logger`)، `react-error-boundary` + `RouterErrorBoundary` + `ErrorPage`، `ScrollToTop` (محتوا)، لینک پرش به محتوا، `Toast` با سقف ۵، `EmptyState`/`Loading`/`Spinner`، ریسپانسیو نهایی، فونت وزیرمتن با `@theme`، حذف فایل‌های تکراری |
+|  ۹  | یکپارچه‌سازی و UX ضروری           | ✅ تکمیل | مدیریت جامع خطاها در `axiosInstance` (کلاس `ApiError`)، `react-error-boundary` + `RouterErrorBoundary` + `ErrorPage`، لینک پرش به محتوا، `Toast` با سقف ۵، `EmptyState`/`Loading`/`Spinner`، ریسپانسیو نهایی، فونت وزیرمتن با `@theme`، حذف فایل‌های تکراری |
 | ۱۰  | تست، رفع باگ و آماده‌سازی ارائه   | ✅ تکمیل | `db.json` نهایی با کاربران، کلاس‌ها، جلسات، حضور و غیاب، اطلاعیه‌ها، تکالیف و پاسخ‌ها، سه نقش نمونه (مدیر/استاد/دانشجو)، سناریوهای دمو آماده |
 | ۱۱  | ★ کلاس‌های منِ دانشجو            | ✅ تکمیل | `StudentClassesPage` با نمایش کلاس‌های ثبت‌نام‌شده + نشان ظرفیت رنگی + مسیر `classes/join/:classId` با `JoinClassPlaceholderPage` (ثبت‌نام، در حال توسعه) |
-| ۱۲  | ★ ارتقای کیفیت معماری (نسخه 3.7.0)   | ✅ تکمیل | استخراج ۵ هوک قابل استفاده مجدد، متمرکزسازی آیکون/تنظیمات/نمودار/اعتبارسنجی/توابع، جداسازی `User` از `UserWithPassword`، `Logger` و `getErrorMessage` یکپارچه، تفکیک ماژول حضور و غیاب به ۴ نمای نقش‌محور |
-| ۱۳  | ★ معماری ماژولار هوک‌ها + تست (نسخه 3.8.0) | ✅ تکمیل | ماژولارسازی `constants`، ۸ هوک `use*Page`، تفکیک تکالیف نقش‌محور، ارتقای اطلاعیه‌ها، Vitest/RTL، فونت وزیرمتن کامل، `cascadeDelete`، `authStorage` |
+| ۱۲  | ★ ارتقای کیفیت معماری (نسخه 3.7.0)   | ✅ تکمیل | استخراج ۵ هوک قابل استفاده مجدد، متمرکزسازی آیکون/تنظیمات/نمودار/اعتبارسنجی/توابع، جداسازی `User` از `UserWithPassword`، `getErrorMessage` یکپارچه، تفکیک ماژول حضور و غیاب به ۴ نمای نقش‌محور |
+| ۱۳  | ★ معماری ماژولار هوک‌ها (نسخه 3.8.0) | ✅ تکمیل | ماژولارسازی `constants`، ۸ هوک `use*Page`، تفکیک تکالیف نقش‌محور، ارتقای اطلاعیه‌ها، فونت وزیرمتن کامل، `cascadeDelete`، `authStorage` |
 
 ---
 

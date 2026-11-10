@@ -1,4 +1,35 @@
-export const TOAST_MESSAGES = {
+
+export const TOAST_MESSAGES: {
+  readonly CREATE_SUCCESS: string;
+  readonly UPDATE_SUCCESS: string;
+  readonly DELETE_SUCCESS: string;
+  readonly CREATE_ERROR: string;
+  readonly UPDATE_ERROR: string;
+  readonly DELETE_ERROR: string;
+  readonly FETCH_ERROR: string;
+  readonly USER_CREATE_SUCCESS: string;
+  readonly USER_UPDATE_SUCCESS: string;
+  readonly USER_DELETE_SUCCESS: string;
+  readonly USER_STATUS_SUCCESS: string;
+  readonly USER_STATUS_ERROR: string;
+  readonly CLASS_CREATE_SUCCESS: string;
+  readonly CLASS_UPDATE_SUCCESS: string;
+  readonly CLASS_DELETE_SUCCESS: string;
+  readonly CLASS_STATUS: (title: string, action: "غیرفعال" | "فعال") => string;
+  readonly CLASS_STATUS_ERROR: string;
+  readonly ASSIGNMENT_CREATE_SUCCESS: string;
+  readonly ASSIGNMENT_UPDATE_SUCCESS: string;
+  readonly ASSIGNMENT_DELETE_SUCCESS: string;
+  readonly ASSIGNMENT_SAVE_ERROR: string;
+  readonly ANNOUNCEMENT_SAVE_SUCCESS: string;
+  readonly ANNOUNCEMENT_SAVE_ERROR: string;
+  readonly ANNOUNCEMENT_SEEN_SUCCESS: string;
+  readonly ANNOUNCEMENT_SEEN_ERROR: string;
+  readonly ANNOUNCEMENT_FETCH_ERROR: string;
+  readonly ATTENDANCE_SAVE_SUCCESS: string;
+  readonly ATTENDANCE_SAVE_ERROR: string;
+  readonly PREVENT_SELF_ACTION: (action: string) => string;
+} = {
   CREATE_SUCCESS: "با موفقیت ایجاد شد.",
   UPDATE_SUCCESS: "با موفقیت ویرایش شد.",
   DELETE_SUCCESS: "با موفقیت حذف شد.",
@@ -14,7 +45,8 @@ export const TOAST_MESSAGES = {
   CLASS_CREATE_SUCCESS: "کلاس با موفقیت ایجاد شد.",
   CLASS_UPDATE_SUCCESS: "کلاس با موفقیت ویرایش شد.",
   CLASS_DELETE_SUCCESS: "کلاس با موفقیت حذف شد.",
-  CLASS_STATUS_SUCCESS: 'کلاس "{title}" {action} شد.',
+  CLASS_STATUS: (title: string, action: "غیرفعال" | "فعال") =>
+    `کلاس "${title}" ${action} شد.`,
   CLASS_STATUS_ERROR: "تغییر وضعیت کلاس ناموفق بود.",
   ASSIGNMENT_CREATE_SUCCESS: "تکلیف با موفقیت ایجاد شد.",
   ASSIGNMENT_UPDATE_SUCCESS: "تکلیف با موفقیت ویرایش شد.",
@@ -29,4 +61,4 @@ export const TOAST_MESSAGES = {
   ATTENDANCE_SAVE_ERROR: "ذخیره حضور و غیاب با خطا مواجه شد.",
   PREVENT_SELF_ACTION: (action: string) =>
     `شما نمی‌توانید ${action} حساب کاربری خودتان را ${action === "حذف" ? "کنید" : "تغییر دهید"}.`,
-} as const;
+};

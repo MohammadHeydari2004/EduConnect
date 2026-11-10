@@ -1,15 +1,8 @@
 import Button from "#/components/ui/Button.tsx";
 import SearchInput from "#/components/ui/SearchInput.tsx";
 import Select from "#/components/ui/Select.tsx";
-import type { ClassStatus } from "#/types/class.ts";
+import type { ClassFiltersValues } from "#/types/class.ts";
 import type { User } from "#/types/user.ts";
-
-export interface ClassFiltersValues {
-  search: string;
-  statusFilter: ClassStatus | "";
-  teacherFilter: string;
-  [key: string]: string | ClassStatus | "";
-}
 
 interface ClassFiltersProps {
   filters: ClassFiltersValues;
@@ -40,7 +33,10 @@ function ClassFilters({
         onChange={(e) =>
           onChange({
             ...filters,
-            statusFilter: e.target.value as ClassStatus | "",
+            statusFilter: (() => {
+              const v = e.target.value;
+              return v === "active" || v === "inactive" || v === "" ? v : "";
+            })(),
           })
         }
         options={[
@@ -62,7 +58,7 @@ function ClassFilters({
           ]}
         />
       )}
-      {(filters.search || filters["classId"] || filters.statusFilter) && (
+      {(filters.search || filters.statusFilter || filters.teacherFilter) && (
         <div className="flex items-end">
           <Button variant="secondary" className="w-full" onClick={onReset}>
             پاک‌کردن فیلترها

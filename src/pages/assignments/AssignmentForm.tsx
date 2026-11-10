@@ -1,20 +1,20 @@
-import Button from "#/components/ui/Button.tsx";
+﻿import Button from "#/components/ui/Button.tsx";
+import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Select from "#/components/ui/Select.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
 import { useToast } from "#/hooks/useToast.ts";
-import {
-  validateAssignmentForm,
-  type AssignmentFormErrors,
-} from "#/pages/assignments/validators.ts";
+import { validateAssignmentForm } from "#/pages/assignments/validators.ts";
+import type { AssignmentFormErrors } from "#/types/assignment.ts";
 import { assignmentService } from "#/services/assignment.ts";
 import type { Assignment } from "#/types/assignment.ts";
 import type { ClassItem } from "#/types/class.ts";
 import type { ID } from "#/types/common.ts";
-import { getErrorMessage } from "#/utils/error.ts";
+import { classifyError } from "#/services/error.ts";
+import { showErrorToastWithInfo } from "#/hooks/useToastHelpers.ts";
 import { FORM_PLACEHOLDERS } from "#/configs/constants";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface Props {
   initialData?: Assignment | null;
@@ -39,15 +39,20 @@ export default function AssignmentForm({
   const [description, setDescription] = useState(
     initialData?.description ?? "",
   );
-  const [deadline, setDeadline] = useState(initialData?.deadline?.split("T")[0] ?? "");
+  const [deadline, setDeadline] = useState(
+    initialData?.deadline?.split("T")[0] ?? "",
+  );
   const [classId, setClassId] = useState(initialData?.classId ?? "");
   const [errors, setErrors] = useState<AssignmentFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const classOptions = availableClasses.map((c) => ({
-    label: c.title || "(بدون عنوان)",
-    value: c.id,
-  }));
+  const classOptions = useMemo(
+    () => availableClasses.map((c) => ({
+      label: c.title || "(بدون عنوان)",
+      value: c.id,
+    })),
+    [availableClasses],
+  );
 
   const handleSubmit = async () => {
     const validationErrors = validateAssignmentForm({
@@ -69,10 +74,12 @@ export default function AssignmentForm({
       return;
     }
 
+    const payloadDeadline = deadline ? `${deadline}T23:59:59.999` : "";
+
     const payload = {
       title,
       description,
-      deadline: deadline ? `${deadline}T23:59:59.999Z` : "",
+      deadline: payloadDeadline,
       classId,
       teacherId: finalTeacherId,
     };
@@ -89,10 +96,8 @@ export default function AssignmentForm({
       }
       onSuccess(result);
     } catch (err) {
-      addToast(
-        getErrorMessage(err, "خطا در ذخیره تکلیف. لطفاً دوباره تلاش کنید."),
-        "error",
-      );
+      const info = classifyError(err);
+      showErrorToastWithInfo(addToast, info, "خطا در ذخیره تکلیف. لطفاً دوباره تلاش کنید.");
     } finally {
       setIsSubmitting(false);
     }
@@ -104,14 +109,7 @@ export default function AssignmentForm({
       onClose={onClose}
     >
       <div className="space-y-4">
-        {errors.form && (
-          <p
-            className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            role="alert"
-          >
-            {errors.form}
-          </p>
-        )}
+        {errors.form && <ErrorAlert message={errors.form} />}
 
         <Input
           label="عنوان تکلیف"
@@ -119,7 +117,7 @@ export default function AssignmentForm({
           onChange={(e) => {
             setTitle(e.target.value);
             if (errors.title || errors.form)
-              setErrors((prev) => ({
+              setErrors((prev: AssignmentFormErrors) => ({
                 ...prev,
                 title: "",
                 form: "",
@@ -135,7 +133,7 @@ export default function AssignmentForm({
           onChange={(e) => {
             setClassId(e.target.value);
             if (errors.classId || errors.form)
-              setErrors((prev) => ({
+              setErrors((prev: AssignmentFormErrors) => ({
                 ...prev,
                 classId: "",
                 form: "",
@@ -155,7 +153,7 @@ export default function AssignmentForm({
           onChange={(e) => {
             setDeadline(e.target.value);
             if (errors.deadline || errors.form)
-              setErrors((prev) => ({
+              setErrors((prev: AssignmentFormErrors) => ({
                 ...prev,
                 deadline: "",
                 form: "",
@@ -175,7 +173,7 @@ export default function AssignmentForm({
           <Button type="button" variant="secondary" onClick={onClose}>
             انصراف
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
+          <Button onClick={handleSubmit}>
             {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
           </Button>
         </div>

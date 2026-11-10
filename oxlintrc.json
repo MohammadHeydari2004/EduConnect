@@ -159,10 +159,6 @@
     "*.config.js",
     "*.config.ts",
     "coverage",
-    "**/*.d.ts",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx"
+    "**/*.d.ts"
   ]
 }

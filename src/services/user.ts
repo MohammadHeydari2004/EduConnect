@@ -1,6 +1,7 @@
 import { baseApi } from "#/services/api/baseApi.ts";
+import { safeDelete } from "#/services/api/safeDelete.ts";
 import { cascadeDeleteUserData } from "#/services/cascadeDelete.ts";
-import type { ID, RecordStatus } from "#/types/common.ts";
+import type { ID, DeepPartial, RecordStatus } from "#/types/common.ts";
 import type {
   CreateUserPayload,
   UpdateUserPayload,
@@ -10,8 +11,8 @@ import type {
 
 const endpoint = "/users";
 
-async function getAllUsers(): Promise<User[]> {
-  return baseApi.getAll<User>(endpoint);
+async function getAllUsers(params?: Record<string, string | number | boolean>, signal?: AbortSignal): Promise<User[]> {
+  return baseApi.getAll<User>(endpoint, params, signal);
 }
 
 async function getUserById(id: ID): Promise<User> {
@@ -33,8 +34,8 @@ async function ensureEmailIsUnique(
   }
 }
 
-async function getAdminUsers(): Promise<User[]> {
-  return baseApi.getAll<User>(endpoint, { role: "admin" });
+async function getAdminUsers(signal?: AbortSignal): Promise<User[]> {
+  return baseApi.getAll<User>(endpoint, { role: "admin" }, signal);
 }
 
 async function ensureNotLastAdmin(userId: ID): Promise<void> {
@@ -75,34 +76,54 @@ export const userService = {
   },
 
   async update(id: ID, data: UpdateUserPayload): Promise<User> {
-    await ensureEmailIsUnique(data.email, id);
     const existingUser = await getUserById(id);
 
-    if (existingUser.role === "admin" && data.role !== "admin") {
+    if (data.email) {
+      await ensureEmailIsUnique(data.email, id);
+    }
+
+    const role = data.role ?? existingUser.role;
+    const status = data.status ?? existingUser.status;
+
+    if (existingUser.role === "admin" && role !== "admin") {
       await ensureNotLastAdmin(id);
     }
     if (
       existingUser.role === "admin" &&
       existingUser.status === "active" &&
-      data.status === "inactive"
+      status === "inactive"
     ) {
       await ensureNotLastAdminIfDeactivating(existingUser);
     }
 
-    return baseApi.update<User>(endpoint, id, {
-      name: data.name.trim(),
-      email: data.email.trim().toLowerCase(),
-      role: data.role,
-      status: data.status,
-    });
+    const updateData: DeepPartial<User> = {};
+    if (data.name !== undefined) updateData.name = data.name.trim();
+    if (data.email !== undefined) updateData.email = data.email.trim().toLowerCase();
+    if (data.role !== undefined) updateData.role = data.role;
+    if (data.status !== undefined) updateData.status = data.status;
+
+    return baseApi.update<User>(endpoint, id, updateData);
   },
 
   async delete(id: ID): Promise<void> {
     await ensureNotLastAdmin(id);
 
-    await cascadeDeleteUserData(id);
+    try {
+      const report = await cascadeDeleteUserData(id);
+      if (!report.overallSuccess) {
+        throw new Error(report.results.flatMap((r) => r.errors).join("; "));
+      }
 
-    await baseApi.delete(endpoint, id);
+      await safeDelete(
+        (deleteId: ID) => baseApi.delete(endpoint, deleteId),
+        id,
+        endpoint,
+      );
+    } catch (err) {
+      throw new Error(
+        `حذف کاربر با خطا مواجه شد: ${err instanceof Error ? err.message : "خطای نامشخص"}`,
+      );
+    }
   },
 
   async toggleStatus(id: ID): Promise<User> {

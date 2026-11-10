@@ -5,18 +5,33 @@ export const FORM_PLACEHOLDERS = {
   ANNOUNCEMENT_CONTENT: "متن اطلاعیه...",
 } as const;
 
-export const FORM_LABELS = {
-  ASSIGNMENT_TITLE: "عنوان تکلیف",
-  ASSIGNMENT_CLASS: "کلاس",
-  ASSIGNMENT_DEADLINE: "ددلاین",
-  ASSIGNMENT_DESCRIPTION: "توضیحات",
-  ANNOUNCEMENT_TITLE: "عنوان",
-  ANNOUNCEMENT_CLASS: "مخاطب (کلاس)",
-  ANNOUNCEMENT_CONTENT: "محتوا",
-} as const;
+export const ROLE_FORM_OPTIONS = [
+  { label: "مدیر", value: "admin" },
+  { label: "استاد", value: "teacher" },
+  { label: "دانشجو", value: "student" },
+];
 
-export const FORM_BUTTONS = {
-  CANCEL: "انصراف",
-  SAVE: "ذخیره",
-  SAVING: "در حال ذخیره...",
+export const ROLE_FILTER_OPTIONS = [
+  { label: "همه نقش‌ها", value: "" },
+  ...ROLE_FORM_OPTIONS,
+];
+
+export const STATUS_FORM_OPTIONS = [
+  { label: "فعال", value: "active" },
+  { label: "غیرفعال", value: "inactive" },
+];
+
+export const STATUS_FILTER_OPTIONS = [
+  { label: "همه وضعیت‌ها", value: "" },
+  ...STATUS_FORM_OPTIONS,
+];
+
+export const EMAIL_ALREADY_REGISTERED = "قبلاً ثبت شده";
+
+export const DIALOG_STRINGS = {
+  CONFIRM_TITLE: "تأیید عملیات",
+  CONFIRM_MESSAGE: "آیا از انجام این عملیات مطمئن هستید؟",
+  CONFIRM_TEXT: "تأیید",
+  CANCEL_TEXT: "انصراف",
+  PROFILE_TITLE: "پروفایل",
 } as const;

@@ -1,17 +1,19 @@
 import Select from "#/components/ui/Select.tsx";
-import { DEFAULT_TARGET_ROLES } from "#/configs/constants";
+import { ALL_ROLES } from "#/configs/constants";
 import type { TargetAudience } from "#/types/announcement.ts";
 import type { UserRole } from "#/types/common.ts";
-import { getRoleLabel } from "#/utils/user.ts";
+import { getRoleLabel } from "#/utils/userLabels.ts";
 
 interface GlobalAnnouncementRolesProps {
   targetRoles: UserRole[];
   onToggle: (role: UserRole) => void;
+  error?: string | undefined;
 }
 
 export function GlobalAnnouncementRoles({
   targetRoles,
   onToggle,
+  error,
 }: GlobalAnnouncementRolesProps) {
   return (
     <fieldset className="space-y-2">
@@ -19,7 +21,7 @@ export function GlobalAnnouncementRoles({
         قابل مشاهده برای (نقش‌ها):
       </legend>
       <div className="flex flex-wrap gap-3">
-        {DEFAULT_TARGET_ROLES.map((role) => (
+        {ALL_ROLES.map((role: UserRole) => (
           <label
             key={role}
             className="flex cursor-pointer items-center gap-2"
@@ -36,6 +38,11 @@ export function GlobalAnnouncementRoles({
           </label>
         ))}
       </div>
+      {error && (
+        <p className="text-xs text-red-600" role="alert">
+          {error}
+        </p>
+      )}
     </fieldset>
   );
 }
