@@ -1,14 +1,13 @@
-import { STORAGE_KEYS } from "#/configs/constants";
+import { STORAGE_KEYS } from "#/configs/constants/storageKeys.ts";
 import { isValidUser } from "#/utils/guards.ts";
-import type { User } from "#/types/user.ts";
+import type { User } from "#/types";
 
 const STORAGE_ERROR_MESSAGES = {
   QuotaExceededError:
     "حافظه مرورگر پر است. لطفاً فضای ذخیره‌سازی را خالی کنید.",
   SecurityError:
     "دسترسی به ذخیره‌سازی محلی مسدود شده است. لطفاً تنظیمات حریم خصوصی را بررسی کنید.",
-  default: "خطا در دسترسی به حافظه مرورگر.",
-  unknown: "خطای ناشناخته در ذخیره‌سازی داده‌ها.",
+  unknown: "خطا در دسترسی به حافظه مرورگر.",
 } as const;
 
 export function getStoredUser(): User | null {
@@ -43,7 +42,11 @@ export function getStoredUser(): User | null {
 
 export function getStorageErrorMessage(error: unknown): string {
   if (error instanceof DOMException) {
-    return STORAGE_ERROR_MESSAGES[error.name as keyof typeof STORAGE_ERROR_MESSAGES] ?? STORAGE_ERROR_MESSAGES.default;
+    return (
+      STORAGE_ERROR_MESSAGES[
+        error.name as keyof typeof STORAGE_ERROR_MESSAGES
+      ] ?? STORAGE_ERROR_MESSAGES.unknown
+    );
   }
   return STORAGE_ERROR_MESSAGES.unknown;
 }

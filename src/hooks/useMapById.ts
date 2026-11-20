@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { ID } from "#/types/common.ts";
+import type { ID } from "#/types";
 
 export function useMapById<T extends { id: ID }>(items: T[]): Map<ID, T> {
   return useMemo(() => {

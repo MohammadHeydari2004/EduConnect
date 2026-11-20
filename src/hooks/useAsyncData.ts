@@ -1,4 +1,3 @@
-import { getErrorMessage } from "#/services/error.ts";
 import {
   useCallback,
   useEffect,
@@ -37,6 +36,7 @@ export function useAsyncData<T>({
 
   const dataRef = useRef<T | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const prevDepsRef = useRef<DependencyList>(deps);
 
   const refresh = useCallback(() => {
     setRefreshKey((key) => key + 1);
@@ -52,9 +52,21 @@ export function useAsyncData<T>({
 
     let ignore = false;
 
-    const hasData = dataRef.current !== null;
-        setLoading(!hasData);
-        setError("");
+    const depsChanged =
+      prevDepsRef.current.length !== deps.length ||
+      deps.some((dep, index) => dep !== prevDepsRef.current[index]);
+    prevDepsRef.current = deps;
+
+    if (depsChanged) {
+      setData(null);
+      dataRef.current = null;
+      setLoading(true);
+      setError("");
+    } else {
+      const hasData = dataRef.current !== null;
+      setLoading(!hasData);
+      setError("");
+    }
 
     fetcherRef
       .current(signal)
@@ -69,7 +81,7 @@ export function useAsyncData<T>({
         if (err instanceof DOMException && err.name === "AbortError") {
           return;
         }
-        setError(getErrorMessage(err, fallbackRef.current));
+        setError(err instanceof Error ? err.message : fallbackRef.current);
       })
       .finally(() => {
         if (!ignore && !signal.aborted) {
@@ -81,7 +93,6 @@ export function useAsyncData<T>({
       ignore = true;
       controller.abort();
     };
-    
   }, [refreshKey, ...deps]);
 
   return { data, loading, error, refresh };

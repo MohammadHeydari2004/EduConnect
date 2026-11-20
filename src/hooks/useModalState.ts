@@ -1,6 +1,6 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
-export interface UseModalStateResult<Target = unknown> {
+interface UseModalStateResult<Target = unknown> {
   kind: string | null;
   target: Target | null;
   open: (kind: string) => void;
@@ -17,7 +17,7 @@ export function useModalState<Target = unknown>(): UseModalStateResult<Target> {
   }>({ kind: null, target: null });
 
   const open = useCallback(
-    (kind: string) => setState((prev) => ({ kind, target: prev.target })),
+    (kind: string) => setState({ kind, target: null }),
     [],
   );
 
@@ -37,13 +37,16 @@ export function useModalState<Target = unknown>(): UseModalStateResult<Target> {
     [state.kind],
   );
 
-  return {
-    kind: state.kind,
-    target: state.target,
-    open,
-    openWithTarget,
-    setTarget,
-    close,
-    isOpen,
-  };
+  return useMemo(
+    () => ({
+      kind: state.kind,
+      target: state.target,
+      open,
+      openWithTarget,
+      setTarget,
+      close,
+      isOpen,
+    }),
+    [state.kind, state.target, open, openWithTarget, setTarget, close, isOpen],
+  );
 }

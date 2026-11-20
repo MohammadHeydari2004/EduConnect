@@ -6,21 +6,16 @@ import Select from "#/components/ui/Select.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
 import { useToast } from "#/hooks/useToast.ts";
 import { validateAssignmentForm } from "#/pages/assignments/validators.ts";
-import type { AssignmentFormErrors } from "#/types/assignment.ts";
+import type { Assignment, AssignmentFormErrors, ClassItem, ID } from "#/types";
 import { assignmentService } from "#/services/assignment.ts";
-import type { Assignment } from "#/types/assignment.ts";
-import type { ClassItem } from "#/types/class.ts";
-import type { ID } from "#/types/common.ts";
-import { classifyError } from "#/services/error.ts";
-import { showErrorToastWithInfo } from "#/hooks/useToastHelpers.ts";
+import { showErrorToast } from "#/hooks/useToastHelpers.ts";
 import { FORM_PLACEHOLDERS } from "#/configs/constants";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 interface Props {
   initialData?: Assignment | null;
   availableClasses: ClassItem[];
   teacherId: ID;
-  isAdmin: boolean;
   onClose: () => void;
   onSuccess: (assignment: Assignment) => void;
 }
@@ -29,7 +24,6 @@ export default function AssignmentForm({
   initialData,
   availableClasses,
   teacherId,
-  isAdmin,
   onClose,
   onSuccess,
 }: Props) {
@@ -54,6 +48,16 @@ export default function AssignmentForm({
     [availableClasses],
   );
 
+  const clearFieldError = useCallback(
+    (field: "title" | "classId" | "deadline") => {
+      setErrors((prev) => {
+        if (!prev[field] && !prev.form) return prev;
+        return { ...prev, [field]: "", form: "" };
+      });
+    },
+    [],
+  );
+
   const handleSubmit = async () => {
     const validationErrors = validateAssignmentForm({
       title,
@@ -64,16 +68,6 @@ export default function AssignmentForm({
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
 
-    const selectedClass = availableClasses.find((c) => c.id === classId);
-    const finalTeacherId = isAdmin ? selectedClass?.teacherId : teacherId;
-
-    if (!finalTeacherId) {
-      setErrors({
-        form: "این کلاس فاقد استاد است. ابتدا استاد کلاس را تعیین کنید.",
-      });
-      return;
-    }
-
     const payloadDeadline = deadline ? `${deadline}T23:59:59.999` : "";
 
     const payload = {
@@ -81,14 +75,20 @@ export default function AssignmentForm({
       description,
       deadline: payloadDeadline,
       classId,
-      teacherId: finalTeacherId,
+      teacherId,
+    };
+    const updatePayload = {
+      title,
+      description,
+      deadline: payloadDeadline,
+      classId,
     };
 
     try {
       setIsSubmitting(true);
       let result: Assignment;
       if (initialData) {
-        result = await assignmentService.update(initialData.id, payload);
+        result = await assignmentService.update(initialData.id, updatePayload);
         addToast("تکلیف با موفقیت ویرایش شد.", "success");
       } else {
         result = await assignmentService.create(payload);
@@ -96,8 +96,10 @@ export default function AssignmentForm({
       }
       onSuccess(result);
     } catch (err) {
-      const info = classifyError(err);
-      showErrorToastWithInfo(addToast, info, "خطا در ذخیره تکلیف. لطفاً دوباره تلاش کنید.");
+      showErrorToast(
+        addToast,
+        err instanceof Error ? err.message : "خطا در ذخیره تکلیف. لطفاً دوباره تلاش کنید.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -108,7 +110,13 @@ export default function AssignmentForm({
       title={initialData ? "ویرایش تکلیف" : "ایجاد تکلیف جدید"}
       onClose={onClose}
     >
-      <div className="space-y-4">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void handleSubmit();
+        }}
+        className="space-y-4"
+      >
         {errors.form && <ErrorAlert message={errors.form} />}
 
         <Input
@@ -116,12 +124,7 @@ export default function AssignmentForm({
           value={title}
           onChange={(e) => {
             setTitle(e.target.value);
-            if (errors.title || errors.form)
-              setErrors((prev: AssignmentFormErrors) => ({
-                ...prev,
-                title: "",
-                form: "",
-              }));
+            clearFieldError("title");
           }}
           error={errors.title}
           placeholder={FORM_PLACEHOLDERS.ASSIGNMENT_TITLE}
@@ -132,12 +135,7 @@ export default function AssignmentForm({
           value={classId}
           onChange={(e) => {
             setClassId(e.target.value);
-            if (errors.classId || errors.form)
-              setErrors((prev: AssignmentFormErrors) => ({
-                ...prev,
-                classId: "",
-                form: "",
-              }));
+            clearFieldError("classId");
           }}
           options={[
             { label: "انتخاب کلاس...", value: "", disabled: true },
@@ -152,12 +150,7 @@ export default function AssignmentForm({
           value={deadline}
           onChange={(e) => {
             setDeadline(e.target.value);
-            if (errors.deadline || errors.form)
-              setErrors((prev: AssignmentFormErrors) => ({
-                ...prev,
-                deadline: "",
-                form: "",
-              }));
+            clearFieldError("deadline");
           }}
           error={errors.deadline}
           required
@@ -173,11 +166,11 @@ export default function AssignmentForm({
           <Button type="button" variant="secondary" onClick={onClose}>
             انصراف
           </Button>
-          <Button onClick={handleSubmit}>
+          <Button type="submit">
             {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
           </Button>
         </div>
-      </div>
+      </form>
     </Modal>
   );
 }

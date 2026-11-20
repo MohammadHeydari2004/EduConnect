@@ -1,5 +1,4 @@
 import Loading from "#/components/common/Loading.tsx";
-import EmptyState from "#/components/common/EmptyState.tsx";
 import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import AdminDashboard from "#/pages/dashboard/AdminDashboard.tsx";
@@ -15,12 +14,6 @@ export default function DashboardContainer() {
   if (!user) return <Loading />;
   if (loading) return <Loading />;
   if (error) return <ErrorAlert message={error} />;
-  if (!data) return (
-    <EmptyState
-      title="داده‌ای یافت نشد"
-      description="داده‌های داشبورد در دسترس نیستند."
-    />
-  );
 
   return (
     <div className="space-y-6">

@@ -2,8 +2,7 @@ import Card from "#/components/ui/Card.tsx";
 import Input from "#/components/ui/Input.tsx";
 import Select from "#/components/ui/Select.tsx";
 import Button from "#/components/ui/Button.tsx";
-import type { ClassItem } from "#/types/class.ts";
-import type { AssignmentFilters } from "#/types/assignment.ts";
+import type { AssignmentFilters, ClassItem } from "#/types";
 
 interface AssignmentFilterCardProps {
   filters: AssignmentFilters;

@@ -3,28 +3,27 @@ import Card from "#/components/ui/Card.tsx";
 import Input from "#/components/ui/Input.tsx";
 import { EyeIcon, EyeSlashIcon } from "#/components/common/icons";
 import { useAuth } from "#/contexts/AuthContext.ts";
+import { useFieldErrors } from "#/hooks/useFieldErrors.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import { useState, type FormEvent } from "react";
 import { Navigate } from "react-router-dom";
-import { getErrorMessage } from "#/services/error.ts";
-import { validateEmail, validatePassword } from "#/utils/validation.ts";
+import { validateEmail } from "#/utils";
 
 function LoginPage() {
   const { login, isAuthenticated } = useAuth();
   const { addToast } = useToast();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {},
-  );
+  const { errors, setErrors, clearError } = useFieldErrors<{
+    email?: string;
+    password?: string;
+  }>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (field: "email" | "password", value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
+    clearError(field);
   };
 
   const validate = () => {
@@ -33,9 +32,8 @@ function LoginPage() {
     if (emailError) {
       newErrors.email = emailError;
     }
-    const passwordError = validatePassword(formData.password);
-    if (passwordError) {
-      newErrors.password = passwordError;
+    if (!formData.password) {
+      newErrors.password = "رمز عبور الزامی است.";
     }
     return newErrors;
   };
@@ -45,7 +43,7 @@ function LoginPage() {
       setIsSubmitting(true);
       await login({ email, password });
     } catch (err) {
-      addToast(getErrorMessage(err, "ورود ناموفق بود."), "error");
+      addToast(err instanceof Error ? err.message : "ورود ناموفق بود.", "error");
     } finally {
       setIsSubmitting(false);
     }

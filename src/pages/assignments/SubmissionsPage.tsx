@@ -1,12 +1,11 @@
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
-import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
-import { useSubmissionsPage } from "#/pages/assignments/useSubmissionsPage.ts";
+import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
+import { useSubmissionsPage } from "#/hooks/useSubmissionsPage";
 import StudentGradeCard from "#/pages/assignments/StudentGradeCard.tsx";
-import { MAX_ASSIGNMENT_GRADE } from "#/configs/constants";
-import { formatDate } from "#/utils/formatDate.ts";
+import { formatDate } from "#/utils";
 import { useNavigate } from "react-router-dom";
 
 export default function SubmissionsPage() {
@@ -17,6 +16,7 @@ export default function SubmissionsPage() {
     loading,
     error,
     gradedCount,
+    submittedCount,
     isDeadlinePassed,
     getUserEmail,
     getClassName,
@@ -37,10 +37,7 @@ export default function SubmissionsPage() {
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <Button
-            variant="secondary"
-            onClick={() => navigate("/assignments")}
-          >
+          <Button variant="secondary" onClick={() => navigate("/assignments")}>
             → بازگشت
           </Button>
           <h1 className="text-xl font-bold text-gray-800 sm:text-2xl max-sm:mt-2.5">
@@ -48,7 +45,8 @@ export default function SubmissionsPage() {
           </h1>
         </div>
         <div className="text-sm text-gray-600">
-          تعداد کل دانشجوها: <span className="font-bold">{studentStatuses.length}</span>
+          تعداد کل دانشجوها:{" "}
+          <span className="font-bold">{studentStatuses.length}</span>
         </div>
       </div>
 
@@ -75,7 +73,7 @@ export default function SubmissionsPage() {
             <div>
               <span className="text-gray-500">تسلیم‌شده:</span>{" "}
               <span className="font-medium">
-                {studentStatuses.filter((s) => s.submission).length}
+                {submittedCount}
               </span>
             </div>
             <div>
@@ -109,7 +107,6 @@ export default function SubmissionsPage() {
               handleSaveGrade={handleSaveGrade}
               handleReturnSubmission={handleReturnSubmission}
               getUserEmail={getUserEmail}
-              maxAssignmentGrade={MAX_ASSIGNMENT_GRADE}
             />
           ))}
         </div>

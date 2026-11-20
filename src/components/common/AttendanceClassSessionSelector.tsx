@@ -1,8 +1,7 @@
 import Card from "#/components/ui/Card.tsx";
 import Select from "#/components/ui/Select.tsx";
-import type { ClassItem } from "#/types/class.ts";
-import type { Session } from "#/types/session.ts";
-import { formatDate } from "#/utils/formatDate.ts";
+import type { ClassItem, Session } from "#/types";
+import { formatDate } from "#/utils";
 
 interface AttendanceClassSessionSelectorProps {
   classes: ClassItem[];

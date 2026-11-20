@@ -1,32 +1,13 @@
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Card from "#/components/ui/Card.tsx";
-import ChartLegend from "#/components/ui/ChartLegend.tsx";
-import ChartTooltip, {
-  defaultChartLabel,
-  type ChartPayloadEntry,
-} from "#/components/ui/ChartTooltip.tsx";
+import PieChartCard from "#/components/ui/PieChartCard.tsx";
 import StatCard from "#/components/ui/StatCard.tsx";
-import { ATTENDANCE_LABELS } from "#/components/ui/StatusChip.tsx";
+import { ATTENDANCE_LABELS } from "#/configs/constants";
 import { useStudentDashboardData } from "#/hooks/dashboardData";
 import { attendanceService } from "#/services/attendance.ts";
-import type { AttendanceStatus } from "#/types/common.ts";
-import type { DashboardData } from "#/types/dashboard.ts";
-import type { User } from "#/types/user.ts";
-import { isAnnouncementVisibleTo } from "#/utils/announcementVisibility.ts";
-import { formatDate, formatRelativeTime } from "#/utils/formatDate.ts";
-import {
-  NEAR_DEADLINE_DAYS,
-  NEAR_DEADLINE_HOURS,
-} from "#/utils/tableHelpers.ts";
+import type { AttendanceStatus, DashboardData, User } from "#/types";
+import { buildChartSummary, formatDate, formatRelativeTime, getRecentItems, isAnnouncementVisibleTo, MS_PER_DAY, MS_PER_HOUR, NEAR_DEADLINE_DAYS, NEAR_DEADLINE_HOURS } from "#/utils";
 import { useMemo } from "react";
-import {
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
 
 const ATTENDANCE_COLORS: Record<string, string> = {
   present: "#16a34a",
@@ -47,7 +28,7 @@ export default function StudentDashboard({ data, currentUser }: Props) {
     myAttendances,
     pendingAssignments,
     myAssignments,
-    mySubmissions,
+    submittedAssignmentIds,
     classMap,
   } = useStudentDashboardData(currentUser.id, data);
 
@@ -77,15 +58,14 @@ export default function StudentDashboard({ data, currentUser }: Props) {
   }, [attendanceStats]);
 
   const upcomingAssignments = useMemo(() => {
-    const submittedIds = new Set(mySubmissions.map((s) => s.assignmentId));
     const nowDate = Date.now();
     const threeDaysFromNow = new Date(
-      nowDate + NEAR_DEADLINE_DAYS * 24 * 60 * 60 * 1000,
+      nowDate + NEAR_DEADLINE_DAYS * MS_PER_DAY,
     );
 
     return myAssignments
       .filter((a) => {
-        if (submittedIds.has(a.id)) return false;
+        if (submittedAssignmentIds.has(a.id)) return false;
         const deadline = new Date(a.deadline);
         return deadline.getTime() >= nowDate && deadline <= threeDaysFromNow;
       })
@@ -94,19 +74,23 @@ export default function StudentDashboard({ data, currentUser }: Props) {
           new Date(a.deadline).getTime() - new Date(b.deadline).getTime(),
       )
       .slice(0, 5);
-  }, [myAssignments, mySubmissions]);
+  }, [myAssignments, submittedAssignmentIds]);
 
   const relevantAnnouncements = useMemo(() => {
-    return data.announcements
-      .filter((a) => isAnnouncementVisibleTo(currentUser, a, classMap))
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      )
-      .slice(0, 5);
+    return getRecentItems(
+      data.announcements.filter((a) =>
+        isAnnouncementVisibleTo(currentUser, a, classMap),
+      ),
+      5,
+      (a) => new Date(a.createdAt).getTime(),
+    );
   }, [data.announcements, currentUser, classMap]);
 
-  const chartSummary = `وضعیت حضور و غیاب: ${attendanceChartData.map((d) => `${d.name} ${d.value} جلسه`).join("، ")}`;
+  const chartSummary = buildChartSummary(
+    "وضعیت حضور و غیاب",
+    attendanceChartData,
+    (d) => `${d.name} ${d.value} جلسه`,
+  );
 
   return (
     <div className="space-y-6">
@@ -136,104 +120,50 @@ export default function StudentDashboard({ data, currentUser }: Props) {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card title="نمودار وضعیت حضور و غیاب">
-          {attendanceChartData.length === 0 ? (
-            <div className="flex h-64 items-center justify-center text-sm text-gray-500">
-              هنوز رکورد حضور و غیابی ثبت نشده است.
-            </div>
-          ) : (
-            <>
-              <div className="sm:hidden space-y-2">
-                {attendanceChartData.map((entry) => (
-                  <div
-                    key={entry.key}
-                    className="flex items-center justify-between text-sm"
-                  >
-                    <span className="text-gray-700">{entry.name}</span>
-                    <span className="font-medium text-gray-900">
-                      {entry.value} جلسه
-                    </span>
-                  </div>
-                ))}
+        <PieChartCard
+          title="نمودار وضعیت حضور و غیاب"
+          data={attendanceChartData}
+          emptyText="هنوز رکورد حضور و غیابی ثبت نشده است."
+          chartSummary={chartSummary}
+          unit="جلسه"
+          heightClass="h-72"
+          getColor={(entry) => ATTENDANCE_COLORS[entry.key ?? ""] ?? FALLBACK_COLOR}
+          tooltip={(first) => {
+            const itemColor = first.color ?? "#333";
+            const value = typeof first.value === "number" ? first.value : 0;
+            const percentage = ((
+              first.payload as
+                { percentage?: number } | undefined
+            )?.percentage ?? 0) as number;
+            const name = ((
+              first.payload as { name?: string } | undefined
+            )?.name ?? first.name) as string;
+            return (
+              <div className="min-w-40">
+                <p
+                  style={{ color: itemColor }}
+                  className="mb-2 border-b pb-1 font-bold"
+                >
+                  {name}
+                </p>
+                <div className="flex items-center justify-between gap-4 py-0.5">
+                  <span className="text-gray-600">
+                    تعداد جلسات:
+                  </span>
+                  <span className="font-bold text-gray-800">
+                    {value}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-4 py-0.5">
+                  <span className="text-gray-600">درصد:</span>
+                  <span className="font-bold text-gray-800">
+                    {percentage.toFixed(1)}%
+                  </span>
+                </div>
               </div>
-              <div
-                className="hidden sm:block h-72"
-                role="group"
-                aria-label={chartSummary}
-              >
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart
-                    margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-                  >
-                    <Pie
-                      data={attendanceChartData}
-                      cx="50%"
-                      cy="40%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      fill={FALLBACK_COLOR}
-                      dataKey="value"
-                    >
-                      {attendanceChartData.map((entry) => (
-                        <Cell
-                          key={`cell-${entry.key}`}
-                          fill={ATTENDANCE_COLORS[entry.key] ?? FALLBACK_COLOR}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      content={
-                        <ChartTooltip>
-                          {(first: ChartPayloadEntry) => {
-                            const itemColor = first.color ?? "#333";
-                            const value =
-                              typeof first.value === "number" ? first.value : 0;
-                            const percentage = ((
-                              first.payload as
-                                { percentage?: number } | undefined
-                            )?.percentage ?? 0) as number;
-                            const name = ((
-                              first.payload as { name?: string } | undefined
-                            )?.name ?? first.name) as string;
-                            return (
-                              <div className="min-w-40">
-                                <p
-                                  style={{ color: itemColor }}
-                                  className="mb-2 border-b pb-1 font-bold"
-                                >
-                                  {name}
-                                </p>
-                                <div className="flex items-center justify-between gap-4 py-0.5">
-                                  <span className="text-gray-600">
-                                    تعداد جلسات:
-                                  </span>
-                                  <span className="font-bold text-gray-800">
-                                    {value}
-                                  </span>
-                                </div>
-                                <div className="flex items-center justify-between gap-4 py-0.5">
-                                  <span className="text-gray-600">درصد:</span>
-                                  <span className="font-bold text-gray-800">
-                                    {percentage.toFixed(1)}%
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          }}
-                        </ChartTooltip>
-                      }
-                    />
-                    <Legend
-                      verticalAlign="bottom"
-                      height={36}
-                      content={<ChartLegend resolveLabel={defaultChartLabel} />}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </>
-          )}
-        </Card>
+            );
+          }}
+        />
 
         <Card title="تکالیف نزدیک به ددلاین">
           {upcomingAssignments.length === 0 ? (
@@ -246,7 +176,7 @@ export default function StudentDashboard({ data, currentUser }: Props) {
               {upcomingAssignments.map((assignment) => {
                 const deadline = new Date(assignment.deadline);
                 const diffHours = Math.ceil(
-                  (deadline.getTime() - Date.now()) / (1000 * 60 * 60),
+                  (deadline.getTime() - Date.now()) / MS_PER_HOUR,
                 );
                 const isUrgent = diffHours <= NEAR_DEADLINE_HOURS;
 

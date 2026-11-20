@@ -8,7 +8,7 @@ import UserFilters from "#/pages/users/UserFilters.tsx";
 import UserForm from "#/pages/users/UserForm.tsx";
 import UserTable from "#/pages/users/UserTable.tsx";
 import { useUsersPage } from "#/pages/users/useUsersPage";
-import { hasActiveUserFilters } from "#/utils/hasActiveFilters.ts";
+import { hasActiveFilters } from "#/utils";
 import { EmptyListState } from "#/components/ui/EmptyListState.tsx";
 
 export default function UsersPage() {
@@ -27,10 +27,14 @@ export default function UsersPage() {
     handleUpdate,
     handleOpenDelete,
     handleDelete,
+    statusModal,
+    isStatusChanging,
+    handleOpenStatus,
+    handleCloseStatus,
     handleToggleStatus,
     handleView,
   } = useUsersPage();
-  const hasActiveFilters = hasActiveUserFilters(filters);
+  const hasActive = hasActiveFilters(filters);
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -61,7 +65,7 @@ export default function UsersPage() {
           <>
             <EmptyListState
               items={filteredUsers}
-              hasActiveFilters={hasActiveFilters}
+              hasActiveFilters={hasActive}
               emptyTitle="کاربری ثبت نشده است"
               emptyDescription="هنوز هیچ کاربری در سیستم وجود ندارد."
               notFoundTitle="کاربری پیدا نشد"
@@ -74,7 +78,7 @@ export default function UsersPage() {
                 onView={handleView}
                 onEdit={handleOpenEdit}
                 onDelete={handleOpenDelete}
-                onToggleStatus={handleToggleStatus}
+                onToggleStatus={handleOpenStatus}
               />
             )}
           </>
@@ -107,6 +111,27 @@ export default function UsersPage() {
         onConfirm={handleDelete}
         isLoading={isDeleting}
       />
+
+      {statusModal.target && (
+        <ConfirmDialog
+          isOpen
+          title={
+            statusModal.target.status === "active"
+              ? "غیرفعال‌سازی کاربر"
+              : "فعال‌سازی کاربر"
+          }
+          message={
+            statusModal.target.status === "active"
+              ? `آیا از غیرفعال‌سازی کاربر "${statusModal.target.name}" مطمئن هستید؟`
+              : `آیا از فعال‌سازی کاربر "${statusModal.target.name}" مطمئن هستید؟`
+          }
+          onClose={handleCloseStatus}
+          onConfirm={() => {
+            if (statusModal.target) void handleToggleStatus(statusModal.target);
+          }}
+          isLoading={isStatusChanging}
+        />
+      )}
     </div>
   );
 }

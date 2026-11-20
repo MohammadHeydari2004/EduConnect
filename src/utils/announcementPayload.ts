@@ -1,7 +1,13 @@
-import type { TargetAudience, AnnouncementPayload } from "#/types/announcement.ts";
-import type { ClassItem } from "#/types/class.ts";
-import type { ID, UserRole } from "#/types/common.ts";
-import { GLOBAL_ANNOUNCEMENT_CLASS_ID } from "#/configs/constants";
+import type {
+  AnnouncementPayload,
+  ClassItem,
+  ID,
+  SelectOption,
+  TargetAudience,
+  UserRole,
+} from "#/types";
+import { GLOBAL_ANNOUNCEMENT_CLASS_ID } from "#/configs/constants/classConstants.ts";
+import { DEFAULT_TARGET_AUDIENCE } from "#/configs/constants/announcementConstants.ts";
 
 interface BuildAnnouncementPayloadOptions {
   title: string;
@@ -33,7 +39,7 @@ export function buildAnnouncementPayload({
 
   return {
     ...basePayload,
-    targetAudience: "students",
+    targetAudience: DEFAULT_TARGET_AUDIENCE,
     targetRoles: null,
   };
 }
@@ -56,7 +62,7 @@ export function validateGlobalAnnouncementRoles(
 export function getAnnouncementClassOptions(
   isAdmin: boolean,
   classes: ClassItem[]
-): { label: string; value: string }[] {
+): SelectOption<string>[] {
   return isAdmin
     ? [
         { label: "همه (عمومی)", value: GLOBAL_ANNOUNCEMENT_CLASS_ID },

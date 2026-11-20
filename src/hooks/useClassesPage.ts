@@ -9,10 +9,9 @@ import { useModalState } from "#/hooks/useModalState.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import { classService } from "#/services/class.ts";
 import { userService } from "#/services/user.ts";
-import type { ClassFormValues, ClassItem, ClassStatus, ClassFiltersValues } from "#/types/class.ts";
-import type { User } from "#/types/user.ts";
+import type { ClassFiltersValues, ClassFormValues, ClassItem, ClassStatus, User } from "#/types";
 import { TOAST_MESSAGES } from "#/configs/constants";
-import { isAdmin, isTeacher } from "#/utils/roleUtils.ts";
+import { isAdmin, isTeacher } from "#/utils";
 import { showErrorToast } from "#/hooks/useToastHelpers.ts";
 import { useCallback, useMemo, useState } from "react";
 
@@ -32,6 +31,7 @@ export function useClassesPage() {
 
   const {
     data: users,
+    error: usersError,
   } = useAsyncData<User[]>({
     fetcher: (signal) => userService.getAll(undefined, signal),
     deps: [],
@@ -93,7 +93,7 @@ export function useClassesPage() {
 
       await classService.setStatus(target.id, newStatus);
       addToast(
-        TOAST_MESSAGES.CLASS_STATUS(target.title ?? "", newStatus === "inactive" ? "غیرفعال" : "فعال"),
+        TOAST_MESSAGES.CLASS_STATUS(target.title ?? "", newStatus),
         "success",
       );
       crud.state.refresh();
@@ -104,43 +104,14 @@ export function useClassesPage() {
     } finally {
       setIsStatusChanging(false);
     }
-  }, [statusModal.target, crud.state.refresh, statusModal, addToast]);
+  }, [statusModal.target, statusModal.close, crud.state.refresh, addToast]);
 
   const handleOpenStatus = useCallback(
     (cls: ClassItem) => {
       statusModal.openWithTarget("status", cls);
     },
-    [statusModal],
+    [statusModal.openWithTarget],
   );
-
-  const modals = {
-    isOpen: (kind: string) => {
-      if (kind === "status") return statusModal.isOpen("status");
-      if (kind === "create") return crud.modals.create;
-      if (kind === "edit") return crud.modals.edit;
-      if (kind === "delete") return crud.modals.delete;
-      return false;
-    },
-    target: statusModal.isOpen("status")
-      ? statusModal.target
-      : crud.modals.target,
-    createModal: {
-      close: () => {
-        crud.actions.modal.close();
-        statusModal.close();
-      },
-      openWithTarget: (kind: string, target: ClassItem) => {
-        if (kind === "status") {
-          statusModal.openWithTarget("status", target);
-        } else {
-          crud.actions.modal.openWithTarget(kind, target);
-        }
-      },
-    },
-    deleteModal: {
-      close: () => crud.actions.modal.close(),
-    },
-  };
 
   return {
     currentUser,
@@ -148,12 +119,13 @@ export function useClassesPage() {
     teachers,
     users,
     loading: crud.state.loading,
-    error: crud.state.error,
+    error: crud.state.error || usersError,
     filters: crud.state.filters,
     setFilters: crud.state.setFilters,
     resetFilters: crud.state.resetFilters,
     filteredClasses: crud.state.filteredData,
-    modals,
+    classModal: crud.actions.modal,
+    statusModal,
     isStatusChanging,
     confirmStatusChange,
     handleOpenCreate: crud.actions.handleOpenCreate,
@@ -162,7 +134,7 @@ export function useClassesPage() {
     handleDelete: crud.actions.handleDelete,
     handleOpenStatus,
     isDeleting: crud.actions.isDeleting,
-    canManageClass: (_cls: ClassItem) => isAdminUser,
+    canManageClass: isAdminUser,
     refresh: crud.state.refresh,
   };
 }

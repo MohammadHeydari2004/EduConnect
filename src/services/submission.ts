@@ -1,9 +1,8 @@
 import { baseApi } from "#/services/api/baseApi.ts";
-import { safeDelete } from "#/services/api/safeDelete.ts";
-import type { ID } from "#/types/common.ts";
-import type { Submission } from "#/types/submission.ts";
+import { API_ENDPOINTS } from "#/configs/constants";
+import type { ID, Submission } from "#/types";
 
-const endpoint = "/submissions";
+const endpoint = API_ENDPOINTS.SUBMISSIONS;
 
 export const submissionService = {
   getAll: (params?: Record<string, string | number | boolean>, signal?: AbortSignal) =>
@@ -24,5 +23,5 @@ export const submissionService = {
       updatedAt: new Date().toISOString(),
     }),
 
-  delete: (id: ID) => safeDelete((deleteId: ID) => baseApi.delete(endpoint, deleteId), id, endpoint),
+  delete: (id: ID) => baseApi.delete(endpoint, id),
 };

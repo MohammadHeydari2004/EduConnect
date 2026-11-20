@@ -4,9 +4,8 @@ import Modal from "#/components/ui/Modal.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
 import { validateSessionForm } from "#/pages/classes/sessionValidation.ts";
 import { sessionService } from "#/services/session.ts";
-import type { ID } from "#/types/common.ts";
-import type { Session, SessionFormErrors, SessionFormValues } from "#/types/session.ts";
-import { classifyError } from "#/services/error.ts";
+import { useFieldErrors } from "#/hooks/useFieldErrors.ts";
+import type { ID, Session, SessionFormErrors, SessionFormValues } from "#/types";
 import { useState } from "react";
 
 interface Props {
@@ -31,7 +30,7 @@ export default function SessionForm({
     description: initialData?.description ?? "",
     classId,
   }));
-  const [errors, setErrors] = useState<SessionFormErrors>({});
+  const { errors, setErrors, clearError } = useFieldErrors<SessionFormErrors>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
@@ -44,15 +43,14 @@ export default function SessionForm({
     try {
       setIsSubmitting(true);
       let newSession: Session;
-      if (isEdit && initialData) {
+      if (initialData) {
         newSession = await sessionService.update(initialData.id, form);
       } else {
         newSession = await sessionService.create({ ...form, classId });
       }
       onSuccess(isEdit ? "جلسه با موفقیت ویرایش شد." : "جلسه با موفقیت ایجاد شد.", newSession);
     } catch (err) {
-      const info = classifyError(err);
-      onError(info.userMessage);
+      onError(err instanceof Error ? err.message : "خطای نامشخص");
     } finally {
       setIsSubmitting(false);
     }
@@ -60,13 +58,19 @@ export default function SessionForm({
 
   return (
     <Modal title={isEdit ? "ویرایش جلسه" : "افزودن جلسه جدید"} onClose={onClose}>
-      <div className="space-y-4">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void handleSubmit();
+        }}
+        className="space-y-4"
+      >
         <Input
           label="عنوان جلسه"
           value={form.title}
           onChange={(e) => {
             setForm({ ...form, title: e.target.value });
-            if (errors.title) setErrors({ ...errors, title: undefined } as unknown as SessionFormErrors);
+            clearError("title");
           }}
           error={errors.title}
           placeholder="مثلاً: جلسه اول"
@@ -78,7 +82,7 @@ export default function SessionForm({
           value={form.date}
           onChange={(e) => {
             setForm({ ...form, date: e.target.value });
-            if (errors.date) setErrors({ ...errors, date: undefined });
+            clearError("date");
           }}
           error={errors.date}
           required
@@ -88,8 +92,7 @@ export default function SessionForm({
           value={form.description}
           onChange={(e) => {
             setForm({ ...form, description: e.target.value });
-            if (errors.description)
-              setErrors({ ...errors, description: undefined });
+            clearError("description");
           }}
           error={errors.description}
           placeholder="توضیحات مختصر درباره جلسه..."
@@ -99,11 +102,11 @@ export default function SessionForm({
           <Button type="button" variant="secondary" onClick={onClose}>
             انصراف
           </Button>
-          <Button onClick={handleSubmit}>
+          <Button type="submit">
             {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
           </Button>
         </div>
-      </div>
+      </form>
     </Modal>
   );
 }

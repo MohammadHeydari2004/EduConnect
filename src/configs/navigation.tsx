@@ -4,6 +4,7 @@ import {
   AttendanceIcon,
   ClassesIcon,
   DashboardIcon,
+  MyAssignmentsIcon,
   ProfileIcon,
   StudentClassesIcon,
   UsersIcon,
@@ -14,13 +15,13 @@ import {
   STUDENT_ROLES,
   TEACHER_AND_ABOVE_ROLES,
 } from "#/configs/constants";
-import type { UserRole } from "#/types/common.ts";
+import type { UserRole } from "#/types";
 import type { ComponentType } from "react";
 
 export interface NavItem {
   label: string;
   path: string;
-  roles: UserRole[];
+  roles: readonly UserRole[];
   icon: ComponentType<{ className?: string }>;
 }
 
@@ -71,7 +72,7 @@ export const navItems: NavItem[] = [
     label: "تکالیف من",
     path: "/my-assignments",
     roles: STUDENT_ROLES,
-    icon: AssignmentsIcon,
+    icon: MyAssignmentsIcon,
   },
   {
     label: "پروفایل",

@@ -1,17 +1,5 @@
-import type { RecordStatus, UserRole } from "#/types/common.ts";
-
-export const getRoleLabel = (role: UserRole): string => {
-  switch (role) {
-    case "admin":
-      return "مدیر";
-    case "teacher":
-      return "استاد";
-    case "student":
-      return "دانشجو";
-    default:
-      return "نامشخص";
-  }
-};
+import type { UserRole } from "#/types";
+export { getRoleLabel, getStatusLabel } from "#/configs/constants";
 
 export const getRoleVariant = (role: UserRole): "blue" | "green" | "gray" => {
   switch (role) {
@@ -21,16 +9,5 @@ export const getRoleVariant = (role: UserRole): "blue" | "green" | "gray" => {
       return "green";
     default:
       return "gray";
-  }
-};
-
-export const getStatusLabel = (status: RecordStatus): string => {
-  switch (status) {
-    case "active":
-      return "فعال";
-    case "inactive":
-      return "غیرفعال";
-    default:
-      return "نامشخص";
   }
 };

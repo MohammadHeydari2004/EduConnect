@@ -3,9 +3,9 @@ import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import StudentAttendanceView from "#/pages/attendance/StudentAttendanceView.tsx";
 import TeacherAttendanceForm from "#/pages/attendance/TeacherAttendanceForm.tsx";
 import AdminAttendanceReport from "#/pages/attendance/AdminAttendanceReport.tsx";
-import { useAttendancePage } from "#/pages/attendance/useAttendancePage";
+import { useAttendancePage } from "#/hooks/useAttendancePage";
 import { useMapById } from "#/hooks/useMapById.ts";
-import type { Session } from "#/types/session.ts";
+import type { Session } from "#/types";
 
 export default function AttendancePage() {
   const {

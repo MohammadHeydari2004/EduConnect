@@ -9,9 +9,8 @@ import Button from "#/components/ui/Button.tsx";
 import MenuItem from "#/components/ui/MenuItem.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
-import type { ID } from "#/types/common.ts";
-import type { User } from "#/types/user.ts";
-import { getRoleLabel, getStatusLabel } from "#/utils/userLabels.ts";
+import type { ID, User } from "#/types";
+import { getRoleLabel, getStatusLabel } from "#/utils";
 
 interface UserTableProps {
   users: User[];
@@ -33,6 +32,11 @@ function UserTable({
   const getStatusToggleLabel = (user: User) =>
     user.status === "active" ? "غیرفعال‌سازی" : "فعال‌سازی";
 
+  const youIndicator = (user: User) =>
+    user.id === currentUserId ? (
+      <span className="ms-1 text-xs text-blue-600">(شما)</span>
+    ) : null;
+
   return (
     <Table
       getRowKey={(user) => user.id}
@@ -48,9 +52,7 @@ function UserTable({
               title={user.name}
             >
               {user.name}
-              {user.id === currentUserId && (
-                <span className="ms-1 text-xs text-blue-600">(شما)</span>
-              )}
+              {youIndicator(user)}
             </div>
           ),
         },
@@ -75,10 +77,7 @@ function UserTable({
           title: "وضعیت",
           width: "13%",
           render: (user) => (
-            <>
-              <StatusChip status={user.status} />
-              <span className="sr-only">{getStatusLabel(user.status)}</span>
-            </>
+            <StatusChip status={user.status} />
           ),
         },
         {
@@ -109,9 +108,7 @@ function UserTable({
           <div className="flex items-center justify-between">
             <span className="font-bold text-gray-800">
               {user.name}
-              {user.id === currentUserId && (
-                <span className="ms-1 text-xs text-blue-600">(شما)</span>
-              )}
+              {youIndicator(user)}
             </span>
             <StatusChip status={user.status} />
           </div>

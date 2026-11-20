@@ -1,8 +1,8 @@
 import { RouterErrorBoundary } from "#/components/common/RouterErrorBoundary";
 import AuthProvider from "#/contexts/AuthProvider";
 import { ToastProvider } from "#/contexts/ToastProvider";
-import AppRoutes from "#/routes/AppRoutes";
 import "#/index.css";
+import AppRoutes from "#/routes/AppRoutes";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -18,13 +18,13 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <BrowserRouter>
-      <RouterErrorBoundary>
-        <ToastProvider>
+      <ToastProvider>
+        <RouterErrorBoundary>
           <AuthProvider>
             <AppRoutes />
           </AuthProvider>
-        </ToastProvider>
-      </RouterErrorBoundary>
+        </RouterErrorBoundary>
+      </ToastProvider>
     </BrowserRouter>
   </React.StrictMode>,
 );

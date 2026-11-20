@@ -1,22 +1,15 @@
-import type { TitleRule } from "#/types/common.ts";
+import { validateLength } from "#/utils/validation.ts";
+import type { TitleRule } from "#/types";
 
 export function validateTitle(
   value: string,
   rule: TitleRule = {},
 ): string | null {
   const { titleLabel = "", min = 3, max } = rule;
-  const trimmed = (value ?? "").trim();
-
-  if (!trimmed) {
-    return titleLabel
-      ? `عنوان ${titleLabel} الزامی است.`
-      : "عنوان الزامی است.";
-  }
-  if (trimmed.length < min) {
-    return `عنوان باید حداقل ${min} کاراکتر باشد.`;
-  }
-  if (typeof max === "number" && trimmed.length > max) {
-    return `عنوان نباید بیشتر از ${max} کاراکتر باشد.`;
-  }
-  return null;
+  const label = titleLabel ? `عنوان ${titleLabel}` : "عنوان";
+  const error =
+    max === undefined
+      ? validateLength(value, label, { min })
+      : validateLength(value, label, { min, max });
+  return error ?? null;
 }

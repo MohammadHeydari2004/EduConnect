@@ -5,24 +5,21 @@ import Select from "#/components/ui/Select.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
 import {
   ALL_ROLES,
+  DEFAULT_TARGET_AUDIENCE,
   GLOBAL_ANNOUNCEMENT_CLASS_ID,
 } from "#/configs/constants";
 import { useToast } from "#/hooks/useToast.ts";
+import { useFieldErrors } from "#/hooks/useFieldErrors.ts";
 import { validateAnnouncementForm } from "#/pages/announcements/validators.ts";
 import { announcementService } from "#/services/announcement.ts";
+import { buildAnnouncementPayload, getAnnouncementClassOptions, isAdmin, validateGlobalAnnouncementRoles } from "#/utils";
 import {
-  buildAnnouncementPayload,
-  validateGlobalAnnouncementRoles,
-  getAnnouncementClassOptions,
-} from "#/utils/announcementPayload";
-import { GlobalAnnouncementRoles } from "#/components/ui/AnnouncementFormParts";
-import { ClassAnnouncementAudience } from "#/components/ui/AnnouncementFormParts";
-import type { Announcement, TargetAudience } from "#/types/announcement.ts";
-import type { ClassItem } from "#/types/class.ts";
-import type { ID, UserRole } from "#/types/common.ts";
-import { getErrorMessage } from "#/services/error.ts";
+  ClassAnnouncementAudience,
+  GlobalAnnouncementRoles,
+} from "#/components/ui/AnnouncementFormParts";
+import type { Announcement, AnnouncementFormErrors, ClassItem, ID, TargetAudience, UserRole } from "#/types";
 import { FORM_PLACEHOLDERS } from "#/configs/constants";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 interface Props {
   isOpen: boolean;
@@ -50,22 +47,24 @@ export default function AnnouncementForm({
     initialData?.classId ?? GLOBAL_ANNOUNCEMENT_CLASS_ID,
   );
   const [targetRoles, setTargetRoles] = useState<UserRole[]>(
-    initialData?.targetRoles ?? ALL_ROLES,
+    initialData?.targetRoles ?? [...ALL_ROLES],
   );
   const [targetAudience, setTargetAudience] = useState<TargetAudience>(
-    initialData?.targetAudience ?? "students",
+    initialData?.targetAudience ?? DEFAULT_TARGET_AUDIENCE,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [titleError, setTitleError] = useState("");
-  const [contentError, setContentError] = useState("");
-  const [classError, setClassError] = useState("");
-  const [audienceError, setAudienceError] = useState("");
-  const [rolesError, setRolesError] = useState("");
-  const isAdmin = userRole === "admin";
+  const { errors, setErrors, clearError } = useFieldErrors<
+    AnnouncementFormErrors & {
+      classId?: string;
+      audience?: string;
+      roles?: string;
+    }
+  >();
+  const isAdminUser = isAdmin(userRole);
 
   const classOptions = useMemo(
-    () => getAnnouncementClassOptions(isAdmin, classes),
-    [isAdmin, classes],
+    () => getAnnouncementClassOptions(isAdminUser, classes),
+    [isAdminUser, classes],
   );
 
   useEffect(() => {
@@ -75,29 +74,28 @@ export default function AnnouncementForm({
     }
   }, [classOptions, classId]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     const validationErrors = validateAnnouncementForm({ title, content });
-    setTitleError(validationErrors.title ?? "");
-    setContentError(validationErrors.content ?? "");
-    setClassError("");
-    setAudienceError("");
-    setRolesError("");
+    setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
 
-    if (!classId) {
-      setClassError("انتخاب کلاس الزامی است.");
-      return;
-    }
-    setClassError("");
-
-    if (isAdmin && classId !== GLOBAL_ANNOUNCEMENT_CLASS_ID && !targetAudience) {
-      setAudienceError("انتخاب مخاطبان الزامی است.");
+    if (
+      !classId ||
+      (!isAdminUser && classId === GLOBAL_ANNOUNCEMENT_CLASS_ID)
+    ) {
+      setErrors((prev) => ({ ...prev, classId: "انتخاب کلاس الزامی است." }));
       return;
     }
 
-    const roleError = validateGlobalAnnouncementRoles(isAdmin, classId, targetRoles);
+    if (isAdminUser && classId !== GLOBAL_ANNOUNCEMENT_CLASS_ID && !targetAudience) {
+      setErrors((prev) => ({ ...prev, audience: "انتخاب مخاطبان الزامی است." }));
+      return;
+    }
+
+    const roleError = validateGlobalAnnouncementRoles(isAdminUser, classId, targetRoles);
     if (roleError) {
-      setRolesError(roleError);
+      setErrors((prev) => ({ ...prev, roles: roleError }));
       return;
     }
 
@@ -107,8 +105,8 @@ export default function AnnouncementForm({
         title,
         content,
         classId,
-        authorId,
-        isAdmin,
+authorId,
+        isAdmin: isAdminUser,
         targetRoles,
         targetAudience,
       });
@@ -125,7 +123,7 @@ export default function AnnouncementForm({
       addToast("اطلاعیه با موفقیت ذخیره شد.", "success");
       onSuccess(result);
     } catch (err) {
-      addToast(getErrorMessage(err, "خطا در ذخیره اطلاعیه."), "error");
+      addToast(err instanceof Error ? err.message : "خطا در ذخیره اطلاعیه.", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -139,12 +137,12 @@ export default function AnnouncementForm({
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
-    setTitleError("");
+    clearError("title");
   };
 
   const handleContentChange = (value: string) => {
     setContent(value);
-    setContentError("");
+    clearError("content");
   };
 
   return (
@@ -160,7 +158,7 @@ export default function AnnouncementForm({
           onChange={(e) => handleTitleChange(e.target.value)}
           placeholder={FORM_PLACEHOLDERS.ANNOUNCEMENT_TITLE}
           required
-          error={titleError || undefined}
+          error={errors.title}
         />
 
         <Select
@@ -168,34 +166,33 @@ export default function AnnouncementForm({
           value={classId}
           onChange={(e) => {
             setClassId(e.target.value);
-            setClassError("");
-            setRolesError("");
+            clearError("classId");
+            clearError("roles");
           }}
           options={classOptions}
           required
-          error={classError || undefined}
+          error={errors.classId}
         />
 
-        {isAdmin && classId === GLOBAL_ANNOUNCEMENT_CLASS_ID && (
+        {isAdminUser && classId === GLOBAL_ANNOUNCEMENT_CLASS_ID && (
           <GlobalAnnouncementRoles
             targetRoles={targetRoles}
             onToggle={(role) => {
               toggleRole(role);
-              setRolesError("");
+              clearError("roles");
             }}
-            error={rolesError || undefined}
+            error={errors.roles || undefined}
           />
         )}
 
-        {isAdmin && classId !== GLOBAL_ANNOUNCEMENT_CLASS_ID && (
+        {isAdminUser && classId !== GLOBAL_ANNOUNCEMENT_CLASS_ID && (
           <ClassAnnouncementAudience
             targetAudience={targetAudience}
             onChange={(value) => {
               setTargetAudience(value);
-              setClassError("");
-              setAudienceError("");
+              clearError("audience");
             }}
-            error={audienceError || undefined}
+            error={errors.audience || undefined}
           />
         )}
 
@@ -206,7 +203,7 @@ export default function AnnouncementForm({
           rows={5}
           placeholder={FORM_PLACEHOLDERS.ANNOUNCEMENT_CONTENT}
           required
-          error={contentError || undefined}
+          error={errors.content}
         />
 
         <div className="flex justify-end gap-2 pt-2">

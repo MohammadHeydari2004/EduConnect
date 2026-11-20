@@ -1,10 +1,10 @@
+import { TOAST_MESSAGES } from "#/configs/constants";
 import {
   assignmentFilterConfigs,
   initialAssignmentFilters,
-  TOAST_MESSAGES,
-} from "#/configs/constants";
+} from "#/pages/assignments/assignmentFilters.ts";
 import { useAuth } from "#/contexts/AuthContext.ts";
-import { useAssignmentsPageData } from "#/hooks/useAssignmentsPageData";
+import { useAssignmentLookups } from "#/hooks/useAssignmentLookups.ts";
 import { useCrudPage } from "#/hooks/useCrudPage.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import { assignmentService } from "#/services/assignment.ts";
@@ -12,14 +12,15 @@ import type {
   Assignment,
   AssignmentFilters,
   CreateAssignmentPayload,
+  ID,
   UpdateAssignmentPayload,
-} from "#/types/assignment.ts";
-import type { ID } from "#/types/common.ts";
+} from "#/types";
 import {
   getClassNameFromMap,
   getUserNameFromMap,
-} from "#/utils/nameHelpers.ts";
-import { isAdmin, isTeacher } from "#/utils/roleUtils.ts";
+  isAdmin,
+  isTeacher,
+} from "#/utils";
 import { useCallback, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -29,8 +30,7 @@ export function useTeacherAssignmentsPage() {
   const { user: currentUser } = useAuth();
   const { addToast } = useToast();
 
-  const { classes, userMap, classMap, gradingStatsMap } =
-    useAssignmentsPageData();
+  const { classes, userMap, classMap, gradingStatsMap } = useAssignmentLookups();
 
   const isAdminUser = isAdmin(currentUser);
   const isTeacherUser = isTeacher(currentUser);
@@ -45,8 +45,14 @@ export function useTeacherAssignmentsPage() {
     return [];
   }, [classes, currentUser, isAdminUser, isTeacherUser]);
 
-  const getTeacherName = (userId: ID) => getUserNameFromMap(userMap, userId);
-  const getClassName = (classId: ID) => getClassNameFromMap(classMap, classId);
+  const getTeacherName = useCallback(
+    (userId: ID) => getUserNameFromMap(userMap, userId),
+    [userMap],
+  );
+  const getClassName = useCallback(
+    (classId: ID) => getClassNameFromMap(classMap, classId),
+    [classMap],
+  );
 
   const extraPredicate = useCallback(
     (assignment: Assignment) => {
@@ -89,17 +95,19 @@ export function useTeacherAssignmentsPage() {
     },
   });
 
-  const handleViewSubmissions = (assignmentId: ID) =>
-    navigate(`/assignments/${assignmentId}/submissions`);
+  const handleViewSubmissions = useCallback(
+    (assignmentId: ID) => navigate(`/assignments/${assignmentId}/submissions`),
+    [navigate],
+  );
 
-  const handleAssignmentFormClose = () => {
+  const handleAssignmentFormClose = useCallback(() => {
     crud.actions.modal.close();
-  };
+  }, [crud.actions.modal]);
 
-  const handleAssignmentSuccess = () => {
+  const handleAssignmentSuccess = useCallback(() => {
     handleAssignmentFormClose();
     crud.state.refresh();
-  };
+  }, [handleAssignmentFormClose, crud.state.refresh]);
 
   return {
     currentUser,

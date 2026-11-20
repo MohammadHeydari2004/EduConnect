@@ -1,6 +1,7 @@
 import { navItems } from "#/configs/navigation.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useIsMobile } from "#/hooks/useMediaQuery.ts";
+import { CloseIcon } from "#/components/common/icons";
 import { forwardRef, useEffect, useMemo } from "react";
 import { NavLink } from "react-router-dom";
 
@@ -19,11 +20,37 @@ const Sidebar = forwardRef<HTMLElement, SidebarProps>(
     useEffect(() => {
       if (!isOpen || !isMobile) return;
       const handleKey = (event: KeyboardEvent) => {
-        if (event.key === "Escape") onClose();
+        if (event.key === "Escape") {
+          onClose();
+          return;
+        }
+        if (event.key !== "Tab") return;
+
+        const aside = ref && typeof ref === "object" ? ref.current : null;
+        if (!aside) return;
+
+        const focusable = Array.from(
+          aside.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+          ),
+        );
+        if (focusable.length === 0) {
+          event.preventDefault();
+          return;
+        }
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
       };
       document.addEventListener("keydown", handleKey);
       return () => document.removeEventListener("keydown", handleKey);
-    }, [isOpen, isMobile, onClose]);
+    }, [isOpen, isMobile, onClose, ref]);
 
     useEffect(() => {
       if (!isDrawerClosed || !ref || typeof ref === "function") return;
@@ -66,6 +93,16 @@ const Sidebar = forwardRef<HTMLElement, SidebarProps>(
           inert={isDrawerClosed}
           className={`fixed right-0 max-w-fit transform border-l border-gray-200 bg-white p-4 transition-transform duration-300 ease-in-out lg:static lg:h-auto lg:translate-x-0 ${isMobile ? "top-0 z-60 h-full" : "top-16 z-10 h-full"} ${isOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}`}
         >
+          <div className="mb-3 flex justify-end lg:hidden">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="بستن منو"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100"
+            >
+              <CloseIcon className="h-5 w-5" />
+            </button>
+          </div>
           <nav id="main-nav" aria-label="منوی اصلی" className="flex flex-col gap-1">
             {filteredNavItems.map((item) => {
               const Icon = item.icon;

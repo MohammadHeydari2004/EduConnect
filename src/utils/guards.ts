@@ -1,6 +1,5 @@
 import { ALL_ROLES } from "#/configs/constants";
-import type { RecordStatus, UserRole } from "#/types/common.ts";
-import type { User } from "#/types/user.ts";
+import type { RecordStatus, User, UserRole } from "#/types";
 
 const VALID_STATUSES: RecordStatus[] = ["active", "inactive"];
 

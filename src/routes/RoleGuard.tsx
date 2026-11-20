@@ -1,11 +1,11 @@
 import { useAuth } from "#/contexts/AuthContext.ts";
-import type { UserRole } from "#/types/common.ts";
+import type { UserRole } from "#/types";
 import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 
 interface RoleGuardProps {
   children: ReactNode;
-  allowedRoles: UserRole[];
+  allowedRoles: readonly UserRole[];
 }
 
 function RoleGuard({ children, allowedRoles }: RoleGuardProps) {

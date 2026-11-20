@@ -5,17 +5,18 @@ import SearchableMultiSelect from "#/components/ui/SearchableMultiSelect.tsx";
 import Select from "#/components/ui/Select.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
 import { DEFAULT_CLASS_CAPACITY } from "#/configs/constants";
+import { useFieldErrors } from "#/hooks/useFieldErrors.ts";
 import { validateClassForm } from "#/pages/classes/classValidation.ts";
 import { classService } from "#/services/class.ts";
-import { getErrorMessage } from "#/services/error.ts";
 import { removeStudentsFromClassCascade } from "#/services/cascadeDelete.ts";
 import type {
   ClassFormErrors,
   ClassFormValues,
   ClassItem,
-} from "#/types/class.ts";
-import type { User } from "#/types/user.ts";
-import { useCallback, useEffect, useMemo, useState } from "react";
+  User,
+} from "#/types";
+import { useCallback, useMemo, useState } from "react";
+import { selectValue } from "#/utils";
 
 interface Props {
   users: User[];
@@ -56,13 +57,8 @@ export default function ClassForm({
   }), [initialData]);
 
   const [form, setForm] = useState<ClassFormValues>(buildInitialForm);
-  const [errors, setErrors] = useState<ClassFormErrors>({});
+  const { errors, setErrors, clearError } = useFieldErrors<ClassFormErrors>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    setForm(buildInitialForm());
-    setErrors({});
-  }, [buildInitialForm]);
 
   const handleSubmit = async () => {
     const validationErrors = validateClassForm(form);
@@ -72,8 +68,6 @@ export default function ClassForm({
     try {
       setIsSubmitting(true);
       if (initialData) {
-        await classService.update(initialData.id, form);
-
         const currentStudentIds = new Set(form.studentIds);
 
         const removedStudentIds = initialData.studentIds.filter(
@@ -81,19 +75,27 @@ export default function ClassForm({
         );
 
         if (removedStudentIds.length > 0) {
-          await removeStudentsFromClassCascade(
+          const report = await removeStudentsFromClassCascade(
             initialData.id,
             removedStudentIds,
           );
+          if (!report.overallSuccess) {
+            onError(
+              report.results.flatMap((r) => r.errors).join("؛ ") ||
+                "حذف وابستگی‌های دانش‌آموزان با خطا مواجه شد.",
+            );
+            return;
+          }
         }
 
+        await classService.update(initialData.id, form);
         onSuccess("کلاس با موفقیت ویرایش شد.");
       } else {
         await classService.create(form);
         onSuccess("کلاس با موفقیت ایجاد شد.");
       }
     } catch (err) {
-      onError(getErrorMessage(err, "عملیات با خطا مواجه شد."));
+      onError(err instanceof Error ? err.message : "عملیات با خطا مواجه شد.");
     } finally {
       setIsSubmitting(false);
     }
@@ -103,13 +105,19 @@ export default function ClassForm({
 
   return (
     <Modal title={title} onClose={onClose}>
-      <div className="space-y-4">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void handleSubmit();
+        }}
+        className="space-y-4"
+      >
         <Input
           label="عنوان کلاس"
           value={form.title}
           onChange={(e) => {
             setForm({ ...form, title: e.target.value });
-            if (errors.title) setErrors({ ...errors, title: undefined } as unknown as ClassFormErrors);
+            clearError("title");
           }}
           error={errors.title}
           placeholder="مثلاً: مبانی برنامه‌نویسی"
@@ -121,8 +129,7 @@ export default function ClassForm({
           onChange={(e) => {
             const value = e.target.value;
             setForm({ ...form, teacherId: value || null });
-            if (errors.teacherId)
-              setErrors({ ...errors, teacherId: undefined });
+            clearError("teacherId");
           }}
           options={[
             { label: "انتخاب استاد...", value: "", disabled: true },
@@ -140,8 +147,7 @@ export default function ClassForm({
             onChange={(e) => {
               const value = e.target.value;
               setForm({ ...form, capacity: value === "" ? 0 : Number(value) });
-              if (errors.capacity)
-                setErrors({ ...errors, capacity: undefined });
+              clearError("capacity");
             }}
             error={errors.capacity}
             required
@@ -150,10 +156,14 @@ export default function ClassForm({
             label="وضعیت"
             value={form.status}
             onChange={(e) =>
-              setForm({ ...form, status: (() => {
-                const v = e.target.value;
-                return v === "active" || v === "inactive" ? v : "active";
-              })() })
+              setForm({
+                ...form,
+                status: selectValue(
+                  e.target.value,
+                  ["active", "inactive"],
+                  "active",
+                ),
+              })
             }
             options={[
               { label: "فعال", value: "active" },
@@ -167,11 +177,7 @@ export default function ClassForm({
           value={form.description || ""}
           onChange={(e) => {
             setForm({ ...form, description: e.target.value });
-            if (errors.description)
-              setErrors((prev: ClassFormErrors) => ({
-                ...prev,
-                description: undefined,
-              }));
+            clearError("description");
           }}
           error={errors.description}
           placeholder="توضیحات مختصر درباره کلاس..."
@@ -189,8 +195,7 @@ export default function ClassForm({
             selectedIds={form.studentIds}
             onChange={(ids) => {
               setForm({ ...form, studentIds: ids });
-              if (errors.studentIds)
-                setErrors({ ...errors, studentIds: undefined });
+              clearError("studentIds");
             }}
             placeholder="دانشجویان را جستجو و انتخاب کنید..."
             searchPlaceholder="جستجوی دانشجو (نام یا ایمیل)..."
@@ -202,11 +207,11 @@ export default function ClassForm({
           <Button type="button" variant="secondary" onClick={onClose}>
             انصراف
           </Button>
-          <Button onClick={handleSubmit}>
+          <Button type="submit">
             {isSubmitting ? "در حال ذخیره..." : "ذخیره"}
           </Button>
         </div>
-      </div>
+      </form>
     </Modal>
   );
 }

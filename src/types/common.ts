@@ -22,6 +22,6 @@ export interface TitleRule {
 }
 
 export interface BaseFormErrors {
-  title?: string;
-  form?: string;
+  title?: string | undefined;
+  form?: string | undefined;
 }

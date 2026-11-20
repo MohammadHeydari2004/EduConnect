@@ -1,21 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "#/components/ui/Button.tsx";
 import MenuItem from "#/components/ui/MenuItem.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
 import ClassCapacityBadge from "#/components/common/ClassCapacityBadge.tsx";
 import { useMapById } from "#/hooks/useMapById.ts";
-import type { ClassItem } from "#/types/class.ts";
-import type { User } from "#/types/user.ts";
-import { getEffectiveStatus } from "#/utils/class.ts";
-import { getStatusLabel } from "#/utils/userLabels.ts";
-import { getUserNameFromMap } from "#/utils/nameHelpers.ts";
-import { useNavigate } from "react-router-dom";
+import type { ClassItem, User } from "#/types";
+import { getEffectiveStatus, getStatusLabel, getUserNameFromMap } from "#/utils";
 
 interface ClassTableProps {
   classes: ClassItem[];
   users: User[];
-  canManageClass: (c: ClassItem) => boolean;
+  canManageClass: boolean;
   onEdit: (c: ClassItem) => void;
   onToggleStatus: (c: ClassItem) => void;
   onDelete: (c: ClassItem) => void;
@@ -32,8 +28,6 @@ function ClassTable({
   const navigate = useNavigate();
 
   const userMap = useMapById(users);
-
-  const hasManageableClass = classes.some(canManageClass);
 
   const columns = [
     {
@@ -71,7 +65,7 @@ function ClassTable({
         </span>
       ),
     },
-    ...(hasManageableClass
+    ...(canManageClass
       ? [
           {
             key: "actions",
@@ -79,7 +73,7 @@ function ClassTable({
             width: "41%",
             render: (c: ClassItem) => (
               <div className="w-full flex flex-wrap justify-center gap-2">
-                {canManageClass(c) && (
+                {canManageClass && (
                   <>
                     <Button variant="secondary" onClick={() => onEdit(c)}>
                       ویرایش
@@ -136,7 +130,7 @@ function ClassTable({
             label="جزئیات"
             onAction={() => navigate(`/classes/${c.id}`)}
           />
-          {canManageClass(c) && (
+          {canManageClass && (
             <>
               <MenuItem label="ویرایش" onAction={() => onEdit(c)} />
               <MenuItem

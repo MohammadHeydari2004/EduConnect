@@ -47,7 +47,6 @@ function Button({
   type = "button",
   disabled,
   "aria-busy": ariaBusy,
-  "aria-disabled": ariaDisabled,
   ...props
 }: ButtonProps) {
   const isDisabled = disabled || isLoading;
@@ -58,7 +57,6 @@ function Button({
       className={buildClassName(variant, isDisabled, className)}
       disabled={isDisabled}
       aria-busy={ariaBusy ?? (isLoading ? true : undefined)}
-      aria-disabled={ariaDisabled ?? (isDisabled ? true : undefined)}
       {...props}
     >
       {isLoading && <Spinner size="sm" />}

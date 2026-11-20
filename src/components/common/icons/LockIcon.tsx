@@ -1,6 +1,6 @@
 ﻿import type { IconProps } from "./types.ts";
 
-export function LockIcon({ className = "h-full w-full" }: IconProps) {
+export function LockIcon({ className = "h-5 w-5" }: IconProps) {
   return (
     <svg
       className={className}

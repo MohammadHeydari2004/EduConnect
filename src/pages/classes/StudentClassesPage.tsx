@@ -8,8 +8,7 @@ import StatusChip from "#/components/ui/StatusChip.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useAsyncData } from "#/hooks/useAsyncData.ts";
 import { classService } from "#/services/class.ts";
-import type { ClassItem } from "#/types/class.ts";
-import { getEffectiveStatus } from "#/utils/class.ts";
+import type { ClassItem } from "#/types";import { getEffectiveStatus } from "#/utils";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 

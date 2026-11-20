@@ -1,11 +1,9 @@
 ﻿import { baseApi } from "#/services/api/baseApi.ts";
-import { safeDelete } from "#/services/api/safeDelete.ts";
-import type { Assignment } from "#/types/assignment.ts";
-import type { ID } from "#/types/common.ts";
-import type { Submission } from "#/types/submission.ts";
+import { API_ENDPOINTS } from "#/configs/constants";
+import type { Assignment, ID, Submission } from "#/types";
 
-const endpoint = "/assignments";
-const submissionEndpoint = "/submissions";
+const endpoint = API_ENDPOINTS.ASSIGNMENTS;
+const submissionEndpoint = API_ENDPOINTS.SUBMISSIONS;
 
 export const assignmentService = {
   getAll: (
@@ -29,29 +27,12 @@ export const assignmentService = {
     }),
 
   delete: async (id: ID) => {
-    const submissions = await baseApi.getAll<Submission>(
+    await baseApi.nullifyDependents<Submission>(
       submissionEndpoint,
       { assignmentId: id },
+      "assignmentId",
+      "تسليم",
     );
-
-    await Promise.all(
-      submissions.map(async (s) => {
-        try {
-          await baseApi.update(submissionEndpoint, s.id, {
-            assignmentId: null,
-          });
-        } catch (err) {
-          throw new Error(
-            `حذف وابستگی تسليم با خطا مواجه شد: ${err instanceof Error ? err.message : "خطای نامشخص"}`,
-          );
-        }
-      }),
-    );
-
-    await safeDelete(
-      (deleteId: ID) => baseApi.delete(endpoint, deleteId),
-      id,
-      endpoint,
-    );
+    await baseApi.delete(endpoint, id);
   },
 };

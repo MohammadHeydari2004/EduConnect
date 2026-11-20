@@ -2,7 +2,7 @@ import EmptyState from "#/components/common/EmptyState.tsx";
 import Card from "#/components/ui/Card.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
-import type { User } from "#/types/user.ts";
+import type { User } from "#/types";
 
 interface ClassStudentsPanelProps {
   students: User[];

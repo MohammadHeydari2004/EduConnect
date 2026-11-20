@@ -5,19 +5,19 @@ import Card from "#/components/ui/Card.tsx";
 import Select from "#/components/ui/Select.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
+import { studentNameEmailColumns } from "#/pages/attendance/attendanceColumns.tsx";
 import AttendanceClassSessionSelector from "#/components/common/AttendanceClassSessionSelector.tsx";
-import type { ClassItem } from "#/types/class.ts";
-import type { AttendanceStatus } from "#/types/common.ts";
-import type { Session } from "#/types/session.ts";
-import type { User } from "#/types/user.ts";
+import type { AttendanceStatus, ClassItem, Session, User } from "#/types";
+import { selectValue } from "#/utils";
+import { ATTENDANCE_LABELS } from "#/configs/constants";
 
 const ATTENDANCE_STATUS_OPTIONS: Array<{
   label: string;
   value: AttendanceStatus;
 }> = [
-  { label: "حاضر", value: "present" },
-  { label: "با تأخیر", value: "late" },
-  { label: "غایب", value: "absent" },
+  { label: ATTENDANCE_LABELS.present, value: "present" },
+  { label: ATTENDANCE_LABELS.late, value: "late" },
+  { label: ATTENDANCE_LABELS.absent, value: "absent" },
 ];
 
 interface AttendanceFormData {
@@ -107,26 +107,7 @@ export default function TeacherAttendanceForm({
               <Table
                 getRowKey={(student) => student.id}
                 columns={[
-                  {
-                    key: "name",
-                    title: "نام",
-                    width: "35%",
-                    render: (student) => (
-                      <span className="font-medium text-gray-800">
-                        {student.name}
-                      </span>
-                    ),
-                  },
-                  {
-                    key: "email",
-                    title: "ایمیل",
-                    width: "40%",
-                    render: (student) => (
-                      <span className="text-sm text-gray-600 break-all">
-                        {student.email}
-                      </span>
-                    ),
-                  },
+                  ...studentNameEmailColumns("35%", "40%"),
                   {
                     key: "status",
                     title: "وضعیت حضور",
@@ -138,12 +119,11 @@ export default function TeacherAttendanceForm({
                         onChange={(e) =>
                           onStatusChange(
                             student.id,
-                            (() => {
-                              const v = e.target.value;
-                              return (["present", "late", "absent"].includes(v)
-                                ? v
-                                : "present") as AttendanceStatus;
-                            })(),
+                            selectValue(
+                              e.target.value,
+                              ["present", "late", "absent"],
+                              "present",
+                            ),
                           )
                         }
                         options={ATTENDANCE_STATUS_OPTIONS}
@@ -173,12 +153,11 @@ export default function TeacherAttendanceForm({
                         onChange={(e) =>
                           onStatusChange(
                             student.id,
-                            (() => {
-                              const v = e.target.value;
-                              return (["present", "late", "absent"].includes(v)
-                                ? v
-                                : "present") as AttendanceStatus;
-                            })(),
+                            selectValue(
+                              e.target.value,
+                              ["present", "late", "absent"],
+                              "present",
+                            ),
                           )
                         }
                         options={ATTENDANCE_STATUS_OPTIONS}

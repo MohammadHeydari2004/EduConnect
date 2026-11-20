@@ -1,8 +1,5 @@
-import type { ID } from "#/types/common.ts";
-import { isDateBeforeToday } from "#/utils/formatDate.ts";
-import { validateTitle } from "#/utils/validateTitle.ts";
-import type { AssignmentFormErrors } from "#/types/assignment.ts";
-import type { SubmissionFormErrors } from "#/types/submission.ts";
+import { isDateBeforeToday, validateTitle } from "#/utils";
+import type { AssignmentFormErrors, ID, SubmissionFormErrors } from "#/types";
 
 export function validateAssignmentForm(values: {
   title: string;
@@ -13,7 +10,6 @@ export function validateAssignmentForm(values: {
   const errors: AssignmentFormErrors = {};
   const titleError = validateTitle(values.title, {
     titleLabel: "تکلیف",
-    min: 3,
   });
   if (titleError) errors.title = titleError;
 

@@ -6,16 +6,17 @@ import { useToast } from "#/hooks/useToast.ts";
 import { showErrorToast } from "#/hooks/useToastHelpers.ts";
 import { attendanceService } from "#/services/attendance.ts";
 import { classService } from "#/services/class.ts";
-import { getErrorMessage } from "#/services/error.ts";
 import { sessionService } from "#/services/session.ts";
 import { userService } from "#/services/user.ts";
-import type { Attendance } from "#/types/attendance.ts";
-import type { ClassItem } from "#/types/class.ts";
-import type { AttendanceStatus } from "#/types/common.ts";
-import type { Session } from "#/types/session.ts";
-import type { User } from "#/types/user.ts";
-import { isAdmin, isTeacher } from "#/utils/roleUtils.ts";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import type {
+  Attendance,
+  AttendanceStatus,
+  ClassItem,
+  Session,
+  User,
+} from "#/types";
+import { isAdmin, isTeacher } from "#/utils";
+import { useCallback, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 interface AttendancePageData {
@@ -26,13 +27,17 @@ interface AttendancePageData {
 }
 
 function fetchAttendancePageData(
+  studentId: string | undefined,
   signal?: AbortSignal,
 ): Promise<AttendancePageData> {
   return Promise.all([
-    classService.getAll(),
-    userService.getAll(undefined, signal),
+    classService.getAll(undefined, signal),
+    studentId ? Promise.resolve<User[]>([]) : userService.getAll(undefined, signal),
     sessionService.getAll(undefined, signal),
-    attendanceService.getAll(undefined, signal),
+    attendanceService.getAll(
+      studentId ? { studentId } : undefined,
+      signal,
+    ),
   ]).then(([classes, users, sessions, attendances]) => ({
     classes,
     users,
@@ -46,22 +51,25 @@ export function useAttendancePage() {
   const { addToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const studentId =
+    currentUser?.role === "student" ? currentUser.id : undefined;
+
   const {
     data: pageData,
     loading,
     error,
     refresh,
   } = useAsyncData<AttendancePageData>({
-    fetcher: (signal) => fetchAttendancePageData(signal),
-    deps: [],
+    fetcher: (signal) => fetchAttendancePageData(studentId, signal),
+    deps: [studentId],
     fallbackError: TOAST_MESSAGES.FETCH_ERROR,
   });
 
   const selectedClassId = searchParams.get("classId") ?? "";
   const selectedSessionId = searchParams.get("sessionId") ?? "";
 
-  const [draftAttendanceMap, setDraftAttendanceMap] = useState<
-    Record<string, AttendanceStatus>
+  const [draftBySession, setDraftBySession] = useState<
+    Record<string, Record<string, AttendanceStatus>>
   >({});
   const [isSaving, setIsSaving] = useState(false);
 
@@ -87,9 +95,10 @@ export function useAttendancePage() {
     return map;
   }, [attendances, selectedSessionId]);
 
-  useEffect(() => {
-    setDraftAttendanceMap({ ...sessionAttendances });
-  }, [sessionAttendances]);  
+  const draftAttendanceMap = {
+    ...sessionAttendances,
+    ...draftBySession[selectedSessionId],
+  };
 
   const availableClasses = useMemo(() => {
     if (isAdminUser) return classes;
@@ -115,9 +124,15 @@ export function useAttendancePage() {
 
   const handleStatusChange = useCallback(
     (studentId: string, status: AttendanceStatus) => {
-      setDraftAttendanceMap((prev) => ({ ...prev, [studentId]: status }));
+      setDraftBySession((prev) => ({
+        ...prev,
+        [selectedSessionId]: {
+          ...(prev[selectedSessionId]),
+          [studentId]: status,
+        },
+      }));
     },
-    [],
+    [selectedSessionId],
   );
 
   const setAllStatus = useCallback(
@@ -126,9 +141,12 @@ export function useAttendancePage() {
       classStudents.forEach((s) => {
         newMap[s.id] = status;
       });
-      setDraftAttendanceMap(newMap);
+      setDraftBySession((prev) => ({
+        ...prev,
+        [selectedSessionId]: newMap,
+      }));
     },
-    [classStudents],
+    [classStudents, selectedSessionId],
   );
 
   const handleMarkAllPresent = useCallback(
@@ -144,16 +162,10 @@ export function useAttendancePage() {
     if (!selectedSessionId || !selectedClassId) return;
     setIsSaving(true);
     try {
-      const records = classStudents
-        .map((student) => {
-          const status = draftAttendanceMap[student.id];
-          if (!status) return null;
-          return { studentId: student.id, status };
-        })
-        .filter(
-          (r): r is { studentId: string; status: AttendanceStatus } =>
-            r !== null,
-        );
+      const records = classStudents.map((student) => ({
+        studentId: student.id,
+        status: draftAttendanceMap[student.id] ?? "present",
+      }));
       await attendanceService.saveAttendanceForSession(
         selectedSessionId,
         selectedClassId,
@@ -164,7 +176,7 @@ export function useAttendancePage() {
     } catch (err) {
       showErrorToast(
         addToast,
-        getErrorMessage(err, TOAST_MESSAGES.ATTENDANCE_SAVE_ERROR),
+        err instanceof Error ? err.message : TOAST_MESSAGES.ATTENDANCE_SAVE_ERROR,
       );
     } finally {
       setIsSaving(false);

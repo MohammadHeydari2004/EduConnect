@@ -6,12 +6,7 @@ import {
   ErrorBoundary as ReactErrorBoundary,
 } from "react-error-boundary";
 
-function ErrorFallback({
-  error,
-  resetErrorBoundary,
-  heading = "h2",
-}: FallbackProps & { heading?: "h1" | "h2" | "h3" }) {
-  const HeadingTag = heading;
+function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
     <div
       role="alert"
@@ -21,9 +16,9 @@ function ErrorFallback({
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
           <WarningIcon className="h-8 w-8 text-red-600" />
         </div>
-        <HeadingTag className="mb-2 text-xl font-bold text-gray-800 ">
+        <h2 className="mb-2 text-xl font-bold text-gray-800 ">
           خطای غیرمنتظره در رندر
-        </HeadingTag>
+        </h2>
         <p className="mb-6 text-sm text-gray-600">
           متأسفانه مشکلی در بارگذاری برنامه رخ داده است. می‌توانید دوباره
           تلاش کنید.
@@ -49,26 +44,12 @@ function ErrorFallback({
 interface ErrorBoundaryWrapperProps {
   children: ReactNode;
   resetKeys?: unknown[] | undefined;
-  heading?: "h1" | "h2" | "h3";
 }
 
-function ErrorBoundaryWrapper({
-  children,
-  resetKeys,
-  heading = "h2",
-}: ErrorBoundaryWrapperProps) {
+function ErrorBoundaryWrapper({ children, resetKeys }: ErrorBoundaryWrapperProps) {
   return (
     <ReactErrorBoundary
-      FallbackComponent={({
-        error,
-        resetErrorBoundary,
-      }: FallbackProps) => (
-        <ErrorFallback
-          error={error}
-          heading={heading}
-          resetErrorBoundary={resetErrorBoundary}
-        />
-      )}
+      FallbackComponent={ErrorFallback}
       {...(resetKeys !== undefined ? { resetKeys } : {})}
     >
       {children}

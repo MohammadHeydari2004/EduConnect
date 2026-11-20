@@ -2,8 +2,7 @@ import Button from "#/components/ui/Button.tsx";
 import { DeadlineBadge } from "#/components/ui/DeadlineBadge.tsx";
 import MenuItem from "#/components/ui/MenuItem.tsx";
 import Table from "#/components/ui/Table.tsx";
-import type { Assignment } from "#/types/assignment.ts";
-import type { ID } from "#/types/common.ts";
+import type { Assignment, ID } from "#/types";
 
 interface TeacherAssignmentsTableProps {
   data: Assignment[];
@@ -31,7 +30,7 @@ export default function TeacherAssignmentsTable({
     return (
       <div className="space-y-2 text-right">
         <div className="flex items-start justify-between gap-2">
-          <span className="text-base font-bold text-gray-800 w-34">
+          <span className="text-base font-bold text-gray-800 w-64">
             {a.title}
           </span>
           <span className="text-xs text-gray-500">
@@ -131,22 +130,25 @@ export default function TeacherAssignmentsTable({
             key: "actions",
             title: "عملیات",
             width: "23.5%",
-            render: (a: Assignment) => (
-              <div className="flex flex-wrap justify-center gap-2">
-                <Button variant="secondary" onClick={() => onEdit(a)}>
-                  ویرایش
-                </Button>
-                <Button variant="danger" onClick={() => onDelete(a)}>
-                  حذف
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => onViewSubmissions(a.id)}
-                >
-                  پاسخ‌ها
-                </Button>
-              </div>
-            ),
+            render: (a: Assignment) => {
+              if (!canManage(a)) return null;
+              return (
+                <div className="flex flex-wrap justify-center gap-2">
+                  <Button variant="secondary" onClick={() => onEdit(a)}>
+                    ویرایش
+                  </Button>
+                  <Button variant="danger" onClick={() => onDelete(a)}>
+                    حذف
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => onViewSubmissions(a.id)}
+                  >
+                    پاسخ‌ها
+                  </Button>
+                </div>
+              );
+            },
           },
         ]
       : []),

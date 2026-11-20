@@ -1,31 +1,18 @@
 import Badge from "#/components/ui/Badge.tsx";
-import { formatDate } from "#/utils/formatDate.ts";
-import {
-  getDeadlineBadgeLabel,
-  getDeadlineColor,
-  getDeadlineColorClass,
-} from "#/utils/tableHelpers.ts";
+import { formatDate, getDeadlineBadgeLabel, getDeadlineColor, getDeadlineColorClass } from "#/utils";
 
 interface DeadlineBadgeProps {
   deadline: string;
-  fontWeight?: "normal" | "medium" | "semibold" | "bold";
 }
 
-export function DeadlineBadge({ deadline, fontWeight = "medium" }: DeadlineBadgeProps) {
+export function DeadlineBadge({ deadline }: DeadlineBadgeProps) {
   const deadlineColor = getDeadlineColor(deadline);
-  const WEIGHT_CLASS = {
-    normal: "font-normal",
-    medium: "font-medium",
-    semibold: "font-semibold",
-    bold: "font-bold",
-  } as const;
-  const weightClass = WEIGHT_CLASS[fontWeight];
   return (
     <span
       className="inline-flex flex-col items-center gap-2"
       aria-label={`${formatDate(deadline)}، ${getDeadlineBadgeLabel(deadlineColor)}`}
     >
-      <span className={`${getDeadlineColorClass(deadlineColor)} ${weightClass}`}>
+      <span className={`font-medium ${getDeadlineColorClass(deadlineColor)}`}>
         {formatDate(deadline)}
       </span>
       <Badge variant={deadlineColor}>

@@ -1,0 +1,1 @@
+export const DEFAULT_TARGET_AUDIENCE = "students" as const;

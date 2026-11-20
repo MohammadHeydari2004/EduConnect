@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { FilterConfig, UseFilterOptions } from "#/types/hooks.ts";
+import type { FilterConfig, UseFilterOptions } from "#/types";
 
 export function useFilter<T, F extends object = Record<string, unknown>>({
   data,

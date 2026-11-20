@@ -1,3 +1,5 @@
+import { getStatusLabel } from "./userLabels.ts";
+import type { RecordStatus } from "#/types";
 
 export const TOAST_MESSAGES: {
   readonly CREATE_SUCCESS: string;
@@ -15,20 +17,19 @@ export const TOAST_MESSAGES: {
   readonly CLASS_CREATE_SUCCESS: string;
   readonly CLASS_UPDATE_SUCCESS: string;
   readonly CLASS_DELETE_SUCCESS: string;
-  readonly CLASS_STATUS: (title: string, action: "غیرفعال" | "فعال") => string;
+  readonly CLASS_STATUS: (title: string, status: RecordStatus) => string;
   readonly CLASS_STATUS_ERROR: string;
   readonly ASSIGNMENT_CREATE_SUCCESS: string;
   readonly ASSIGNMENT_UPDATE_SUCCESS: string;
   readonly ASSIGNMENT_DELETE_SUCCESS: string;
-  readonly ASSIGNMENT_SAVE_ERROR: string;
-  readonly ANNOUNCEMENT_SAVE_SUCCESS: string;
-  readonly ANNOUNCEMENT_SAVE_ERROR: string;
   readonly ANNOUNCEMENT_SEEN_SUCCESS: string;
   readonly ANNOUNCEMENT_SEEN_ERROR: string;
   readonly ANNOUNCEMENT_FETCH_ERROR: string;
   readonly ATTENDANCE_SAVE_SUCCESS: string;
   readonly ATTENDANCE_SAVE_ERROR: string;
-  readonly PREVENT_SELF_ACTION: (action: string) => string;
+  readonly PREVENT_SELF_EDIT: string;
+  readonly PREVENT_SELF_DELETE: string;
+  readonly PREVENT_SELF_STATUS: string;
 } = {
   CREATE_SUCCESS: "با موفقیت ایجاد شد.",
   UPDATE_SUCCESS: "با موفقیت ویرایش شد.",
@@ -45,20 +46,18 @@ export const TOAST_MESSAGES: {
   CLASS_CREATE_SUCCESS: "کلاس با موفقیت ایجاد شد.",
   CLASS_UPDATE_SUCCESS: "کلاس با موفقیت ویرایش شد.",
   CLASS_DELETE_SUCCESS: "کلاس با موفقیت حذف شد.",
-  CLASS_STATUS: (title: string, action: "غیرفعال" | "فعال") =>
-    `کلاس "${title}" ${action} شد.`,
+  CLASS_STATUS: (title: string, status: RecordStatus) =>
+    `کلاس "${title}" ${getStatusLabel(status)} شد.`,
   CLASS_STATUS_ERROR: "تغییر وضعیت کلاس ناموفق بود.",
   ASSIGNMENT_CREATE_SUCCESS: "تکلیف با موفقیت ایجاد شد.",
   ASSIGNMENT_UPDATE_SUCCESS: "تکلیف با موفقیت ویرایش شد.",
   ASSIGNMENT_DELETE_SUCCESS: "تکلیف با موفقیت حذف شد.",
-  ASSIGNMENT_SAVE_ERROR: "خطا در ذخیره تکلیف. لطفاً دوباره تلاش کنید.",
-  ANNOUNCEMENT_SAVE_SUCCESS: "اطلاعیه با موفقیت ذخیره شد.",
-  ANNOUNCEMENT_SAVE_ERROR: "خطا در ذخیره اطلاعیه.",
   ANNOUNCEMENT_SEEN_SUCCESS: "اطلاعیه به‌عنوان خوانده‌شده ثبت شد.",
   ANNOUNCEMENT_SEEN_ERROR: "ثبت خواندن اطلاعیه ناموفق بود.",
   ANNOUNCEMENT_FETCH_ERROR: "خطا در بارگذاری اطلاعیه‌ها.",
   ATTENDANCE_SAVE_SUCCESS: "حضور و غیاب با موفقیت ذخیره شد.",
   ATTENDANCE_SAVE_ERROR: "ذخیره حضور و غیاب با خطا مواجه شد.",
-  PREVENT_SELF_ACTION: (action: string) =>
-    `شما نمی‌توانید ${action} حساب کاربری خودتان را ${action === "حذف" ? "کنید" : "تغییر دهید"}.`,
+  PREVENT_SELF_EDIT: "شما نمی‌توانید حساب کاربری خودتان را ویرایش کنید.",
+  PREVENT_SELF_DELETE: "شما نمی‌توانید حساب کاربری خودتان را حذف کنید.",
+  PREVENT_SELF_STATUS: "شما نمی‌توانید وضعیت حساب کاربری خودتان را تغییر دهید.",
 };

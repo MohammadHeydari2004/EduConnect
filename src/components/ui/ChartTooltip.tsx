@@ -1,9 +1,6 @@
 import type { ReactNode } from "react";
 import { useId } from "react";
-import type { ChartPayloadEntry } from "#/utils/chart.ts";
-
-export type { ChartPayloadEntry } from "#/utils/chart.ts";
-export { defaultChartLabel, getChartEntryKey } from "#/utils/chart.ts";
+import type { ChartPayloadEntry } from "#/utils";
 
 type TooltipRenderFn =
   | ((entry: ChartPayloadEntry) => ReactNode)
@@ -12,7 +9,6 @@ type TooltipRenderFn =
 interface ChartTooltipProps {
   active?: boolean;
   payload?: ChartPayloadEntry[];
-  label?: string;
   className?: string;
   children?: ReactNode | TooltipRenderFn;
 }
@@ -23,11 +19,12 @@ export function ChartTooltip({
   className = "",
   children,
 }: ChartTooltipProps) {
+  const tooltipId = useId();
+
   if (!active || !payload || payload.length === 0) return null;
   if (children === undefined || children === null) return null;
   const first = payload[0];
   if (!first) return null;
-  const tooltipId = useId();
   const content =
     typeof children === "function"
       ? (children as TooltipRenderFn)(first, payload)

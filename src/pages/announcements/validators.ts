@@ -1,5 +1,6 @@
-import { validateTitle } from "#/utils/validateTitle.ts";
-import type { AnnouncementFormErrors } from "#/types/announcement.ts";
+import { validateTitle } from "#/utils";
+import { MAX_CLASS_TITLE_LENGTH } from "#/configs/constants";
+import type { AnnouncementFormErrors } from "#/types";
 
 export function validateAnnouncementForm(values: {
   title: string;
@@ -8,8 +9,7 @@ export function validateAnnouncementForm(values: {
   const errors: AnnouncementFormErrors = {};
   const titleError = validateTitle(values.title, {
     titleLabel: "اطلاعیه",
-    min: 3,
-    max: 100,
+    max: MAX_CLASS_TITLE_LENGTH,
   });
   if (titleError) errors.title = titleError;
 
@@ -17,10 +17,6 @@ export function validateAnnouncementForm(values: {
     errors.content = "محتوای اطلاعیه الزامی است.";
   } else if (values.content.trim().length < 10) {
     errors.content = "محتوا باید حداقل ۱۰ کاراکتر باشد.";
-  }
-
-  if (errors.title || errors.content) {
-    errors.form = "لطفاً خطاهای فرم را برطرف کنید.";
   }
 
   return errors;

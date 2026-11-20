@@ -1,36 +1,31 @@
 import { baseApi } from "#/services/api/baseApi.ts";
-import { safeDelete } from "#/services/api/safeDelete.ts";
+import { isApiError } from "#/services/api/axiosInstance.ts";
 import { cascadeDeleteUserData } from "#/services/cascadeDelete.ts";
-import type { ID, DeepPartial, RecordStatus } from "#/types/common.ts";
+import { API_ENDPOINTS, EMAIL_ALREADY_REGISTERED } from "#/configs/constants";
 import type {
   CreateUserPayload,
+  DeepPartial,
+  ID,
+  RecordStatus,
   UpdateUserPayload,
   User,
   UserWithPassword,
-} from "#/types/user.ts";
+} from "#/types";
+import { normalizeEmail } from "#/utils";
 
-const endpoint = "/users";
-
-async function getAllUsers(params?: Record<string, string | number | boolean>, signal?: AbortSignal): Promise<User[]> {
-  return baseApi.getAll<User>(endpoint, params, signal);
-}
-
-async function getUserById(id: ID): Promise<User> {
-  return baseApi.getById<User>(endpoint, id);
-}
+const endpoint = API_ENDPOINTS.USERS;
 
 async function ensureEmailIsUnique(
   email: string,
   excludeUserId?: ID,
 ): Promise<void> {
-  const normalizedEmail = email.trim().toLowerCase();
   const duplicates = await baseApi.getAll<User>(endpoint, {
-    email: normalizedEmail,
+    email: normalizeEmail(email),
   });
 
   const duplicate = duplicates.find((user) => user.id !== excludeUserId);
   if (duplicate) {
-    throw new Error("این ایمیل قبلاً ثبت شده است.");
+    throw new Error(`این ایمیل ${EMAIL_ALREADY_REGISTERED} است.`);
   }
 }
 
@@ -38,36 +33,40 @@ async function getAdminUsers(signal?: AbortSignal): Promise<User[]> {
   return baseApi.getAll<User>(endpoint, { role: "admin" }, signal);
 }
 
-async function ensureNotLastAdmin(userId: ID): Promise<void> {
-  const targetUser = await getUserById(userId);
+async function ensureNotLastAdmin(
+  userId: ID,
+  onlyActive = false,
+): Promise<void> {
+  const targetUser = await baseApi.getById<User>(endpoint, userId);
   if (!targetUser) throw new Error("کاربر موردنظر پیدا نشد.");
   if (targetUser.role !== "admin") return;
+  if (onlyActive && targetUser.status === "inactive") return;
 
   const adminUsers = await getAdminUsers();
-  if (adminUsers.length <= 1) {
-    throw new Error("امکان حذف یا تغییر آخرین مدیر سیستم وجود ندارد.");
-  }
-}
-
-async function ensureNotLastAdminIfDeactivating(user: User): Promise<void> {
-  if (user.role !== "admin" || user.status === "inactive") return;
-  const activeAdmins = (await getAdminUsers()).filter(
-    (admin) => admin.status === "active",
-  );
-  if (activeAdmins.length <= 1) {
-    throw new Error("امکان غیرفعال‌سازی آخرین مدیر سیستم وجود ندارد.");
+  const adminCount = onlyActive
+    ? adminUsers.filter((admin) => admin.status === "active").length
+    : adminUsers.length;
+  if (adminCount <= 1) {
+    throw new Error(
+      onlyActive
+        ? "امکان غیرفعال‌سازی آخرین مدیر سیستم وجود ندارد."
+        : "امکان حذف یا تغییر آخرین مدیر سیستم وجود ندارد.",
+    );
   }
 }
 
 export const userService = {
-  getAll: getAllUsers,
-  getById: getUserById,
+  getAll: (
+    params?: Record<string, string | number | boolean>,
+    signal?: AbortSignal,
+  ) => baseApi.getAll<User>(endpoint, params, signal),
+  getById: (id: ID) => baseApi.getById<User>(endpoint, id),
 
   async create(data: CreateUserPayload): Promise<User> {
     await ensureEmailIsUnique(data.email);
     const payload: Omit<UserWithPassword, "id"> = {
       name: data.name.trim(),
-      email: data.email.trim().toLowerCase(),
+      email: normalizeEmail(data.email),
       password: data.password,
       role: data.role,
       status: data.status,
@@ -76,7 +75,7 @@ export const userService = {
   },
 
   async update(id: ID, data: UpdateUserPayload): Promise<User> {
-    const existingUser = await getUserById(id);
+    const existingUser = await baseApi.getById<User>(endpoint, id);
 
     if (data.email) {
       await ensureEmailIsUnique(data.email, id);
@@ -93,12 +92,12 @@ export const userService = {
       existingUser.status === "active" &&
       status === "inactive"
     ) {
-      await ensureNotLastAdminIfDeactivating(existingUser);
+      await ensureNotLastAdmin(id, true);
     }
 
     const updateData: DeepPartial<User> = {};
     if (data.name !== undefined) updateData.name = data.name.trim();
-    if (data.email !== undefined) updateData.email = data.email.trim().toLowerCase();
+    if (data.email !== undefined) updateData.email = normalizeEmail(data.email);
     if (data.role !== undefined) updateData.role = data.role;
     if (data.status !== undefined) updateData.status = data.status;
 
@@ -114,12 +113,9 @@ export const userService = {
         throw new Error(report.results.flatMap((r) => r.errors).join("; "));
       }
 
-      await safeDelete(
-        (deleteId: ID) => baseApi.delete(endpoint, deleteId),
-        id,
-        endpoint,
-      );
+      await baseApi.delete(endpoint, id);
     } catch (err) {
+      if (isApiError(err)) throw err;
       throw new Error(
         `حذف کاربر با خطا مواجه شد: ${err instanceof Error ? err.message : "خطای نامشخص"}`,
       );
@@ -127,8 +123,8 @@ export const userService = {
   },
 
   async toggleStatus(id: ID): Promise<User> {
-    const user = await getUserById(id);
-    await ensureNotLastAdminIfDeactivating(user);
+    const user = await baseApi.getById<User>(endpoint, id);
+    await ensureNotLastAdmin(id, true);
     const nextStatus: RecordStatus =
       user.status === "active" ? "inactive" : "active";
     return baseApi.update<User>(endpoint, id, {

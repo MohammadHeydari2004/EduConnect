@@ -1,19 +1,19 @@
-import type { Maybe } from "#/types/common.ts";
-import type { UserRole } from "#/types/common.ts";
-import type { User } from "#/types/user.ts";
+import { ADMIN_ROLES, TEACHER_ROLES } from "#/configs/constants";
+import type { Maybe, User, UserRole } from "#/types";
 
-export function hasRole(user: Maybe<User>, role: UserRole): boolean {
-  return user?.role === role;
+type RoleLike = Maybe<User> | UserRole;
+
+function getRole(user: RoleLike): UserRole | null {
+  if (typeof user === "string") return user;
+  return user?.role ?? null;
 }
 
-export function isAdmin(user: Maybe<User>): boolean {
-  return hasRole(user, "admin");
+export function isAdmin(user: RoleLike): boolean {
+  const role = getRole(user);
+  return role ? ADMIN_ROLES.includes(role) : false;
 }
 
-export function isTeacher(user: Maybe<User>): boolean {
-  return hasRole(user, "teacher");
-}
-
-export function isStudent(user: Maybe<User>): boolean {
-  return hasRole(user, "student");
+export function isTeacher(user: RoleLike): boolean {
+  const role = getRole(user);
+  return role ? TEACHER_ROLES.includes(role) : false;
 }

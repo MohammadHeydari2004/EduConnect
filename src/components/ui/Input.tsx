@@ -5,7 +5,6 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string | undefined;
   error?: string | undefined;
   suffix?: ReactNode;
-  compact?: boolean | undefined;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -14,7 +13,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       label,
       error,
       suffix,
-      compact = false,
       className = "",
       id: propId,
       required,
@@ -26,8 +24,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   ) => {
     const { id, errorId, describedBy } = useField({ id: propId, error });
 
-    const paddingClasses = compact ? "px-3 py-1.5" : "px-3 py-2";
-    const suffixPadding = suffix ? "px-8" : "";
+    const paddingClasses = "px-3 py-2";
+    const suffixPadding = suffix ? "pr-8" : "";
 
     return (
       <div className="flex flex-col gap-1.5">

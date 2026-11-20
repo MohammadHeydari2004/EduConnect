@@ -1,16 +1,15 @@
 import { baseApi } from "#/services/api/baseApi.ts";
-import { safeDelete } from "#/services/api/safeDelete.ts";
-import type { Attendance } from "#/types/attendance.ts";
-import type { AttendanceStatus, ID } from "#/types/common.ts";
+import { API_ENDPOINTS } from "#/configs/constants";
+import type { Attendance, AttendanceStatus, ID } from "#/types";
 
-const endpoint = "/attendance";
+const attendanceEndpoint = API_ENDPOINTS.ATTENDANCE;
 
 export const attendanceService = {
   getAll: (params?: Record<string, string | number | boolean>, signal?: AbortSignal) =>
-    baseApi.getAll<Attendance>(endpoint, params, signal),
+    baseApi.getAll<Attendance>(attendanceEndpoint, params, signal),
 
   getBySession: (sessionId: ID, signal?: AbortSignal) =>
-    baseApi.getAll<Attendance>(endpoint, { sessionId }, signal),
+    baseApi.getAll<Attendance>(attendanceEndpoint, { sessionId }, signal),
 
   saveAttendanceForSession: async (
     sessionId: ID,
@@ -32,12 +31,15 @@ export const attendanceService = {
       }
     }
 
+    const recordStudentIds = new Set(records.map((r) => r.studentId));
+    const deletes = existing.filter((a) => !recordStudentIds.has(a.studentId));
+
     const results: Attendance[] = [];
 
     if (creates.length > 0) {
       const created = await Promise.all(
         creates.map((record) =>
-          baseApi.create<Attendance>(endpoint, {
+          baseApi.create<Attendance>(attendanceEndpoint, {
             sessionId,
             classId,
             studentId: record.studentId,
@@ -51,16 +53,22 @@ export const attendanceService = {
     if (updates.length > 0) {
       const updated = await Promise.all(
         updates.map((update) =>
-          baseApi.update<Attendance>(endpoint, update.id, { status: update.status }),
+          baseApi.update<Attendance>(attendanceEndpoint, update.id, { status: update.status }),
         ),
       );
       results.push(...updated);
     }
 
+    if (deletes.length > 0) {
+      await Promise.all(
+        deletes.map((deleted) => baseApi.delete(attendanceEndpoint, deleted.id)),
+      );
+    }
+
     return results;
   },
 
-  delete: (id: ID) => safeDelete((deleteId: ID) => baseApi.delete(endpoint, deleteId), id, endpoint),
+  delete: (id: ID) => baseApi.delete(attendanceEndpoint, id),
 
   calculateStudentStats: (attendances: Attendance[]) => {
     const present = attendances.filter((a) => a.status === "present").length;

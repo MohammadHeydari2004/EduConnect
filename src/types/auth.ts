@@ -5,7 +5,7 @@ export interface LoginPayload {
   password: string;
 }
 
-export interface AuthState {
+interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
 }

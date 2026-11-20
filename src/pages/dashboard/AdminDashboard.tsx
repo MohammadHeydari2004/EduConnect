@@ -1,26 +1,12 @@
 import Card from "#/components/ui/Card.tsx";
-import ChartLegend from "#/components/ui/ChartLegend.tsx";
-import ChartTooltip, {
-  defaultChartLabel,
-  type ChartPayloadEntry,
-} from "#/components/ui/ChartTooltip.tsx";
+import PieChartCard from "#/components/ui/PieChartCard.tsx";
 import StatCard from "#/components/ui/StatCard.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
-import type { DashboardData } from "#/types/dashboard.ts";
-import type { ClassItem } from "#/types/class.ts";
+import type { ClassItem, DashboardData } from "#/types";
 import { CHART_COLORS } from "#/configs/constants";
-import { getEffectiveStatus } from "#/utils/class.ts";
-import { formatDate } from "#/utils/formatDate.ts";
+import { buildChartSummary, formatDate, getEffectiveStatus, getRecentItems } from "#/utils";
 import { useMemo } from "react";
-import {
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
 
 interface RoleDataItem {
   name: string;
@@ -57,15 +43,19 @@ export default function AdminDashboard({ data }: Props) {
     [roleCounts],
   );
   const recentClasses = useMemo(() => {
-    return [...classes]
-      .filter((c): c is ClassItem & { createdAt: string } => !!c.createdAt)
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      )
-      .slice(0, 5);
+    return getRecentItems(
+      classes.filter(
+        (c): c is ClassItem & { createdAt: string } => !!c.createdAt,
+      ),
+      5,
+      (c) => new Date(c.createdAt).getTime(),
+    );
   }, [classes]);
-  const chartSummary = `توزیع کاربران: ${roleData.map((r) => `${r.name} ${r.value} نفر`).join("، ")}`;
+  const chartSummary = buildChartSummary(
+    "توزیع کاربران",
+    roleData,
+    (r) => `${r.name} ${r.value} نفر`,
+  );
 
   return (
     <div className="space-y-6">
@@ -93,84 +83,27 @@ export default function AdminDashboard({ data }: Props) {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card title="توزیع نقش‌های کاربران">
-          {totalUsers === 0 ? (
-            <div className="flex h-full items-center justify-center text-sm text-gray-500">
-              هنوز کاربری ثبت نشده است.
-            </div>
-          ) : (
-            <>
-              <div className="sm:hidden space-y-2">
-                {roleData.map((r) => (
-                  <div
-                    key={r.name}
-                    className="flex items-center justify-between text-sm"
-                  >
-                    <span className="text-gray-700">{r.name}</span>
-                    <span className="font-medium text-gray-900">{r.value} نفر</span>
-                  </div>
-                ))}
-              </div>
-              <div
-                className="hidden sm:block h-64"
-                role="group"
-                aria-label={chartSummary}
-              >
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                    <Pie
-                      data={roleData}
-                      cx="50%"
-                      cy="40%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {roleData.map((_, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={CHART_COLORS[index % CHART_COLORS.length] as string}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      content={
-                        <ChartTooltip>
-                          {(first: ChartPayloadEntry) => {
-                            const itemColor = first.color ?? "#333";
-                            const value =
-                              typeof first.value === "number" ? first.value : 0;
-                            const percentage =
-                              totalUsers > 0 ? (value / totalUsers) * 100 : 0;
-                            return (
-                              <p
-                                style={{ color: itemColor }}
-                                className="font-bold"
-                              >
-                                {`${first.name ?? ""}: ${percentage.toFixed(1)}% (${value} نفر)`}
-                              </p>
-                            );
-                          }}
-                        </ChartTooltip>
-                      }
-                      contentStyle={{ direction: "rtl", textAlign: "right" }}
-                    />
-                    <Legend
-                      verticalAlign="bottom"
-                      height={36}
-                      content={
-                        <ChartLegend
-                          resolveLabel={defaultChartLabel}
-                        />
-                      }
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </>
-          )}
-        </Card>
+        <PieChartCard
+          title="توزیع نقش‌های کاربران"
+          data={roleData}
+          emptyText="هنوز کاربری ثبت نشده است."
+          chartSummary={chartSummary}
+          unit="نفر"
+          getColor={(_, index) =>
+            (CHART_COLORS[index % CHART_COLORS.length] as string) ?? "#8884d8"
+          }
+          tooltip={(first) => {
+            const itemColor = first.color ?? "#333";
+            const value = typeof first.value === "number" ? first.value : 0;
+            const percentage =
+              totalUsers > 0 ? (value / totalUsers) * 100 : 0;
+            return (
+              <p style={{ color: itemColor }} className="font-bold">
+                {`${first.name ?? ""}: ${percentage.toFixed(1)}% (${value} نفر)`}
+              </p>
+            );
+          }}
+        />
 
         <Card title="آخرین کلاس‌های ثبت‌شده">
           {recentClasses.length === 0 ? (

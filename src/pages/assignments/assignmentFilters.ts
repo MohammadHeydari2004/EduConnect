@@ -1,6 +1,5 @@
 import { createStringContainsFilter, createExactMatchFilter, createDateStatusFilter } from "#/hooks/useFilter.ts";
-import type { FilterConfig } from "#/types/hooks.ts";
-import type { Assignment, AssignmentFilters } from "#/types/assignment.ts";
+import type { Assignment, AssignmentFilters, FilterConfig } from "#/types";
 
 export const assignmentFilterConfigs: FilterConfig<Assignment>[] = [
   createStringContainsFilter<Assignment>("search", (assignment) => assignment.title),

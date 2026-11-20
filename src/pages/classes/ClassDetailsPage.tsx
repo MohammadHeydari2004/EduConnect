@@ -6,20 +6,15 @@ import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
-import { showErrorToastWithInfo } from "#/hooks/useToastHelpers.ts";
+import { showErrorToast } from "#/hooks/useToastHelpers.ts";
 import ClassSessionsPanel from "#/pages/classes/ClassSessionsPanel.tsx";
 import ClassStudentsPanel from "#/pages/classes/ClassStudentsPanel.tsx";
 import ClassCapacityBadge from "#/components/common/ClassCapacityBadge.tsx";
-import SessionForm from "#/pages/classes/SessionForm.tsx";
 import { classService } from "#/services/class.ts";
 import { sessionService } from "#/services/session.ts";
 import { userService } from "#/services/user.ts";
-import type { ClassItem } from "#/types/class.ts";
-import type { Session } from "#/types/session.ts";
-import type { User } from "#/types/user.ts";
-import { getEffectiveStatus } from "#/utils/class.ts";
-import { classifyError } from "#/services/error.ts";
-import { getStatusLabel } from "#/utils/userLabels.ts";
+import type { ClassItem, Session, User } from "#/types";
+import { getEffectiveStatus, getStatusLabel, isAdmin } from "#/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -27,7 +22,7 @@ function getClassRoles(
   currentUser: User | undefined | null,
   classItem: ClassItem | null,
 ): { isAdmin: boolean; isTeacherOfThisClass: boolean; isStudentInThisClass: boolean; canManageSessions: boolean } {
-  const isAdmin = currentUser?.role === "admin";
+  const isAdminUser = isAdmin(currentUser);
   const isTeacherOfThisClass =
     currentUser?.role === "teacher" &&
     classItem !== null &&
@@ -37,10 +32,10 @@ function getClassRoles(
     classItem !== null &&
     (classItem.studentIds || []).includes(currentUser.id);
   return {
-    isAdmin,
+    isAdmin: isAdminUser,
     isTeacherOfThisClass,
     isStudentInThisClass,
-    canManageSessions: isAdmin || isTeacherOfThisClass,
+    canManageSessions: isAdminUser || isTeacherOfThisClass,
   };
 }
 
@@ -57,10 +52,6 @@ export default function ClassDetailsPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(!isInvalidId);
-  const [error, setError] = useState(
-    isInvalidId ? "شناسه کلاس نامعتبر است." : "",
-  );
-  const [showSessionForm, setShowSessionForm] = useState(false);
 
   const { isTeacherOfThisClass, isStudentInThisClass, canManageSessions } = useMemo(
     () => getClassRoles(currentUser, classItem),
@@ -71,31 +62,30 @@ export default function ClassDetailsPage() {
     if (isInvalidId) return;
 
     setLoading(true);
-    setError("");
     setClassItem(null);
     setUsers([]);
     setSessions([]);
-    setShowSessionForm(false);
 
     let cancelled = false;
 
     const load = async () => {
       try {
         const [c, u, s] = await Promise.all([
-          classService.getById(classId!),
+          classService.getById(classId),
           userService.getAll(),
-          sessionService.getByClass(classId!),
+          sessionService.getByClass(classId),
         ]);
         if (!cancelled) {
-          
           if (
-            currentUser?.role === "teacher" &&
-            c.teacherId !== currentUser.id
+            (currentUser?.role === "teacher" &&
+              c.teacherId !== currentUser.id) ||
+            (currentUser?.role === "student" &&
+              !(c.studentIds || []).includes(currentUser.id))
           ) {
+            setLoading(false);
             navigate("/unauthorized", { replace: true });
             return;
           }
-          setError("");
           setClassItem(c);
           setUsers(u);
           setSessions(s);
@@ -103,8 +93,10 @@ export default function ClassDetailsPage() {
         }
       } catch (err) {
         if (!cancelled) {
-          const info = classifyError(err);
-          showErrorToastWithInfo(addToast, info, "دریافت اطلاعات کلاس با خطا مواجه شد.");
+          showErrorToast(
+            addToast,
+            err instanceof Error ? err.message : "دریافت اطلاعات کلاس با خطا مواجه شد.",
+          );
           setLoading(false);
         }
       }
@@ -114,7 +106,7 @@ export default function ClassDetailsPage() {
     return () => {
       cancelled = true;
     };
-  }, [classId, isInvalidId, currentUser, navigate]);
+  }, [classId, isInvalidId, currentUser, navigate, addToast]);
 
   const refreshSessions = useCallback(async () => {
     if (!classId) return;
@@ -122,8 +114,10 @@ export default function ClassDetailsPage() {
       const currentSessions = await sessionService.getByClass(classId);
       setSessions(currentSessions);
     } catch (err) {
-      const info = classifyError(err);
-      showErrorToastWithInfo(addToast, info, "به‌روزرسانی لیست جلسات ناموفق بود.");
+      showErrorToast(
+        addToast,
+        err instanceof Error ? err.message : "به‌روزرسانی لیست جلسات ناموفق بود.",
+      );
     }
   }, [classId, addToast]);
 
@@ -149,16 +143,6 @@ export default function ClassDetailsPage() {
     );
 
   if (loading) return <Loading />;
-
-  if (error)
-    return (
-      <div className="space-y-4">
-        <Button variant="secondary" onClick={() => navigate("/classes")}>
-          → بازگشت به لیست کلاس‌ها
-        </Button>
-        <ErrorAlert message={error} />
-      </div>
-    );
 
   if (!classItem)
     return (
@@ -251,27 +235,10 @@ export default function ClassDetailsPage() {
       <ClassSessionsPanel
         sessions={sessions}
         classItem={classItem}
-        classId={classId!}
+        classId={classId}
         canManage={canManageSessions}
-        onAddSession={() => setShowSessionForm(true)}
         onSessionsChanged={refreshSessions}
       />
-
-      {showSessionForm && (
-        <SessionForm
-          key={`session-form-${classId}`}
-          classId={classId!}
-          onClose={() => setShowSessionForm(false)}
-          onSuccess={(message) => {
-            addToast(message, "success");
-            setShowSessionForm(false);
-            void refreshSessions();
-          }}
-          onError={(message) => {
-            addToast(message, "error");
-          }}
-        />
-      )}
     </div>
   );
 }

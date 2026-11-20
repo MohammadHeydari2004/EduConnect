@@ -1,10 +1,14 @@
 import AuthContext from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
 import { loginUser } from "#/services/auth.ts";
-import type { AuthContextType, LoginPayload } from "#/types/auth.ts";
-import type { User } from "#/types/user.ts";
+import type { AuthContextType, LoginPayload, User } from "#/types";
 import { useCallback, useMemo, useState, type ReactNode } from "react";
-import { getStoredUser, getStorageErrorMessage, setStoredUser, clearStoredUser } from "#/utils/authStorage.ts";
+import {
+  clearStoredUser,
+  getStorageErrorMessage,
+  getStoredUser,
+  setStoredUser,
+} from "#/utils";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -21,7 +25,8 @@ function AuthProvider({ children }: AuthProviderProps) {
       try {
         setStoredUser(loggedInUser);
       } catch (error) {
-        const message = getStorageErrorMessage(error);
+        const message =
+          error instanceof Error ? error.message : getStorageErrorMessage(error);
         addToast(message, "error");
         throw new Error(message);
       }
@@ -35,7 +40,8 @@ function AuthProvider({ children }: AuthProviderProps) {
     try {
       clearStoredUser();
     } catch (error) {
-      const message = getStorageErrorMessage(error);
+      const message =
+        error instanceof Error ? error.message : getStorageErrorMessage(error);
       addToast(message, "error");
       return;
     }

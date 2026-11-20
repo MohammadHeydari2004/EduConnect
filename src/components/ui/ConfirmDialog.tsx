@@ -1,10 +1,8 @@
 import { WarningIcon } from "#/components/common/icons";
 import Button from "#/components/ui/Button.tsx";
 import Modal from "#/components/ui/Modal.tsx";
-import { DIALOG_STRINGS } from "#/configs/constants/formStrings.ts";
+import { DIALOG_STRINGS } from "#/configs/constants";
 import type { ReactNode } from "react";
-
-export type ConfirmTone = "danger" | "warning" | "info";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -15,33 +13,7 @@ interface ConfirmDialogProps {
   confirmText?: string;
   cancelText?: string;
   isLoading?: boolean;
-  tone?: ConfirmTone;
 }
-
-const TONE_CLASSES: Record<
-  ConfirmTone,
-  {
-    bg: string;
-    text: string;
-    buttonVariant: "danger" | "primary" | "secondary";
-  }
-> = {
-  danger: {
-    bg: "bg-red-100",
-    text: "text-red-600",
-    buttonVariant: "danger",
-  },
-  warning: {
-    bg: "bg-yellow-100",
-    text: "text-yellow-600",
-    buttonVariant: "primary",
-  },
-  info: {
-    bg: "bg-blue-100",
-    text: "text-blue-600",
-    buttonVariant: "primary",
-  },
-};
 
 function ConfirmDialog({
   isOpen,
@@ -52,18 +24,12 @@ function ConfirmDialog({
   confirmText = DIALOG_STRINGS.CONFIRM_TEXT,
   cancelText = DIALOG_STRINGS.CANCEL_TEXT,
   isLoading = false,
-  tone,
 }: ConfirmDialogProps) {
-  const effectiveTone: ConfirmTone = tone ?? "danger";
-  const toneClasses = TONE_CLASSES[effectiveTone];
-
   return (
     <Modal isOpen={isOpen} title={title} onClose={onClose}>
       <div className="text-center sm:text-right flex flex-col items-center justify-center">
-        <div
-          className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full ${toneClasses.bg} sm:mx-0`}
-        >
-          <WarningIcon className={`h-6 w-6 ${toneClasses.text}`} />
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 sm:mx-0">
+          <WarningIcon className="h-6 w-6 text-red-600" />
         </div>
 
         <div className="mb-6 text-sm leading-relaxed text-gray-600">
@@ -76,10 +42,9 @@ function ConfirmDialog({
           {cancelText}
         </Button>
         <Button
-          variant={toneClasses.buttonVariant}
+          variant="danger"
           onClick={onConfirm}
           isLoading={isLoading}
-          autoFocus
         >
           {confirmText}
         </Button>

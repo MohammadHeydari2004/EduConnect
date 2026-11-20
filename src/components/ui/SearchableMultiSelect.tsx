@@ -1,11 +1,10 @@
 import { useClickOutside } from "#/hooks/useClickOutside.ts";
 import { useId, useMemo, useRef, useState } from "react";
-import type { ID } from "#/types/common.ts";
-import type { MultiSelectOption } from "#/types/hooks.ts";
+import type { ID, MultiSelectOption } from "#/types";
 import { MultiSelectTrigger } from "#/components/ui/MultiSelectTrigger.tsx";
 import { MultiSelectDropdown } from "#/components/ui/MultiSelectDropdown.tsx";
 
-export interface SearchableMultiSelectProps {
+interface SearchableMultiSelectProps {
   options: MultiSelectOption[];
   selectedIds: ID[];
   onChange: (ids: ID[]) => void;
@@ -98,7 +97,7 @@ export default function SearchableMultiSelect({
     if (isOpen) setSearchTerm("");
   };
 
-  const handleTriggerKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleTriggerKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
     if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
       if (!isOpen) {
         event.preventDefault();
@@ -174,7 +173,7 @@ export default function SearchableMultiSelect({
         </label>
       )}
 
-      <div onKeyDown={handleTriggerKeyDown}>
+      <div>
         <MultiSelectTrigger
           ref={triggerRef}
           selectedOptions={selectedOptions}
@@ -183,6 +182,7 @@ export default function SearchableMultiSelect({
           error={error}
           disabled={disabled}
           onClick={toggleDropdown}
+          onKeyDown={handleTriggerKeyDown}
           onRemoveChip={handleRemoveSelected}
           aria-labelledby={label ? labelId : undefined}
           aria-label={label ? undefined : placeholder}

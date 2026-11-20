@@ -3,15 +3,14 @@ import {
   MAX_CLASS_DESCRIPTION_LENGTH,
   MAX_CLASS_TITLE_LENGTH,
 } from "#/configs/constants";
-import type { ClassFormValues, ClassFormErrors } from "#/types/class.ts";
-import { validateTitle } from "#/utils/validateTitle.ts";
+import type { ClassFormErrors, ClassFormValues } from "#/types";
+import { validateTitle } from "#/utils";
 
 export function validateClassForm(form: ClassFormValues): ClassFormErrors {
   const newErrors: ClassFormErrors = {};
 
   const titleError = validateTitle(form.title, {
     titleLabel: "کلاس",
-    min: 3,
     max: MAX_CLASS_TITLE_LENGTH,
   });
   if (titleError) newErrors.title = titleError;

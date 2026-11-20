@@ -1,6 +1,6 @@
 import { useId } from "react";
 
-export function buildAriaDescribedBy(
+function buildAriaDescribedBy(
   errorId?: string | undefined,
   descId?: string | undefined,
 ): string | undefined {
@@ -8,13 +8,13 @@ export function buildAriaDescribedBy(
   return ids.length > 0 ? ids.join(" ") : undefined;
 }
 
-export interface UseFieldOptions {
+interface UseFieldOptions {
   id?: string | undefined;
   error?: string | undefined;
   descId?: string | undefined;
 }
 
-export interface UseFieldResult {
+interface UseFieldResult {
   id: string;
   errorId: string | undefined;
   describedBy: string | undefined;

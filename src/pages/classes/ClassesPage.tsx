@@ -8,7 +8,7 @@ import { useToast } from "#/hooks/useToast.ts";
 import ClassFilters from "#/pages/classes/ClassFilters.tsx";
 import ClassForm from "#/pages/classes/ClassForm.tsx";
 import ClassTable from "#/pages/classes/ClassTable.tsx";
-import { useClassesPage } from "#/pages/classes/useClassesPage.ts";
+import { useClassesPage } from "#/hooks/useClassesPage";
 
 export default function ClassesPage() {
   const { addToast } = useToast();
@@ -22,7 +22,8 @@ export default function ClassesPage() {
     setFilters,
     resetFilters,
     filteredClasses,
-    modals,
+    classModal,
+    statusModal,
     isStatusChanging,
     confirmStatusChange,
     handleOpenCreate,
@@ -84,15 +85,15 @@ export default function ClassesPage() {
         )}
       </Card>
 
-      {(modals.isOpen("create") || modals.isOpen("edit")) && (
+      {(classModal.isOpen("create") || classModal.isOpen("edit")) && (
         <ClassForm
-          key={`class-form-${modals.target?.id ?? "new"}`}
+          key={`class-form-${classModal.target?.id ?? "new"}`}
           users={users ?? []}
-          initialData={modals.target}
-          onClose={modals.createModal.close}
+          initialData={classModal.target}
+          onClose={classModal.close}
           onSuccess={(message) => {
             addToast(message, "success");
-            modals.createModal.close();
+            classModal.close();
             refresh();
           }}
           onError={(message) => {
@@ -101,30 +102,28 @@ export default function ClassesPage() {
         />
       )}
 
-      {modals.isOpen("status") && (
-        <ConfirmDialog
-          isOpen={true}
-          title={
-            modals.target?.status === "active"
-              ? "غیرفعال کردن کلاس"
-              : "فعال کردن کلاس"
-          }
-          message={
-            modals.target?.status === "active"
-              ? `آیا از غیرفعال کردن کلاس "${modals.target?.title ?? ""}" مطمئن هستید؟`
-              : `آیا از فعال کردن کلاس "${modals.target?.title ?? ""}" مطمئن هستید؟`
-          }
-          onClose={modals.createModal.close}
-          onConfirm={confirmStatusChange}
-          isLoading={isStatusChanging}
-        />
-      )}
+      <ConfirmDialog
+        isOpen={statusModal.isOpen("status")}
+        title={
+          statusModal.target?.status === "active"
+            ? "غیرفعال کردن کلاس"
+            : "فعال کردن کلاس"
+        }
+        message={
+          statusModal.target?.status === "active"
+            ? `آیا از غیرفعال کردن کلاس "${statusModal.target?.title ?? ""}" مطمئن هستید؟`
+            : `آیا از فعال کردن کلاس "${statusModal.target?.title ?? ""}" مطمئن هستید؟`
+        }
+        onClose={statusModal.close}
+        onConfirm={confirmStatusChange}
+        isLoading={isStatusChanging}
+      />
 
       <ConfirmDialog
-        isOpen={modals.isOpen("delete")}
+        isOpen={classModal.isOpen("delete")}
         title="حذف کلاس"
-        message={`آیا از حذف کامل کلاس "${modals.target?.title ?? ""}" مطمئن هستید؟ این عمل قابل بازگشت نیست.`}
-        onClose={modals.deleteModal.close}
+        message={`آیا از حذف کامل کلاس "${classModal.target?.title ?? ""}" مطمئن هستید؟ این عمل قابل بازگشت نیست.`}
+        onClose={classModal.close}
         onConfirm={handleDelete}
         isLoading={isDeleting}
       />

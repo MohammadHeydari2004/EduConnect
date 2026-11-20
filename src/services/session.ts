@@ -1,18 +1,15 @@
 ﻿import { baseApi } from "#/services/api/baseApi.ts";
-import { safeDelete } from "#/services/api/safeDelete.ts";
-import type { Attendance } from "#/types/attendance.ts";
-import type { ID } from "#/types/common.ts";
-import type { Session, SessionFormValues } from "#/types/session.ts";
+import { API_ENDPOINTS } from "#/configs/constants";
+import type { Attendance, ID, Session, SessionFormValues } from "#/types";
 
-const endpoint = "/sessions";
-const attendanceEndpoint = "/attendance";
+const endpoint = API_ENDPOINTS.SESSIONS;
+const attendanceEndpoint = API_ENDPOINTS.ATTENDANCE;
 
 export const sessionService = {
   getAll: (
     params?: Record<string, string | number | boolean>,
     signal?: AbortSignal,
   ) => baseApi.getAll<Session>(endpoint, params, signal),
-  getById: (id: ID) => baseApi.getById<Session>(endpoint, id),
   getByClass: (classId: ID, signal?: AbortSignal) =>
     baseApi.getAll<Session>(endpoint, { classId }, signal),
 
@@ -29,29 +26,11 @@ export const sessionService = {
     }),
 
   delete: async (id: ID) => {
-    const attendances = await baseApi.getAll<Attendance>(
+    await baseApi.deleteDependents<Attendance>(
       attendanceEndpoint,
       { sessionId: id },
+      "حضور و غیاب",
     );
-
-    await Promise.all(
-      attendances.map(async (a) => {
-        try {
-          await baseApi.update(attendanceEndpoint, a.id, {
-            sessionId: null,
-          });
-        } catch (err) {
-          throw new Error(
-            `حذف وابستگی حضور و غیاب با خطا مواجه شد: ${err instanceof Error ? err.message : "خطای نامشخص"}`,
-          );
-        }
-      }),
-    );
-
-    await safeDelete(
-      (deleteId: ID) => baseApi.delete(endpoint, deleteId),
-      id,
-      endpoint,
-    );
+    await baseApi.delete(endpoint, id);
   },
 };

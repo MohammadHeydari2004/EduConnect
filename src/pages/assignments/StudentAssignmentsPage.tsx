@@ -2,13 +2,13 @@ import Loading from "#/components/common/Loading.tsx";
 import { EmptyListState } from "#/components/ui/EmptyListState.tsx";
 import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import Card from "#/components/ui/Card.tsx";
+import { TOAST_MESSAGES } from "#/configs/constants";
 import {
   assignmentFilterConfigs,
   initialAssignmentFilters,
-  TOAST_MESSAGES,
-} from "#/configs/constants";
+} from "#/pages/assignments/assignmentFilters.ts";
 import { useAuth } from "#/contexts/AuthContext.ts";
-import { useAssignmentsPageData } from "#/hooks/useAssignmentsPageData";
+import { useAssignmentLookups } from "#/hooks/useAssignmentLookups.ts";
 import { useAsyncData } from "#/hooks/useAsyncData.ts";
 import { useFilter } from "#/hooks/useFilter.ts";
 import { useMapById } from "#/hooks/useMapById.ts";
@@ -18,13 +18,8 @@ import AssignmentFilterCard from "#/components/common/AssignmentFilterCard.tsx";
 import StudentAssignmentsTable from "#/pages/assignments/StudentAssignmentsTable.tsx";
 import SubmissionForm from "#/pages/assignments/SubmissionForm";
 import { assignmentService } from "#/services/assignment.ts";
-import type { Assignment, AssignmentFilters } from "#/types/assignment.ts";
-import type { ID } from "#/types/common.ts";
-import type { NewSubmissionDraft, Submission } from "#/types/submission.ts";
-import {
-  getClassNameFromMap,
-  getUserNameFromMap,
-} from "#/utils/nameHelpers.ts";
+import type { Assignment, AssignmentFilters, ID, NewSubmissionDraft, Submission } from "#/types";
+import { getClassNameFromMap, getUserNameFromMap, hasActiveFilters, isDeadlineExpired } from "#/utils";
 import { useCallback, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -42,8 +37,8 @@ export default function StudentAssignmentsPage() {
     classMap,
     loading,
     error,
-    refreshSubmissions,
-  } = useAssignmentsPageData();
+    refreshLookups,
+  } = useAssignmentLookups(currentUser?.id);
 
   const isStudent = currentUser?.role === "student";
   const classId = classIdParam ?? null;
@@ -96,8 +91,14 @@ export default function StudentAssignmentsPage() {
     [submissionMap],
   );
 
-  const getTeacherName = (userId: ID) => getUserNameFromMap(userMap, userId);
-  const getClassName = (classId: ID) => getClassNameFromMap(classMap, classId);
+  const getTeacherName = useCallback(
+    (userId: ID) => getUserNameFromMap(userMap, userId),
+    [userMap],
+  );
+  const getClassName = useCallback(
+    (classId: ID) => getClassNameFromMap(classMap, classId),
+    [classMap],
+  );
 
   const myClasses = useMemo(() => {
     if (!currentUser) return [];
@@ -109,7 +110,7 @@ export default function StudentAssignmentsPage() {
   }, [classes, currentUser, isStudent]);
 
   const handleOpenSubmissionForm = (assignment: Assignment) => {
-    const isExpired = new Date() > new Date(assignment.deadline);
+    const isExpired = isDeadlineExpired(assignment.deadline);
     if (isExpired) {
       addToast("مهلت ارسال این تکلیف به پایان رسیده است.", "error");
       return;
@@ -118,8 +119,7 @@ export default function StudentAssignmentsPage() {
     const target: Submission | NewSubmissionDraft = existing
       ? existing
       : { assignmentId: assignment.id };
-    submissionModal.setTarget(target);
-    submissionModal.open("form");
+    submissionModal.openWithTarget("form", target);
   };
 
   const handleSubmissionFormClose = useCallback(() => {
@@ -128,8 +128,8 @@ export default function StudentAssignmentsPage() {
 
   const handleSubmissionSuccess = useCallback(() => {
     handleSubmissionFormClose();
-    refreshSubmissions();
-  }, [handleSubmissionFormClose, refreshSubmissions]);
+    refreshLookups();
+  }, [handleSubmissionFormClose, refreshLookups]);
 
   const submissionFormProps = useMemo(() => {
     if (!submissionModal.isOpen("form") || !currentUser) return null;
@@ -158,9 +158,7 @@ export default function StudentAssignmentsPage() {
   if (error || assignmentsError)
     return <ErrorAlert message={error || assignmentsError} />;
 
-  const hasActiveFilters = Boolean(
-    filters.search || filters.classId || filters.status,
-  );
+  const hasActive = hasActiveFilters(filters);
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -178,7 +176,7 @@ export default function StudentAssignmentsPage() {
           onChange={(next) => setFilters({ ...filters, ...next })}
           onReset={() => setFilters(initialAssignmentFilters)}
           classes={myClasses}
-          hasActiveFilters={hasActiveFilters}
+          hasActiveFilters={hasActive}
         />
       )}
 

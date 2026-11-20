@@ -1,4 +1,4 @@
-import type { ID, Maybe, UserRole, BaseFormErrors } from "#/types/common.ts";
+import type { BaseFormErrors, ID, Maybe, UserRole } from "#/types/common.ts";
 
 export type TargetAudience = "students" | "teacher" | "both";
 

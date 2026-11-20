@@ -1,20 +1,20 @@
 ﻿import { useAuth } from "#/contexts/AuthContext.ts";
 import { useToast } from "#/hooks/useToast.ts";
-import { showErrorToastWithInfo } from "#/hooks/useToastHelpers.ts";
+import { showErrorToast } from "#/hooks/useToastHelpers.ts";
 import { useMapById } from "#/hooks/useMapById.ts";
 import { useAsyncData } from "#/hooks/useAsyncData.ts";
 import { assignmentService } from "#/services/assignment.ts";
 import { classService } from "#/services/class.ts";
 import { submissionService } from "#/services/submission.ts";
 import { userService } from "#/services/user.ts";
-import type { Assignment } from "#/types/assignment.ts";
-import type { ClassItem } from "#/types/class.ts";
-import type { ID } from "#/types/common.ts";
-import type { Submission } from "#/types/submission.ts";
-import type { User } from "#/types/user.ts";
-import { classifyError } from "#/services/error.ts";
-import { getUserNameFromMap, getClassNameFromMap, getUserEmailFromMap } from "#/utils/nameHelpers.ts";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import type { Assignment, ClassItem, ID, Submission, User } from "#/types";
+import {
+  getClassNameFromMap,
+  getUserEmailFromMap,
+  isAdmin,
+  isDeadlineExpired,
+} from "#/utils";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MAX_ASSIGNMENT_GRADE } from "#/configs/constants";
 
@@ -30,7 +30,6 @@ export interface StudentSubmissionStatus {
   submission: Submission | null;
   isLate: boolean;
   isMissing: boolean;
-  isAutoGraded: boolean;
   canGrade: boolean;
 }
 
@@ -42,8 +41,8 @@ interface UseSubmissionsPageReturn {
   loading: boolean;
   error: string;
   gradedCount: number;
+  submittedCount: number;
   isDeadlinePassed: boolean;
-  getUserName: (userId: ID) => string;
   getUserEmail: (userId: ID) => string;
   getClassName: (classId: ID) => string;
   grading: Record<ID, { grade: string; feedback: string }>;
@@ -84,9 +83,10 @@ export function useSubmissionsPage(): UseSubmissionsPageReturn {
     Record<ID, { grade: string; feedback: string }>
   >({});
   const [savingId, setSavingId] = useState<ID | null>(null);
+  const gradingInitializedRef = useRef<ID | null>(null);
 
   const { data, loading, error, refresh } = useAsyncData<SubmissionsPageData>({
-    fetcher: (signal) => id ? fetchSubmissionsPageData(assignmentId, signal) : Promise.reject(new Error("Missing assignment id")),
+    fetcher: (signal) => id ? fetchSubmissionsPageData(assignmentId, signal) : Promise.reject(new Error("شناسه تکلیف نامعتبر است.")),
     deps: [assignmentId],
     fallbackError: "خطا در بارگذاری پاسخ‌ها.",
   });
@@ -99,12 +99,11 @@ export function useSubmissionsPage(): UseSubmissionsPageReturn {
   const userMap = useMapById(users);
   const classMap = useMapById(classes);
 
-  const getUserName = (userId: ID) => getUserNameFromMap(userMap, userId);
   const getUserEmail = (userId: ID) => getUserEmailFromMap(userMap, userId);
   const getClassName = (classId: ID) => getClassNameFromMap(classMap, classId);
 
   const isDeadlinePassed = useMemo(
-    () => assignment ? new Date() > new Date(assignment.deadline) : false,
+    () => assignment ? isDeadlineExpired(assignment.deadline) : false,
     [assignment],
   );
 
@@ -125,21 +124,19 @@ export function useSubmissionsPage(): UseSubmissionsPageReturn {
 
         const submission = submissionsByStudent.get(studentId) ?? null;
         const hasContent = submission && submission.content && submission.content.trim().length > 0;
-        const effectiveSubmission = hasContent ? submission : null;
+        const effectiveSubmission = hasContent || submission?.status === "graded" ? submission : null;
 
         const isLate = effectiveSubmission
           ? new Date(effectiveSubmission.submittedAt) > new Date(assignment.deadline)
           : false;
         const isMissing = !effectiveSubmission && isDeadlinePassed;
-        const isAutoGraded = isMissing;
-        const canGrade = Boolean(effectiveSubmission && !isAutoGraded && effectiveSubmission.status !== "graded");
+        const canGrade = Boolean(effectiveSubmission && !isMissing);
 
         return {
           student,
           submission: effectiveSubmission,
           isLate,
           isMissing,
-          isAutoGraded,
           canGrade,
         };
       })
@@ -147,7 +144,15 @@ export function useSubmissionsPage(): UseSubmissionsPageReturn {
   }, [assignment, submissions, classMap, userMap, isDeadlinePassed]);
 
   const gradedCount = useMemo(
-    () => studentStatuses.filter((s) => s.submission?.status === "graded" || s.isAutoGraded).length,
+    () =>
+      studentStatuses.filter(
+        (s) => s.submission?.status === "graded" || s.isMissing,
+      ).length,
+    [studentStatuses],
+  );
+
+  const submittedCount = useMemo(
+    () => studentStatuses.filter((s) => s.submission).length,
     [studentStatuses],
   );
 
@@ -157,14 +162,17 @@ export function useSubmissionsPage(): UseSubmissionsPageReturn {
     const currentAssignment = data.assignment;
     const currentSubmissions = data.submissions;
 
-    const isAdmin = currentUser.role === "admin";
+    const isAdminUser = isAdmin(currentUser);
     const isTeacherOwner =
       currentUser.role === "teacher" && currentAssignment.teacherId === currentUser.id;
 
-    if (!isAdmin && !isTeacherOwner) {
+    if (!isAdminUser && !isTeacherOwner) {
       navigate("/assignments", { replace: true });
       return;
     }
+
+    if (gradingInitializedRef.current === assignmentId) return;
+    gradingInitializedRef.current = assignmentId;
 
     const initialGrading: Record<
       ID,
@@ -215,19 +223,33 @@ export function useSubmissionsPage(): UseSubmissionsPageReturn {
     async (student: User) => {
       setSavingId(student.id);
       try {
-        await submissionService.create({
+        const existingList = await submissionService.getByAssignment(
           assignmentId,
-          studentId: student.id,
-          content: "",
-          grade: 0,
-          feedback: "تکلیف در مهلت ارسال نشده است.",
-          status: "graded",
-        });
+        );
+        const existing = existingList.find((s) => s.studentId === student.id);
+        if (existing) {
+          await submissionService.update(existing.id, {
+            grade: 0,
+            feedback: "تکلیف در مهلت ارسال نشده است.",
+            status: "graded",
+          });
+        } else {
+          await submissionService.create({
+            assignmentId,
+            studentId: student.id,
+            content: "",
+            grade: 0,
+            feedback: "تکلیف در مهلت ارسال نشده است.",
+            status: "graded",
+          });
+        }
         addToast("نمره ۰ به صورت خودکار ثبت شد.", "success");
         refresh();
       } catch (err) {
-        const info = classifyError(err);
-        showErrorToastWithInfo(addToast, info, "خطا در ثبت نمره.");
+        showErrorToast(
+          addToast,
+          err instanceof Error ? err.message : "خطا در ثبت نمره.",
+        );
       } finally {
         setSavingId(null);
       }
@@ -264,8 +286,10 @@ export function useSubmissionsPage(): UseSubmissionsPageReturn {
           },
         }));
       } catch (err) {
-        const info = classifyError(err);
-        showErrorToastWithInfo(addToast, info, "خطا در ثبت نمره.");
+        showErrorToast(
+          addToast,
+          err instanceof Error ? err.message : "خطا در ثبت نمره.",
+        );
       } finally {
         setSavingId(null);
       }
@@ -295,7 +319,7 @@ export function useSubmissionsPage(): UseSubmissionsPageReturn {
 
   const handleReturnSubmission = useCallback(
     async (submission: Submission) => {
-      setSavingId(submission.id);
+      setSavingId(submission.studentId);
       try {
         await submissionService.update(submission.id, {
           status: "returned",
@@ -304,8 +328,10 @@ export function useSubmissionsPage(): UseSubmissionsPageReturn {
         addToast("پاسخ دانشجو برای اصلاح برگردانده شد.", "success");
         refresh();
       } catch (err) {
-        const info = classifyError(err);
-        showErrorToastWithInfo(addToast, info, "خطا در برگرداندن پاسخ.");
+        showErrorToast(
+          addToast,
+          err instanceof Error ? err.message : "خطا در برگرداندن پاسخ.",
+        );
       } finally {
         setSavingId(null);
       }
@@ -321,8 +347,8 @@ export function useSubmissionsPage(): UseSubmissionsPageReturn {
     loading,
     error: error || "",
     gradedCount,
+    submittedCount,
     isDeadlinePassed,
-    getUserName,
     getUserEmail,
     getClassName,
     grading,

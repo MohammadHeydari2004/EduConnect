@@ -1,4 +1,4 @@
-import { useMenuClose } from "#/hooks/useMenuPropagation.ts";
+import { useMenuClose } from "#/hooks/menuClose.ts";
 import type { ReactNode } from "react";
 
 const BASE_CLASS =

@@ -1,12 +1,12 @@
 import { SearchIcon } from "#/components/common/icons";
 import { createPortal } from "react-dom";
 import { usePortalPosition } from "#/hooks/usePortalPosition.ts";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import { MultiSelectActions } from "#/components/ui/MultiSelectActions.tsx";
 import { MultiSelectEmpty } from "#/components/ui/MultiSelectEmpty.tsx";
 import { MultiSelectOptionComponent } from "#/components/ui/MultiSelectOption.tsx";
-import type { ID } from "#/types/common.ts";
-import type { MultiSelectOption } from "#/types/hooks.ts";
+import type { ID } from "#/types";
+import type { MultiSelectOption } from "#/types";
 
 interface MultiSelectDropdownProps {
   isOpen: boolean;
@@ -21,7 +21,7 @@ interface MultiSelectDropdownProps {
   searchInputRef: React.RefObject<HTMLInputElement | null>;
   listboxRef: React.RefObject<HTMLDivElement | null>;
   triggerRef: React.RefObject<HTMLButtonElement | null>;
-  dropdownRef: React.RefObject<HTMLDivElement | null>;
+  dropdownRef: React.MutableRefObject<HTMLDivElement | null>;
   listboxId: string;
   onSearchChange: (value: string) => void;
   onSearchKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -57,8 +57,6 @@ export function MultiSelectDropdown({
   onDeselectAll,
   onActiveIndexChange,
 }: MultiSelectDropdownProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-
   const selectedIdsSet = useMemo(() => new Set(selectedIds), [selectedIds]);
 
   const position = usePortalPosition({
@@ -102,8 +100,7 @@ export function MultiSelectDropdown({
   return createPortal(
     <div
       ref={(el) => {
-        (dropdownRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
-        (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+        dropdownRef.current = el;
       }}
       className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg"
       style={{

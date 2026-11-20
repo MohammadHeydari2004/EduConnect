@@ -1,10 +1,10 @@
-import { CHART_COLORS } from "#/configs/constants/chartConstants.ts";
+import { CHART_COLORS } from "#/configs/constants";
 import {
+  type ChartPayloadEntry,
   defaultChartLabel,
   getChartEntryColor,
   getChartEntryKey,
-  type ChartPayloadEntry,
-} from "#/utils/chart.ts";
+} from "#/utils";
 
 interface ChartLegendProps {
   payload?: ChartPayloadEntry[];

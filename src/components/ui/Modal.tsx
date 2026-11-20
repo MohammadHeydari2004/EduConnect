@@ -10,9 +10,6 @@ interface ModalProps {
   onClose: () => void;
   ariaLabel?: string;
   description?: string;
-  size?: "sm" | "md" | "lg";
-  dismissOnBackdropClick?: boolean;
-  ariaDescribedBy?: string | undefined;
 }
 
 function Modal({
@@ -22,9 +19,6 @@ function Modal({
   onClose,
   ariaLabel,
   description,
-  size = "md",
-  dismissOnBackdropClick = true,
-  ariaDescribedBy,
 }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
@@ -124,12 +118,6 @@ function Modal({
 
   if (!isOpen) return null;
 
-  const sizeClasses = {
-    sm: "max-w-sm",
-    md: "max-w-lg",
-    lg: "max-w-2xl",
-  };
-
   return createPortal(
     <div
       ref={modalRef}
@@ -137,12 +125,12 @@ function Modal({
       aria-modal="true"
       aria-labelledby={title ? titleId : undefined}
       aria-label={!title ? (ariaLabel ?? "پنجره گفتگو") : undefined}
-      aria-describedby={ariaDescribedBy ?? (description ? descId : undefined)}
+      aria-describedby={description ? descId : undefined}
       tabIndex={-1}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 outline-none sm:p-4"
-      onClick={dismissOnBackdropClick ? onClose : undefined}
+      onClick={onClose}
     >
-      <div className={`w-full ${sizeClasses[size]} rounded-xl bg-white p-4 shadow-lg sm:p-6`} onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-lg rounded-xl bg-white p-4 shadow-lg sm:p-6" onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-center justify-between">
           {title && (
             <h2

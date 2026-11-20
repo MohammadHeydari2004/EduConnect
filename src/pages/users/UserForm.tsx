@@ -3,19 +3,15 @@ import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import Input from "#/components/ui/Input.tsx";
 import Modal from "#/components/ui/Modal.tsx";
 import Select from "#/components/ui/Select.tsx";
-import {
-  validateEmail,
-  validateName,
-  validatePassword,
-} from "#/utils/validation.ts";
-import { ROLE_FORM_OPTIONS, STATUS_FORM_OPTIONS, EMAIL_ALREADY_REGISTERED } from "#/configs/constants";
-import { isApiError } from "#/services/api/axiosInstance.ts";
+import { validateEmail, validateName, validatePassword } from "#/utils";
+import { ROLE_FORM_OPTIONS, STATUS_FORM_OPTIONS } from "#/configs/constants";
 import type {
   CreateUserPayload,
+  RecordStatus,
   UpdateUserPayload,
   User,
-} from "#/types/user.ts";
-import type { RecordStatus, UserRole } from "#/types/common.ts";
+  UserRole,
+} from "#/types";
 import { useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import { useEffect } from "react";
@@ -37,25 +33,6 @@ interface UserFormProps {
   onUpdate: (values: UpdateUserPayload) => Promise<void>;
 }
 
-function resolveError(err: unknown): {
-  field: keyof UserFormValues | "root";
-  message: string;
-} {
-  let message: string;
-  if (isApiError(err)) {
-    message = err.userMessage;
-  } else if (err instanceof Error) {
-    message = err.message;
-  } else {
-    return { field: "root", message: "خطای غیرمنتظره‌ای رخ داد." };
-  }
-
-  if (message.includes(EMAIL_ALREADY_REGISTERED)) {
-    return { field: "email", message };
-  }
-  return { field: "root", message };
-}
-
 function UserForm({
   isOpen,
   mode,
@@ -69,7 +46,6 @@ function UserForm({
      handleSubmit,
      formState: { errors, isSubmitting },
      reset,
-     setError,
      clearErrors,
    } = useForm<UserFormValues>({
     defaultValues: {
@@ -95,31 +71,21 @@ function UserForm({
    }, [mode, user, reset, clearErrors]);
 
   const onSubmit: SubmitHandler<UserFormValues> = async (data) => {
-    try {
-      if (mode === "create") {
-        await onCreate({
-          name: data.name.trim(),
-          email: data.email.trim(),
-          password: data.password?.trim() ?? "",
-          role: data.role,
-          status: data.status,
-        });
-      } else {
-        await onUpdate({
-          name: data.name.trim(),
-          email: data.email.trim(),
-          role: data.role,
-          status: data.status,
-        });
-      }
-      onClose();
-    } catch (err) {
-      const { field, message } = resolveError(err);
-      
-      setError(field, { type: "server", message });
-      if (field !== "root") {
-        clearErrors("root");
-      }
+    if (mode === "create") {
+      await onCreate({
+        name: data.name.trim(),
+        email: data.email.trim(),
+        password: data.password?.trim() ?? "",
+        role: data.role,
+        status: data.status,
+      });
+    } else {
+      await onUpdate({
+        name: data.name.trim(),
+        email: data.email.trim(),
+        role: data.role,
+        status: data.status,
+      });
     }
   };
 

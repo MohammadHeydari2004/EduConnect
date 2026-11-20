@@ -2,11 +2,9 @@ import EmptyState from "#/components/common/EmptyState.tsx";
 import Card from "#/components/ui/Card.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
+import { studentNameEmailColumns } from "#/pages/attendance/attendanceColumns.tsx";
 import AttendanceClassSessionSelector from "#/components/common/AttendanceClassSessionSelector.tsx";
-import type { ClassItem } from "#/types/class.ts";
-import type { AttendanceStatus } from "#/types/common.ts";
-import type { Session } from "#/types/session.ts";
-import type { User } from "#/types/user.ts";
+import type { AttendanceStatus, ClassItem, Session, User } from "#/types";
 
 interface AdminAttendanceReportProps {
   classes: ClassItem[];
@@ -91,41 +89,17 @@ export default function AdminAttendanceReport({
               <Table
                 getRowKey={(student) => student.id}
                 columns={[
-                  {
-                    key: "name",
-                    title: "نام",
-                    width: "30%",
-                    render: (student) => (
-                      <span className="font-medium text-gray-800">
-                        {student.name}
-                      </span>
-                    ),
-                  },
-                  {
-                    key: "email",
-                    title: "ایمیل",
-                    width: "35%",
-                    render: (student) => (
-                      <span className="text-sm text-gray-600 break-all">
-                        {student.email}
-                      </span>
-                    ),
-                  },
+                  ...studentNameEmailColumns("30%", "35%"),
                   {
                     key: "status",
                     title: "وضعیت حضور",
                     width: "25%",
-                    render: (student) => {
-                      const status = attendances[student.id];
-                      if (!status) {
-                        return (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/20">
-                            ثبت‌نشده
-                          </span>
-                        );
-                      }
-                      return <StatusChip status={status} />;
-                    },
+                    render: (student) => (
+                      <StatusChip
+                        status={attendances[student.id]}
+                        fallbackLabel="ثبت‌نشده"
+                      />
+                    ),
                   },
                 ]}
                 data={classStudents}
@@ -137,13 +111,7 @@ export default function AdminAttendanceReport({
                           <span className="text-base font-bold text-gray-800">
                             {student.name}
                           </span>
-                          {!status ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/20">
-                              ثبت‌نشده
-                            </span>
-                          ) : (
-                            <StatusChip status={status} />
-                          )}
+                          <StatusChip status={status} fallbackLabel="ثبت‌نشده" />
                         </div>
                         <div className="text-sm break-all text-gray-600">
                           {student.email}

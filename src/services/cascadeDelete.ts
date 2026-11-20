@@ -1,175 +1,101 @@
 ﻿import { announcementService } from "#/services/announcement.ts";
-import { attendanceService } from "#/services/attendance.ts";
+import { baseApi } from "#/services/api/baseApi.ts";
 import { assignmentService } from "#/services/assignment.ts";
+import { attendanceService } from "#/services/attendance.ts";
 import { classService } from "#/services/class.ts";
 import { submissionService } from "#/services/submission.ts";
-import { safeDelete } from "#/services/api/safeDelete.ts";
-import { baseApi } from "#/services/api/baseApi.ts";
-import type { CascadeReport, CascadeResult } from "#/types/cascade.ts";
-import type { ClassItem } from "#/types/class.ts";
-import type { ID } from "#/types/common.ts";
-import type { Attendance } from "#/types/attendance.ts";
+import { API_ENDPOINTS } from "#/configs/constants";
+import type {
+  Announcement,
+  Attendance,
+  CascadeReport,
+  CascadeResult,
+  ClassItem,
+  ID,
+  Submission,
+} from "#/types";
 
 interface HasId {
   id: ID;
 }
 
-interface CascadeDeleteConfig<T extends HasId> {
-  endpoint: string;
-  getAll: (params?: Record<string, string>) => Promise<T[]>;
-  delete: (id: ID) => Promise<void>;
-  filter?: (item: T, userId: ID) => boolean;
-  serverFilterKey?: string;
+interface CascadeProcessConfig<T extends HasId> {
+  entityLabel: string;
+  actionLabel: string;
+  fetchItems: () => Promise<T[]>;
+  filter?: (item: T) => boolean;
+  processItem: (item: T) => Promise<void>;
 }
 
-async function cascadeDeleteByFilter<T extends HasId>(
-  userId: ID,
-  config: CascadeDeleteConfig<T>,
+async function cascadeProcess<T extends HasId>(
+  config: CascadeProcessConfig<T>,
 ): Promise<CascadeResult> {
   const errors: string[] = [];
   try {
-    const params = config.serverFilterKey
-      ? { [config.serverFilterKey]: userId }
-      : undefined;
-    const items = await baseApi.getAll<T>(config.endpoint, params);
-    const filtered = config.filter
-      ? items.filter((item) => config.filter!(item, userId))
-      : items;
+    const items = await config.fetchItems();
+    const filtered = config.filter ? items.filter(config.filter) : items;
 
     await Promise.all(
       filtered.map(async (item) => {
         try {
-          await safeDelete(config.delete, item.id, config.endpoint);
+          await config.processItem(item);
         } catch (err) {
           errors.push(
-            `حذف ${config.endpoint} با id ${item.id} با خطا مواجه شد: ${err instanceof Error ? err.message : "خطای نامشخص"}`,
+            `${config.actionLabel} ${config.entityLabel} با id ${item.id} با خطا مواجه شد: ${
+              err instanceof Error ? err.message : "خطای نامشخص"
+            }`,
           );
         }
       }),
     );
 
     return {
-      entityType: config.endpoint,
+      entityType: config.entityLabel,
       success: errors.length === 0,
       errors,
     };
   } catch (err) {
     return {
-      entityType: config.endpoint,
+      entityType: config.entityLabel,
       success: false,
       errors: [
-        `دریافت ${config.endpoint} با خطا مواجه شد: ${err instanceof Error ? err.message : "خطای نامشخص"}`,
+        `دریافت ${config.entityLabel} با خطا مواجه شد: ${
+          err instanceof Error ? err.message : "خطای نامشخص"
+        }`,
       ],
     };
   }
 }
 
-export async function cascadeDeleteUserClasses(userId: ID): Promise<CascadeResult> {
-  return cascadeDeleteByFilter(userId, {
-    endpoint: "/classes",
-    getAll: classService.getAll,
-    delete: classService.delete,
-    serverFilterKey: "teacherId",
-  });
-}
-
-export async function cascadeDeleteUserAttendances(userId: ID): Promise<CascadeResult> {
-  return cascadeDeleteByFilter(userId, {
-    endpoint: "/attendance",
-    getAll: attendanceService.getAll,
-    delete: attendanceService.delete,
-    serverFilterKey: "studentId",
-  });
-}
-
-export async function cascadeDeleteUserSubmissions(userId: ID): Promise<CascadeResult> {
-  return cascadeDeleteByFilter(userId, {
-    endpoint: "/submissions",
-    getAll: submissionService.getAll,
-    delete: submissionService.delete,
-    serverFilterKey: "studentId",
-  });
-}
-
-export async function cascadeDeleteUserAnnouncements(
+async function removeUserFromAnnouncementSeenBy(
   userId: ID,
 ): Promise<CascadeResult> {
-  return cascadeDeleteByFilter(userId, {
-    endpoint: "/announcements",
-    getAll: announcementService.getAll,
-    delete: announcementService.delete,
-    serverFilterKey: "authorId",
-  });
-}
-
-async function cascadeUpdateArrayField(
-  userId: ID,
-  config: {
-    endpoint: string;
-    getAll: () => Promise<HasId[]>;
-    filter: (item: HasId) => boolean;
-    getArray: (item: HasId) => ID[];
-    setArray: (id: ID, value: ID[]) => Promise<void>;
-  },
-): Promise<CascadeResult> {
-  const errors: string[] = [];
-  try {
-    const items = await config.getAll();
-    const filtered = items.filter(config.filter);
-
-    await Promise.all(
-      filtered.map(async (item) => {
-        try {
-          const currentValue = config.getArray(item);
-          if (!currentValue.includes(userId)) return;
-          const newValue = currentValue.filter((uid) => uid !== userId);
-          await config.setArray(item.id, newValue);
-        } catch (err) {
-          errors.push(
-            `به‌روزرسانی ${config.endpoint} با id ${item.id} با خطا مواجه شد: ${err instanceof Error ? err.message : "خطای نامشخص"}`,
-          );
-        }
-      }),
-    );
-
-    return {
-      entityType: config.endpoint,
-      success: errors.length === 0,
-      errors,
-    };
-  } catch (err) {
-    return {
-      entityType: config.endpoint,
-      success: false,
-      errors: [
-        `دریافت ${config.endpoint} با خطا مواجه شد: ${err instanceof Error ? err.message : "خطای نامشخص"}`,
-      ],
-    };
-  }
-}
-export async function removeUserFromAnnouncementSeenBy(
-  userId: ID,
-): Promise<CascadeResult> {
-  return cascadeUpdateArrayField(userId, {
-    endpoint: "/announcements.seenBy",
-    getAll: () =>
-      baseApi.getAll<{ id: ID; seenBy?: ID[] }>("/announcements"),
-    filter: (item) => (item as { seenBy?: ID[] }).seenBy?.includes(userId) ?? false,
-    getArray: (item) => (item as { seenBy?: ID[] }).seenBy ?? [],
-    setArray: async (id, value) => {
-      await announcementService.update(id, { seenBy: value });
+  return cascadeProcess<{ id: ID; seenBy?: ID[] }>({
+    entityLabel: "اطلاعیه‌ها",
+    actionLabel: "به‌روزرسانی",
+    fetchItems: () =>
+      baseApi.getAll<{ id: ID; seenBy?: ID[] }>(API_ENDPOINTS.ANNOUNCEMENTS),
+    filter: (item) => (item.seenBy ?? []).includes(userId),
+    processItem: async (item) => {
+      const seenBy = (item.seenBy ?? []).filter((uid) => uid !== userId);
+      await announcementService.update(item.id, { seenBy });
     },
   });
 }
 
-export async function removeUserFromClassRolls(userId: ID): Promise<CascadeResult> {
-  return cascadeUpdateArrayField(userId, {
-    endpoint: "/classes.studentIds",
-    getAll: () => baseApi.getAll<ClassItem>("/classes"),
-    filter: (cls) => (cls as ClassItem).studentIds?.includes(userId) ?? false,
-    getArray: (cls) => (cls as ClassItem).studentIds ?? [],
-    setArray: async (id, value) => {
-      await classService.update(id, { studentIds: value });
+async function removeUserFromClassRolls(
+  userId: ID,
+): Promise<CascadeResult> {
+  return cascadeProcess<ClassItem>({
+    entityLabel: "کلاس‌ها",
+    actionLabel: "به‌روزرسانی",
+    fetchItems: () => classService.getAll(),
+    filter: (cls) => (cls.studentIds ?? []).includes(userId),
+    processItem: async (item) => {
+      const studentIds = (item.studentIds ?? []).filter(
+        (sid) => sid !== userId,
+      );
+      await classService.update(item.id, { studentIds });
     },
   });
 }
@@ -181,71 +107,30 @@ export async function removeStudentsFromClassCascade(
   const results: CascadeResult[] = [];
   const studentIdsSet = new Set(studentIds);
 
-  // حذف rekordهای حضور و غیاب دانش‌آموزان حذف‌شده در این کلاس
-  const attendanceErrors: string[] = [];
-  try {
-    const attendances = await baseApi.getAll<Attendance>("/attendance", {
-      classId,
-    });
-    const attendanceToDelete = attendances.filter((a) =>
-      studentIdsSet.has(a.studentId),
-    );
-    await Promise.all(
-      attendanceToDelete.map(async (a) => {
-        try {
-          await attendanceService.delete(a.id);
-        } catch (err) {
-          attendanceErrors.push(
-            `حذف حضور و غیاب با id ${a.id} با خطا مواجه شد: ${err instanceof Error ? err.message : "خطای نامشخص"}`,
-          );
-        }
-      }),
-    );
-  } catch (err) {
-    attendanceErrors.push(
-      `دریافت حضور و غیاب کلاس با خطا مواجه شد: ${err instanceof Error ? err.message : "خطای نامشخص"}`,
-    );
-  }
-  results.push({
-    entityType: "/attendance",
-    success: attendanceErrors.length === 0,
-    errors: attendanceErrors,
+  const attendanceResult = await cascadeProcess<Attendance>({
+    entityLabel: "حضور و غیاب",
+    actionLabel: "حذف",
+    fetchItems: () =>
+      baseApi.getAll<Attendance>(API_ENDPOINTS.ATTENDANCE, { classId }),
+    filter: (a) => studentIdsSet.has(a.studentId),
+    processItem: (a) => attendanceService.delete(a.id),
   });
+  results.push(attendanceResult);
 
-  // حذف ارسال‌های دانش‌آموزان حذف‌شده در تکالیف این کلاس
-  const submissionErrors: string[] = [];
-  try {
-    const assignments = await assignmentService.getByClass(classId);
-    const submissionsToDelete: ID[] = [];
-    for (const assignment of assignments) {
-      const subs = await submissionService.getByAssignment(assignment.id);
-      for (const s of subs) {
-        if (studentIdsSet.has(s.studentId)) {
-          submissionsToDelete.push(s.id);
-        }
-      }
-    }
-    await Promise.all(
-      submissionsToDelete.map(async (id) => {
-        try {
-          await submissionService.delete(id);
-        } catch (err) {
-          submissionErrors.push(
-            `حذف ارسال با id ${id} با خطا مواجه شد: ${err instanceof Error ? err.message : "خطای نامشخص"}`,
-          );
-        }
-      }),
-    );
-  } catch (err) {
-    submissionErrors.push(
-      `دریافت/حذف ارسال‌های کلاس با خطا مواجه شد: ${err instanceof Error ? err.message : "خطای نامشخص"}`,
-    );
-  }
-  results.push({
-    entityType: "/submissions",
-    success: submissionErrors.length === 0,
-    errors: submissionErrors,
+  const submissionResult = await cascadeProcess<Submission>({
+    entityLabel: "ارسال‌ها",
+    actionLabel: "حذف",
+    fetchItems: async () => {
+      const assignments = await assignmentService.getByClass(classId);
+      const nested = await Promise.all(
+        assignments.map((a) => submissionService.getByAssignment(a.id)),
+      );
+      return nested.flat();
+    },
+    filter: (s) => studentIdsSet.has(s.studentId),
+    processItem: (s) => submissionService.delete(s.id),
   });
+  results.push(submissionResult);
 
   return {
     overallSuccess: results.every((r) => r.success),
@@ -253,7 +138,9 @@ export async function removeStudentsFromClassCascade(
   };
 }
 
-export async function cascadeDeleteUserData(userId: ID): Promise<CascadeReport> {
+export async function cascadeDeleteUserData(
+  userId: ID,
+): Promise<CascadeReport> {
   const results: CascadeResult[] = [];
 
   const seenByResult = await removeUserFromAnnouncementSeenBy(userId);
@@ -263,10 +150,30 @@ export async function cascadeDeleteUserData(userId: ID): Promise<CascadeReport> 
   results.push(rollsResult);
 
   const cascadeResults = await Promise.all([
-    cascadeDeleteUserClasses(userId),
-    cascadeDeleteUserAttendances(userId),
-    cascadeDeleteUserSubmissions(userId),
-    cascadeDeleteUserAnnouncements(userId),
+    cascadeProcess<ClassItem>({
+      entityLabel: "کلاس‌ها",
+      actionLabel: "حذف",
+      fetchItems: () => classService.getAll({ teacherId: userId }),
+      processItem: (item) => classService.delete(item.id),
+    }),
+    cascadeProcess<Attendance>({
+      entityLabel: "حضور و غیاب",
+      actionLabel: "حذف",
+      fetchItems: () => attendanceService.getAll({ studentId: userId }),
+      processItem: (item) => attendanceService.delete(item.id),
+    }),
+    cascadeProcess<Submission>({
+      entityLabel: "ارسال‌ها",
+      actionLabel: "حذف",
+      fetchItems: () => submissionService.getAll({ studentId: userId }),
+      processItem: (item) => submissionService.delete(item.id),
+    }),
+    cascadeProcess<Announcement>({
+      entityLabel: "اطلاعیه‌ها",
+      actionLabel: "حذف",
+      fetchItems: () => announcementService.getAll({ authorId: userId }),
+      processItem: (item) => announcementService.delete(item.id),
+    }),
   ]);
   results.push(...cascadeResults);
 

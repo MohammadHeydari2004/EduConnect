@@ -3,13 +3,10 @@ import Modal from "#/components/ui/Modal.tsx";
 import Textarea from "#/components/ui/Textarea.tsx";
 import { useToast } from "#/hooks/useToast.ts";
 import { validateSubmissionForm } from "#/pages/assignments/validators.ts";
-import type { SubmissionFormErrors } from "#/types/submission.ts";
+import type { ID, Submission, SubmissionFormErrors } from "#/types";
 import { submissionService } from "#/services/submission.ts";
-import type { ID } from "#/types/common.ts";
-import type { Submission } from "#/types/submission.ts";
-import { classifyError } from "#/services/error.ts";
-import { showErrorToastWithInfo } from "#/hooks/useToastHelpers.ts";
-import { formatDate } from "#/utils/formatDate.ts";
+import { showErrorToast } from "#/hooks/useToastHelpers.ts";
+import { formatDate, isDeadlineExpired } from "#/utils";
 import { useMemo, useState } from "react";
 
 interface Props {
@@ -35,7 +32,7 @@ export default function SubmissionForm({
   const { addToast } = useToast();
 
   const isDeadlinePassed = useMemo(
-    () => new Date() > new Date(deadline),
+    () => isDeadlineExpired(deadline),
     [deadline],
   );
 
@@ -73,12 +70,17 @@ export default function SubmissionForm({
       }
       onSuccess(result);
     } catch (err) {
-      const info = classifyError(err);
-      showErrorToastWithInfo(addToast, info, "خطا در ذخیره پاسخ. لطفاً دوباره تلاش کنید.");
-      setErrors({ form: info.userMessage });
+      const message = err instanceof Error ? err.message : "خطا در ذخیره پاسخ. لطفاً دوباره تلاش کنید.";
+      showErrorToast(addToast, message);
+      setErrors({ form: message });
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const clearFieldError = () => {
+    if (!errors.content && !errors.form) return;
+    setErrors((prev) => ({ ...prev, content: "", form: "" }));
   };
 
   return (
@@ -132,16 +134,10 @@ export default function SubmissionForm({
           value={content}
           onChange={(e) => {
             setContent(e.target.value);
-            if (errors.content || errors.form) {
-              setErrors((prev: SubmissionFormErrors) => ({
-                ...prev,
-                content: "",
-                form: "",
-              }));
-            }
+            clearFieldError();
           }}
           error={errors.content}
-          placeholder="پاسخ خود را اینجا بنویسید یا لینک فایل را قرار دهید..."
+          placeholder="پاسخ خود را اینجا بنویسید..."
           rows={6}
           readOnly={isReadOnly}
           required={!isReadOnly}

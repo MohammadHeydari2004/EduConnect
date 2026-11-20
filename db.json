@@ -67,12 +67,12 @@
       "id": "BAImompfEJA"
     },
     {
-      "name": "Student Test",
-      "email": "mh4194210000@gmail.com",
+      "name": "مدیر تستی",
+      "email": "mh4194210123@gmail.com",
       "password": "123456",
-      "role": "student",
+      "role": "admin",
       "status": "active",
-      "id": "4PD1Huj2TNk"
+      "id": "YqxHuw7wHcQ"
     }
   ],
   "classes": [
@@ -103,36 +103,22 @@
       "status": "inactive",
       "description": "مدل‌سازی داده، SQL و طراحی پایگاه داده.",
       "createdAt": "2026-11-01T08:00:00.000Z",
-      "updatedAt": "2026-11-10T19:06:31.023Z"
+      "updatedAt": "2026-11-20T10:09:19.288Z"
     },
     {
       "id": "cls-cloud-01",
-      "title": "رایانش ابری",
+      "title": "رایانش ابری ",
       "teacherId": "usr-teacher-02",
       "studentIds": [
         "usr-student-01",
-        "usr-student-04"
+        "usr-student-04",
+        "BAImompfEJA"
       ],
       "capacity": 5,
       "status": "active",
       "description": "مفاهیم زیرساخت و سرویس‌های ابری.",
       "createdAt": "2026-11-01T08:00:00.000Z",
-      "updatedAt": "2026-11-10T19:03:01.651Z"
-    },
-    {
-      "title": "Class Test",
-      "teacherId": "lVNMjvEvmFc",
-      "studentIds": [
-        "usr-student-01",
-        "usr-student-04",
-        "BAImompfEJA",
-        "4PD1Huj2TNk"
-      ],
-      "capacity": 5,
-      "status": "active",
-      "description": "test",
-      "createdAt": "2026-11-10T19:06:05.352Z",
-      "id": "g4K09tmxqAM"
+      "updatedAt": "2026-11-20T10:09:37.710Z"
     },
     {
       "title": "کلاس تست جدید",
@@ -140,15 +126,26 @@
       "studentIds": [
         "usr-student-01",
         "usr-student-04",
-        "BAImompfEJA",
-        "4PD1Huj2TNk"
+        "BAImompfEJA"
       ],
       "capacity": 4,
       "status": "active",
       "description": "",
       "createdAt": "2026-11-10T19:07:55.175Z",
       "id": "ppjZhI_EWco",
-      "updatedAt": "2026-11-10T19:08:01.551Z"
+      "updatedAt": "2026-11-20T10:01:20.691Z"
+    },
+    {
+      "title": "کلاس 1",
+      "teacherId": "lVNMjvEvmFc",
+      "studentIds": [
+        "BAImompfEJA"
+      ],
+      "capacity": 10,
+      "status": "active",
+      "description": "کلاس تستی ",
+      "createdAt": "2026-11-20T10:10:18.491Z",
+      "id": "StLiZWCnIaQ"
     }
   ],
   "sessions": [
@@ -180,24 +177,24 @@
       "updatedAt": "2026-11-10T08:00:00.000Z"
     },
     {
-      "title": "test 1",
-      "date": "2026-11-10",
+      "title": "تست کلاس 11",
+      "date": "2026-11-20",
       "description": "تست ",
       "classId": "cls-web-01",
       "createdAt": "2026-11-10T19:16:11.885Z",
-      "id": "rL56n5my_Wo"
+      "id": "rL56n5my_Wo",
+      "updatedAt": "2026-11-20T10:16:44.772Z"
+    },
+    {
+      "title": "Test کلاس ",
+      "date": "2026-11-20",
+      "description": "",
+      "classId": "cls-web-01",
+      "createdAt": "2026-11-20T10:17:03.067Z",
+      "id": "cNQPQa2inSY"
     }
   ],
   "attendance": [
-    {
-      "id": "att-01",
-      "sessionId": null,
-      "classId": "cls-web-01",
-      "studentId": "usr-student-01",
-      "status": "absent",
-      "createdAt": "2026-11-10T08:00:00.000Z",
-      "updatedAt": "2026-11-10T08:00:00.000Z"
-    },
     {
       "id": "att-04",
       "sessionId": "ses-02-2",
@@ -208,26 +205,10 @@
       "updatedAt": "2026-11-10T08:00:00.000Z"
     },
     {
-      "id": "att-09",
-      "sessionId": null,
-      "classId": "cls-web-01",
-      "studentId": "usr-student-04",
-      "status": "late",
-      "createdAt": "2026-11-10T08:00:00.000Z",
-      "updatedAt": "2026-11-10T08:00:00.000Z"
-    },
-    {
-      "sessionId": null,
-      "classId": "cls-web-01",
-      "studentId": "BAImompfEJA",
-      "status": "absent",
-      "id": "Ok9QFGfMvPA"
-    },
-    {
       "sessionId": "ses-01-2",
       "classId": "cls-web-01",
       "studentId": "BAImompfEJA",
-      "status": "late",
+      "status": "absent",
       "id": "jHLKxSdSUCU"
     },
     {
@@ -236,6 +217,62 @@
       "studentId": "usr-student-01",
       "status": "absent",
       "id": "ndPstBpxnoE"
+    },
+    {
+      "sessionId": "ses-01-2",
+      "classId": "cls-web-01",
+      "studentId": "usr-student-01",
+      "status": "absent",
+      "id": "_XpWoVllygs"
+    },
+    {
+      "sessionId": "ses-01-2",
+      "classId": "cls-web-01",
+      "studentId": "usr-student-04",
+      "status": "absent",
+      "id": "dtlmRuV39zE"
+    },
+    {
+      "sessionId": "rL56n5my_Wo",
+      "classId": "cls-web-01",
+      "studentId": "usr-student-01",
+      "status": "present",
+      "id": "sE_92ipOvto"
+    },
+    {
+      "sessionId": "rL56n5my_Wo",
+      "classId": "cls-web-01",
+      "studentId": "usr-student-04",
+      "status": "late",
+      "id": "rwMcsgNw7q8"
+    },
+    {
+      "sessionId": "rL56n5my_Wo",
+      "classId": "cls-web-01",
+      "studentId": "BAImompfEJA",
+      "status": "present",
+      "id": "mvrIDZ0fuOc"
+    },
+    {
+      "sessionId": "cNQPQa2inSY",
+      "classId": "cls-web-01",
+      "studentId": "usr-student-01",
+      "status": "present",
+      "id": "-ZwIyH4nFIk"
+    },
+    {
+      "sessionId": "cNQPQa2inSY",
+      "classId": "cls-web-01",
+      "studentId": "usr-student-04",
+      "status": "present",
+      "id": "UPUd6nyXTD8"
+    },
+    {
+      "sessionId": "cNQPQa2inSY",
+      "classId": "cls-web-01",
+      "studentId": "BAImompfEJA",
+      "status": "absent",
+      "id": "XiawAxT7MMw"
     }
   ],
   "announcements": [
@@ -276,22 +313,6 @@
       "updatedAt": "2026-11-10T08:00:00.000Z"
     },
     {
-      "id": "an-03",
-      "title": "اطلاعیه ویژه دانشجویان",
-      "content": "مهلت تحویل تکالیف را بررسی کنید.",
-      "classId": "__global__",
-      "authorId": "usr-admin-01",
-      "targetAudience": null,
-      "targetRoles": [
-        "student"
-      ],
-      "seenBy": [
-        "usr-student-01"
-      ],
-      "createdAt": "2026-11-10T08:00:00.000Z",
-      "updatedAt": "2026-11-10T08:00:00.000Z"
-    },
-    {
       "id": "an-04",
       "title": "اطلاعیه کلاس برنامه‌نویسی وب پیشرفته",
       "content": "اطلاعیه آزمایشی با مخاطب students برای کلاس برنامه‌نویسی وب پیشرفته.",
@@ -301,21 +322,6 @@
       "targetRoles": null,
       "seenBy": [
         "usr-student-01"
-      ],
-      "createdAt": "2026-11-10T08:00:00.000Z",
-      "updatedAt": "2026-11-10T08:00:00.000Z"
-    },
-    {
-      "id": "an-08",
-      "title": "اطلاعیه کلاس برنامه‌نویسی وب پیشرفته",
-      "content": "اطلاعیه آزمایشی با مخاطب teacher برای کلاس برنامه‌نویسی وب پیشرفته.",
-      "classId": "cls-web-01",
-      "authorId": "usr-teacher-01",
-      "targetAudience": "teacher",
-      "targetRoles": null,
-      "seenBy": [
-        "usr-student-01",
-        "usr-teacher-01"
       ],
       "createdAt": "2026-11-10T08:00:00.000Z",
       "updatedAt": "2026-11-10T08:00:00.000Z"
@@ -332,34 +338,42 @@
       ],
       "targetAudience": null,
       "seenBy": [
-        "usr-admin-01"
+        "usr-admin-01",
+        "usr-teacher-01",
+        "usr-student-01"
       ],
       "createdAt": "2026-11-10T19:07:12.001Z",
       "id": "jI_692UNT4w"
     },
     {
-      "title": "تست اطلاعیه master",
-      "content": "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+      "title": "تست اطلاعیه",
+      "content": "تست متنی 0123",
+      "classId": "__global__",
+      "authorId": "usr-admin-01",
+      "targetRoles": [
+        "teacher",
+        "student"
+      ],
+      "targetAudience": null,
+      "seenBy": [
+        "usr-student-01"
+      ],
+      "createdAt": "2026-11-20T10:13:22.692Z",
+      "id": "4xSRkrYYS_A"
+    },
+    {
+      "title": "جلسه 21",
+      "content": "بدویین بیاین\n",
       "classId": "cls-web-01",
       "authorId": "usr-teacher-01",
       "targetAudience": "students",
       "targetRoles": null,
       "seenBy": [],
-      "createdAt": "2026-11-10T19:11:42.671Z",
-      "id": "kFS23eAy45E"
+      "createdAt": "2026-11-20T10:23:41.797Z",
+      "id": "61W08oVYNFI"
     }
   ],
   "assignments": [
-    {
-      "id": "asg-01-1",
-      "title": "تکلیف 1: برنامه‌نویسی وب پیشرفته",
-      "description": "تمرین شماره 1 برای کلاس برنامه‌نویسی وب پیشرفته.",
-      "classId": "cls-web-01",
-      "teacherId": "usr-teacher-01",
-      "deadline": "2026-11-09T23:59:59.999Z",
-      "createdAt": "2026-11-10T08:00:00.000Z",
-      "updatedAt": "2026-11-10T08:00:00.000Z"
-    },
     {
       "id": "asg-01-2",
       "title": "تکلیف 2: برنامه‌نویسی وب پیشرفته",
@@ -381,20 +395,19 @@
       "updatedAt": "2026-11-10T08:00:00.000Z"
     },
     {
-      "id": "asg-02-2",
-      "title": "تکلیف 2: طراحی پایگاه داده",
-      "description": "تمرین شماره 2 برای کلاس طراحی پایگاه داده.",
+      "title": "تست تمرین",
+      "description": "",
+      "deadline": "2026-11-20T23:59:59.999",
       "classId": "cls-db-01",
       "teacherId": "usr-teacher-01",
-      "deadline": "2026-11-25T23:59:59.999Z",
-      "createdAt": "2026-11-10T08:00:00.000Z",
-      "updatedAt": "2026-11-10T08:00:00.000Z"
+      "createdAt": "2026-11-20T10:26:01.546Z",
+      "id": "0W4lBye1KGU"
     }
   ],
   "submissions": [
     {
       "id": "sub-01",
-      "assignmentId": "asg-01-1",
+      "assignmentId": null,
       "studentId": "usr-student-01",
       "content": "پاسخ آزمایشی دانشجو برای تکلیف 1: برنامه‌نویسی وب پیشرفته.",
       "status": "returned",
@@ -417,7 +430,7 @@
       "feedback": "پاسخ بررسی شد؛ عملکرد خوب است."
     },
     {
-      "assignmentId": "asg-01-1",
+      "assignmentId": null,
       "studentId": "usr-student-04",
       "content": "",
       "grade": 0,
@@ -427,7 +440,7 @@
       "id": "oMHVg_Y15VI"
     },
     {
-      "assignmentId": "asg-01-1",
+      "assignmentId": null,
       "studentId": "BAImompfEJA",
       "content": "",
       "grade": 0,
@@ -439,10 +452,68 @@
     {
       "assignmentId": "asg-02-1",
       "studentId": "usr-student-01",
+      "content": "تست پاسخ برگشتی 1",
+      "status": "graded",
+      "submittedAt": "2026-11-10T19:18:06.669Z",
+      "id": "tyiEjCOOp0k",
+      "grade": 17,
+      "feedback": "تست جواب ",
+      "updatedAt": "2026-11-20T11:05:56.701Z"
+    },
+    {
+      "assignmentId": "",
+      "studentId": "usr-student-01",
       "content": "تست پاسخ",
       "status": "submitted",
-      "submittedAt": "2026-11-10T19:18:06.669Z",
-      "id": "tyiEjCOOp0k"
+      "submittedAt": "2026-11-20T10:27:41.686Z",
+      "id": "Eh3hOqYzn18"
+    },
+    {
+      "assignmentId": "",
+      "studentId": "usr-student-01",
+      "content": "تست پاسخ",
+      "status": "submitted",
+      "submittedAt": "2026-11-20T10:27:48.568Z",
+      "id": "e7z6oa5Rl-k"
+    },
+    {
+      "assignmentId": "",
+      "studentId": "usr-student-01",
+      "content": "تست پاسخ",
+      "status": "submitted",
+      "submittedAt": "2026-11-20T10:28:39.722Z",
+      "id": "6cmyooD0gQ0"
+    },
+    {
+      "assignmentId": "0W4lBye1KGU",
+      "studentId": "usr-student-01",
+      "content": "تست پاسخ برگشتی 2",
+      "status": "graded",
+      "submittedAt": "2026-11-20T10:58:07.065Z",
+      "id": "byrykJ9K6hQ",
+      "grade": 20,
+      "feedback": "تست پاسخ",
+      "updatedAt": "2026-11-20T11:06:06.357Z"
+    },
+    {
+      "assignmentId": "asg-01-2",
+      "studentId": "usr-student-04",
+      "content": "",
+      "grade": 0,
+      "feedback": "تکلیف در مهلت ارسال نشده است.",
+      "status": "graded",
+      "submittedAt": "2026-11-20T20:52:20.656Z",
+      "id": "4a3W3aZtryw"
+    },
+    {
+      "assignmentId": "asg-01-2",
+      "studentId": "BAImompfEJA",
+      "content": "",
+      "grade": 0,
+      "feedback": "تکلیف در مهلت ارسال نشده است.",
+      "status": "graded",
+      "submittedAt": "2026-11-20T20:52:25.536Z",
+      "id": "_ubQH4ieRSc"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

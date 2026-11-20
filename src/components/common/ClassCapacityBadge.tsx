@@ -1,6 +1,6 @@
 import Badge from "#/components/ui/Badge.tsx";
-import { getCapacityVariant } from "#/utils/tableHelpers.ts";
-import type { ClassItem } from "#/types/class.ts";
+import { getCapacityVariant } from "#/utils";
+import type { ClassItem } from "#/types";
 
 interface ClassCapacityBadgeProps {
   classItem: ClassItem;

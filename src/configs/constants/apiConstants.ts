@@ -2,6 +2,16 @@ export const MAX_ASSIGNMENT_GRADE = 20;
 
 export const API_REQUEST_TIMEOUT_MS = 15000;
 
+export const API_ENDPOINTS = {
+  USERS: "/users",
+  CLASSES: "/classes",
+  SESSIONS: "/sessions",
+  ASSIGNMENTS: "/assignments",
+  SUBMISSIONS: "/submissions",
+  ATTENDANCE: "/attendance",
+  ANNOUNCEMENTS: "/announcements",
+} as const;
+
 export const HTTP_STATUS_MESSAGES: Record<number, string> = {
   400: "درخواست ارسال‌شده نامعتبر است.",
   401: "دسترسی به این منبع مجاز نیست. لطفاً دوباره وارد شوید.",

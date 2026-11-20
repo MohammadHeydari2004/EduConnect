@@ -1,4 +1,9 @@
-import type { ID, BaseFormErrors, Maybe, SubmissionStatus } from "#/types/common.ts";
+import type {
+  BaseFormErrors,
+  ID,
+  Maybe,
+  SubmissionStatus,
+} from "#/types/common.ts";
 
 export interface Submission {
   readonly id: ID;

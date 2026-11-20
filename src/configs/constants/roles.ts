@@ -1,9 +1,11 @@
-import type { UserRole } from "#/types/common.ts";
+import type { UserRole } from "#/types";
 
-export const ALL_ROLES: UserRole[] = ["admin", "teacher", "student"];
+export const ALL_ROLES: readonly UserRole[] = ["admin", "teacher", "student"];
 
-export const TEACHER_AND_ABOVE_ROLES: UserRole[] = ["admin", "teacher"];
+export const TEACHER_AND_ABOVE_ROLES: readonly UserRole[] = ["admin", "teacher"];
 
-export const STUDENT_ROLES: UserRole[] = ["student"];
+export const STUDENT_ROLES: readonly UserRole[] = ["student"];
 
-export const ADMIN_ROLES: UserRole[] = ["admin"];
+export const ADMIN_ROLES: readonly UserRole[] = ["admin"];
+
+export const TEACHER_ROLES: readonly UserRole[] = ["teacher"];

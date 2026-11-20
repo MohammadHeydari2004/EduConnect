@@ -2,8 +2,8 @@ import {
   type Toast,
   ToastContext,
   type ToastType,
-} from "#/contexts/ToastContext.tsx";
-import type { ApiErrorInfo } from "#/services/error.ts";
+} from "#/contexts/ToastContext.ts";
+import type { ApiErrorInfo } from "#/types";
 import {
   type ReactNode,
   useCallback,
@@ -22,6 +22,11 @@ const VARIANT_CLASSES: Record<ToastType, string> = {
 const MAX_TOASTS = 5;
 const TOAST_DURATION_MS = 4000;
 
+const createToastId = (): string =>
+  crypto.randomUUID
+    ? crypto.randomUUID()
+    : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+
 interface ToastProviderProps {
   children: ReactNode;
 }
@@ -30,15 +35,6 @@ export function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
-  const removeToast = useCallback((id: string) => {
-    const timer = timersRef.current.get(id);
-    if (timer) {
-      clearTimeout(timer);
-      timersRef.current.delete(id);
-    }
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  }, []);
-
   const stopTimer = useCallback((id: string) => {
     const timer = timersRef.current.get(id);
     if (timer) {
@@ -46,6 +42,14 @@ export function ToastProvider({ children }: ToastProviderProps) {
       timersRef.current.delete(id);
     }
   }, []);
+
+  const removeToast = useCallback(
+    (id: string) => {
+      stopTimer(id);
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    },
+    [stopTimer],
+  );
 
   const startTimer = useCallback(
     (id: string) => {
@@ -61,7 +65,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
 
   const addToast = useCallback(
     (message: string, type: ToastType = "info", errorInfo?: ApiErrorInfo) => {
-      const id = crypto.randomUUID();
+      const id = createToastId();
       setToasts((prev) => {
         const next = [...prev, { id, message, type, ...(errorInfo !== undefined ? { errorInfo } : {}) }];
         return next.length > MAX_TOASTS ? next.slice(next.length - MAX_TOASTS) : next;
@@ -87,15 +91,18 @@ export function ToastProvider({ children }: ToastProviderProps) {
     };
   }, []);
 
+  useEffect(() => {
+    for (const id of timersRef.current.keys()) {
+      if (!toasts.some((toast) => toast.id === id)) {
+        stopTimer(id);
+      }
+    }
+  }, [toasts, stopTimer]);
+
   return (
     <ToastContext.Provider value={{ addToast, showErrorWithInfo }}>
       {children}
-      <div
-        role="log"
-        aria-live="polite"
-        aria-label="اعلان‌های سیستم"
-        className="pointer-events-none fixed top-4 start-4 z-100 flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-3"
-      >
+      <div className="pointer-events-none fixed top-4 start-4 z-100 flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-3">
         {toasts.map((toast) => (
           <div
             key={toast.id}
@@ -105,17 +112,19 @@ export function ToastProvider({ children }: ToastProviderProps) {
             onMouseLeave={() => startTimer(toast.id)}
             onFocus={() => stopTimer(toast.id)}
             onBlur={() => startTimer(toast.id)}
-            className={`pointer-events-auto flex items-center gap-3 rounded-lg border p-4 shadow-lg transition-all duration-300 ${VARIANT_CLASSES[toast.type]}`}
+            className={`pointer-events-auto flex items-center gap-3 rounded-lg border p-4 shadow-lg ${VARIANT_CLASSES[toast.type]}`}
           >
-            <p className="flex-1 text-sm leading-relaxed font-medium">
-              {toast.message}
-            </p>
-            {toast.errorInfo && (
-              <p className="text-xs text-opacity-60 mt-1">
-                {toast.errorInfo.status ? `(status ${toast.errorInfo.status})` : ""}
-                {toast.errorInfo.code ? ` · کد: ${toast.errorInfo.code}` : ""}
+            <div className="flex-1">
+              <p className="text-sm leading-relaxed font-medium">
+                {toast.message}
               </p>
-            )}
+              {toast.errorInfo && (
+                <p className="mt-1 text-xs opacity-70">
+                  {toast.errorInfo.status ? `(status ${toast.errorInfo.status})` : ""}
+                  {toast.errorInfo.code ? ` · کد: ${toast.errorInfo.code}` : ""}
+                </p>
+              )}
+            </div>
             <button
               onClick={() => removeToast(toast.id)}
               className="shrink-0 text-gray-500 transition hover:text-gray-700"

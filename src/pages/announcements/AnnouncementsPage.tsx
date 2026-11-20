@@ -6,10 +6,10 @@ import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
 import ErrorAlert from "#/components/ui/ErrorAlert.tsx";
 import Select from "#/components/ui/Select.tsx";
 import AnnouncementForm from "#/pages/announcements/AnnouncementForm.tsx";
-import { AnnouncementCard } from "#/components/common/AnnouncementCard";
-import { AnnouncementViewModal } from "#/components/common/AnnouncementViewModal";
+import AnnouncementCard from "#/components/common/AnnouncementCard";
+import AnnouncementViewModal from "#/components/common/AnnouncementViewModal";
 import { announcementService } from "#/services/announcement.ts";
-import { useAnnouncementsPage } from "#/pages/announcements/useAnnouncementsPage.ts";
+import { useAnnouncementsPage } from "#/hooks/useAnnouncementsPage";
 
 export default function AnnouncementsPage() {
   const {
@@ -176,7 +176,6 @@ export default function AnnouncementsPage() {
       )}
 
       <AnnouncementViewModal
-        isOpen={viewModal.isOpen("view")}
         announcement={viewModal.target}
         getClassName={getClassName}
         getAuthorName={getAuthorName}

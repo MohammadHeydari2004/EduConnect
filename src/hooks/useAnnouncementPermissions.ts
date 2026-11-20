@@ -1,9 +1,5 @@
-import { isUserInTargetAudience } from "#/utils/announcementVisibility.ts";
-import type { Announcement } from "#/types/announcement.ts";
-import type { ClassItem } from "#/types/class.ts";
-import type { ID } from "#/types/common.ts";
-import type { User } from "#/types/user.ts";
-import { isAdmin, isTeacher } from "#/utils/roleUtils.ts";
+import { isAdmin, isTeacher, isUserInTargetAudience } from "#/utils";
+import type { Announcement, ClassItem, ID, User } from "#/types";
 import { useCallback } from "react";
 
 export function useAnnouncementPermissions(

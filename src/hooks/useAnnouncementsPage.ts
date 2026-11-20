@@ -8,24 +8,42 @@ import { useCrudPage } from "#/hooks/useCrudPage.ts";
 import { announcementService } from "#/services/announcement.ts";
 import { classService } from "#/services/class.ts";
 import { userService } from "#/services/user.ts";
-import type { Announcement, AnnouncementPayload } from "#/types/announcement.ts";
-import type { ClassItem } from "#/types/class.ts";
-import type { ID, UserRole } from "#/types/common.ts";
-import type { User } from "#/types/user.ts";
-import type { FilterConfig } from "#/types/hooks.ts";
-import { getTargetDescription, isAnnouncementVisibleTo } from "#/utils/announcementVisibility.ts";
-import { TOAST_MESSAGES } from "#/configs/constants";
-import { classifyError } from "#/services/error.ts";
-import { GLOBAL_ANNOUNCEMENT_CLASS_ID } from "#/configs/constants";
+import type {
+  Announcement,
+  AnnouncementPayload,
+  ClassItem,
+  FilterConfig,
+  ID,
+  User,
+  UserRole,
+} from "#/types";
+import {
+  getUserNameFromMap,
+  isAnnouncementVisibleTo,
+} from "#/utils";
+import { GLOBAL_ANNOUNCEMENT_CLASS_ID, TOAST_MESSAGES } from "#/configs/constants";
 import { useAnnouncementPermissions } from "#/hooks/useAnnouncementPermissions";
-import { getUserNameFromMap } from "#/utils/nameHelpers.ts";
-import { showErrorToastWithInfo } from "#/hooks/useToastHelpers.ts";
+import { showErrorToast } from "#/hooks/useToastHelpers.ts";
 import { useCallback, useMemo, useState } from "react";
 
 interface AnnouncementsPageData {
   classes: ClassItem[];
   users: User[];
 }
+
+interface AnnouncementFilters {
+  authorId: string;
+  classId: string;
+  targetRole: "" | UserRole;
+  readStatus: "read" | "unread" | "all";
+}
+
+const initialFilters: AnnouncementFilters = {
+  authorId: "",
+  classId: "",
+  targetRole: "",
+  readStatus: "all",
+};
 
 function fetchAnnouncementsPageData(signal?: AbortSignal): Promise<AnnouncementsPageData> {
   return Promise.all([
@@ -41,7 +59,7 @@ export function useAnnouncementsPage() {
   const { user: currentUser } = useAuth();
   const { addToast } = useToast();
 
-const { data, loading, error, refresh } = useAsyncData<AnnouncementsPageData>({
+const { data, loading: pageLoading, error: pageError } = useAsyncData<AnnouncementsPageData>({
     fetcher: (signal) => fetchAnnouncementsPageData(signal),
     deps: [],
     fallbackError: TOAST_MESSAGES.ANNOUNCEMENT_FETCH_ERROR,
@@ -52,20 +70,6 @@ const { data, loading, error, refresh } = useAsyncData<AnnouncementsPageData>({
 
   const viewModal = useModalState<Announcement>();
   const [isMarkingSeen, setIsMarkingSeen] = useState(false);
-
-  interface AnnouncementFilters {
-    authorId: string;
-    classId: string;
-    targetRole: "" | UserRole;
-    readStatus: "read" | "unread" | "all";
-  }
-
-  const initialFilters: AnnouncementFilters = {
-    authorId: "",
-    classId: "",
-    targetRole: "",
-    readStatus: "all",
-  };
 
   const userMap = useMapById(users);
   const classMap = useMapById(classes);
@@ -79,7 +83,10 @@ const { data, loading, error, refresh } = useAsyncData<AnnouncementsPageData>({
     return [];
   }, [classes, permissions.isAdmin, permissions.isTeacher, currentUser]);
 
-  const getAuthorName = (userId: ID) => getUserNameFromMap(userMap, userId);
+  const getAuthorName = useCallback(
+    (userId: ID) => getUserNameFromMap(userMap, userId),
+    [userMap],
+  );
   const getClassName = useCallback(
     (classId: ID) =>
       classId === GLOBAL_ANNOUNCEMENT_CLASS_ID
@@ -151,8 +158,6 @@ const crud = useCrudPage<Announcement, AnnouncementPayload, AnnouncementPayload,
     fallbackError: TOAST_MESSAGES.ANNOUNCEMENT_FETCH_ERROR,
   });
 
-  const announcements = crud.state.data;
-
   const handleCloseView = useCallback(() => {
     viewModal.close();
   }, [viewModal.close]);
@@ -171,14 +176,16 @@ const crud = useCrudPage<Announcement, AnnouncementPayload, AnnouncementPayload,
       await announcementService.markAsSeen(viewingItem.id, currentUser.id);
       viewModal.close();
       addToast(TOAST_MESSAGES.ANNOUNCEMENT_SEEN_SUCCESS, "success");
-      refresh();
+      crud.state.refresh();
     } catch (err) {
-      const info = classifyError(err);
-      showErrorToastWithInfo(addToast, info, "ثبت خواندن اطلاعیه ناموفق بود.");
+      showErrorToast(
+        addToast,
+        err instanceof Error ? err.message : TOAST_MESSAGES.ANNOUNCEMENT_SEEN_ERROR,
+      );
     } finally {
       setIsMarkingSeen(false);
     }
-  }, [viewModal, currentUser, isMarkingSeen, addToast, refresh]);
+  }, [viewModal.target, viewModal.close, currentUser, isMarkingSeen, addToast, crud.state.refresh]);
 
   const canMarkAsSeen = useCallback(
     (announcement: Announcement) =>
@@ -188,12 +195,9 @@ const crud = useCrudPage<Announcement, AnnouncementPayload, AnnouncementPayload,
 
   return {
     currentUser,
-    isAdmin: permissions.isAdmin,
-    isTeacher: permissions.isTeacher,
     canCreate: permissions.canCreate,
-    loading,
-    error,
-    announcements,
+    loading: pageLoading || crud.state.loading,
+    error: pageError || crud.state.error,
     classes,
     users,
     formClasses,
@@ -203,7 +207,6 @@ const crud = useCrudPage<Announcement, AnnouncementPayload, AnnouncementPayload,
     resetFilters: crud.state.resetFilters,
     getAuthorName,
     getClassName,
-    getTargetDescription,
     formModal: crud.actions.modal,
     viewModal,
     isMarkingSeen,
@@ -214,6 +217,6 @@ const crud = useCrudPage<Announcement, AnnouncementPayload, AnnouncementPayload,
     canManageItem: permissions.canManageItem,
     canViewItem: permissions.canViewItem,
     canMarkAsSeen,
-    refresh,
+    refresh: crud.state.refresh,
   };
 }

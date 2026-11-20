@@ -1,7 +1,14 @@
 import axiosInstance from "#/services/api/axiosInstance.ts";
-import { requestTracker } from "#/services/api/requestTracker.ts";
-import type { DeepPartial, ID } from "#/types/common.ts";
+import type { DeepPartial, ID } from "#/types";
 import type { AxiosRequestConfig } from "axios";
+
+function omitUndefined<T>(data: T): T {
+  return Object.fromEntries(
+    Object.entries(data as Record<string, unknown>).filter(
+      ([, value]) => value !== undefined,
+    ),
+  ) as T;
+}
 
 export const baseApi = {
   getAll: async <T>(
@@ -9,78 +16,83 @@ export const baseApi = {
     params?: Record<string, string | number | boolean>,
     signal?: AbortSignal,
   ): Promise<T[]> => {
-    const { promise } = requestTracker.acquire(
-      "get",
-      endpoint,
-      (trackerSignal) => {
-        const config: AxiosRequestConfig = { params };
-        if (signal) config.signal = signal;
-        if (trackerSignal) config.signal = trackerSignal;
-        return axiosInstance.get<T[]>(endpoint, config).then((res) => res.data);
-      },
-    );
-    return promise;
+    const config: AxiosRequestConfig = { params };
+    if (signal) config.signal = signal;
+    return axiosInstance.get<T[]>(endpoint, config).then((res) => res.data);
   },
   getById: async <T>(endpoint: string, id: ID): Promise<T> => {
-    const { promise } = requestTracker.acquire(
-      "get",
-      endpoint,
-      (trackerSignal) => {
-        const config: AxiosRequestConfig = {};
-        if (trackerSignal) config.signal = trackerSignal;
-        return axiosInstance.get<T>(`${endpoint}/${id}`, config).then((res) => res.data);
-      },
-      id,
-    );
-    return promise;
+    return axiosInstance.get<T>(`${endpoint}/${id}`).then((res) => res.data);
   },
   create: async <T>(endpoint: string, data: Omit<T, "id">): Promise<T> => {
-    const { promise } = requestTracker.acquire(
-      "post",
-      endpoint,
-      (trackerSignal) => {
-        const config: AxiosRequestConfig = {};
-        if (trackerSignal) config.signal = trackerSignal;
-        return axiosInstance.post<T>(endpoint, data, config).then((res) => res.data);
-      },
-    );
-    return promise;
+    return axiosInstance
+      .post<T>(endpoint, omitUndefined(data))
+      .then((res) => res.data);
   },
   update: async <T>(
     endpoint: string,
     id: ID,
     data: DeepPartial<T>,
   ): Promise<T> => {
-    const sanitizedData = Object.fromEntries(
-      Object.entries(data).filter(([, value]) => value !== undefined),
-    ) as DeepPartial<T>;
-    const { promise } = requestTracker.acquire(
-      "patch",
-      endpoint,
-      (trackerSignal) => {
-        const config: AxiosRequestConfig = {};
-        if (trackerSignal) config.signal = trackerSignal;
-        return axiosInstance.patch<T>(
-          `${endpoint}/${id}`,
-          sanitizedData,
-          config,
-        ).then((res) => res.data);
-      },
-      id,
-    );
-    return promise;
+    return axiosInstance
+      .patch<T>(`${endpoint}/${id}`, omitUndefined(data))
+      .then((res) => res.data);
   },
   delete: async (endpoint: string, id: ID): Promise<void> => {
-    const { promise } = requestTracker.acquire(
-      "delete",
-      endpoint,
-      (trackerSignal) => {
-        const config: AxiosRequestConfig = {};
-        if (trackerSignal) config.signal = trackerSignal;
-        return axiosInstance.delete(`${endpoint}/${id}`, config).then(() => undefined);
-      },
-      id,
+    await axiosInstance.delete(`${endpoint}/${id}`);
+  },
+  nullifyDependents: async <T extends { id: ID }>(
+    childEndpoint: string,
+    filterParams: Record<string, string | number | boolean>,
+    field: string,
+    label: string,
+  ): Promise<void> => {
+    const dependents = await baseApi.getAll<T>(childEndpoint, filterParams);
+    const errors: string[] = [];
+
+    await Promise.all(
+      dependents.map(async (item) => {
+        try {
+          await baseApi.update<T>(childEndpoint, item.id, {
+            [field]: null,
+          } as DeepPartial<T>);
+        } catch (err) {
+          errors.push(
+            `حذف وابستگی ${label} با خطا مواجه شد: ${
+              err instanceof Error ? err.message : "خطای نامشخص"
+            }`,
+          );
+        }
+      }),
     );
-    return promise;
+
+    if (errors.length > 0) {
+      throw new Error(errors.join("; "));
+    }
+  },
+  deleteDependents: async <T extends { id: ID }>(
+    childEndpoint: string,
+    filterParams: Record<string, string | number | boolean>,
+    label: string,
+  ): Promise<void> => {
+    const dependents = await baseApi.getAll<T>(childEndpoint, filterParams);
+    const errors: string[] = [];
+
+    await Promise.all(
+      dependents.map(async (item) => {
+        try {
+          await baseApi.delete(childEndpoint, item.id);
+        } catch (err) {
+          errors.push(
+            `حذف وابستگی ${label} با خطا مواجه شد: ${
+              err instanceof Error ? err.message : "خطای نامشخص"
+            }`,
+          );
+        }
+      }),
+    );
+
+    if (errors.length > 0) {
+      throw new Error(errors.join("; "));
+    }
   },
 };

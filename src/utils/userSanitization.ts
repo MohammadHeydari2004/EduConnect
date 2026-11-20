@@ -1,4 +1,4 @@
-import type { User, UserWithPassword } from "#/types/user.ts";
+import type { User, UserWithPassword } from "#/types";
 
 export function removePassword(user: UserWithPassword): User {
   const { password: _, ...userWithoutPassword } = user;

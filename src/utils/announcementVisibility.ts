@@ -1,15 +1,15 @@
-import { ALL_ROLES, GLOBAL_ANNOUNCEMENT_CLASS_ID } from "#/configs/constants";
-import type { Announcement } from "#/types/announcement.ts";
-import type { ClassItem } from "#/types/class.ts";
-import type { User } from "#/types/user.ts";
-import { getRoleLabel } from "#/utils/userLabels.ts";
+import { ALL_ROLES } from "#/configs/constants/roles.ts";
+import { GLOBAL_ANNOUNCEMENT_CLASS_ID } from "#/configs/constants/classConstants.ts";
+import { DEFAULT_TARGET_AUDIENCE } from "#/configs/constants/announcementConstants.ts";
+import { getRoleLabel } from "#/configs/constants/userLabels.ts";
+import type { Announcement, ClassItem, User } from "#/types";
 
 export function getTargetDescription(item: Announcement): string {
   if (item.classId === GLOBAL_ANNOUNCEMENT_CLASS_ID) {
-    const roles = item.targetRoles ?? ["admin", "teacher", "student"];
+    const roles = item.targetRoles ?? ALL_ROLES;
     return roles.map((r) => getRoleLabel(r)).join("، ");
   }
-  const audience = item.targetAudience ?? "students";
+  const audience = item.targetAudience ?? DEFAULT_TARGET_AUDIENCE;
   if (audience === "teacher") return "استاد کلاس";
   if (audience === "students") return "دانشجویان کلاس";
   return "دانشجویان و استاد کلاس";
@@ -41,7 +41,7 @@ export function isUserInTargetAudience(
   const targetClass = classMap.get(announcement.classId);
   if (!targetClass) return false;
 
-  const audience = announcement.targetAudience ?? "students";
+  const audience = announcement.targetAudience ?? DEFAULT_TARGET_AUDIENCE;
   const isTeacherOfThisClass = targetClass.teacherId === user.id;
   const isStudentInThisClass = (targetClass.studentIds || []).includes(user.id);
 

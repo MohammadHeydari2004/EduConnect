@@ -1,6 +1,6 @@
 import EmptyState from "#/components/common/EmptyState.tsx";
 
-export interface EmptyListStateProps {
+interface EmptyListStateProps {
   items: unknown[] | null | undefined;
   hasActiveFilters?: boolean;
   emptyTitle: string;

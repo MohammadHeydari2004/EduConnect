@@ -1,7 +1,10 @@
+import {
+  API_REQUEST_TIMEOUT_MS,
+  HTTP_STATUS_MESSAGES,
+} from "#/configs/constants";
 import axios, { type AxiosError } from "axios";
-import { API_REQUEST_TIMEOUT_MS, HTTP_STATUS_MESSAGES } from "#/configs/constants";
 
-export class ApiError extends Error {
+class ApiError extends Error {
   public readonly userMessage: string;
   public readonly status?: number | undefined;
   public readonly code?: string | undefined;

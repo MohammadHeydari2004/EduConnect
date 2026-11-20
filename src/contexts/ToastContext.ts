@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import type { ApiErrorInfo } from "#/services/error.ts";
+import type { ApiErrorInfo } from "#/types";
 
 export type ToastType = "success" | "error" | "info" | "warning";
 

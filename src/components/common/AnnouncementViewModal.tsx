@@ -1,11 +1,9 @@
 import Button from "#/components/ui/Button.tsx";
 import Modal from "#/components/ui/Modal.tsx";
-import { getTargetDescription } from "#/utils/announcementVisibility.ts";
-import { formatDateTime } from "#/utils/formatDate.ts";
-import type { Announcement } from "#/types/announcement.ts";
+import { formatDateTime, getTargetDescription } from "#/utils";
+import type { Announcement } from "#/types";
 
 interface AnnouncementViewModalProps {
-  isOpen: boolean;
   announcement: Announcement | null;
   getClassName: (classId: string) => string;
   getAuthorName: (authorId: string) => string;
@@ -15,8 +13,7 @@ interface AnnouncementViewModalProps {
   canMarkAsSeen: boolean;
 }
 
-export function AnnouncementViewModal({
-  isOpen,
+export default function AnnouncementViewModal({
   announcement,
   getClassName,
   getAuthorName,
@@ -25,10 +22,10 @@ export function AnnouncementViewModal({
   isMarkingSeen,
   canMarkAsSeen,
 }: AnnouncementViewModalProps) {
-  if (!isOpen || !announcement) return null;
+  if (!announcement) return null;
 
   return (
-    <Modal isOpen={true} title={announcement.title} onClose={onClose}>
+    <Modal title={announcement.title} onClose={onClose}>
       <div className="max-h-[70vh] space-y-3 overflow-y-auto text-sm text-gray-700">
         <p>
           <span className="font-semibold">مخاطب:</span>{" "}

@@ -1,8 +1,6 @@
 import Select from "#/components/ui/Select.tsx";
 import { ALL_ROLES } from "#/configs/constants";
-import type { TargetAudience } from "#/types/announcement.ts";
-import type { UserRole } from "#/types/common.ts";
-import { getRoleLabel } from "#/utils/userLabels.ts";
+import type { TargetAudience, UserRole } from "#/types";import { getRoleLabel } from "#/utils";
 
 interface GlobalAnnouncementRolesProps {
   targetRoles: UserRole[];

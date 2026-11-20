@@ -1,4 +1,4 @@
-export type ErrorCategory =
+type ErrorCategory =
   | "NETWORK"
   | "TIMEOUT"
   | "AUTH"
@@ -16,11 +16,4 @@ export interface ApiErrorInfo {
   serverData?: unknown;
   originalError: unknown;
   isRetryable: boolean;
-}
-
-export interface ErrorHandlerConfig {
-  defaultUserMessage?: string;
-  fallbackCategory?: ErrorCategory;
-  retryableCategories?: ErrorCategory[];
-  toastTypeByCategory?: Record<ErrorCategory, "success" | "error" | "info" | "warning">;
 }

@@ -1,6 +1,9 @@
-import type { SessionFormValues, SessionFormErrors } from "#/types/session.ts";
-import { validateTitle } from "#/utils/validateTitle.ts";
-import { MAX_CLASS_DESCRIPTION_LENGTH } from "#/configs/constants";
+import type { SessionFormErrors, SessionFormValues } from "#/types";
+import { validateTitle } from "#/utils";
+import {
+  MAX_CLASS_DESCRIPTION_LENGTH,
+  MAX_CLASS_TITLE_LENGTH,
+} from "#/configs/constants";
 
 export function validateSessionForm(
   values: SessionFormValues,
@@ -9,8 +12,7 @@ export function validateSessionForm(
 
   const titleError = validateTitle(values.title, {
     titleLabel: "جلسه",
-    min: 3,
-    max: 100,
+    max: MAX_CLASS_TITLE_LENGTH,
   });
   if (titleError) newErrors.title = titleError;
 
@@ -24,7 +26,7 @@ export function validateSessionForm(
   }
 
   if (values.description && values.description.length > MAX_CLASS_DESCRIPTION_LENGTH) {
-    newErrors.description = "توضیحات نباید بیشتر از ۵۰۰ کاراکتر باشد.";
+    newErrors.description = `توضیحات نباید بیشتر از ${MAX_CLASS_DESCRIPTION_LENGTH} کاراکتر باشد.`;
   }
 
   if (!values.classId) {

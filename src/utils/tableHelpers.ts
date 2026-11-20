@@ -1,25 +1,24 @@
-import type { Assignment } from "#/types/assignment.ts";
-import type { ID } from "#/types/common.ts";
-import type { Submission } from "#/types/submission.ts";
+import type { Assignment, ID, Submission } from "#/types";
+import { MS_PER_DAY } from "./formatDate.ts";
+import { isDeadlineExpired } from "./deadline.ts";
 
-export type DeadlineColor = "green" | "yellow" | "red";
-export type CapacityVariant = "green" | "yellow" | "red";
+type StatusColor = "green" | "yellow" | "red";
 
 export const NEAR_DEADLINE_DAYS = 3;
 export const NEAR_DEADLINE_HOURS = 24;
 
-export function getDeadlineColor(deadline: string): DeadlineColor {
+export function getDeadlineColor(deadline: string): StatusColor {
   const now = Date.now();
   const deadlineTime = new Date(deadline).getTime();
   const diffMs = deadlineTime - now;
-  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+  const diffDays = diffMs / MS_PER_DAY;
 
   if (diffMs < 0) return "red";
   if (diffDays <= NEAR_DEADLINE_DAYS) return "yellow";
   return "green";
 }
 
-export function getDeadlineColorClass(color: DeadlineColor): string {
+export function getDeadlineColorClass(color: StatusColor): string {
   switch (color) {
     case "green":
       return "text-green-600";
@@ -30,7 +29,7 @@ export function getDeadlineColorClass(color: DeadlineColor): string {
   }
 }
 
-export function getDeadlineBadgeLabel(color: DeadlineColor): string {
+export function getDeadlineBadgeLabel(color: StatusColor): string {
   switch (color) {
     case "green":
       return "وقت کافی";
@@ -48,8 +47,8 @@ export function getSubmissionPreview(content: string, maxLength = 50): string {
   return trimmed.slice(0, maxLength).trim() + "...";
 }
 
-export function isAssignmentExpired(assignment: Assignment): boolean {
-  return new Date(assignment.deadline).getTime() < Date.now();
+function isAssignmentExpired(assignment: Assignment): boolean {
+  return isDeadlineExpired(assignment.deadline);
 }
 
 const CAPACITY_THRESHOLDS = {
@@ -60,7 +59,7 @@ const CAPACITY_THRESHOLDS = {
 export function getCapacityVariant(
   currentCount: number,
   capacity: number,
-): CapacityVariant {
+): StatusColor {
   if (capacity <= 0) return "red";
   const ratio = currentCount / capacity;
   if (ratio >= CAPACITY_THRESHOLDS.OVER_CAPACITY) return "red";
@@ -68,7 +67,7 @@ export function getCapacityVariant(
   return "green";
 }
 
-export interface AssignmentSubmissionStatus {
+interface AssignmentSubmissionStatus {
   sub: Submission | undefined;
   isGraded: boolean;
   isReturned: boolean;

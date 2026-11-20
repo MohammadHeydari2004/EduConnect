@@ -62,7 +62,7 @@ export function usePortalPosition({
   useEffect(() => {
     updatePosition();
     window.addEventListener("scroll", updatePosition, true);
-    window.addEventListener("resize", updatePosition);
+    window.addEventListener("resize", updatePosition, true);
 
     return () => {
       window.removeEventListener("scroll", updatePosition, true);

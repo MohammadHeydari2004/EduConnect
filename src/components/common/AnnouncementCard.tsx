@@ -2,9 +2,8 @@ import { SeenIcon } from "#/components/common/icons";
 import Badge from "#/components/ui/Badge.tsx";
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
-import { getTargetDescription } from "#/utils/announcementVisibility.ts";
-import { formatDateTime } from "#/utils/formatDate.ts";
-import type { Announcement } from "#/types/announcement.ts";
+import type { Announcement } from "#/types";
+import { formatDateTime, getTargetDescription } from "#/utils";
 
 interface AnnouncementCardProps {
   item: Announcement;
@@ -18,7 +17,7 @@ interface AnnouncementCardProps {
   canView: boolean;
 }
 
-export function AnnouncementCard({
+export default function AnnouncementCard({
   item,
   isSeen,
   getClassName,
@@ -30,16 +29,16 @@ export function AnnouncementCard({
   canView,
 }: AnnouncementCardProps) {
   return (
-    <Card>
+    <Card className="max-sm:w-[90dvw]">
       <div className="flex h-full flex-col">
         {!isSeen && (
           <div
             aria-hidden="true"
-            className="-mt-5 -me-5 mb-3 h-1 w-10 rounded-bl-full rounded-br-full bg-blue-500"
+            className="mb-3 h-1 w-10 rounded-full bg-blue-500"
           />
         )}
 
-        <div className="mb-2 flex items-start justify-between gap-2">
+        <div className="mb-2 flex items-start  gap-2">
           <h3
             className={`flex-1 truncate text-lg font-semibold ${isSeen ? "text-gray-600" : "text-blue-700"}`}
           >

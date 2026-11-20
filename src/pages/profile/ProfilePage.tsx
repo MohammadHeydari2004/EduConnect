@@ -4,8 +4,7 @@ import Loading from "#/components/common/Loading.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import UserDetailsList from "#/components/ui/UserDetailsList.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
-import { DIALOG_STRINGS } from "#/configs/constants/formStrings.ts";
-import { getRoleLabel, getRoleVariant } from "#/utils/userLabels.ts";
+import { getRoleLabel, getRoleVariant } from "#/utils";
 
 function ProfilePage() {
   const { user } = useAuth();
@@ -14,11 +13,14 @@ function ProfilePage() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <h1 className="text-xl font-bold text-gray-800 sm:text-2xl max-sm:mt-2.5">{DIALOG_STRINGS.PROFILE_TITLE}</h1>
+      <h1 className="text-xl font-bold text-gray-800 sm:text-2xl max-sm:mt-2.5">پروفایل</h1>
       <div className="sm:grid sm:grid-cols-2">
         <Card>
           <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-blue-100 text-3xl font-bold text-blue-700 shadow-inner">
+            <div
+              aria-hidden="true"
+              className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-blue-100 text-3xl font-bold text-blue-700 shadow-inner"
+            >
               {user.name.charAt(0)}
             </div>
             <div className="flex-1 text-center sm:text-right">

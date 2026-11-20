@@ -28,3 +28,11 @@ export function getChartEntryKey(entry: ChartPayloadEntry, index: number): strin
 export function getChartEntryColor(entry: ChartPayloadEntry, fallback: string): string {
   return entry.color ?? fallback;
 }
+
+export function buildChartSummary<T>(
+  prefix: string,
+  items: T[],
+  formatItem: (item: T) => string,
+): string {
+  return `${prefix}: ${items.map(formatItem).join("، ")}`;
+}

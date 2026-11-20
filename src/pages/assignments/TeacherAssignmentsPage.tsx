@@ -1,17 +1,18 @@
 import Button from "#/components/ui/Button.tsx";
 import Card from "#/components/ui/Card.tsx";
 import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
+import Loading from "#/components/common/Loading.tsx";
 import AssignmentForm from "#/pages/assignments/AssignmentForm.tsx";
 import TeacherAssignmentsTable from "#/pages/assignments/TeacherAssignmentsTable.tsx";
-import { useTeacherAssignmentsPage } from "#/pages/assignments/useTeacherAssignmentsPage";
+import { useTeacherAssignmentsPage } from "#/hooks/useTeacherAssignmentsPage";
 import AssignmentFilterCard from "#/components/common/AssignmentFilterCard.tsx";
-import type { Assignment } from "#/types/assignment.ts";
+import { hasActiveFilters } from "#/utils";
+import type { Assignment } from "#/types";
 import { EmptyListState } from "#/components/ui/EmptyListState.tsx";
 
 export default function TeacherAssignmentsPage() {
   const {
     currentUser,
-    isAdmin,
     isTeacher,
     isClassPage,
     classId,
@@ -35,9 +36,7 @@ export default function TeacherAssignmentsPage() {
     handleAssignmentSuccess,
   } = useTeacherAssignmentsPage();
 
-  const hasActiveFilters = Boolean(
-    filters.search || filters.classId || filters.status,
-  );
+  const hasActive = hasActiveFilters(filters);
 
   const canManageAssignment = (a: Assignment) => {
     if (!currentUser) return false;
@@ -63,12 +62,14 @@ export default function TeacherAssignmentsPage() {
           onChange={(next) => setFilters({ ...filters, ...next })}
           onReset={resetFilters}
           classes={myClasses}
-          hasActiveFilters={hasActiveFilters}
+          hasActiveFilters={hasActive}
         />
       )}
 
       {assignmentsLoading ? (
-        <div className="py-10 text-center text-sm text-gray-500">در حال بارگذاری...</div>
+        <Card noPadding>
+          <Loading />
+        </Card>
       ) : filteredAssignments.length === 0 ? (
         <EmptyListState
           items={filteredAssignments}
@@ -97,7 +98,6 @@ export default function TeacherAssignmentsPage() {
           initialData={assignmentModal.target}
           availableClasses={myClasses}
           teacherId={currentUser?.id ?? ""}
-          isAdmin={isAdmin}
           onClose={handleAssignmentFormClose}
           onSuccess={handleAssignmentSuccess}
         />

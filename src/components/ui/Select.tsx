@@ -1,16 +1,11 @@
 import { ChevronDownIcon } from "#/components/common/icons";
 import { FieldWrapper, useField } from "#/components/ui/FieldWrapper.tsx";
+import type { SelectOption } from "#/types";
 import { forwardRef, type SelectHTMLAttributes } from "react";
-
-interface Option {
-  label: string;
-  value: string | number;
-  disabled?: boolean;
-}
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string | undefined;
-  options: Option[];
+  options: readonly SelectOption[];
   error?: string | undefined;
   compact?: boolean | undefined;
 }
@@ -59,7 +54,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             aria-describedby={ariaDescribedBy ?? describedBy}
             required={required}
             disabled={disabled}
-            className={`w-full appearance-none rounded-lg border ${paddingClasses} pl-8 text-sm transition-colors outline-none focus:ring-2 ${borderClasses} ${stateClasses} ${className}`}
+            className={`w-full appearance-none rounded-lg border ${paddingClasses} text-sm transition-colors outline-none focus:ring-2 ${borderClasses} ${stateClasses} ${className}`}
             {...props}
           >
             {options.map((option) => (

@@ -2,7 +2,8 @@ import Badge from "#/components/ui/Badge.tsx";
 import Button from "#/components/ui/Button.tsx";
 import ConfirmDialog from "#/components/ui/ConfirmDialog.tsx";
 import { useAuth } from "#/contexts/AuthContext.ts";
-import { getRoleLabel, getRoleVariant } from "#/utils/userLabels.ts";
+import { getRoleLabel, getRoleVariant } from "#/utils";
+import { DIALOG_STRINGS } from "#/configs/constants";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CloseIcon, MenuIcon } from "#/components/common/icons";
@@ -90,9 +91,9 @@ function Header({ isSidebarOpen, onToggleSidebar }: HeaderProps) {
       </header>
       <ConfirmDialog
         isOpen={isLogoutConfirmOpen}
-        title="خروج از حساب"
-        message="آیا مطمئن هستید که می‌خواهید خارج شوید؟"
-        confirmText="خروج"
+        title={DIALOG_STRINGS.LOGOUT_TITLE}
+        message={DIALOG_STRINGS.LOGOUT_MESSAGE}
+        confirmText={DIALOG_STRINGS.LOGOUT_CONFIRM_TEXT}
         onClose={() => setIsLogoutConfirmOpen(false)}
         onConfirm={handleLogout}
       />

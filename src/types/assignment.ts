@@ -1,4 +1,4 @@
-import type { ID, BaseFormErrors } from "#/types/common.ts";
+import type { BaseFormErrors, ID } from "#/types/common.ts";
 
 export interface Assignment {
   readonly id: ID;
@@ -16,12 +16,16 @@ export type CreateAssignmentPayload = Omit<
   "id" | "createdAt" | "updatedAt"
 >;
 
-export type UpdateAssignmentPayload = Partial<Assignment>;
+export type UpdateAssignmentPayload = Partial<
+  Omit<Assignment, "id" | "teacherId" | "createdAt" | "updatedAt">
+>;
+
+type AssignmentStatusFilter = "active" | "expired" | "";
 
 export type AssignmentFilters = {
   search: string;
   classId: string;
-  status: "active" | "expired" | "";
+  status: AssignmentStatusFilter;
 };
 
 export interface AssignmentFormErrors extends BaseFormErrors {

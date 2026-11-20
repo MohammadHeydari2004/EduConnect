@@ -1,8 +1,8 @@
 import Button from "#/components/ui/Button.tsx";
 import SearchInput from "#/components/ui/SearchInput.tsx";
 import Select from "#/components/ui/Select.tsx";
-import type { ClassFiltersValues } from "#/types/class.ts";
-import type { User } from "#/types/user.ts";
+import type { ClassFiltersValues, User } from "#/types";
+import { selectValue } from "#/utils";
 
 interface ClassFiltersProps {
   filters: ClassFiltersValues;
@@ -33,10 +33,7 @@ function ClassFilters({
         onChange={(e) =>
           onChange({
             ...filters,
-            statusFilter: (() => {
-              const v = e.target.value;
-              return v === "active" || v === "inactive" || v === "" ? v : "";
-            })(),
+            statusFilter: selectValue(e.target.value, ["active", "inactive", ""], ""),
           })
         }
         options={[

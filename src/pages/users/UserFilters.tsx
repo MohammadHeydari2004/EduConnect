@@ -2,9 +2,9 @@ import Button from "#/components/ui/Button.tsx";
 import SearchInput from "#/components/ui/SearchInput.tsx";
 import Select from "#/components/ui/Select.tsx";
 import { ResetIcon } from "#/components/common/icons";
-import type { UserFilters as UserFiltersType } from "#/types/user.ts";
+import type { UserFilters as UserFiltersType } from "#/types";
 import { ROLE_FILTER_OPTIONS, STATUS_FILTER_OPTIONS } from "#/configs/constants";
-import { hasActiveUserFilters } from "#/utils/hasActiveFilters.ts";
+import { hasActiveFilters, selectValue } from "#/utils";
 
 interface UserFiltersProps {
   filters: UserFiltersType;
@@ -13,7 +13,7 @@ interface UserFiltersProps {
 }
 
 function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
-  const hasActiveFilters = hasActiveUserFilters(filters);
+  const hasActive = hasActiveFilters(filters);
   return (
     <div className="grid grid-cols-1 gap-4 rounded-xl border border-gray-200 bg-white p-4 md:grid-cols-2 xl:grid-cols-5">
       <SearchInput
@@ -34,10 +34,7 @@ function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
         onChange={(e) =>
           onChange({
             ...filters,
-            role: (() => {
-              const v = e.target.value;
-              return v === "admin" || v === "teacher" || v === "student" || v === "" ? v : "";
-            })(),
+            role: selectValue(e.target.value, ["admin", "teacher", "student", ""], ""),
           })
         }
         options={ROLE_FILTER_OPTIONS}
@@ -48,15 +45,12 @@ function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
         onChange={(e) =>
           onChange({
             ...filters,
-            status: (() => {
-              const v = e.target.value;
-              return v === "active" || v === "inactive" || v === "" ? v : "";
-            })(),
+            status: selectValue(e.target.value, ["active", "inactive", ""], ""),
           })
         }
         options={STATUS_FILTER_OPTIONS}
       />
-      {hasActiveFilters && (
+      {hasActive && (
         <div className="flex items-end">
           <Button variant="secondary" className="w-full" onClick={onReset}>
             <ResetIcon className="h-4 w-4" />

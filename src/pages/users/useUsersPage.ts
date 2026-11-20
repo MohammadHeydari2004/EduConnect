@@ -5,18 +5,18 @@ import {
   createExactMatchFilter,
   createStringContainsFilter,
 } from "#/hooks/useFilter.ts";
-import type { FilterConfig } from "#/types/hooks.ts";
 import { userService } from "#/services/user.ts";
 import type {
   CreateUserPayload,
+  FilterConfig,
+  ID,
   UpdateUserPayload,
   User,
   UserFilters as UserFiltersType,
-} from "#/types/user.ts";
+} from "#/types";
 import { TOAST_MESSAGES } from "#/configs/constants";
-import { showErrorToastWithInfo } from "#/hooks/useToastHelpers.ts";
-import { classifyError } from "#/services/error.ts";
-import { useCallback, useMemo } from "react";
+import { showErrorToast } from "#/hooks/useToastHelpers.ts";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 const initialFilters: UserFiltersType = {
   searchName: "",
@@ -28,14 +28,11 @@ const initialFilters: UserFiltersType = {
 function preventSelfAction(
   currentUserId: string | undefined,
   targetId: string,
-  actionName: string,
+  message: string,
   addToast: (message: string, type: "success" | "error" | "info") => void,
 ): boolean {
   if (currentUserId === targetId) {
-    addToast(
-      TOAST_MESSAGES.PREVENT_SELF_ACTION(actionName),
-      "error",
-    );
+    addToast(message, "error");
     return true;
   }
   return false;
@@ -44,6 +41,11 @@ function preventSelfAction(
 export function useUsersPage() {
   const { user: currentUser } = useAuth();
   const { addToast } = useToast();
+  const [statusModal, setStatusModal] = useState<{
+    target: User | null;
+  }>({ target: null });
+  const [isStatusChanging, setIsStatusChanging] = useState(false);
+  const togglingUserIdsRef = useRef<Set<ID>>(new Set());
 
   const filterConfigs = useMemo<FilterConfig<User>[]>(
     () => [
@@ -84,7 +86,7 @@ export function useUsersPage() {
 
   const handleOpenEdit = useCallback(
     (user: User) => {
-      if (preventSelfAction(currentUser?.id, user.id, "ویرایش", addToast)) {
+      if (preventSelfAction(currentUser?.id, user.id, TOAST_MESSAGES.PREVENT_SELF_EDIT, addToast)) {
         return;
       }
       crud.actions.handleOpenEdit(user);
@@ -94,7 +96,7 @@ export function useUsersPage() {
 
   const handleOpenDelete = useCallback(
     (user: User) => {
-      if (preventSelfAction(currentUser?.id, user.id, "حذف", addToast)) {
+      if (preventSelfAction(currentUser?.id, user.id, TOAST_MESSAGES.PREVENT_SELF_DELETE, addToast)) {
         return;
       }
       crud.actions.handleOpenDelete(user);
@@ -102,22 +104,43 @@ export function useUsersPage() {
     [crud.actions, currentUser, addToast],
   );
 
-  const handleToggleStatus = useCallback(
-    async (user: User) => {
+  const handleOpenStatus = useCallback(
+    (user: User) => {
       if (!currentUser) return;
-      if (preventSelfAction(currentUser.id, user.id, "تغییر وضعیت", addToast)) {
+      if (preventSelfAction(currentUser.id, user.id, TOAST_MESSAGES.PREVENT_SELF_STATUS, addToast)) {
         return;
       }
+      setStatusModal({ target: user });
+    },
+    [currentUser, addToast],
+  );
+
+  const handleCloseStatus = useCallback(() => {
+    setStatusModal({ target: null });
+  }, []);
+
+  const handleToggleStatus = useCallback(
+    async (user: User) => {
+      if (togglingUserIdsRef.current.has(user.id)) return;
+      togglingUserIdsRef.current.add(user.id);
+      setIsStatusChanging(true);
       try {
         await userService.toggleStatus(user.id);
         addToast(TOAST_MESSAGES.USER_STATUS_SUCCESS, "success");
         crud.state.refresh();
+        setStatusModal({ target: null });
       } catch (err) {
-        const info = classifyError(err);
-        showErrorToastWithInfo(addToast, info, TOAST_MESSAGES.USER_STATUS_ERROR);
+        showErrorToast(
+          addToast,
+          err instanceof Error ? err.message : TOAST_MESSAGES.USER_STATUS_ERROR,
+        );
+        setStatusModal({ target: null });
+      } finally {
+        togglingUserIdsRef.current.delete(user.id);
+        setIsStatusChanging(false);
       }
     },
-    [currentUser, addToast, crud.state.refresh],
+    [addToast, crud.state.refresh],
   );
 
   const handleView = useCallback(
@@ -142,6 +165,10 @@ export function useUsersPage() {
     handleUpdate: crud.actions.handleUpdate,
     handleOpenDelete,
     handleDelete: crud.actions.handleDelete,
+    statusModal,
+    isStatusChanging,
+    handleOpenStatus,
+    handleCloseStatus,
     handleToggleStatus,
     handleView,
   };

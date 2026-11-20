@@ -4,11 +4,8 @@ import StatCard from "#/components/ui/StatCard.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
 import { attendanceService } from "#/services/attendance.ts";
-import type { Attendance } from "#/types/attendance.ts";
-import type { ClassItem } from "#/types/class.ts";
-import type { Session } from "#/types/session.ts";
-import type { User } from "#/types/user.ts";
-import { formatDate } from "#/utils/formatDate.ts";
+import type { Attendance, ClassItem, Session, User } from "#/types";
+import { formatDate } from "#/utils";
 import { useMemo } from "react";
 
 interface StudentAttendanceViewProps {
@@ -149,7 +146,7 @@ export default function StudentAttendanceView({
                 </div>
                 <div className="text-sm text-gray-600">
                   <span className="text-gray-500">کلاس: </span>{" "}
-                  <span className="wrap-break-word">{item.classTitle}</span>
+                  <span className="break-words">{item.classTitle}</span>
                 </div>
                 <div className="text-sm text-gray-600">
                   <span className="text-gray-500">تاریخ: </span>{" "}

@@ -1,4 +1,4 @@
-import { MenuCloseContext } from "#/hooks/useMenuPropagation.ts";
+import { MenuCloseContext } from "#/hooks/menuClose.ts";
 import { usePortalPosition } from "#/hooks/usePortalPosition.ts";
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
@@ -20,6 +20,7 @@ function ActionsMenu({ children, label }: ActionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const triggerId = useId();
   const menuId = useId();
   const closeMenu = useCallback((returnFocus = false) => {
     setIsOpen(false);
@@ -84,7 +85,10 @@ function ActionsMenu({ children, label }: ActionsMenuProps) {
 
   const onTriggerKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
     if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
-      if (!isOpen) setIsOpen(true);
+      if (!isOpen) {
+        e.preventDefault();
+        setIsOpen(true);
+      }
     }
   };
 
@@ -92,6 +96,7 @@ function ActionsMenu({ children, label }: ActionsMenuProps) {
     <>
       <button
         ref={buttonRef}
+        id={triggerId}
         onClick={toggleMenu}
         onKeyDown={onTriggerKeyDown}
         className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100"
@@ -108,6 +113,7 @@ function ActionsMenu({ children, label }: ActionsMenuProps) {
             id={menuId}
             ref={menuRef}
             role="menu"
+            aria-labelledby={triggerId}
             className="fixed z-50 flex min-w-40 flex-col gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
             style={{
               top: `${position.top}px`,

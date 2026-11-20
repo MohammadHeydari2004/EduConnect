@@ -1,13 +1,12 @@
 import Badge from "#/components/ui/Badge.tsx";
 import Button from "#/components/ui/Button.tsx";
+import { DeadlineBadge } from "#/components/ui/DeadlineBadge.tsx";
 import MenuItem from "#/components/ui/MenuItem.tsx";
 import StatusChip from "#/components/ui/StatusChip.tsx";
 import Table from "#/components/ui/Table.tsx";
-import { DeadlineBadge } from "#/components/ui/DeadlineBadge.tsx";
-import type { Assignment } from "#/types/assignment.ts";
-import type { ID } from "#/types/common.ts";
-import type { Submission } from "#/types/submission.ts";
-import { getSubmissionPreview, getAssignmentSubmissionStatus } from "#/utils/tableHelpers.ts";
+import type { Assignment, ID, Submission } from "#/types";
+import { getAssignmentSubmissionStatus, getSubmissionPreview } from "#/utils";
+import { useMemo } from "react";
 
 interface StudentAssignmentsTableProps {
   data: Assignment[];
@@ -17,6 +16,8 @@ interface StudentAssignmentsTableProps {
   onOpenSubmissionForm: (assignment: Assignment) => void;
 }
 
+type SubmissionStatusResult = ReturnType<typeof getAssignmentSubmissionStatus>;
+
 export default function StudentAssignmentsTable({
   data,
   getSubmission,
@@ -24,15 +25,61 @@ export default function StudentAssignmentsTable({
   getTeacherName,
   onOpenSubmissionForm,
 }: StudentAssignmentsTableProps) {
-  const renderMobileCard = (a: Assignment) => {
-    const { sub, isGraded, isReturned } = getAssignmentSubmissionStatus(
-      a,
-      getSubmission,
+  const statusMap = useMemo(
+    () =>
+      new Map<ID, SubmissionStatusResult>(
+        data.map((a) => [
+          a.id,
+          getAssignmentSubmissionStatus(a, getSubmission),
+        ]),
+      ),
+    [data, getSubmission],
+  );
+
+  const getStatus = (a: Assignment): SubmissionStatusResult =>
+    statusMap.get(a.id)!;
+
+  const renderSubmissionAction = (a: Assignment, kind: "button" | "menu") => {
+    const { sub, isGraded, isReturned, isExpired } = getStatus(a);
+    const openForm = () => onOpenSubmissionForm(a);
+    if (!sub || isReturned) {
+      const label = !sub ? "ارسال پاسخ" : "پاسخ مجدد";
+      return kind === "button" ? (
+        <Button variant="secondary" onClick={openForm} disabled={isExpired}>
+          {label}
+        </Button>
+      ) : (
+        <MenuItem label={label} onAction={openForm} disabled={isExpired} />
+      );
+    }
+    if (!isGraded) {
+      const label = "منتظر پاسخ استاد";
+      return kind === "button" ? (
+        <span className="py-2 px-3 text-xs text-blue-700 font-medium">
+          {label}
+        </span>
+      ) : (
+        <div className="w-full rounded-md px-3 py-2 text-right text-sm text-blue-700 font-medium">
+          {label}
+        </div>
+      );
+    }
+    const label = `نمره نهایی شده (${sub.grade})`;
+    return kind === "button" ? (
+      <span className="py-2 text-xs text-gray-500">{label}</span>
+    ) : (
+      <div className="w-full rounded-md px-3 py-2 text-right text-sm text-gray-400">
+        {label}
+      </div>
     );
+  };
+
+  const renderMobileCard = (a: Assignment) => {
+    const { sub, isGraded, isReturned } = getStatus(a);
     return (
       <div className="space-y-2 text-right">
         <div className="flex items-start justify-between gap-2">
-          <span className="text-base font-bold text-gray-800 w-34">
+          <span className="text-base font-bold text-gray-800 w-64">
             {a.title}
           </span>
           {sub ? (
@@ -41,71 +88,44 @@ export default function StudentAssignmentsTable({
             <Badge variant="gray">ارسال نشده</Badge>
           )}
         </div>
-        <div className="text-sm text-gray-600">
-          <span className="text-gray-500">کلاس: </span>{" "}
-          {getClassName(a.classId)}
-        </div>
-        <div className="text-sm text-gray-600">
-          <span className="text-gray-500">استاد: </span>{" "}
-          {getTeacherName(a.teacherId)}
-        </div>
-        {a.description && (
-          <p className="line-clamp-2 text-xs text-gray-500">
-            {a.description}
-          </p>
-        )}
-        {sub && sub.content && (
-          <p className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded line-clamp-2">
-            <span className="font-medium text-gray-500">پاسخ: </span>
-            {getSubmissionPreview(sub.content, 80)}
-          </p>
-        )}
-        <DeadlineBadge deadline={a.deadline} />
-        {isGraded && typeof sub?.grade === "number" && (
-          <div className="rounded-lg bg-green-50 px-3 py-1.5 text-sm font-bold text-green-700">
-            نمره: {sub.grade}
+        <div className="flex flex-col items-start gap-4">
+          <div className="text-sm text-gray-600">
+            <span className="text-gray-500">کلاس: </span>{" "}
+            {getClassName(a.classId)}
           </div>
-        )}
-        {isReturned && (
-          <div className="rounded-lg bg-orange-50 px-3 py-1.5 text-sm font-bold text-orange-700">
-            پاسخ برگشتی - لطفاً مجدداً ارسال کنید
+          <div className="text-sm text-gray-600">
+            <span className="text-gray-500">استاد: </span>{" "}
+            {getTeacherName(a.teacherId)}
           </div>
-        )}
+          {a.description && (
+            <p className="line-clamp-2 text-xs text-gray-500">
+              {a.description}
+            </p>
+          )}
+          {sub && sub.content && (
+            <p className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded line-clamp-2">
+              <span className="font-medium text-gray-500">پاسخ: </span>
+              {getSubmissionPreview(sub.content, 80)}
+            </p>
+          )}
+          <DeadlineBadge deadline={a.deadline} />
+          {isGraded && typeof sub?.grade === "number" && (
+            <div className="rounded-lg bg-green-50 px-3 py-1.5 text-sm font-bold text-green-700">
+              نمره: {sub.grade}
+            </div>
+          )}
+          {isReturned && (
+            <div className="rounded-lg bg-orange-50 px-3 py-1.5 text-sm font-bold text-orange-700">
+              پاسخ برگشتی - لطفاً مجدداً ارسال کنید
+            </div>
+          )}
+        </div>
       </div>
     );
   };
 
-  const renderMobileActions = (a: Assignment) => {
-    const { sub, isGraded, isReturned, isExpired } = getAssignmentSubmissionStatus(
-      a,
-      getSubmission,
-    );
-    return (
-      <>
-        {!sub ? (
-          <MenuItem
-            label="ارسال پاسخ"
-            onAction={() => onOpenSubmissionForm(a)}
-            disabled={isExpired}
-          />
-        ) : isReturned ? (
-          <MenuItem
-            label="پاسخ مجدد"
-            onAction={() => onOpenSubmissionForm(a)}
-            disabled={isExpired}
-          />
-        ) : !isGraded ? (
-          <div className="w-full rounded-md px-3 py-2 text-right text-sm text-blue-700 font-medium">
-            منتظر پاسخ استاد
-          </div>
-        ) : (
-          <div className="w-full rounded-md px-3 py-2 text-right text-sm text-gray-400">
-            نمره نهایی شده ({sub.grade})
-          </div>
-        )}
-      </>
-    );
-  };
+  const renderMobileActions = (a: Assignment) =>
+    renderSubmissionAction(a, "menu");
 
   return (
     <Table
@@ -155,79 +175,32 @@ export default function StudentAssignmentsTable({
           title: "وضعیت",
           width: "23%",
           render: (a) => {
-            const { sub } = getAssignmentSubmissionStatus(a, getSubmission);
-            if (sub) {
-              if (sub.status === "graded") {
-                return (
-                  <span className="inline-flex items-center gap-1 text-green-700 font-medium">
-                    <StatusChip status={sub.status} />
-                    {typeof sub.grade === "number" && <span>نمره: {sub.grade}</span>}
-                  </span>
-                );
-              }
-              if (sub.status === "returned") {
-                return (
-                  <span className="inline-flex items-center gap-1 text-orange-700 font-medium">
-                    <StatusChip status={sub.status} />
-                    <span>برگشتی - نیاز به اصلاح</span>
-                  </span>
-                );
-              }
-              if (sub.status === "pending") {
-                return (
-                  <span className="inline-flex items-center gap-1 text-yellow-700 font-medium">
-                    <StatusChip status={sub.status} />
-                    <span>در انتظار بررسی</span>
-                  </span>
-                );
-              }
+            const { sub } = getStatus(a);
+            if (!sub) return <span className="text-gray-500">ارسال نشده</span>;
+            if (sub.status === "graded") {
               return (
-                <span className="inline-flex items-center gap-1 text-blue-700 font-medium">
+                <span className="inline-flex items-center gap-1">
                   <StatusChip status={sub.status} />
-                  <span>منتظر پاسخ استاد</span>
+                  {typeof sub.grade === "number" && (
+                    <span className="text-sm font-medium text-gray-700">
+                      نمره: {sub.grade}
+                    </span>
+                  )}
                 </span>
               );
             }
-            return <span className="text-gray-500">ارسال نشده</span>;
+            return <StatusChip status={sub.status} />;
           },
         },
         {
           key: "actions",
           title: "عملیات",
           width: "13%",
-          render: (a) => {
-            const { sub, isGraded, isReturned, isExpired } =
-              getAssignmentSubmissionStatus(a, getSubmission);
-            return (
-              <div className="flex flex-wrap justify-center gap-2">
-                {!sub ? (
-                  <Button
-                    variant="secondary"
-                    onClick={() => onOpenSubmissionForm(a)}
-                    disabled={isExpired}
-                  >
-                    ارسال پاسخ
-                  </Button>
-                ) : isReturned ? (
-                  <Button
-                    variant="secondary"
-                    onClick={() => onOpenSubmissionForm(a)}
-                    disabled={isExpired}
-                  >
-                    پاسخ مجدد
-                  </Button>
-                ) : !isGraded ? (
-                  <span className="py-2 px-3 text-xs text-blue-700 font-medium">
-                    منتظر پاسخ استاد
-                  </span>
-                ) : (
-                  <span className="py-2 text-xs text-gray-500">
-                    نمره نهایی شده ({sub.grade})
-                  </span>
-                )}
-              </div>
-            );
-          },
+          render: (a) => (
+            <div className="flex flex-wrap justify-center gap-2">
+              {renderSubmissionAction(a, "button")}
+            </div>
+          ),
         },
       ]}
       data={data}

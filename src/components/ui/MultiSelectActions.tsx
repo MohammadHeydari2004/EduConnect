@@ -1,4 +1,4 @@
-import type { MultiSelectOption } from "#/types/hooks.ts";
+import type { MultiSelectOption } from "#/types";
 
 interface MultiSelectActionsProps {
   options: MultiSelectOption[];

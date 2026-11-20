@@ -1,4 +1,4 @@
-import type { ID, BaseFormErrors } from "#/types/common.ts";
+import type { BaseFormErrors, ID } from "#/types/common.ts";
 
 export interface Session {
   readonly id: ID;
@@ -10,12 +10,10 @@ export interface Session {
   readonly updatedAt?: string;
 }
 
-export interface SessionFormValues {
-  title: string;
-  classId: ID;
-  date: string;
-  description?: string;
-}
+export type SessionFormValues = Omit<
+  Session,
+  "id" | "createdAt" | "updatedAt"
+>;
 
 export interface SessionFormErrors extends BaseFormErrors {
   date?: string | undefined;

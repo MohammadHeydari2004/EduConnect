@@ -1,4 +1,9 @@
-import type { ID, Maybe, RecordStatus, BaseFormErrors } from "#/types/common.ts";
+import type {
+  BaseFormErrors,
+  ID,
+  Maybe,
+  RecordStatus,
+} from "#/types/common.ts";
 
 export type ClassStatus = RecordStatus;
 
@@ -14,14 +19,10 @@ export interface ClassItem {
   readonly updatedAt?: string;
 }
 
-export interface ClassFormValues {
-  title: string;
-  teacherId: Maybe<ID>;
-  studentIds: ID[];
-  capacity: number;
-  status: ClassStatus;
-  description?: string;
-}
+export type ClassFormValues = Omit<
+  ClassItem,
+  "id" | "createdAt" | "updatedAt"
+>;
 
 export interface ClassFiltersValues {
   search: string;

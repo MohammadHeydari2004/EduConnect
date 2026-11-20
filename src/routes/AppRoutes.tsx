@@ -6,8 +6,9 @@ import { lazy, Suspense } from "react";
 import { Outlet, Route, Routes } from "react-router-dom";
 import {
   ADMIN_ROLES,
-  TEACHER_AND_ABOVE_ROLES,
+  ALL_ROLES,
   STUDENT_ROLES,
+  TEACHER_AND_ABOVE_ROLES,
 } from "#/configs/constants";
 
 const DashboardPage = lazy(() => import("#/pages/dashboard/DashboardContainer.tsx"));
@@ -72,7 +73,7 @@ function AppRoutes() {
           <Route
             path="classes/:id"
             element={
-              <RoleGuard allowedRoles={[...TEACHER_AND_ABOVE_ROLES, ...STUDENT_ROLES]}>
+              <RoleGuard allowedRoles={ALL_ROLES}>
                 <ClassDetailsPage />
               </RoleGuard>
             }

@@ -1,15 +1,10 @@
-﻿import { useCallback, useState } from "react";
+﻿import { useCallback, useMemo, useState } from "react";
 import { useAsyncData } from "#/hooks/useAsyncData.ts";
 import { useFilter } from "#/hooks/useFilter.ts";
 import { useModalState } from "#/hooks/useModalState.ts";
 import { useToast } from "#/hooks/useToast.ts";
-import { showErrorToastWithInfo } from "#/hooks/useToastHelpers.ts";
-import { getErrorMessage, classifyError } from "#/services/error.ts";
-import type { ID } from "#/types/common.ts";
-import type {
-  CrudPageConfig,
-  CrudPageState,
-} from "#/types/hooks.ts";
+import { showErrorToast } from "#/hooks/useToastHelpers.ts";
+import type { CrudPageConfig, CrudPageState, ID } from "#/types";
 import { TOAST_MESSAGES } from "#/configs/constants";
 
 export function useCrudPage<
@@ -65,14 +60,10 @@ export function useCrudPage<
 
         refresh();
       } catch (err) {
-        const info = classifyError(err);
-        showErrorToastWithInfo(
+        showErrorToast(
           addToast,
-          info,
-          getErrorMessage(err, TOAST_MESSAGES.CREATE_ERROR),
+          err instanceof Error ? err.message : TOAST_MESSAGES.CREATE_ERROR,
         );
-      } finally {
-        setIsDeleting(false);
       }
     },
     [service, addToast, refresh, close, onCreateSuccess],
@@ -92,14 +83,10 @@ export function useCrudPage<
 
         refresh();
       } catch (err) {
-        const info = classifyError(err);
-        showErrorToastWithInfo(
+        showErrorToast(
           addToast,
-          info,
-          getErrorMessage(err, TOAST_MESSAGES.UPDATE_ERROR),
+          err instanceof Error ? err.message : TOAST_MESSAGES.UPDATE_ERROR,
         );
-      } finally {
-        setIsDeleting(false);
       }
     },
     [service, addToast, refresh, close, target, onUpdateSuccess],
@@ -120,11 +107,9 @@ export function useCrudPage<
 
         refresh();
       } catch (err) {
-        const info = classifyError(err);
-        showErrorToastWithInfo(
+        showErrorToast(
           addToast,
-          info,
-          getErrorMessage(err, TOAST_MESSAGES.DELETE_ERROR),
+          err instanceof Error ? err.message : TOAST_MESSAGES.DELETE_ERROR,
         );
       } finally {
         setIsDeleting(false);
@@ -151,11 +136,48 @@ export function useCrudPage<
     [openWithTarget],
   );
 
-  const modal = { kind, target, open, openWithTarget, setTarget, close, isOpen };
+  const modal = useMemo(
+    () => ({ kind, target, open, openWithTarget, setTarget, close, isOpen }),
+    [kind, target, open, openWithTarget, setTarget, close, isOpen],
+  );
 
   const resetFilters = useCallback(() => {
     setFilters(initialFilters);
   }, [initialFilters]);
+
+  const modals = useMemo(
+    () => ({
+      create: modal.isOpen("create"),
+      edit: modal.isOpen("edit"),
+      delete: modal.isOpen("delete"),
+      target: modal.target,
+      kind: modal.kind,
+    }),
+    [modal],
+  );
+
+  const actions = useMemo(
+    () => ({
+      modal,
+      handleCreate,
+      handleUpdate,
+      handleDelete,
+      handleOpenCreate,
+      handleOpenEdit,
+      handleOpenDelete,
+      isDeleting,
+    }),
+    [
+      modal,
+      handleCreate,
+      handleUpdate,
+      handleDelete,
+      handleOpenCreate,
+      handleOpenEdit,
+      handleOpenDelete,
+      isDeleting,
+    ],
+  );
 
   return {
     state: {
@@ -168,22 +190,7 @@ export function useCrudPage<
       setFilters,
       resetFilters,
     } as CrudPageState<T, FilterState>,
-    modals: {
-      create: modal.isOpen("create"),
-      edit: modal.isOpen("edit"),
-      delete: modal.isOpen("delete"),
-      target: modal.target,
-      kind: modal.kind,
-    },
-    actions: {
-      modal,
-      handleCreate,
-      handleUpdate,
-      handleDelete,
-      handleOpenCreate,
-      handleOpenEdit,
-      handleOpenDelete,
-      isDeleting,
-    },
+    modals,
+    actions,
   };
 }
