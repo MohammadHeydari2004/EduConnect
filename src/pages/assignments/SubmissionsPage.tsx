@@ -41,26 +41,26 @@ export default function SubmissionsPage() {
             → بازگشت
           </Button>
           <h1 className="text-xl font-bold text-gray-800 sm:text-2xl max-sm:mt-2.5">
-            پاسخ‌های تکلیف: {assignment?.title}
+            پاسخ‌های تکلیف : {assignment?.title}
           </h1>
         </div>
         <div className="text-sm text-gray-600">
-          تعداد کل دانشجوها:{" "}
+          تعداد کل دانشجوها :
           <span className="font-bold">{studentStatuses.length}</span>
         </div>
       </div>
 
       {assignment && (
         <Card title="اطلاعات تکلیف">
-          <div className="grid gap-3 text-sm sm:grid-cols-2 md:grid-cols-4">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-start sm:gap-8 text-sm sm:py-2">
             <div>
-              <span className="text-gray-500">کلاس:</span>{" "}
+              <span className="text-gray-500">کلاس :</span>
               <span className="font-medium">
                 {getClassName(assignment.classId)}
               </span>
             </div>
             <div>
-              <span className="text-gray-500">ددلاین:</span>{" "}
+              <span className="text-gray-500">ددلاین :</span>{" "}
               <span
                 className={`font-medium ${isDeadlinePassed ? "text-red-600" : ""}`}
               >
@@ -71,13 +71,11 @@ export default function SubmissionsPage() {
               </span>
             </div>
             <div>
-              <span className="text-gray-500">تسلیم‌شده:</span>{" "}
-              <span className="font-medium">
-                {submittedCount}
-              </span>
+              <span className="text-gray-500"> ارسال شده : </span>
+              <span className="font-medium">{submittedCount}</span>
             </div>
             <div>
-              <span className="text-gray-500">تصحیح‌شده:</span>{" "}
+              <span className="text-gray-500">تصحیح شده : </span>
               <span className="font-medium text-green-600">{gradedCount}</span>
             </div>
           </div>

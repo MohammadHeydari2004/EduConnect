@@ -102,7 +102,7 @@ function ClassSessionsPanel({
                   </div>
                 )}
               </div>
-              <div className="sm:flex sm:flex-wrap sm:items-center sm:gap-2 flex flex-col gap-2 max-sm:pt-4">
+              <div className="sm:flex sm:flex-row  sm:items-center sm:gap-2 flex flex-col gap-2 max-sm:pt-4">
                 {canEditSessions && (
                   <>
                     <Button

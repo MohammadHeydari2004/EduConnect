@@ -228,7 +228,7 @@ src/
 </div>
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/MohammadHeydari2004/EduConnect.git
 cd educonnect
 npm install
 ```

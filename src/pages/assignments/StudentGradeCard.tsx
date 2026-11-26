@@ -43,7 +43,7 @@ export default function StudentGradeCard({
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2 border-b border-gray-100 pb-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="sm:flex sm:items-center sm:gap-2 flex flex-col gap-3 pb-2 items-start">
+            <div className="sm:flex-row sm:items-center sm:gap-2 flex flex-col gap-3 pb-2 items-start">
               <span className="font-semibold text-gray-800">
                 {student.name}
               </span>

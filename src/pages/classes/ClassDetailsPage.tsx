@@ -1,3 +1,4 @@
+import ClassCapacityBadge from "#/components/common/ClassCapacityBadge.tsx";
 import EmptyState from "#/components/common/EmptyState.tsx";
 import Loading from "#/components/common/Loading.tsx";
 import Button from "#/components/ui/Button.tsx";
@@ -9,7 +10,6 @@ import { useToast } from "#/hooks/useToast.ts";
 import { showErrorToast } from "#/hooks/useToastHelpers.ts";
 import ClassSessionsPanel from "#/pages/classes/ClassSessionsPanel.tsx";
 import ClassStudentsPanel from "#/pages/classes/ClassStudentsPanel.tsx";
-import ClassCapacityBadge from "#/components/common/ClassCapacityBadge.tsx";
 import { classService } from "#/services/class.ts";
 import { sessionService } from "#/services/session.ts";
 import { userService } from "#/services/user.ts";
@@ -21,7 +21,12 @@ import { useNavigate, useParams } from "react-router-dom";
 function getClassRoles(
   currentUser: User | undefined | null,
   classItem: ClassItem | null,
-): { isAdmin: boolean; isTeacherOfThisClass: boolean; isStudentInThisClass: boolean; canManageSessions: boolean } {
+): {
+  isAdmin: boolean;
+  isTeacherOfThisClass: boolean;
+  isStudentInThisClass: boolean;
+  canManageSessions: boolean;
+} {
   const isAdminUser = isAdmin(currentUser);
   const isTeacherOfThisClass =
     currentUser?.role === "teacher" &&
@@ -53,10 +58,11 @@ export default function ClassDetailsPage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(!isInvalidId);
 
-  const { isTeacherOfThisClass, isStudentInThisClass, canManageSessions } = useMemo(
-    () => getClassRoles(currentUser, classItem),
-    [currentUser, classItem],
-  );
+  const { isTeacherOfThisClass, isStudentInThisClass, canManageSessions } =
+    useMemo(
+      () => getClassRoles(currentUser, classItem),
+      [currentUser, classItem],
+    );
 
   useEffect(() => {
     if (isInvalidId) return;
@@ -95,7 +101,9 @@ export default function ClassDetailsPage() {
         if (!cancelled) {
           showErrorToast(
             addToast,
-            err instanceof Error ? err.message : "دریافت اطلاعات کلاس با خطا مواجه شد.",
+            err instanceof Error
+              ? err.message
+              : "دریافت اطلاعات کلاس با خطا مواجه شد.",
           );
           setLoading(false);
         }
@@ -116,7 +124,9 @@ export default function ClassDetailsPage() {
     } catch (err) {
       showErrorToast(
         addToast,
-        err instanceof Error ? err.message : "به‌روزرسانی لیست جلسات ناموفق بود.",
+        err instanceof Error
+          ? err.message
+          : "به‌روزرسانی لیست جلسات ناموفق بود.",
       );
     }
   }, [classId, addToast]);
@@ -165,7 +175,11 @@ export default function ClassDetailsPage() {
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Button
             variant="secondary"
-            onClick={() => navigate(currentUser?.role === "student" ? "/my-classes" : "/classes")}
+            onClick={() =>
+              navigate(
+                currentUser?.role === "student" ? "/my-classes" : "/classes",
+              )
+            }
             className="w-full sm:w-auto"
           >
             → بازگشت
@@ -198,39 +212,76 @@ export default function ClassDetailsPage() {
         )}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card title="اطلاعات کلاس">
-          <div className="space-y-3 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">عنوان:</span>{" "}
-              {classItem.title || "—"}
-            </p>
-            {classItem.description && (
-              <p>
-                <span className="font-semibold">توضیحات:</span>{" "}
-                {classItem.description}
-              </p>
-            )}
-            <p>
-              <span className="font-semibold">استاد:</span>{" "}
-              {teacher?.name ?? "—"}
-            </p>
-            <p>
-              <span className="font-semibold">ظرفیت:</span>{" "}
-              <ClassCapacityBadge classItem={classItem} />
-            </p>
-            <p className="flex items-center gap-2">
-              <span className="font-semibold">وضعیت:</span>
-              <StatusChip status={classStatus} />
-              <span className="text-gray-600">
-                ({getStatusLabel(classStatus)})
-              </span>
-            </p>
+      {isTeacherOfThisClass ? (
+        <>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card title="اطلاعات کلاس">
+              <div className="space-y-3 text-sm text-gray-700">
+                <p>
+                  <span className="font-semibold">عنوان:</span>{" "}
+                  {classItem.title || "—"}
+                </p>
+                {classItem.description && (
+                  <p>
+                    <span className="font-semibold">توضیحات:</span>{" "}
+                    {classItem.description}
+                  </p>
+                )}
+                <p>
+                  <span className="font-semibold">استاد:</span>{" "}
+                  {teacher?.name ?? "—"}
+                </p>
+                <p>
+                  <span className="font-semibold">ظرفیت:</span>{" "}
+                  <ClassCapacityBadge classItem={classItem} />
+                </p>
+                <p className="flex items-center gap-2">
+                  <span className="font-semibold">وضعیت:</span>
+                  <StatusChip status={classStatus} />
+                  <span className="text-gray-600">
+                    ({getStatusLabel(classStatus)})
+                  </span>
+                </p>
+              </div>
+            </Card>
+            <ClassStudentsPanel students={students} />
           </div>
-        </Card>
-
-        <ClassStudentsPanel students={students} />
-      </div>
+        </>
+      ) : (
+        <>
+          <div className="">
+            <Card title="اطلاعات کلاس">
+              <div className="space-y-3 text-sm text-gray-700">
+                <p>
+                  <span className="font-semibold">عنوان:</span>{" "}
+                  {classItem.title || "—"}
+                </p>
+                {classItem.description && (
+                  <p>
+                    <span className="font-semibold">توضیحات:</span>{" "}
+                    {classItem.description}
+                  </p>
+                )}
+                <p>
+                  <span className="font-semibold">استاد:</span>{" "}
+                  {teacher?.name ?? "—"}
+                </p>
+                <p>
+                  <span className="font-semibold">ظرفیت:</span>{" "}
+                  <ClassCapacityBadge classItem={classItem} />
+                </p>
+                <p className="flex items-center gap-2">
+                  <span className="font-semibold">وضعیت:</span>
+                  <StatusChip status={classStatus} />
+                  <span className="text-gray-600">
+                    ({getStatusLabel(classStatus)})
+                  </span>
+                </p>
+              </div>
+            </Card>
+          </div>
+        </>
+      )}
 
       <ClassSessionsPanel
         sessions={sessions}

@@ -100,10 +100,10 @@
         "usr-student-04"
       ],
       "capacity": 9,
-      "status": "inactive",
+      "status": "active",
       "description": "مدل‌سازی داده، SQL و طراحی پایگاه داده.",
       "createdAt": "2026-11-01T08:00:00.000Z",
-      "updatedAt": "2026-11-20T10:09:19.288Z"
+      "updatedAt": "2026-11-26T08:57:19.827Z"
     },
     {
       "id": "cls-cloud-01",
@@ -208,28 +208,28 @@
       "sessionId": "ses-01-2",
       "classId": "cls-web-01",
       "studentId": "BAImompfEJA",
-      "status": "absent",
+      "status": "late",
       "id": "jHLKxSdSUCU"
     },
     {
       "sessionId": "ses-02-1",
       "classId": "cls-db-01",
       "studentId": "usr-student-01",
-      "status": "absent",
+      "status": "present",
       "id": "ndPstBpxnoE"
     },
     {
       "sessionId": "ses-01-2",
       "classId": "cls-web-01",
       "studentId": "usr-student-01",
-      "status": "absent",
+      "status": "present",
       "id": "_XpWoVllygs"
     },
     {
       "sessionId": "ses-01-2",
       "classId": "cls-web-01",
       "studentId": "usr-student-04",
-      "status": "absent",
+      "status": "present",
       "id": "dtlmRuV39zE"
     },
     {
@@ -243,7 +243,7 @@
       "sessionId": "rL56n5my_Wo",
       "classId": "cls-web-01",
       "studentId": "usr-student-04",
-      "status": "late",
+      "status": "absent",
       "id": "rwMcsgNw7q8"
     },
     {
@@ -257,7 +257,7 @@
       "sessionId": "cNQPQa2inSY",
       "classId": "cls-web-01",
       "studentId": "usr-student-01",
-      "status": "present",
+      "status": "absent",
       "id": "-ZwIyH4nFIk"
     },
     {
@@ -273,6 +273,20 @@
       "studentId": "BAImompfEJA",
       "status": "absent",
       "id": "XiawAxT7MMw"
+    },
+    {
+      "sessionId": "ses-02-1",
+      "classId": "cls-db-01",
+      "studentId": "usr-student-04",
+      "status": "late",
+      "id": "B5xlkwVa-kM"
+    },
+    {
+      "sessionId": "ses-02-2",
+      "classId": "cls-db-01",
+      "studentId": "usr-student-01",
+      "status": "absent",
+      "id": "9u_qwhvHBm4"
     }
   ],
   "announcements": [
@@ -356,7 +370,8 @@
       ],
       "targetAudience": null,
       "seenBy": [
-        "usr-student-01"
+        "usr-student-01",
+        "usr-teacher-01"
       ],
       "createdAt": "2026-11-20T10:13:22.692Z",
       "id": "4xSRkrYYS_A"
@@ -390,18 +405,19 @@
       "description": "تمرین شماره 1 برای کلاس طراحی پایگاه داده.",
       "classId": "cls-db-01",
       "teacherId": "usr-teacher-01",
-      "deadline": "2026-11-25T23:59:59.999Z",
+      "deadline": "2026-11-29T23:59:59.999",
       "createdAt": "2026-11-10T08:00:00.000Z",
-      "updatedAt": "2026-11-10T08:00:00.000Z"
+      "updatedAt": "2026-11-26T09:02:14.162Z"
     },
     {
       "title": "تست تمرین",
-      "description": "",
-      "deadline": "2026-11-20T23:59:59.999",
+      "description": "00",
+      "deadline": "2026-11-27T23:59:59.999",
       "classId": "cls-db-01",
       "teacherId": "usr-teacher-01",
       "createdAt": "2026-11-20T10:26:01.546Z",
-      "id": "0W4lBye1KGU"
+      "id": "0W4lBye1KGU",
+      "updatedAt": "2026-11-26T09:01:55.786Z"
     }
   ],
   "submissions": [
